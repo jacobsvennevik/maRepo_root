@@ -37,10 +37,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "flashcardGenerator",
-    "learningtips",
-    "users",
-    "study",
+    "maProject.apps.learningtips",
+    "maProject.apps.users",
+    "maProject.apps.study",
 ]
 
 MIDDLEWARE = [

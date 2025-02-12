@@ -20,12 +20,14 @@ from django.http import HttpResponse
 import debug_toolbar    
 
 def home(request):
+    x = 1
+    y = 2
     return HttpResponse("Welcome to ksProject Homepage!")
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('learningtips/', include('learningtips.urls')),
-    path('study/', include('study.urls')),
-    path('users/', include('users.urls')),
+    path('__debug__/', include('debug_toolbar.urls')),
+    path('study/', include('maProject.apps.study.urls')),    
+    path('learningtips/', include('maProject.apps.learningtips.urls')),
 ]
