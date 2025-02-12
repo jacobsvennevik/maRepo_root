@@ -1,3 +1,5 @@
-from django.shortcuts import render
+# maProject/apps/learningtips/views.py
+from django.http import HttpResponse
 
-# Create your views here.
+def index(request):
+    return HttpResponse("Welcome to the Learning Tips Index!")

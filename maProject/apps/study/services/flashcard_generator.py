@@ -11,8 +11,8 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 try:
-    from text_processor.pdf_reader import read_pdf
-    from LLM_modules.api_client import AIClient
+    from maProject.apps.study.services.pdf_reader import read_pdf
+    from maProject.apps.study.services.api_client import AIClient
 except ModuleNotFoundError as e:
     print(f"Module import error: {e}. Check if the paths are correct.")
     sys.exit(1)
