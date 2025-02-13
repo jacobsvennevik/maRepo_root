@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "maProject.apps.learningtips",
     "maProject.apps.users",
     "maProject.apps.study",
+    'debug_toolbar',  
 ]
 
 MIDDLEWARE = [
@@ -85,8 +86,12 @@ WSGI_APPLICATION = "maProject.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        'ENGINE': 'django.db.backends.postgresql',  # Recommended for modern Django versions
+        'NAME': 'myproject_db',         # Replace with your actual database name
+        'USER': 'jacobhornsvennevik',       # Replace with your actual database username
+        'PASSWORD': '12345',  # Replace with your actual database password
+        'HOST': '127.0.0.1',  # Use quotes to make it a string
+        'PORT': 5432,                # Default PostgreSQL port
     }
 }
 

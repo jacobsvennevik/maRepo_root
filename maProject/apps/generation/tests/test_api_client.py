@@ -1,6 +1,6 @@
 # tests/test_api_client.py
 import pytest
-from maProject.apps.study.services.api_client import AIClient
+from maProject.apps.generation.services.api_client import AIClient
 
 def test_ai_client_init():
     """Test that the AIClient initializes correctly."""

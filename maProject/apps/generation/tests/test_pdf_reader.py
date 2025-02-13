@@ -2,7 +2,7 @@ import os
 import pathlib
 import csv
 import pytest
-from maProject.apps.study.services.pdf_reader import read_pdf
+from maProject.apps.generation.services.pdf_reader import read_pdf
 
 # Remove any custom definition of tmp_path; use the built-in fixture.
 
@@ -18,7 +18,7 @@ def test_read_pdf_file_exists(tmp_path, monkeypatch):
     # Monkey-patch the conversion function to return a known Markdown string.
     expected_md = "Markdown content for testing."
     monkeypatch.setattr(
-        "maProject.apps.study.services.pdf_reader.pymupdf4llm.to_markdown",
+        "maProject.apps.generation.services.pdf_reader.pymupdf4llm.to_markdown",
         lambda path: expected_md
     )
 
@@ -45,7 +45,7 @@ def test_read_pdf_output_file(tmp_path, monkeypatch):
     # Monkey-patch the conversion function.
     expected_md = "Markdown content for testing."
     monkeypatch.setattr(
-        "maProject.apps.study.services.pdf_reader.pymupdf4llm.to_markdown",
+        "maProject.apps.generation.services.pdf_reader.pymupdf4llm.to_markdown",
         lambda path: expected_md
     )
 
@@ -74,7 +74,7 @@ def test_read_pdf_empty_file(tmp_path, monkeypatch):
 
     # Monkey-patch the conversion function to return an empty string.
     monkeypatch.setattr(
-        "maProject.apps.study.services.pdf_reader.pymupdf4llm.to_markdown",
+        "maProject.apps.generation.services.pdf_reader.pymupdf4llm.to_markdown",
         lambda path: ''
     )
 

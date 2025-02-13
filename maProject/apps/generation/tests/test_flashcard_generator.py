@@ -2,7 +2,7 @@
 # tests/test_flashcard_generator.py
 import csv
 import pytest
-from maProject.apps.study.services.flashcard_generator import (
+from maProject.apps.generation.services.flashcard_generator import (
     parse_flashcards,
     export_to_csv,
     get_auto_output_filename,
