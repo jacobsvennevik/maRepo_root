@@ -1,4 +1,4 @@
-# study/urls.py
+# generation/urls.py
 from django.urls import path
 from .views import generate_flashcards_view
 

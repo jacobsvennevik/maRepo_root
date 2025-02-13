@@ -28,6 +28,7 @@ def home(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('__debug__/', include('debug_toolbar.urls')),
-    path('study/', include('maProject.apps.study.urls')),    
-    path('learningtips/', include('maProject.apps.learningtips.urls')),
+    path('accounts/', include('maProject.apps.accounts.urls')),    
+    path('generation/', include('maProject.apps.generation.urls')),
+    path('documents/', include('maProject.apps.documents.urls')),
 ]
