@@ -23,7 +23,8 @@ class Document(models.Model):
     """
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='documents')
-    file = models.FileField(upload_to='uploads/%Y/%m/%d/')
+    file = models.FileField(upload_to='uploads/%Y/%m/%d/', max_length=255)
+
     file_type = models.CharField(max_length=50, choices=FILE_TYPE_CHOICES)
     upload_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')

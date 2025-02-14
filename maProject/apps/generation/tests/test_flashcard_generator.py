@@ -1,9 +1,11 @@
 import pytest
 from django.contrib.auth import get_user_model
 from unittest.mock import patch
+import os
 from maProject.apps.documents.models import Document
 from maProject.apps.generation.models import FlashcardSet, Flashcard
 from maProject.apps.documents.services.pdf_reader import read_pdf
+from django.core.files.uploadedfile import SimpleUploadedFile
 from maProject.apps.generation.services.flashcard_generator import (
     parse_flashcards,
     save_flashcards_to_db,
@@ -23,9 +25,11 @@ def test_parse_flashcards_empty_content():
 
 @pytest.mark.django_db
 def test_parse_flashcards_single_flashcard():
-    """Test that parse_flashcards correctly extracts a single flashcard."""
     content = "Front: What is AI? Back: Artificial Intelligence"
     flashcards = parse_flashcards(content)
+
+    print(f"Extracted flashcards: {flashcards}")  # 🔍 Debug output
+
     assert len(flashcards) == 1
     assert flashcards[0] == ("What is AI?", "Artificial Intelligence")
 
@@ -92,26 +96,40 @@ def test_generate_flashcards(mocker):
 
 # ✅ Test generating flashcards from a document
 @pytest.mark.django_db
-@patch("maProject.apps.documents.services.read_pdf.read_pdf", return_value="Front: What is AI? Back: Artificial Intelligence")
+@patch("maProject.apps.generation.services.flashcard_generator.read_pdf", return_value="Front: What is AI? Back: Artificial Intelligence")
 @patch("maProject.apps.generation.services.flashcard_generator.AIClient.get_response", return_value="Front: What is AI? Back: Artificial Intelligence")
-def test_generate_flashcards_from_document(mock_read_pdf, mock_ai_response):
+def test_generate_flashcards_from_document(mock_ai_response, mock_read_pdf):
     """
     Test that generate_flashcards_from_document extracts text, generates flashcards, and saves them to the database.
     """
     user = User.objects.create_user(username="testuser", email="testuser@example.com", password="testpass")
-    document = Document.objects.create(user=user, file="uploads/test.pdf", file_type="pdf", title="Test Document")
+    
+    # Use `tmp_path` to create a real test file
+   # Create a dummy PDF file using SimpleUploadedFile
+    uploaded_file = SimpleUploadedFile("test.pdf", b"Dummy PDF content", content_type="application/pdf")
+    document = Document.objects.create(user=user, file=uploaded_file, file_type="pdf", title="Test Document")
+
+
+    # Ensure file exists before running test
+    assert os.path.exists(document.file.path), "Test PDF file was not created!"
 
     flashcard_set = generate_flashcards_from_document(document.id, user)
 
-    # Verify that the flashcard set was created
+    # ✅ Verify that the flashcard set was created
     assert flashcard_set is not None
+
+    # 🔥 Ensure mocks were called!
+    mock_read_pdf.assert_called_once_with(document.id)
+    mock_ai_response.assert_called_once()
+
+    
     assert flashcard_set.title == f"Flashcards for {document.title}"
 
-    # Verify that flashcards were saved to the database
+    # ✅ Verify that flashcards were saved to the database
     stored_flashcards = Flashcard.objects.filter(flashcard_set=flashcard_set).order_by("id")
     assert stored_flashcards.count() == 1
     assert stored_flashcards[0].question == "What is AI?"
     assert stored_flashcards[0].answer == "Artificial Intelligence"
 
-    # Ensure `read_pdf` was called once to extract text
+    # ✅ Ensure `read_pdf` was called once to extract text
     mock_read_pdf.assert_called_once_with(document.id)

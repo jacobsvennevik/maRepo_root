@@ -13,16 +13,14 @@ import re
 def parse_flashcards(content):
     """
     Parses flashcards from AI-generated content.
-    Expects format:
+    Expected format:
       Front: <question>
       Back: <answer>
-      (repeats multiple times)
     """
-    flashcard_pattern = re.compile(r'(?i)Front:\s*(.*?)\s*Back:\s*(.*?)\n?', re.DOTALL)
+    flashcard_pattern = re.compile(r'Front:\s*(.*?)\s*Back:\s*(.*?)(?:\n|$)', re.DOTALL)
 
-    flashcards_raw = flashcard_pattern.findall(content)  # Extract all matches
+    flashcards_raw = flashcard_pattern.findall(content)
     return [(front.strip(), back.strip()) for front, back in flashcards_raw]
-
 def generate_flashcards(text, model=MODEL):
     """
     Generates flashcards using AI based on extracted document text.
@@ -57,14 +55,18 @@ def generate_flashcards_from_document(document_id, user):
     try:
         # Retrieve document from DB
         document = Document.objects.get(id=document_id)
+        print(f"📝 Document Found: {document}")
 
         # Ensure extracted text exists (if not, process the document)
         if not document.original_text:
             document.original_text = read_pdf(document_id)  # Extract and save
             document.save()
+            print(f"📜 Extracted Text: {document.original_text}")
 
         # Generate flashcards
         flashcards = generate_flashcards(document.original_text, MODEL)
+        print(f"📌 Generated Flashcards: {flashcards}")
+
         if not flashcards:
             raise ValueError("AI did not generate any flashcards.")
 
@@ -74,6 +76,7 @@ def generate_flashcards_from_document(document_id, user):
             owner=user,
             document=document
         )
+        print(f"✅ Created FlashcardSet: {flashcard_set}")
 
         # Save flashcards to DB
         save_flashcards_to_db(flashcards, flashcard_set)
@@ -83,5 +86,6 @@ def generate_flashcards_from_document(document_id, user):
     except Document.DoesNotExist:
         raise ValueError(f"Document with ID {document_id} not found.")
     except Exception as e:
-        print(f"Error generating flashcards: {e}")
+        print(f"❌ Error generating flashcards: {e}")
         return None
+
