@@ -1,4 +1,4 @@
-# maProject/apps/study/forms.py
+# maProject/apps/generation/forms.py
 from django import forms
 
 class PDFUploadForm(forms.Form):
