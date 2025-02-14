@@ -23,8 +23,9 @@ class DocumentFactory(factory.django.DjangoModelFactory):
         model = Document
 
     user = factory.SubFactory(UserFactory)
-    file = factory.django.FileField(filename='test.pdf')
-    file_type = 'pdf'
-    status = 'pending'
-    original_text = 'Sample extracted text'
-    metadata = {'pages': 10}
+    file = SimpleUploadedFile("dummy.pdf", b"Test content", content_type="application/pdf")
+    file_type = "pdf"
+    status = "pending"
+    original_text = "Sample extracted text"
+    metadata = {"pages": 10}
+    title = "Generated Title"

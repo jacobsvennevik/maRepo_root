@@ -1,61 +1,31 @@
-import json
-import google.generativeai as genai
-from openai import OpenAI
 import re
-import csv
-import datetime
-import os
-import sys
+from django.contrib.auth import get_user_model
+from maProject.apps.documents.models import Document
+from maProject.apps.generation.models import FlashcardSet, Flashcard
+from maProject.apps.documents.services.pdf_reader import read_pdf  # Ensure this function saves text to DB
+from maProject.apps.generation.services.api_client import AIClient  # Your AI integration
 
-# Add parent directories to sys.path to allow imports
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+User = get_user_model()
+MODEL = "gemini-2.0-flash"  # Define the AI model to use
 
-try:
-    from maProject.apps.generation.services.pdf_reader import read_pdf
-    from maProject.apps.generation.services.api_client import AIClient
-except ModuleNotFoundError as e:
-    print(f"Module import error: {e}. Check if the paths are correct.")
-    sys.exit(1)
-
-MODEL = "gemini-2.0-flash"
+import re
 
 def parse_flashcards(content):
     """
     Parses flashcards from AI-generated content.
+    Expects format:
+      Front: <question>
+      Back: <answer>
+      (repeats multiple times)
     """
-    flashcard_formats = [
-        r'(?i)(?:front(?:\s+of\s+card)?\s*:\s*(.+?))'
-        r'(?:(?:back(?:\s+of\s+card)?\s*:\s*(.+?))?(?=front(?:\s+of\s+card)?\s*:|\Z))'
-    ]
-    flashcards_raw = []
-    for regex in flashcard_formats:
-        flashcards_raw = re.findall(regex, content, re.DOTALL)
-        if flashcards_raw:
-            break
+    flashcard_pattern = re.compile(r'(?i)Front:\s*(.*?)\s*Back:\s*(.*?)\n?', re.DOTALL)
 
-    flashcards = [(front.strip(), back.strip() if back else "") for front, back in flashcards_raw]
-    return flashcards
+    flashcards_raw = flashcard_pattern.findall(content)  # Extract all matches
+    return [(front.strip(), back.strip()) for front, back in flashcards_raw]
 
-def export_to_csv(flashcards, output_file):
+def generate_flashcards(text, model=MODEL):
     """
-    Exports flashcards to a CSV file.
-    """
-    with open(output_file, 'w', newline='', encoding='utf-8') as csvfile:
-        writer = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(['Front', 'Back'])
-        for front, back in flashcards:
-            writer.writerow([front, back])
-
-def get_auto_output_filename(extension):
-    """
-    Generates a timestamped filename.
-    """
-    now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    return f"flashcards_{now}.{extension}"
-
-def generate_flashcards(user_text, model):
-    """
-    Generates flashcards using the specified AI model.
+    Generates flashcards using AI based on extracted document text.
     """
     ai_client = AIClient(model)
     prompt = (
@@ -63,21 +33,55 @@ def generate_flashcards(user_text, model):
         "Use the format:\n"
         "Front: <question>\n"
         "Back: <answer>\n\n"
-        "Text:\n" + user_text
+        "Text:\n" + text
     )
+
     messages = [ai_client.format_message("user", prompt)]
     response = ai_client.get_response(messages)
     return parse_flashcards(response)
 
-if __name__ == "__main__":
-    pdf_path = "All_notes_Mod2_copy.pdf"
-    model = "gemini-2.0-flash"
-    if os.path.exists(pdf_path):
-        user_text = read_pdf(pdf_path)
-        flashcards = generate_flashcards(user_text, MODEL)
-        if flashcards:
-            output_file = get_auto_output_filename("csv")
-            export_to_csv(flashcards, output_file)
-            print(f"Flashcards saved to {output_file}")
-    else:
-        print(f"Error: PDF file '{pdf_path}' not found.")
+def save_flashcards_to_db(flashcards, flashcard_set):
+    """
+    Saves each flashcard (front, back) pair to the database.
+    """
+    flashcard_objects = [
+        Flashcard(flashcard_set=flashcard_set, question=front, answer=back)
+        for front, back in flashcards
+    ]
+    Flashcard.objects.bulk_create(flashcard_objects)  # Bulk create for efficiency
+
+def generate_flashcards_from_document(document_id, user):
+    """
+    Generates flashcards from the extracted text of a given document and saves them.
+    """
+    try:
+        # Retrieve document from DB
+        document = Document.objects.get(id=document_id)
+
+        # Ensure extracted text exists (if not, process the document)
+        if not document.original_text:
+            document.original_text = read_pdf(document_id)  # Extract and save
+            document.save()
+
+        # Generate flashcards
+        flashcards = generate_flashcards(document.original_text, MODEL)
+        if not flashcards:
+            raise ValueError("AI did not generate any flashcards.")
+
+        # Create a FlashcardSet
+        flashcard_set = FlashcardSet.objects.create(
+            title=f"Flashcards for {document.title}",
+            owner=user,
+            document=document
+        )
+
+        # Save flashcards to DB
+        save_flashcards_to_db(flashcards, flashcard_set)
+
+        return flashcard_set
+
+    except Document.DoesNotExist:
+        raise ValueError(f"Document with ID {document_id} not found.")
+    except Exception as e:
+        print(f"Error generating flashcards: {e}")
+        return None
