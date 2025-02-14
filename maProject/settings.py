@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+AUTH_USER_MODEL = 'accounts.CustomUser'
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "maProject.apps.accounts",
-    "maProject.apps.documents",
+    "maProject.apps.documents", 
     "maProject.apps.generation",
     'debug_toolbar',  
 ]
