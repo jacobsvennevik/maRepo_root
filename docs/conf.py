@@ -1,28 +1,40 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
+# docs/conf.py
 
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+import os
+import sys
 
+# 1) Insert the parent directory so that Sphinx can locate 'maProject'.
+sys.path.insert(0, os.path.abspath('..'))
+
+# 2) Point to your Django settings and initialize Django.
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'maProject.settings')
+import django
+django.setup()
+
+# -- Project information
 project = 'maProject'
-copyright = '2025, SvenMedSpenn'
 author = 'SvenMedSpenn'
 release = '0.0.1'
 
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
-extensions = []
+# -- General configuration
+extensions = [
+    'sphinx.ext.autodoc',   # Pull docstrings automatically
+    'sphinx.ext.napoleon',  # Parse Google/NumPy style docstrings
+    'sphinx.ext.intersphinx'
+]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+# If you want intersphinx to link to external docs:
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+}
 
+# Autodoc settings
+autodoc_member_order = 'bysource'
+autoclass_content = 'both'
 
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
-html_theme = 'alabaster'
+# -- Options for HTML output
+html_theme = 'alabaster'  # or 'sphinx_rtd_theme'
 html_static_path = ['_static']
