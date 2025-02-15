@@ -1,5 +1,3 @@
-# tests/factories.py
-
 import factory
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
@@ -21,6 +19,7 @@ class FlashcardSetFactory(factory.django.DjangoModelFactory):
     title = factory.Sequence(lambda n: f"Flashcard Set {n}")
     document = factory.SubFactory(DocumentFactory)
 
+from maProject.apps.generation.models import FlashcardSet
 
 class FlashcardFactory(factory.django.DjangoModelFactory):
     class Meta:

@@ -8,9 +8,9 @@ from maProject.apps.generation.forms import (
     FlashcardFormSet,
 )
 from maProject.apps.generation.models import FlashcardSet, Flashcard
-from .factories import FlashcardSetFactory
-from maProject.apps.accounts.tests.factories import CustomUserFactory
 from maProject.apps.documents.tests.factories import DocumentFactory
+from maProject.apps.accounts.tests.factories import CustomUserFactory
+from .factories import FlashcardSetFactory  # Import your FlashcardSetFactory
 
 # --- FlashcardForm Tests ---
 
@@ -19,7 +19,7 @@ def test_flashcard_form_valid():
     """
     Test that FlashcardForm is valid with proper question and answer data.
     """
-    user = CustomUserFactory.create()
+    user = CustomUserFactory.create()  # Use CustomUserFactory here
     flashcard_set = FlashcardSetFactory(owner=user)
     
     form_data = {
@@ -140,7 +140,7 @@ def test_flashcard_formset_valid():
     """
     Test that the inline FlashcardFormSet can create multiple flashcards.
     """
-    user = CustomUserFactory.create()
+    user = CustomUserFactory.create()  # Use CustomUserFactory here as well
     flashcard_set = FlashcardSetFactory(owner=user)
     
     # Define management form data and two flashcard entries.
@@ -185,3 +185,4 @@ def test_flashcard_formset_invalid():
     assert not formset.is_valid()
     errors = formset.errors[0]
     assert 'question' in errors
+
