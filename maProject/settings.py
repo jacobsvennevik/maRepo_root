@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "maProject.apps.documents", 
     "maProject.apps.generation",
     'debug_toolbar',  
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,12 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication', 
+        # or 'rest_framework.authentication.TokenAuthentication', etc.
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+}
