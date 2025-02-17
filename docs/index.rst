@@ -1,4 +1,4 @@
-maProject documentation
+backend documentation
 =======================
 
 .. toctree::

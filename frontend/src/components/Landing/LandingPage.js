@@ -1,5 +1,5 @@
 import React from "react";
-import LandingNavbar from "./Navbar";
+import LandingNavbar from "../Navbar/Navbar";
 import HeroSection from "./HeroSection";
 import Footer from "./Footer";
 

@@ -1,22 +1,22 @@
 documents App
 ==============
 
-.. automodule:: maProject.apps.documents.models
+.. automodule:: backend.apps.documents.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: maProject.apps.documents.views
+.. automodule:: backend.apps.documents.views
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: maProject.apps.documents.forms
+.. automodule:: backend.apps.documents.forms
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: maProject.apps.documents.services
+.. automodule:: backend.apps.documents.services
    :members:
    :undoc-members:
    :show-inheritance:

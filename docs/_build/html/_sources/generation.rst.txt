@@ -1,22 +1,22 @@
 generation App
 ==============
 
-.. automodule:: maProject.apps.generation.models
+.. automodule:: backend.apps.generation.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: maProject.apps.generation.views
+.. automodule:: backend.apps.generation.views
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: maProject.apps.generation.forms
+.. automodule:: backend.apps.generation.forms
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: maProject.apps.generation.services
+.. automodule:: backend.apps.generation.services
    :members:
    :undoc-members:
    :show-inheritance:

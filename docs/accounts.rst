@@ -1,17 +1,17 @@
 accounts App
 =============
 
-.. automodule:: maProject.apps.accounts.models
+.. automodule:: backend.apps.accounts.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: maProject.apps.accounts.views
+.. automodule:: backend.apps.accounts.views
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: maProject.apps.accounts.forms
+.. automodule:: backend.apps.accounts.forms
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,0 +1,1410 @@
+# Query: maProject
+# ContextLines: 1
+
+968 results - 33 files
+
+backend/urls.py:
+  24      path('__debug__/', include('debug_toolbar.urls')),
+  25:     path('accounts/', include('backend.apps.accounts.urls')),    
+  26:     path('generation/', include('backend.apps.generation.urls')),
+  27:     path('documents/', include('backend.apps.documents.urls')),
+  28      path('api/', include(router.urls)),
+
+backend/wsgi.py:
+   1  """
+   2: WSGI config for backend project.
+   3  
+
+  13  
+  14: os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
+  15  
+
+backend/apps/accounts/apps.py:
+  4      default_auto_field = 'django.db.models.BigAutoField'
+  5:     name = 'backend.apps.accounts'
+
+backend/apps/accounts/serializers.py:
+  1: # backend/apps/accounts/serializers.py
+  2  from rest_framework import serializers
+
+backend/apps/accounts/views_api.py:
+  1: # backend/apps/accounts/views_api.py
+  2  from rest_framework import viewsets, permissions
+
+backend/apps/accounts/views.py:
+  1: # backend/apps/accounts/views.py
+  2  from rest_framework import viewsets
+
+backend/apps/documents/apps.py:
+  4      default_auto_field = 'django.db.models.BigAutoField'
+  5:     name = 'backend.apps.documents'
+
+backend/apps/documents/serializers.py:
+  1: # backend/apps/documents/serializers.py
+  2  from rest_framework import serializers
+
+backend/apps/documents/views_api.py:
+  1: # backend/apps/documents/views_api.py
+  2  from rest_framework import viewsets
+
+backend/apps/documents/views.py:
+  1: # backend/apps/learningtips/views.py
+  2  from django.http import HttpResponse
+
+backend/apps/documents/tests/test_pdf_reader.py:
+  14      monkeypatch.setattr(
+  15:         "backend.apps.documents.services.pdf_reader.pymupdf4llm.to_markdown",
+  16          lambda _: expected_md
+
+  55      monkeypatch.setattr(
+  56:         "backend.apps.documents.services.pdf_reader.pymupdf4llm.to_markdown",
+  57          lambda _: expected_md
+
+  74      monkeypatch.setattr(
+  75:         "backend.apps.documents.services.pdf_reader.pymupdf4llm.to_markdown",
+  76          lambda _: ''
+
+backend/apps/generation/apps.py:
+  4      default_auto_field = 'django.db.models.BigAutoField'
+  5:     name = 'backend.apps.generation'
+
+backend/apps/generation/forms.py:
+  1: # backend/apps/generation/forms.py
+  2  
+
+backend/apps/generation/serializers.py:
+  1: # backend/apps/generation/serializers.py
+  2  from rest_framework import serializers
+
+backend/apps/generation/tests/test_flascard_forms.py:
+  1: # backend/apps/generation/tests/test_flashcard_forms.py
+  2  
+
+backend/apps/generation/tests/test_flashcard_generator.py:
+   86      mocker.patch(
+   87:         "backend.apps.generation.services.flashcard_generator.AIClient.get_response",
+   88          return_value="Front: What is AI? Back: Artificial Intelligence"
+
+   98  @pytest.mark.django_db
+   99: @patch("backend.apps.generation.services.flashcard_generator.read_pdf", return_value="Front: What is AI? Back: Artificial Intelligence")
+  100: @patch("backend.apps.generation.services.flashcard_generator.AIClient.get_response", return_value="Front: What is AI? Back: Artificial Intelligence")
+  101  def test_generate_flashcards_from_document(mock_ai_response, mock_read_pdf):
+
+docs/accounts.rst:
+   3  
+   4: .. automodule:: backend.apps.accounts.models
+   5     :members:
+
+   8  
+   9: .. automodule:: backend.apps.accounts.views
+  10     :members:
+
+  13  
+  14: .. automodule:: backend.apps.accounts.forms
+  15     :members:
+
+docs/conf.py:
+   5  
+   6: # 1) Insert the parent directory so that Sphinx can locate 'backend'.
+   7  sys.path.insert(0, os.path.abspath('..'))
+
+   9  # 2) Point to your Django settings and initialize Django.
+  10: os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+  11  import django
+
+  14  # -- Project information
+  15: project = 'backend'
+  16  author = 'SvenMedSpenn'
+
+docs/documents.rst:
+   3  
+   4: .. automodule:: backend.apps.documents.models
+   5     :members:
+
+   8  
+   9: .. automodule:: backend.apps.documents.views
+  10     :members:
+
+  13  
+  14: .. automodule:: backend.apps.documents.forms
+  15     :members:
+
+  18  
+  19: .. automodule:: backend.apps.documents.services
+  20     :members:
+
+docs/generation.rst:
+   3  
+   4: .. automodule:: backend.apps.generation.models
+   5     :members:
+
+   8  
+   9: .. automodule:: backend.apps.generation.views
+  10     :members:
+
+  13  
+  14: .. automodule:: backend.apps.generation.forms
+  15     :members:
+
+  18  
+  19: .. automodule:: backend.apps.generation.services
+  20     :members:
+
+docs/index.rst:
+  1: backend documentation
+  2  =======================
+
+docs/_build/html/accounts.html:
+    7  
+    8:     <title>accounts App &#8212; backend 0.0.1 documentation</title>
+    9      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+
+   17      <link rel="next" title="documents App" href="documents.html" />
+   18:     <link rel="prev" title="backend documentation" href="index.html" />
+   19     
+
+   35              
+   36:   <section id="module-backend.apps.accounts.models">
+   37: <span id="accounts-app"></span><h1>accounts App<a class="headerlink" href="#module-backend.apps.accounts.models" title="Link to this heading">¶</a></h1>
+   38  <dl class="py class">
+   39: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser">
+   40: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.apps.accounts.models.</span></span><span class="sig-name descname"><span class="pre">CustomUser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser" title="Link to this definition">¶</a></dt>
+   41  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractUser</span></code></p>
+
+   44  <dl class="py attribute">
+   45: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.SUBSCRIPTION_CHOICES">
+   46: <span class="sig-name descname"><span class="pre">SUBSCRIPTION_CHOICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('free',</span> <span class="pre">'Free'),</span> <span class="pre">('premium',</span> <span class="pre">'Premium')]</span></em><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.SUBSCRIPTION_CHOICES" title="Link to this definition">¶</a></dt>
+   47  <dd></dd></dl>
+
+   49  <dl class="py attribute">
+   50: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.subscription_status">
+   51: <span class="sig-name descname"><span class="pre">subscription_status</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.subscription_status" title="Link to this definition">¶</a></dt>
+   52  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+   56  <dl class="py attribute">
+   57: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.preferences">
+   58: <span class="sig-name descname"><span class="pre">preferences</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.preferences" title="Link to this definition">¶</a></dt>
+   59  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+   63  <dl class="py exception">
+   64: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.DoesNotExist">
+   65: <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.DoesNotExist" title="Link to this definition">¶</a></dt>
+   66  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+
+   69  <dl class="py exception">
+   70: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.MultipleObjectsReturned">
+   71: <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+   72  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+
+   75  <dl class="py attribute">
+   76: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.date_joined">
+   77: <span class="sig-name descname"><span class="pre">date_joined</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.date_joined" title="Link to this definition">¶</a></dt>
+   78  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+   82  <dl class="py attribute">
+   83: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.documents">
+   84: <span class="sig-name descname"><span class="pre">documents</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.documents" title="Link to this definition">¶</a></dt>
+   85  <dd><p>Accessor to the related objects manager on the reverse side of a
+
+   97  <dl class="py attribute">
+   98: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.email">
+   99: <span class="sig-name descname"><span class="pre">email</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.email" title="Link to this definition">¶</a></dt>
+  100  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  104  <dl class="py attribute">
+  105: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.first_name">
+  106: <span class="sig-name descname"><span class="pre">first_name</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.first_name" title="Link to this definition">¶</a></dt>
+  107  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  111  <dl class="py attribute">
+  112: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.flashcardset_set">
+  113: <span class="sig-name descname"><span class="pre">flashcardset_set</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.flashcardset_set" title="Link to this definition">¶</a></dt>
+  114  <dd><p>Accessor to the related objects manager on the reverse side of a
+
+  126  <dl class="py method">
+  127: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.get_next_by_date_joined">
+  128: ⟪ 396 characters skipped ⟫="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.get_next_by_date_joined" title="Link to this definition">¶</a></dt>
+  129  <dd></dd></dl>
+
+  131  <dl class="py method">
+  132: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.get_previous_by_date_joined">
+  133: ⟪ 401 characters skipped ⟫"n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.get_previous_by_date_joined" title="Link to this definition">¶</a></dt>
+  134  <dd></dd></dl>
+
+  136  <dl class="py method">
+  137: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.get_subscription_status_display">
+  138: <span class="sig-name descname"><span class="pre">get_subscription_status_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">subscription_status&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.get_subscription_status_display" title="Link to this definition">¶</a></dt>
+  139  <dd></dd></dl>
+
+  141  <dl class="py attribute">
+  142: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.groups">
+  143: <span class="sig-name descname"><span class="pre">groups</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.groups" title="Link to this definition">¶</a></dt>
+  144  <dd><p>Accessor to the related objects manager on the forward and reverse sides of
+
+  157  <dl class="py attribute">
+  158: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.id">
+  159: <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.id" title="Link to this definition">¶</a></dt>
+  160  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  164  <dl class="py attribute">
+  165: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.is_active">
+  166: <span class="sig-name descname"><span class="pre">is_active</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.is_active" title="Link to this definition">¶</a></dt>
+  167  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  171  <dl class="py attribute">
+  172: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.is_staff">
+  173: <span class="sig-name descname"><span class="pre">is_staff</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.is_staff" title="Link to this definition">¶</a></dt>
+  174  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  178  <dl class="py attribute">
+  179: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.is_superuser">
+  180: <span class="sig-name descname"><span class="pre">is_superuser</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.is_superuser" title="Link to this definition">¶</a></dt>
+  181  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  185  <dl class="py attribute">
+  186: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.last_login">
+  187: <span class="sig-name descname"><span class="pre">last_login</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.last_login" title="Link to this definition">¶</a></dt>
+  188  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  192  <dl class="py attribute">
+  193: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.last_name">
+  194: <span class="sig-name descname"><span class="pre">last_name</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.last_name" title="Link to this definition">¶</a></dt>
+  195  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  199  <dl class="py attribute">
+  200: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.logentry_set">
+  201: <span class="sig-name descname"><span class="pre">logentry_set</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.logentry_set" title="Link to this definition">¶</a></dt>
+  202  <dd><p>Accessor to the related objects manager on the reverse side of a
+
+  214  <dl class="py attribute">
+  215: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.password">
+  216: <span class="sig-name descname"><span class="pre">password</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.password" title="Link to this definition">¶</a></dt>
+  217  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  221  <dl class="py attribute">
+  222: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.user_permissions">
+  223: <span class="sig-name descname"><span class="pre">user_permissions</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.user_permissions" title="Link to this definition">¶</a></dt>
+  224  <dd><p>Accessor to the related objects manager on the forward and reverse sides of
+
+  237  <dl class="py attribute">
+  238: <dt class="sig sig-object py" id="backend.apps.accounts.models.CustomUser.username">
+  239: <span class="sig-name descname"><span class="pre">username</span></span><a class="headerlink" href="#backend.apps.accounts.models.CustomUser.username" title="Link to this definition">¶</a></dt>
+  240  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  245  
+  246: <dl class="py class" id="module-backend.apps.accounts.forms">
+  247: <span id="module-backend.apps.accounts.views"></span><dt class="sig sig-object py" id="backend.apps.accounts.forms.RegistrationForm">
+  248: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.apps.accounts.forms.</span></span><span class="sig-name descname"><span class="pre">RegistrationForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.accounts.forms.RegistrationForm" title="Link to this definition">¶</a></dt>
+  249  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">UserCreationForm</span></code></p>
+
+  251  <dl class="py class">
+  252: <dt class="sig sig-object py" id="backend.apps.accounts.forms.RegistrationForm.Meta">
+  253: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="headerlink" href="#backend.apps.accounts.forms.RegistrationForm.Meta" title="Link to this definition">¶</a></dt>
+  254  <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+  255  <dl class="py attribute">
+  256: <dt class="sig sig-object py" id="backend.apps.accounts.forms.RegistrationForm.Meta.model">
+  257: <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#backend.apps.accounts.forms.RegistrationForm.Meta.model" title="Link to this definition">¶</a></dt>
+  258: <dd><p>alias of <a class="reference internal" href="#backend.apps.accounts.models.CustomUser" title="backend.apps.accounts.models.CustomUser"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomUser</span></code></a></p>
+  259  </dd></dl>
+
+  261  <dl class="py attribute">
+  262: <dt class="sig sig-object py" id="backend.apps.accounts.forms.RegistrationForm.Meta.fields">
+  263: <span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('username',</span> <span class="pre">'email',</span> <span class="pre">'password1',</span> <span class="pre">'password2')</span></em><a class="headerlink" href="#backend.apps.accounts.forms.RegistrationForm.Meta.fields" title="Link to this definition">¶</a></dt>
+  264  <dd></dd></dl>
+
+  268  <dl class="py method">
+  269: <dt class="sig sig-object py" id="backend.apps.accounts.forms.RegistrationForm.save">
+  270: <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.accounts.forms.RegistrationForm.save" title="Link to this definition">¶</a></dt>
+  271  <dd><p>Save this form’s self.instance object if commit=True. Otherwise, add
+
+  276  <dl class="py attribute">
+  277: <dt class="sig sig-object py" id="backend.apps.accounts.forms.RegistrationForm.base_fields">
+  278: ⟪ 559 characters skipped ⟫an class="pre">object&gt;,</span> <span class="pre">'username':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.accounts.forms.RegistrationForm.base_fields" title="Link to this definition">¶</a></dt>
+  279  <dd></dd></dl>
+
+  281  <dl class="py attribute">
+  282: <dt class="sig sig-object py" id="backend.apps.accounts.forms.RegistrationForm.declared_fields">
+  283: ⟪ 430 characters skipped ⟫n class="pre">object&gt;,</span> <span class="pre">'password2':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.accounts.forms.RegistrationForm.declared_fields" title="Link to this definition">¶</a></dt>
+  284  <dd></dd></dl>
+
+  286  <dl class="py property">
+  287: <dt class="sig sig-object py" id="backend.apps.accounts.forms.RegistrationForm.media">
+  288: <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#backend.apps.accounts.forms.RegistrationForm.media" title="Link to this definition">¶</a></dt>
+  289  <dd><p>Return all media required to render the widgets on this form.</p>
+
+  294  <dl class="py class">
+  295: <dt class="sig sig-object py" id="backend.apps.accounts.forms.CustomAuthenticationForm">
+  296: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.apps.accounts.forms.</span></span><span class="sig-name descname"><span class="pre">CustomAuthenticationForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.accounts.forms.CustomAuthenticationForm" title="Link to this definition">¶</a></dt>
+  297  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationForm</span></code></p>
+
+  301  <dl class="py attribute">
+  302: <dt class="sig sig-object py" id="backend.apps.accounts.forms.CustomAuthenticationForm.base_fields">
+  303: ⟪ 293 characters skipped ⟫an class="pre">object&gt;,</span> <span class="pre">'username':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.accounts.forms.CustomAuthenticationForm.base_fields" title="Link to this definition">¶</a></dt>
+  304  <dd></dd></dl>
+
+  306  <dl class="py attribute">
+  307: <dt class="sig sig-object py" id="backend.apps.accounts.forms.CustomAuthenticationForm.declared_fields">
+  308: ⟪ 297 characters skipped ⟫an class="pre">object&gt;,</span> <span class="pre">'username':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.accounts.forms.CustomAuthenticationForm.declared_fields" title="Link to this definition">¶</a></dt>
+  309  <dd></dd></dl>
+
+  311  <dl class="py property">
+  312: <dt class="sig sig-object py" id="backend.apps.accounts.forms.CustomAuthenticationForm.media">
+  313: <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#backend.apps.accounts.forms.CustomAuthenticationForm.media" title="Link to this definition">¶</a></dt>
+  314  <dd><p>Return all media required to render the widgets on this form.</p>
+
+  319  <dl class="py class">
+  320: <dt class="sig sig-object py" id="backend.apps.accounts.forms.ProfileUpdateForm">
+  321: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.apps.accounts.forms.</span></span><span class="sig-name descname"><span class="pre">ProfileUpdateForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.accounts.forms.ProfileUpdateForm" title="Link to this definition">¶</a></dt>
+  322  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+
+  324  <dl class="py class">
+  325: <dt class="sig sig-object py" id="backend.apps.accounts.forms.ProfileUpdateForm.Meta">
+  326: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="headerlink" href="#backend.apps.accounts.forms.ProfileUpdateForm.Meta" title="Link to this definition">¶</a></dt>
+  327  <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+  328  <dl class="py attribute">
+  329: <dt class="sig sig-object py" id="backend.apps.accounts.forms.ProfileUpdateForm.Meta.model">
+  330: <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#backend.apps.accounts.forms.ProfileUpdateForm.Meta.model" title="Link to this definition">¶</a></dt>
+  331: <dd><p>alias of <a class="reference internal" href="#backend.apps.accounts.models.CustomUser" title="backend.apps.accounts.models.CustomUser"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomUser</span></code></a></p>
+  332  </dd></dl>
+
+  334  <dl class="py attribute">
+  335: <dt class="sig sig-object py" id="backend.apps.accounts.forms.ProfileUpdateForm.Meta.fields">
+  336: <span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('username',</span> <span class="pre">'email',</span> <span class="pre">'first_name',</span> <span class="pre">'last_name',</span> <span class="pre">'subscription_status')</span></em><a class="headerlink" href="#backend.apps.accounts.forms.ProfileUpdateForm.Meta.fields" title="Link to this definition">¶</a></dt>
+  337  <dd></dd></dl>
+
+  341  <dl class="py attribute">
+  342: <dt class="sig sig-object py" id="backend.apps.accounts.forms.ProfileUpdateForm.base_fields">
+  343: ⟪ 711 characters skipped ⟫an class="pre">object&gt;,</span> <span class="pre">'username':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.accounts.forms.ProfileUpdateForm.base_fields" title="Link to this definition">¶</a></dt>
+  344  <dd></dd></dl>
+
+  346  <dl class="py attribute">
+  347: <dt class="sig sig-object py" id="backend.apps.accounts.forms.ProfileUpdateForm.declared_fields">
+  348: <span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#backend.apps.accounts.forms.ProfileUpdateForm.declared_fields" title="Link to this definition">¶</a></dt>
+  349  <dd></dd></dl>
+
+  351  <dl class="py property">
+  352: <dt class="sig sig-object py" id="backend.apps.accounts.forms.ProfileUpdateForm.media">
+  353: <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#backend.apps.accounts.forms.ProfileUpdateForm.media" title="Link to this definition">¶</a></dt>
+  354  <dd><p>Return all media required to render the widgets on this form.</p>
+
+  367          <div class="sphinxsidebarwrapper">
+  368: <h1 class="logo"><a href="index.html">backend</a></h1>
+  369  
+
+  389  <li class="toctree-l1 current"><a class="current reference internal" href="#">accounts App</a><ul>
+  390: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.accounts.models.CustomUser"><code class="docutils literal notranslate"><span class="pre">CustomUser</span></code></a></li>
+  391: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.accounts.forms.RegistrationForm"><code class="docutils literal notranslate"><span class="pre">RegistrationForm</span></code></a></li>
+  392: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.accounts.forms.CustomAuthenticationForm"><code class="docutils literal notranslate"><span class="pre">CustomAuthenticationForm</span></code></a></li>
+  393: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.accounts.forms.ProfileUpdateForm"><code class="docutils literal notranslate"><span class="pre">ProfileUpdateForm</span></code></a></li>
+  394  </ul>
+
+  403    <li><a href="index.html">Documentation overview</a><ul>
+  404:       <li>Previous: <a href="index.html" title="previous chapter">backend documentation</a></li>
+  405        <li>Next: <a href="documents.html" title="next chapter">documents App</a></li>
+
+docs/_build/html/documents.html:
+    7  
+    8:     <title>documents App &#8212; backend 0.0.1 documentation</title>
+    9      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+
+   35              
+   36:   <section id="module-backend.apps.documents.models">
+   37: <span id="documents-app"></span><h1>documents App<a class="headerlink" href="#module-backend.apps.documents.models" title="Link to this heading">¶</a></h1>
+   38  <dl class="py class">
+   39: <dt class="sig sig-object py" id="backend.apps.documents.models.Document">
+   40: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.apps.documents.models.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.documents.models.Document" title="Link to this definition">¶</a></dt>
+   41  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+
+   44  <dl class="py attribute">
+   45: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.user">
+   46: <span class="sig-name descname"><span class="pre">user</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.user" title="Link to this definition">¶</a></dt>
+   47  <dd><p>Accessor to the related object on the forward side of a many-to-one or
+
+   57  <dl class="py attribute">
+   58: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.file">
+   59: <span class="sig-name descname"><span class="pre">file</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.file" title="Link to this definition">¶</a></dt>
+   60  <dd><p>The descriptor for the file attribute on the model instance. Return a
+
+   74  <dl class="py attribute">
+   75: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.file_type">
+   76: <span class="sig-name descname"><span class="pre">file_type</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.file_type" title="Link to this definition">¶</a></dt>
+   77  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+   81  <dl class="py attribute">
+   82: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.upload_date">
+   83: <span class="sig-name descname"><span class="pre">upload_date</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.upload_date" title="Link to this definition">¶</a></dt>
+   84  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+   88  <dl class="py attribute">
+   89: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.status">
+   90: <span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.status" title="Link to this definition">¶</a></dt>
+   91  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+   95  <dl class="py attribute">
+   96: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.original_text">
+   97: <span class="sig-name descname"><span class="pre">original_text</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.original_text" title="Link to this definition">¶</a></dt>
+   98  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  102  <dl class="py attribute">
+  103: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.metadata">
+  104: <span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.metadata" title="Link to this definition">¶</a></dt>
+  105  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  109  <dl class="py attribute">
+  110: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.title">
+  111: <span class="sig-name descname"><span class="pre">title</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.title" title="Link to this definition">¶</a></dt>
+  112  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  116  <dl class="py exception">
+  117: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.DoesNotExist">
+  118: <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.DoesNotExist" title="Link to this definition">¶</a></dt>
+  119  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+
+  122  <dl class="py exception">
+  123: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.MultipleObjectsReturned">
+  124: <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+  125  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+
+  128  <dl class="py attribute">
+  129: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.flashcards">
+  130: <span class="sig-name descname"><span class="pre">flashcards</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.flashcards" title="Link to this definition">¶</a></dt>
+  131  <dd><p>Accessor to the related objects manager on the reverse side of a
+
+  143  <dl class="py method">
+  144: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.get_file_type_display">
+  145: <span class="sig-name descname"><span class="pre">get_file_type_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">file_type&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.documents.models.Document.get_file_type_display" title="Link to this definition">¶</a></dt>
+  146  <dd></dd></dl>
+
+  148  <dl class="py method">
+  149: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.get_next_by_upload_date">
+  150: ⟪ 396 characters skipped ⟫="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.documents.models.Document.get_next_by_upload_date" title="Link to this definition">¶</a></dt>
+  151  <dd></dd></dl>
+
+  153  <dl class="py method">
+  154: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.get_previous_by_upload_date">
+  155: ⟪ 401 characters skipped ⟫"n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.documents.models.Document.get_previous_by_upload_date" title="Link to this definition">¶</a></dt>
+  156  <dd></dd></dl>
+
+  158  <dl class="py method">
+  159: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.get_status_display">
+  160: <span class="sig-name descname"><span class="pre">get_status_display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field=&lt;django.db.models.fields.CharField:</span> <span class="pre">status&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.documents.models.Document.get_status_display" title="Link to this definition">¶</a></dt>
+  161  <dd></dd></dl>
+
+  163  <dl class="py attribute">
+  164: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.id">
+  165: <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.id" title="Link to this definition">¶</a></dt>
+  166  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  170  <dl class="py attribute">
+  171: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.objects">
+  172: <span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#backend.apps.documents.models.Document.objects" title="Link to this definition">¶</a></dt>
+  173  <dd></dd></dl>
+
+  175  <dl class="py attribute">
+  176: <dt class="sig sig-object py" id="backend.apps.documents.models.Document.user_id">
+  177: <span class="sig-name descname"><span class="pre">user_id</span></span><a class="headerlink" href="#backend.apps.documents.models.Document.user_id" title="Link to this definition">¶</a></dt>
+  178  <dd></dd></dl>
+
+  181  
+  182: <dl class="py function" id="module-backend.apps.documents.views">
+  183: <dt class="sig sig-object py" id="backend.apps.documents.views.index">
+  184: <span class="sig-prename descclassname"><span class="pre">backend.apps.documents.views.</span></span><span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.documents.views.index" title="Link to this definition">¶</a></dt>
+  185  <dd></dd></dl>
+  186  
+  187: <dl class="py class" id="module-backend.apps.documents.forms">
+  188: <dt class="sig sig-object py" id="backend.apps.documents.forms.DocumentUploadForm">
+  189: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.apps.documents.forms.</span></span><span class="sig-name descname"><span class="pre">DocumentUploadForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.documents.forms.DocumentUploadForm" title="Link to this definition">¶</a></dt>
+  190  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+
+  193  <dl class="py class">
+  194: <dt class="sig sig-object py" id="backend.apps.documents.forms.DocumentUploadForm.Meta">
+  195: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="headerlink" href="#backend.apps.documents.forms.DocumentUploadForm.Meta" title="Link to this definition">¶</a></dt>
+  196  <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+  197  <dl class="py attribute">
+  198: <dt class="sig sig-object py" id="backend.apps.documents.forms.DocumentUploadForm.Meta.model">
+  199: <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#backend.apps.documents.forms.DocumentUploadForm.Meta.model" title="Link to this definition">¶</a></dt>
+  200: <dd><p>alias of <a class="reference internal" href="#backend.apps.documents.models.Document" title="backend.apps.documents.models.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a></p>
+  201  </dd></dl>
+
+  203  <dl class="py attribute">
+  204: <dt class="sig sig-object py" id="backend.apps.documents.forms.DocumentUploadForm.Meta.fields">
+  205: <span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['file',</span> <span class="pre">'file_type',</span> <span class="pre">'title']</span></em><a class="headerlink" href="#backend.apps.documents.forms.DocumentUploadForm.Meta.fields" title="Link to this definition">¶</a></dt>
+  206  <dd></dd></dl>
+
+  210  <dl class="py method">
+  211: <dt class="sig sig-object py" id="backend.apps.documents.forms.DocumentUploadForm.clean_file">
+  212: <span class="sig-name descname"><span class="pre">clean_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.documents.forms.DocumentUploadForm.clean_file" title="Link to this definition">¶</a></dt>
+  213  <dd></dd></dl>
+
+  215  <dl class="py method">
+  216: <dt class="sig sig-object py" id="backend.apps.documents.forms.DocumentUploadForm.clean_title">
+  217: <span class="sig-name descname"><span class="pre">clean_title</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.documents.forms.DocumentUploadForm.clean_title" title="Link to this definition">¶</a></dt>
+  218  <dd></dd></dl>
+
+  220  <dl class="py attribute">
+  221: <dt class="sig sig-object py" id="backend.apps.documents.forms.DocumentUploadForm.base_fields">
+  222: ⟪ 427 characters skipped ⟫<span class="pre">object&gt;,</span> <span class="pre">'title':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.documents.forms.DocumentUploadForm.base_fields" title="Link to this definition">¶</a></dt>
+  223  <dd></dd></dl>
+
+  225  <dl class="py attribute">
+  226: <dt class="sig sig-object py" id="backend.apps.documents.forms.DocumentUploadForm.declared_fields">
+  227: <span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#backend.apps.documents.forms.DocumentUploadForm.declared_fields" title="Link to this definition">¶</a></dt>
+  228  <dd></dd></dl>
+
+  230  <dl class="py property">
+  231: <dt class="sig sig-object py" id="backend.apps.documents.forms.DocumentUploadForm.media">
+  232: <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#backend.apps.documents.forms.DocumentUploadForm.media" title="Link to this definition">¶</a></dt>
+  233  <dd><p>Return all media required to render the widgets on this form.</p>
+
+  237  
+  238: <span class="target" id="module-backend.apps.documents.services"></span></section>
+  239  
+
+  246          <div class="sphinxsidebarwrapper">
+  247: <h1 class="logo"><a href="index.html">backend</a></h1>
+  248  
+
+  269  <li class="toctree-l1 current"><a class="current reference internal" href="#">documents App</a><ul>
+  270: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.documents.models.Document"><code class="docutils literal notranslate"><span class="pre">Document</span></code></a></li>
+  271: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.documents.views.index"><code class="docutils literal notranslate"><span class="pre">index()</span></code></a></li>
+  272: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.documents.forms.DocumentUploadForm"><code class="docutils literal notranslate"><span class="pre">DocumentUploadForm</span></code></a></li>
+  273  </ul>
+
+docs/_build/html/generation.html:
+    7  
+    8:     <title>generation App &#8212; backend 0.0.1 documentation</title>
+    9      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+
+   34              
+   35:   <section id="module-backend.apps.generation.models">
+   36: <span id="generation-app"></span><h1>generation App<a class="headerlink" href="#module-backend.apps.generation.models" title="Link to this heading">¶</a></h1>
+   37  <dl class="py class">
+   38: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet">
+   39: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.apps.generation.models.</span></span><span class="sig-name descname"><span class="pre">FlashcardSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet" title="Link to this definition">¶</a></dt>
+   40  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+
+   42  <dl class="py attribute">
+   43: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.document">
+   44: <span class="sig-name descname"><span class="pre">document</span></span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.document" title="Link to this definition">¶</a></dt>
+   45  <dd><p>Accessor to the related object on the forward side of a many-to-one or
+
+   55  <dl class="py attribute">
+   56: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.title">
+   57: <span class="sig-name descname"><span class="pre">title</span></span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.title" title="Link to this definition">¶</a></dt>
+   58  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+   62  <dl class="py attribute">
+   63: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.owner">
+   64: <span class="sig-name descname"><span class="pre">owner</span></span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.owner" title="Link to this definition">¶</a></dt>
+   65  <dd><p>Accessor to the related object on the forward side of a many-to-one or
+
+   75  <dl class="py attribute">
+   76: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.created_at">
+   77: <span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.created_at" title="Link to this definition">¶</a></dt>
+   78  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+   82  <dl class="py exception">
+   83: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.DoesNotExist">
+   84: <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.DoesNotExist" title="Link to this definition">¶</a></dt>
+   85  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+
+   88  <dl class="py exception">
+   89: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.MultipleObjectsReturned">
+   90: <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+   91  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+
+   94  <dl class="py attribute">
+   95: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.document_id">
+   96: <span class="sig-name descname"><span class="pre">document_id</span></span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.document_id" title="Link to this definition">¶</a></dt>
+   97  <dd></dd></dl>
+
+   99  <dl class="py attribute">
+  100: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.flashcards">
+  101: <span class="sig-name descname"><span class="pre">flashcards</span></span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.flashcards" title="Link to this definition">¶</a></dt>
+  102  <dd><p>Accessor to the related objects manager on the reverse side of a
+
+  114  <dl class="py method">
+  115: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.get_next_by_created_at">
+  116: ⟪ 394 characters skipped ⟫="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.get_next_by_created_at" title="Link to this definition">¶</a></dt>
+  117  <dd></dd></dl>
+
+  119  <dl class="py method">
+  120: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.get_previous_by_created_at">
+  121: ⟪ 399 characters skipped ⟫"n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.get_previous_by_created_at" title="Link to this definition">¶</a></dt>
+  122  <dd></dd></dl>
+
+  124  <dl class="py attribute">
+  125: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.id">
+  126: <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.id" title="Link to this definition">¶</a></dt>
+  127  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  131  <dl class="py attribute">
+  132: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.objects">
+  133: <span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.objects" title="Link to this definition">¶</a></dt>
+  134  <dd></dd></dl>
+
+  136  <dl class="py attribute">
+  137: <dt class="sig sig-object py" id="backend.apps.generation.models.FlashcardSet.owner_id">
+  138: <span class="sig-name descname"><span class="pre">owner_id</span></span><a class="headerlink" href="#backend.apps.generation.models.FlashcardSet.owner_id" title="Link to this definition">¶</a></dt>
+  139  <dd></dd></dl>
+
+  143  <dl class="py class">
+  144: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard">
+  145: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.apps.generation.models.</span></span><span class="sig-name descname"><span class="pre">Flashcard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.generation.models.Flashcard" title="Link to this definition">¶</a></dt>
+  146  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+
+  148  <dl class="py attribute">
+  149: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard.flashcard_set">
+  150: <span class="sig-name descname"><span class="pre">flashcard_set</span></span><a class="headerlink" href="#backend.apps.generation.models.Flashcard.flashcard_set" title="Link to this definition">¶</a></dt>
+  151  <dd><p>Accessor to the related object on the forward side of a many-to-one or
+
+  161  <dl class="py attribute">
+  162: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard.question">
+  163: <span class="sig-name descname"><span class="pre">question</span></span><a class="headerlink" href="#backend.apps.generation.models.Flashcard.question" title="Link to this definition">¶</a></dt>
+  164  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  168  <dl class="py attribute">
+  169: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard.answer">
+  170: <span class="sig-name descname"><span class="pre">answer</span></span><a class="headerlink" href="#backend.apps.generation.models.Flashcard.answer" title="Link to this definition">¶</a></dt>
+  171  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  175  <dl class="py attribute">
+  176: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard.updated_at">
+  177: <span class="sig-name descname"><span class="pre">updated_at</span></span><a class="headerlink" href="#backend.apps.generation.models.Flashcard.updated_at" title="Link to this definition">¶</a></dt>
+  178  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  182  <dl class="py exception">
+  183: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard.DoesNotExist">
+  184: <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#backend.apps.generation.models.Flashcard.DoesNotExist" title="Link to this definition">¶</a></dt>
+  185  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
+
+  188  <dl class="py exception">
+  189: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard.MultipleObjectsReturned">
+  190: <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#backend.apps.generation.models.Flashcard.MultipleObjectsReturned" title="Link to this definition">¶</a></dt>
+  191  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultipleObjectsReturned</span></code></p>
+
+  194  <dl class="py attribute">
+  195: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard.flashcard_set_id">
+  196: <span class="sig-name descname"><span class="pre">flashcard_set_id</span></span><a class="headerlink" href="#backend.apps.generation.models.Flashcard.flashcard_set_id" title="Link to this definition">¶</a></dt>
+  197  <dd></dd></dl>
+
+  199  <dl class="py method">
+  200: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard.get_next_by_updated_at">
+  201: ⟪ 394 characters skipped ⟫="n"><span class="pre">is_next=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.generation.models.Flashcard.get_next_by_updated_at" title="Link to this definition">¶</a></dt>
+  202  <dd></dd></dl>
+
+  204  <dl class="py method">
+  205: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard.get_previous_by_updated_at">
+  206: ⟪ 399 characters skipped ⟫"n"><span class="pre">is_next=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.generation.models.Flashcard.get_previous_by_updated_at" title="Link to this definition">¶</a></dt>
+  207  <dd></dd></dl>
+
+  209  <dl class="py attribute">
+  210: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard.id">
+  211: <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#backend.apps.generation.models.Flashcard.id" title="Link to this definition">¶</a></dt>
+  212  <dd><p>A wrapper for a deferred-loading field. When the value is read from this
+
+  216  <dl class="py attribute">
+  217: <dt class="sig sig-object py" id="backend.apps.generation.models.Flashcard.objects">
+  218: <span class="sig-name descname"><span class="pre">objects</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;django.db.models.manager.Manager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#backend.apps.generation.models.Flashcard.objects" title="Link to this definition">¶</a></dt>
+  219  <dd></dd></dl>
+
+  222  
+  223: <dl class="py function" id="module-backend.apps.generation.views">
+  224: <dt class="sig sig-object py" id="backend.apps.generation.views.generate_flashcards_view">
+  225: <span class="sig-prename descclassname"><span class="pre">backend.apps.generation.views.</span></span><span class="sig-name descname"><span class="pre">generate_flashcards_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.generation.views.generate_flashcards_view" title="Link to this definition">¶</a></dt>
+  226  <dd><p>A view that accepts a PDF file upload, extracts text, generates flashcards,
+
+  229  
+  230: <dl class="py class" id="module-backend.apps.generation.forms">
+  231: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardForm">
+  232: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.apps.generation.forms.</span></span><span class="sig-name descname"><span class="pre">FlashcardForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.generation.forms.FlashcardForm" title="Link to this definition">¶</a></dt>
+  233  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+
+  235  <dl class="py class">
+  236: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardForm.Meta">
+  237: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="headerlink" href="#backend.apps.generation.forms.FlashcardForm.Meta" title="Link to this definition">¶</a></dt>
+  238  <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+  239  <dl class="py attribute">
+  240: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardForm.Meta.model">
+  241: <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#backend.apps.generation.forms.FlashcardForm.Meta.model" title="Link to this definition">¶</a></dt>
+  242: <dd><p>alias of <a class="reference internal" href="#backend.apps.generation.models.Flashcard" title="backend.apps.generation.models.Flashcard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flashcard</span></code></a></p>
+  243  </dd></dl>
+
+  245  <dl class="py attribute">
+  246: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardForm.Meta.fields">
+  247: <span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['question',</span> <span class="pre">'answer']</span></em><a class="headerlink" href="#backend.apps.generation.forms.FlashcardForm.Meta.fields" title="Link to this definition">¶</a></dt>
+  248  <dd></dd></dl>
+
+  250  <dl class="py attribute">
+  251: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardForm.Meta.widgets">
+  252: ⟪ 287 characters skipped ⟫an class="pre">object&gt;,</span> <span class="pre">'question':</span> <span class="pre">&lt;django.forms.widgets.Textarea</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.generation.forms.FlashcardForm.Meta.widgets" title="Link to this definition">¶</a></dt>
+  253  <dd></dd></dl>
+
+  257  <dl class="py attribute">
+  258: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardForm.base_fields">
+  259: ⟪ 291 characters skipped ⟫an class="pre">object&gt;,</span> <span class="pre">'question':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.generation.forms.FlashcardForm.base_fields" title="Link to this definition">¶</a></dt>
+  260  <dd></dd></dl>
+
+  262  <dl class="py attribute">
+  263: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardForm.declared_fields">
+  264: <span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#backend.apps.generation.forms.FlashcardForm.declared_fields" title="Link to this definition">¶</a></dt>
+  265  <dd></dd></dl>
+
+  267  <dl class="py property">
+  268: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardForm.media">
+  269: <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#backend.apps.generation.forms.FlashcardForm.media" title="Link to this definition">¶</a></dt>
+  270  <dd><p>Return all media required to render the widgets on this form.</p>
+
+  275  <dl class="py class">
+  276: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardSetForm">
+  277: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.apps.generation.forms.</span></span><span class="sig-name descname"><span class="pre">FlashcardSetForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.generation.forms.FlashcardSetForm" title="Link to this definition">¶</a></dt>
+  278  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelForm</span></code></p>
+
+  280  <dl class="py class">
+  281: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardSetForm.Meta">
+  282: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="headerlink" href="#backend.apps.generation.forms.FlashcardSetForm.Meta" title="Link to this definition">¶</a></dt>
+  283  <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+  284  <dl class="py attribute">
+  285: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardSetForm.Meta.model">
+  286: <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#backend.apps.generation.forms.FlashcardSetForm.Meta.model" title="Link to this definition">¶</a></dt>
+  287: <dd><p>alias of <a class="reference internal" href="#backend.apps.generation.models.FlashcardSet" title="backend.apps.generation.models.FlashcardSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlashcardSet</span></code></a></p>
+  288  </dd></dl>
+
+  290  <dl class="py attribute">
+  291: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardSetForm.Meta.fields">
+  292: <span class="sig-name descname"><span class="pre">fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['title',</span> <span class="pre">'document']</span></em><a class="headerlink" href="#backend.apps.generation.forms.FlashcardSetForm.Meta.fields" title="Link to this definition">¶</a></dt>
+  293  <dd></dd></dl>
+
+  295  <dl class="py attribute">
+  296: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardSetForm.Meta.widgets">
+  297: <span class="sig-name descname"><span class="pre">widgets</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'title':</span> <span class="pre">&lt;django.forms.widgets.TextInput</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.generation.forms.FlashcardSetForm.Meta.widgets" title="Link to this definition">¶</a></dt>
+  298  <dd></dd></dl>
+
+  302  <dl class="py attribute">
+  303: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardSetForm.base_fields">
+  304: ⟪ 297 characters skipped ⟫<span class="pre">object&gt;,</span> <span class="pre">'title':</span> <span class="pre">&lt;django.forms.fields.CharField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.generation.forms.FlashcardSetForm.base_fields" title="Link to this definition">¶</a></dt>
+  305  <dd></dd></dl>
+
+  307  <dl class="py attribute">
+  308: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardSetForm.declared_fields">
+  309: <span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#backend.apps.generation.forms.FlashcardSetForm.declared_fields" title="Link to this definition">¶</a></dt>
+  310  <dd></dd></dl>
+
+  312  <dl class="py property">
+  313: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardSetForm.media">
+  314: <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#backend.apps.generation.forms.FlashcardSetForm.media" title="Link to this definition">¶</a></dt>
+  315  <dd><p>Return all media required to render the widgets on this form.</p>
+
+  320  <dl class="py class">
+  321: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardDeleteForm">
+  322: <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">backend.apps.generation.forms.</span></span><span class="sig-name descname"><span class="pre">FlashcardDeleteForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_id='id_%s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_class=&lt;class</span> <span class="pre">'django.forms.utils.ErrorList'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_suffix=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_permitted=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_order=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_required_attribute=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renderer=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#backend.apps.generation.forms.FlashcardDeleteForm" title="Link to this definition">¶</a></dt>
+  323  <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Form</span></code></p>
+
+  325  <dl class="py attribute">
+  326: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardDeleteForm.base_fields">
+  327: <span class="sig-name descname"><span class="pre">base_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'confirm':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.generation.forms.FlashcardDeleteForm.base_fields" title="Link to this definition">¶</a></dt>
+  328  <dd></dd></dl>
+
+  330  <dl class="py attribute">
+  331: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardDeleteForm.declared_fields">
+  332: <span class="sig-name descname"><span class="pre">declared_fields</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'confirm':</span> <span class="pre">&lt;django.forms.fields.BooleanField</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#backend.apps.generation.forms.FlashcardDeleteForm.declared_fields" title="Link to this definition">¶</a></dt>
+  333  <dd></dd></dl>
+
+  335  <dl class="py property">
+  336: <dt class="sig sig-object py" id="backend.apps.generation.forms.FlashcardDeleteForm.media">
+  337: <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#backend.apps.generation.forms.FlashcardDeleteForm.media" title="Link to this definition">¶</a></dt>
+  338  <dd><p>Return all media required to render the widgets on this form.</p>
+
+  342  
+  343: <span class="target" id="module-backend.apps.generation.services"></span></section>
+  344  
+
+  351          <div class="sphinxsidebarwrapper">
+  352: <h1 class="logo"><a href="index.html">backend</a></h1>
+  353  
+
+  375  <li class="toctree-l1 current"><a class="current reference internal" href="#">generation App</a><ul>
+  376: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.generation.models.FlashcardSet"><code class="docutils literal notranslate"><span class="pre">FlashcardSet</span></code></a></li>
+  377: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.generation.models.Flashcard"><code class="docutils literal notranslate"><span class="pre">Flashcard</span></code></a></li>
+  378: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.generation.views.generate_flashcards_view"><code class="docutils literal notranslate"><span class="pre">generate_flashcards_view()</span></code></a></li>
+  379: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.generation.forms.FlashcardForm"><code class="docutils literal notranslate"><span class="pre">FlashcardForm</span></code></a></li>
+  380: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.generation.forms.FlashcardSetForm"><code class="docutils literal notranslate"><span class="pre">FlashcardSetForm</span></code></a></li>
+  381: <li class="toctree-l2"><a class="reference internal" href="#backend.apps.generation.forms.FlashcardDeleteForm"><code class="docutils literal notranslate"><span class="pre">FlashcardDeleteForm</span></code></a></li>
+  382  </ul>
+
+docs/_build/html/genindex.html:
+    6      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    7:     <title>Index &#8212; backend 0.0.1 documentation</title>
+    8      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+
+   59    <td style="width: 33%; vertical-align: top;"><ul>
+   60:       <li><a href="generation.html#backend.apps.generation.models.Flashcard.answer">answer (backend.apps.generation.models.Flashcard attribute)</a>
+   61  </li>
+
+   67    <td style="width: 33%; vertical-align: top;"><ul>
+   68:       <li><a href="accounts.html#backend.apps.accounts.forms.CustomAuthenticationForm.base_fields">base_fields (backend.apps.accounts.forms.CustomAuthenticationForm attribute)</a>
+   69  
+   70        <ul>
+   71:         <li><a href="accounts.html#backend.apps.accounts.forms.ProfileUpdateForm.base_fields">(backend.apps.accounts.forms.ProfileUpdateForm attribute)</a>
+   72  </li>
+   73:         <li><a href="accounts.html#backend.apps.accounts.forms.RegistrationForm.base_fields">(backend.apps.accounts.forms.RegistrationForm attribute)</a>
+   74  </li>
+   75:         <li><a href="documents.html#backend.apps.documents.forms.DocumentUploadForm.base_fields">(backend.apps.documents.forms.DocumentUploadForm attribute)</a>
+   76  </li>
+   77:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardDeleteForm.base_fields">(backend.apps.generation.forms.FlashcardDeleteForm attribute)</a>
+   78  </li>
+   79:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardForm.base_fields">(backend.apps.generation.forms.FlashcardForm attribute)</a>
+   80  </li>
+   81:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardSetForm.base_fields">(backend.apps.generation.forms.FlashcardSetForm attribute)</a>
+   82  </li>
+
+   89    <td style="width: 33%; vertical-align: top;"><ul>
+   90:       <li><a href="documents.html#backend.apps.documents.forms.DocumentUploadForm.clean_file">clean_file() (backend.apps.documents.forms.DocumentUploadForm method)</a>
+   91  </li>
+   92:       <li><a href="documents.html#backend.apps.documents.forms.DocumentUploadForm.clean_title">clean_title() (backend.apps.documents.forms.DocumentUploadForm method)</a>
+   93  </li>
+   94:       <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.created_at">created_at (backend.apps.generation.models.FlashcardSet attribute)</a>
+   95  </li>
+
+   97    <td style="width: 33%; vertical-align: top;"><ul>
+   98:       <li><a href="accounts.html#backend.apps.accounts.forms.CustomAuthenticationForm">CustomAuthenticationForm (class in backend.apps.accounts.forms)</a>
+   99  </li>
+  100:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser">CustomUser (class in backend.apps.accounts.models)</a>
+  101  </li>
+  102:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.DoesNotExist">CustomUser.DoesNotExist</a>
+  103  </li>
+  104:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.MultipleObjectsReturned">CustomUser.MultipleObjectsReturned</a>
+  105  </li>
+
+  111    <td style="width: 33%; vertical-align: top;"><ul>
+  112:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.date_joined">date_joined (backend.apps.accounts.models.CustomUser attribute)</a>
+  113  </li>
+  114:       <li><a href="accounts.html#backend.apps.accounts.forms.CustomAuthenticationForm.declared_fields">declared_fields (backend.apps.accounts.forms.CustomAuthenticationForm attribute)</a>
+  115  
+  116        <ul>
+  117:         <li><a href="accounts.html#backend.apps.accounts.forms.ProfileUpdateForm.declared_fields">(backend.apps.accounts.forms.ProfileUpdateForm attribute)</a>
+  118  </li>
+  119:         <li><a href="accounts.html#backend.apps.accounts.forms.RegistrationForm.declared_fields">(backend.apps.accounts.forms.RegistrationForm attribute)</a>
+  120  </li>
+  121:         <li><a href="documents.html#backend.apps.documents.forms.DocumentUploadForm.declared_fields">(backend.apps.documents.forms.DocumentUploadForm attribute)</a>
+  122  </li>
+  123:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardDeleteForm.declared_fields">(backend.apps.generation.forms.FlashcardDeleteForm attribute)</a>
+  124  </li>
+  125:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardForm.declared_fields">(backend.apps.generation.forms.FlashcardForm attribute)</a>
+  126  </li>
+  127:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardSetForm.declared_fields">(backend.apps.generation.forms.FlashcardSetForm attribute)</a>
+  128  </li>
+
+  131    <td style="width: 33%; vertical-align: top;"><ul>
+  132:       <li><a href="documents.html#backend.apps.documents.models.Document">Document (class in backend.apps.documents.models)</a>
+  133  </li>
+  134:       <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.document">document (backend.apps.generation.models.FlashcardSet attribute)</a>
+  135  </li>
+  136:       <li><a href="documents.html#backend.apps.documents.models.Document.DoesNotExist">Document.DoesNotExist</a>
+  137  </li>
+  138:       <li><a href="documents.html#backend.apps.documents.models.Document.MultipleObjectsReturned">Document.MultipleObjectsReturned</a>
+  139  </li>
+  140:       <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.document_id">document_id (backend.apps.generation.models.FlashcardSet attribute)</a>
+  141  </li>
+  142:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.documents">documents (backend.apps.accounts.models.CustomUser attribute)</a>
+  143  </li>
+  144:       <li><a href="documents.html#backend.apps.documents.forms.DocumentUploadForm">DocumentUploadForm (class in backend.apps.documents.forms)</a>
+  145  </li>
+  146:       <li><a href="documents.html#backend.apps.documents.forms.DocumentUploadForm.Meta">DocumentUploadForm.Meta (class in backend.apps.documents.forms)</a>
+  147  </li>
+
+  153    <td style="width: 33%; vertical-align: top;"><ul>
+  154:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.email">email (backend.apps.accounts.models.CustomUser attribute)</a>
+  155  </li>
+
+  161    <td style="width: 33%; vertical-align: top;"><ul>
+  162:       <li><a href="accounts.html#backend.apps.accounts.forms.ProfileUpdateForm.Meta.fields">fields (backend.apps.accounts.forms.ProfileUpdateForm.Meta attribute)</a>
+  163  
+  164        <ul>
+  165:         <li><a href="accounts.html#backend.apps.accounts.forms.RegistrationForm.Meta.fields">(backend.apps.accounts.forms.RegistrationForm.Meta attribute)</a>
+  166  </li>
+  167:         <li><a href="documents.html#backend.apps.documents.forms.DocumentUploadForm.Meta.fields">(backend.apps.documents.forms.DocumentUploadForm.Meta attribute)</a>
+  168  </li>
+  169:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardForm.Meta.fields">(backend.apps.generation.forms.FlashcardForm.Meta attribute)</a>
+  170  </li>
+  171:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardSetForm.Meta.fields">(backend.apps.generation.forms.FlashcardSetForm.Meta attribute)</a>
+  172  </li>
+  173        </ul></li>
+  174:       <li><a href="documents.html#backend.apps.documents.models.Document.file">file (backend.apps.documents.models.Document attribute)</a>
+  175  </li>
+  176:       <li><a href="documents.html#backend.apps.documents.models.Document.file_type">file_type (backend.apps.documents.models.Document attribute)</a>
+  177  </li>
+  178:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.first_name">first_name (backend.apps.accounts.models.CustomUser attribute)</a>
+  179  </li>
+  180:       <li><a href="generation.html#backend.apps.generation.models.Flashcard">Flashcard (class in backend.apps.generation.models)</a>
+  181  </li>
+  182:       <li><a href="generation.html#backend.apps.generation.models.Flashcard.DoesNotExist">Flashcard.DoesNotExist</a>
+  183  </li>
+  184:       <li><a href="generation.html#backend.apps.generation.models.Flashcard.MultipleObjectsReturned">Flashcard.MultipleObjectsReturned</a>
+  185  </li>
+  186:       <li><a href="generation.html#backend.apps.generation.models.Flashcard.flashcard_set">flashcard_set (backend.apps.generation.models.Flashcard attribute)</a>
+  187  </li>
+
+  189    <td style="width: 33%; vertical-align: top;"><ul>
+  190:       <li><a href="generation.html#backend.apps.generation.models.Flashcard.flashcard_set_id">flashcard_set_id (backend.apps.generation.models.Flashcard attribute)</a>
+  191  </li>
+  192:       <li><a href="generation.html#backend.apps.generation.forms.FlashcardDeleteForm">FlashcardDeleteForm (class in backend.apps.generation.forms)</a>
+  193  </li>
+  194:       <li><a href="generation.html#backend.apps.generation.forms.FlashcardForm">FlashcardForm (class in backend.apps.generation.forms)</a>
+  195  </li>
+  196:       <li><a href="generation.html#backend.apps.generation.forms.FlashcardForm.Meta">FlashcardForm.Meta (class in backend.apps.generation.forms)</a>
+  197  </li>
+  198:       <li><a href="documents.html#backend.apps.documents.models.Document.flashcards">flashcards (backend.apps.documents.models.Document attribute)</a>
+  199  
+  200        <ul>
+  201:         <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.flashcards">(backend.apps.generation.models.FlashcardSet attribute)</a>
+  202  </li>
+  203        </ul></li>
+  204:       <li><a href="generation.html#backend.apps.generation.models.FlashcardSet">FlashcardSet (class in backend.apps.generation.models)</a>
+  205  </li>
+  206:       <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.DoesNotExist">FlashcardSet.DoesNotExist</a>
+  207  </li>
+  208:       <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.MultipleObjectsReturned">FlashcardSet.MultipleObjectsReturned</a>
+  209  </li>
+  210:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.flashcardset_set">flashcardset_set (backend.apps.accounts.models.CustomUser attribute)</a>
+  211  </li>
+  212:       <li><a href="generation.html#backend.apps.generation.forms.FlashcardSetForm">FlashcardSetForm (class in backend.apps.generation.forms)</a>
+  213  </li>
+  214:       <li><a href="generation.html#backend.apps.generation.forms.FlashcardSetForm.Meta">FlashcardSetForm.Meta (class in backend.apps.generation.forms)</a>
+  215  </li>
+
+  221    <td style="width: 33%; vertical-align: top;"><ul>
+  222:       <li><a href="generation.html#backend.apps.generation.views.generate_flashcards_view">generate_flashcards_view() (in module backend.apps.generation.views)</a>
+  223  </li>
+  224:       <li><a href="documents.html#backend.apps.documents.models.Document.get_file_type_display">get_file_type_display() (backend.apps.documents.models.Document method)</a>
+  225  </li>
+  226:       <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.get_next_by_created_at">get_next_by_created_at() (backend.apps.generation.models.FlashcardSet method)</a>
+  227  </li>
+  228:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.get_next_by_date_joined">get_next_by_date_joined() (backend.apps.accounts.models.CustomUser method)</a>
+  229  </li>
+  230:       <li><a href="generation.html#backend.apps.generation.models.Flashcard.get_next_by_updated_at">get_next_by_updated_at() (backend.apps.generation.models.Flashcard method)</a>
+  231  </li>
+  232:       <li><a href="documents.html#backend.apps.documents.models.Document.get_next_by_upload_date">get_next_by_upload_date() (backend.apps.documents.models.Document method)</a>
+  233  </li>
+
+  235    <td style="width: 33%; vertical-align: top;"><ul>
+  236:       <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.get_previous_by_created_at">get_previous_by_created_at() (backend.apps.generation.models.FlashcardSet method)</a>
+  237  </li>
+  238:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.get_previous_by_date_joined">get_previous_by_date_joined() (backend.apps.accounts.models.CustomUser method)</a>
+  239  </li>
+  240:       <li><a href="generation.html#backend.apps.generation.models.Flashcard.get_previous_by_updated_at">get_previous_by_updated_at() (backend.apps.generation.models.Flashcard method)</a>
+  241  </li>
+  242:       <li><a href="documents.html#backend.apps.documents.models.Document.get_previous_by_upload_date">get_previous_by_upload_date() (backend.apps.documents.models.Document method)</a>
+  243  </li>
+  244:       <li><a href="documents.html#backend.apps.documents.models.Document.get_status_display">get_status_display() (backend.apps.documents.models.Document method)</a>
+  245  </li>
+  246:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.get_subscription_status_display">get_subscription_status_display() (backend.apps.accounts.models.CustomUser method)</a>
+  247  </li>
+  248:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.groups">groups (backend.apps.accounts.models.CustomUser attribute)</a>
+  249  </li>
+
+  255    <td style="width: 33%; vertical-align: top;"><ul>
+  256:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.id">id (backend.apps.accounts.models.CustomUser attribute)</a>
+  257  
+  258        <ul>
+  259:         <li><a href="documents.html#backend.apps.documents.models.Document.id">(backend.apps.documents.models.Document attribute)</a>
+  260  </li>
+  261:         <li><a href="generation.html#backend.apps.generation.models.Flashcard.id">(backend.apps.generation.models.Flashcard attribute)</a>
+  262  </li>
+  263:         <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.id">(backend.apps.generation.models.FlashcardSet attribute)</a>
+  264  </li>
+
+  267    <td style="width: 33%; vertical-align: top;"><ul>
+  268:       <li><a href="documents.html#backend.apps.documents.views.index">index() (in module backend.apps.documents.views)</a>
+  269  </li>
+  270:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.is_active">is_active (backend.apps.accounts.models.CustomUser attribute)</a>
+  271  </li>
+  272:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.is_staff">is_staff (backend.apps.accounts.models.CustomUser attribute)</a>
+  273  </li>
+  274:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.is_superuser">is_superuser (backend.apps.accounts.models.CustomUser attribute)</a>
+  275  </li>
+
+  281    <td style="width: 33%; vertical-align: top;"><ul>
+  282:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.last_login">last_login (backend.apps.accounts.models.CustomUser attribute)</a>
+  283  </li>
+
+  285    <td style="width: 33%; vertical-align: top;"><ul>
+  286:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.last_name">last_name (backend.apps.accounts.models.CustomUser attribute)</a>
+  287  </li>
+  288:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.logentry_set">logentry_set (backend.apps.accounts.models.CustomUser attribute)</a>
+  289  </li>
+
+  296        <li>
+  297:     backend.apps.accounts.forms
+  298  
+  299        <ul>
+  300:         <li><a href="accounts.html#module-backend.apps.accounts.forms">module</a>
+  301  </li>
+
+  303        <li>
+  304:     backend.apps.accounts.models
+  305  
+  306        <ul>
+  307:         <li><a href="accounts.html#module-backend.apps.accounts.models">module</a>
+  308  </li>
+
+  310        <li>
+  311:     backend.apps.accounts.views
+  312  
+  313        <ul>
+  314:         <li><a href="accounts.html#module-backend.apps.accounts.views">module</a>
+  315  </li>
+
+  317        <li>
+  318:     backend.apps.documents.forms
+  319  
+  320        <ul>
+  321:         <li><a href="documents.html#module-backend.apps.documents.forms">module</a>
+  322  </li>
+
+  324        <li>
+  325:     backend.apps.documents.models
+  326  
+  327        <ul>
+  328:         <li><a href="documents.html#module-backend.apps.documents.models">module</a>
+  329  </li>
+
+  331        <li>
+  332:     backend.apps.documents.services
+  333  
+  334        <ul>
+  335:         <li><a href="documents.html#module-backend.apps.documents.services">module</a>
+  336  </li>
+
+  338        <li>
+  339:     backend.apps.documents.views
+  340  
+  341        <ul>
+  342:         <li><a href="documents.html#module-backend.apps.documents.views">module</a>
+  343  </li>
+
+  345        <li>
+  346:     backend.apps.generation.forms
+  347  
+  348        <ul>
+  349:         <li><a href="generation.html#module-backend.apps.generation.forms">module</a>
+  350  </li>
+
+  352        <li>
+  353:     backend.apps.generation.models
+  354  
+  355        <ul>
+  356:         <li><a href="generation.html#module-backend.apps.generation.models">module</a>
+  357  </li>
+
+  359        <li>
+  360:     backend.apps.generation.services
+  361  
+  362        <ul>
+  363:         <li><a href="generation.html#module-backend.apps.generation.services">module</a>
+  364  </li>
+
+  366        <li>
+  367:     backend.apps.generation.views
+  368  
+  369        <ul>
+  370:         <li><a href="generation.html#module-backend.apps.generation.views">module</a>
+  371  </li>
+  372        </ul></li>
+  373:       <li><a href="accounts.html#backend.apps.accounts.forms.CustomAuthenticationForm.media">media (backend.apps.accounts.forms.CustomAuthenticationForm property)</a>
+  374  
+  375        <ul>
+  376:         <li><a href="accounts.html#backend.apps.accounts.forms.ProfileUpdateForm.media">(backend.apps.accounts.forms.ProfileUpdateForm property)</a>
+  377  </li>
+  378:         <li><a href="accounts.html#backend.apps.accounts.forms.RegistrationForm.media">(backend.apps.accounts.forms.RegistrationForm property)</a>
+  379  </li>
+  380:         <li><a href="documents.html#backend.apps.documents.forms.DocumentUploadForm.media">(backend.apps.documents.forms.DocumentUploadForm property)</a>
+  381  </li>
+  382:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardDeleteForm.media">(backend.apps.generation.forms.FlashcardDeleteForm property)</a>
+  383  </li>
+  384:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardForm.media">(backend.apps.generation.forms.FlashcardForm property)</a>
+  385  </li>
+  386:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardSetForm.media">(backend.apps.generation.forms.FlashcardSetForm property)</a>
+  387  </li>
+
+  390    <td style="width: 33%; vertical-align: top;"><ul>
+  391:       <li><a href="documents.html#backend.apps.documents.models.Document.metadata">metadata (backend.apps.documents.models.Document attribute)</a>
+  392  </li>
+  393:       <li><a href="accounts.html#backend.apps.accounts.forms.ProfileUpdateForm.Meta.model">model (backend.apps.accounts.forms.ProfileUpdateForm.Meta attribute)</a>
+  394  
+  395        <ul>
+  396:         <li><a href="accounts.html#backend.apps.accounts.forms.RegistrationForm.Meta.model">(backend.apps.accounts.forms.RegistrationForm.Meta attribute)</a>
+  397  </li>
+  398:         <li><a href="documents.html#backend.apps.documents.forms.DocumentUploadForm.Meta.model">(backend.apps.documents.forms.DocumentUploadForm.Meta attribute)</a>
+  399  </li>
+  400:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardForm.Meta.model">(backend.apps.generation.forms.FlashcardForm.Meta attribute)</a>
+  401  </li>
+  402:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardSetForm.Meta.model">(backend.apps.generation.forms.FlashcardSetForm.Meta attribute)</a>
+  403  </li>
+
+  408        <ul>
+  409:         <li><a href="accounts.html#module-backend.apps.accounts.forms">backend.apps.accounts.forms</a>
+  410  </li>
+  411:         <li><a href="accounts.html#module-backend.apps.accounts.models">backend.apps.accounts.models</a>
+  412  </li>
+  413:         <li><a href="accounts.html#module-backend.apps.accounts.views">backend.apps.accounts.views</a>
+  414  </li>
+  415:         <li><a href="documents.html#module-backend.apps.documents.forms">backend.apps.documents.forms</a>
+  416  </li>
+  417:         <li><a href="documents.html#module-backend.apps.documents.models">backend.apps.documents.models</a>
+  418  </li>
+  419:         <li><a href="documents.html#module-backend.apps.documents.services">backend.apps.documents.services</a>
+  420  </li>
+  421:         <li><a href="documents.html#module-backend.apps.documents.views">backend.apps.documents.views</a>
+  422  </li>
+  423:         <li><a href="generation.html#module-backend.apps.generation.forms">backend.apps.generation.forms</a>
+  424  </li>
+  425:         <li><a href="generation.html#module-backend.apps.generation.models">backend.apps.generation.models</a>
+  426  </li>
+  427:         <li><a href="generation.html#module-backend.apps.generation.services">backend.apps.generation.services</a>
+  428  </li>
+  429:         <li><a href="generation.html#module-backend.apps.generation.views">backend.apps.generation.views</a>
+  430  </li>
+
+  437    <td style="width: 33%; vertical-align: top;"><ul>
+  438:       <li><a href="documents.html#backend.apps.documents.models.Document.objects">objects (backend.apps.documents.models.Document attribute)</a>
+  439  
+  440        <ul>
+  441:         <li><a href="generation.html#backend.apps.generation.models.Flashcard.objects">(backend.apps.generation.models.Flashcard attribute)</a>
+  442  </li>
+  443:         <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.objects">(backend.apps.generation.models.FlashcardSet attribute)</a>
+  444  </li>
+
+  447    <td style="width: 33%; vertical-align: top;"><ul>
+  448:       <li><a href="documents.html#backend.apps.documents.models.Document.original_text">original_text (backend.apps.documents.models.Document attribute)</a>
+  449  </li>
+  450:       <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.owner">owner (backend.apps.generation.models.FlashcardSet attribute)</a>
+  451  </li>
+  452:       <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.owner_id">owner_id (backend.apps.generation.models.FlashcardSet attribute)</a>
+  453  </li>
+
+  459    <td style="width: 33%; vertical-align: top;"><ul>
+  460:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.password">password (backend.apps.accounts.models.CustomUser attribute)</a>
+  461  </li>
+  462:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.preferences">preferences (backend.apps.accounts.models.CustomUser attribute)</a>
+  463  </li>
+
+  465    <td style="width: 33%; vertical-align: top;"><ul>
+  466:       <li><a href="accounts.html#backend.apps.accounts.forms.ProfileUpdateForm">ProfileUpdateForm (class in backend.apps.accounts.forms)</a>
+  467  </li>
+  468:       <li><a href="accounts.html#backend.apps.accounts.forms.ProfileUpdateForm.Meta">ProfileUpdateForm.Meta (class in backend.apps.accounts.forms)</a>
+  469  </li>
+
+  475    <td style="width: 33%; vertical-align: top;"><ul>
+  476:       <li><a href="generation.html#backend.apps.generation.models.Flashcard.question">question (backend.apps.generation.models.Flashcard attribute)</a>
+  477  </li>
+
+  483    <td style="width: 33%; vertical-align: top;"><ul>
+  484:       <li><a href="accounts.html#backend.apps.accounts.forms.RegistrationForm">RegistrationForm (class in backend.apps.accounts.forms)</a>
+  485  </li>
+
+  487    <td style="width: 33%; vertical-align: top;"><ul>
+  488:       <li><a href="accounts.html#backend.apps.accounts.forms.RegistrationForm.Meta">RegistrationForm.Meta (class in backend.apps.accounts.forms)</a>
+  489  </li>
+
+  495    <td style="width: 33%; vertical-align: top;"><ul>
+  496:       <li><a href="accounts.html#backend.apps.accounts.forms.RegistrationForm.save">save() (backend.apps.accounts.forms.RegistrationForm method)</a>
+  497  </li>
+  498:       <li><a href="documents.html#backend.apps.documents.models.Document.status">status (backend.apps.documents.models.Document attribute)</a>
+  499  </li>
+
+  501    <td style="width: 33%; vertical-align: top;"><ul>
+  502:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.SUBSCRIPTION_CHOICES">SUBSCRIPTION_CHOICES (backend.apps.accounts.models.CustomUser attribute)</a>
+  503  </li>
+  504:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.subscription_status">subscription_status (backend.apps.accounts.models.CustomUser attribute)</a>
+  505  </li>
+
+  511    <td style="width: 33%; vertical-align: top;"><ul>
+  512:       <li><a href="documents.html#backend.apps.documents.models.Document.title">title (backend.apps.documents.models.Document attribute)</a>
+  513  
+  514        <ul>
+  515:         <li><a href="generation.html#backend.apps.generation.models.FlashcardSet.title">(backend.apps.generation.models.FlashcardSet attribute)</a>
+  516  </li>
+
+  523    <td style="width: 33%; vertical-align: top;"><ul>
+  524:       <li><a href="generation.html#backend.apps.generation.models.Flashcard.updated_at">updated_at (backend.apps.generation.models.Flashcard attribute)</a>
+  525  </li>
+  526:       <li><a href="documents.html#backend.apps.documents.models.Document.upload_date">upload_date (backend.apps.documents.models.Document attribute)</a>
+  527  </li>
+  528:       <li><a href="documents.html#backend.apps.documents.models.Document.user">user (backend.apps.documents.models.Document attribute)</a>
+  529  </li>
+
+  531    <td style="width: 33%; vertical-align: top;"><ul>
+  532:       <li><a href="documents.html#backend.apps.documents.models.Document.user_id">user_id (backend.apps.documents.models.Document attribute)</a>
+  533  </li>
+  534:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.user_permissions">user_permissions (backend.apps.accounts.models.CustomUser attribute)</a>
+  535  </li>
+  536:       <li><a href="accounts.html#backend.apps.accounts.models.CustomUser.username">username (backend.apps.accounts.models.CustomUser attribute)</a>
+  537  </li>
+
+  543    <td style="width: 33%; vertical-align: top;"><ul>
+  544:       <li><a href="generation.html#backend.apps.generation.forms.FlashcardForm.Meta.widgets">widgets (backend.apps.generation.forms.FlashcardForm.Meta attribute)</a>
+  545  
+  546        <ul>
+  547:         <li><a href="generation.html#backend.apps.generation.forms.FlashcardSetForm.Meta.widgets">(backend.apps.generation.forms.FlashcardSetForm.Meta attribute)</a>
+  548  </li>
+
+  560          <div class="sphinxsidebarwrapper">
+  561: <h1 class="logo"><a href="index.html">backend</a></h1>
+  562  
+
+docs/_build/html/index.html:
+   7  
+   8:     <title>backend documentation &#8212; backend 0.0.1 documentation</title>
+   9      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+
+  35              
+  36:   <section id="backend-documentation">
+  37: <h1>backend documentation<a class="headerlink" href="#backend-documentation" title="Link to this heading">¶</a></h1>
+  38  <div class="toctree-wrapper compound">
+
+  41  <li class="toctree-l1"><a class="reference internal" href="accounts.html">accounts App</a><ul>
+  42: <li class="toctree-l2"><a class="reference internal" href="accounts.html#backend.apps.accounts.models.CustomUser"><code class="docutils literal notranslate"><span class="pre">CustomUser</span></code></a></li>
+  43: <li class="toctree-l2"><a class="reference internal" href="accounts.html#backend.apps.accounts.forms.RegistrationForm"><code class="docutils literal notranslate"><span class="pre">RegistrationForm</span></code></a></li>
+  44: <li class="toctree-l2"><a class="reference internal" href="accounts.html#backend.apps.accounts.forms.CustomAuthenticationForm"><code class="docutils literal notranslate"><span class="pre">CustomAuthenticationForm</span></code></a></li>
+  45: <li class="toctree-l2"><a class="reference internal" href="accounts.html#backend.apps.accounts.forms.ProfileUpdateForm"><code class="docutils literal notranslate"><span class="pre">ProfileUpdateForm</span></code></a></li>
+  46  </ul>
+
+  48  <li class="toctree-l1"><a class="reference internal" href="documents.html">documents App</a><ul>
+  49: <li class="toctree-l2"><a class="reference internal" href="documents.html#backend.apps.documents.models.Document"><code class="docutils literal notranslate"><span class="pre">Document</span></code></a></li>
+  50: <li class="toctree-l2"><a class="reference internal" href="documents.html#backend.apps.documents.views.index"><code class="docutils literal notranslate"><span class="pre">index()</span></code></a></li>
+  51: <li class="toctree-l2"><a class="reference internal" href="documents.html#backend.apps.documents.forms.DocumentUploadForm"><code class="docutils literal notranslate"><span class="pre">DocumentUploadForm</span></code></a></li>
+  52  </ul>
+
+  54  <li class="toctree-l1"><a class="reference internal" href="generation.html">generation App</a><ul>
+  55: <li class="toctree-l2"><a class="reference internal" href="generation.html#backend.apps.generation.models.FlashcardSet"><code class="docutils literal notranslate"><span class="pre">FlashcardSet</span></code></a></li>
+  56: <li class="toctree-l2"><a class="reference internal" href="generation.html#backend.apps.generation.models.Flashcard"><code class="docutils literal notranslate"><span class="pre">Flashcard</span></code></a></li>
+  57: <li class="toctree-l2"><a class="reference internal" href="generation.html#backend.apps.generation.views.generate_flashcards_view"><code class="docutils literal notranslate"><span class="pre">generate_flashcards_view()</span></code></a></li>
+  58: <li class="toctree-l2"><a class="reference internal" href="generation.html#backend.apps.generation.forms.FlashcardForm"><code class="docutils literal notranslate"><span class="pre">FlashcardForm</span></code></a></li>
+  59: <li class="toctree-l2"><a class="reference internal" href="generation.html#backend.apps.generation.forms.FlashcardSetForm"><code class="docutils literal notranslate"><span class="pre">FlashcardSetForm</span></code></a></li>
+  60: <li class="toctree-l2"><a class="reference internal" href="generation.html#backend.apps.generation.forms.FlashcardDeleteForm"><code class="docutils literal notranslate"><span class="pre">FlashcardDeleteForm</span></code></a></li>
+  61  </ul>
+
+  73          <div class="sphinxsidebarwrapper">
+  74: <h1 class="logo"><a href="#">backend</a></h1>
+  75  
+
+docs/_build/html/py-modindex.html:
+    6      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    7:     <title>Python Module Index &#8212; backend 0.0.1 documentation</title>
+    8      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+
+   50         <td>
+   51:        <code class="xref">backend</code></td><td>
+   52         <em></em></td></tr>
+
+   55         <td>&#160;&#160;&#160;
+   56:        <a href="accounts.html#module-backend.apps.accounts.forms"><code class="xref">backend.apps.accounts.forms</code></a></td><td>
+   57         <em></em></td></tr>
+
+   60         <td>&#160;&#160;&#160;
+   61:        <a href="accounts.html#module-backend.apps.accounts.models"><code class="xref">backend.apps.accounts.models</code></a></td><td>
+   62         <em></em></td></tr>
+
+   65         <td>&#160;&#160;&#160;
+   66:        <a href="accounts.html#module-backend.apps.accounts.views"><code class="xref">backend.apps.accounts.views</code></a></td><td>
+   67         <em></em></td></tr>
+
+   70         <td>&#160;&#160;&#160;
+   71:        <a href="documents.html#module-backend.apps.documents.forms"><code class="xref">backend.apps.documents.forms</code></a></td><td>
+   72         <em></em></td></tr>
+
+   75         <td>&#160;&#160;&#160;
+   76:        <a href="documents.html#module-backend.apps.documents.models"><code class="xref">backend.apps.documents.models</code></a></td><td>
+   77         <em></em></td></tr>
+
+   80         <td>&#160;&#160;&#160;
+   81:        <a href="documents.html#module-backend.apps.documents.services"><code class="xref">backend.apps.documents.services</code></a></td><td>
+   82         <em></em></td></tr>
+
+   85         <td>&#160;&#160;&#160;
+   86:        <a href="documents.html#module-backend.apps.documents.views"><code class="xref">backend.apps.documents.views</code></a></td><td>
+   87         <em></em></td></tr>
+
+   90         <td>&#160;&#160;&#160;
+   91:        <a href="generation.html#module-backend.apps.generation.forms"><code class="xref">backend.apps.generation.forms</code></a></td><td>
+   92         <em></em></td></tr>
+
+   95         <td>&#160;&#160;&#160;
+   96:        <a href="generation.html#module-backend.apps.generation.models"><code class="xref">backend.apps.generation.models</code></a></td><td>
+   97         <em></em></td></tr>
+
+  100         <td>&#160;&#160;&#160;
+  101:        <a href="generation.html#module-backend.apps.generation.services"><code class="xref">backend.apps.generation.services</code></a></td><td>
+  102         <em></em></td></tr>
+
+  105         <td>&#160;&#160;&#160;
+  106:        <a href="generation.html#module-backend.apps.generation.views"><code class="xref">backend.apps.generation.views</code></a></td><td>
+  107         <em></em></td></tr>
+
+  116          <div class="sphinxsidebarwrapper">
+  117: <h1 class="logo"><a href="index.html">backend</a></h1>
+  118  
+
+docs/_build/html/search.html:
+   6      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   7:     <title>Search &#8212; backend 0.0.1 documentation</title>
+   8      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+
+  73          <div class="sphinxsidebarwrapper">
+  74: <h1 class="logo"><a href="index.html">backend</a></h1>
+  75  
+
+docs/_build/html/searchindex.js:
+  1: Search.setIndex({"alltitles": {"Contents:": [[3, null]], "accounts App": [[0, null]], "documents App": [[1, null]], "generation App": [[2, null]], "backend documentation": [[3, null]]}, "docnames": ["accounts", "documents", "generation", "index"], "envversion": {"sphinx": 64, "sphinx.domains.c": 3, "sphinx.domains.changeset": 1, "sphinx.domains.citation": 1, "sphinx.domains.cpp": 9, "sphinx.domains.index": 1, "sphinx.domains.javascript": 3, "sphinx.domains.math": 2, "sphinx.domains.python": 4, "sphinx.domains.rst": 2, "sphinx.domains.std": 2, "sphinx.ext.intersphinx": 1}, "filenames": ["accounts.rst", "documents.rst", "generation.rst", "index.rst"], "indexentries": {"answer (backend.apps.generation.models.flashcard attribute)": [[2, "backend.apps.generation.models.Flashcard.answer", false]], "base_fields (backend.apps.accounts.forms.customauthenticationform attribute)": [[0, "backend.apps.accounts.forms.CustomAuthenticationForm.base_fields", false]], "base_fields (backend.apps.accounts.forms.profileupdateform attribute)": [[0, "backend.apps.accounts.forms.ProfileUpdateForm.base_fields", false]], "base_fields (backend.apps.accounts.forms.registrationform attribute)": [[0, "backend.apps.accounts.forms.RegistrationForm.base_fields", false]], "base_fields (backend.apps.documents.forms.documentuploadform attribute)": [[1, "backend.apps.documents.forms.DocumentUploadForm.base_fields", false]], "base_fields (backend.apps.generation.forms.flashcarddeleteform attribute)": [[2, "backend.apps.generation.forms.FlashcardDeleteForm.base_fields", false]], "base_fields (backend.apps.generation.forms.flashcardform attribute)": [[2, "backend.apps.generation.forms.FlashcardForm.base_fields", false]], "base_fields (backend.apps.generation.forms.flashcardsetform attribute)": [[2, "backend.apps.generation.forms.FlashcardSetForm.base_fields", false]], "clean_file() (backend.apps.documents.forms.documentuploadform method)": [[1, "backend.apps.documents.forms.DocumentUploadForm.clean_file", false]], "clean_title() (backend.apps.documents.forms.documentuploadform method)": [[1, "backend.apps.documents.forms.DocumentUploadForm.clean_title", false]], "created_at (backend.apps.generation.models.flashcardset attribute)": [[2, "backend.apps.generation.models.FlashcardSet.created_at", false]], "customauthenticationform (class in backend.apps.accounts.forms)": [[0, "backend.apps.accounts.forms.CustomAuthenticationForm", false]], "customuser (class in backend.apps.accounts.models)": [[0, "backend.apps.accounts.models.CustomUser", false]], "customuser.doesnotexist": [[0, "backend.apps.accounts.models.CustomUser.DoesNotExist", false]], "customuser.multipleobjectsreturned": [[0, "backend.apps.accounts.models.CustomUser.MultipleObjectsReturned", false]], "date_joined (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.date_joined", false]], "declared_fields (backend.apps.accounts.forms.customauthenticationform attribute)": [[0, "backend.apps.accounts.forms.CustomAuthenticationForm.declared_fields", false]], "declared_fields (backend.apps.accounts.forms.profileupdateform attribute)": [[0, "backend.apps.accounts.forms.ProfileUpdateForm.declared_fields", false]], "declared_fields (backend.apps.accounts.forms.registrationform attribute)": [[0, "backend.apps.accounts.forms.RegistrationForm.declared_fields", false]], "declared_fields (backend.apps.documents.forms.documentuploadform attribute)": [[1, "backend.apps.documents.forms.DocumentUploadForm.declared_fields", false]], "declared_fields (backend.apps.generation.forms.flashcarddeleteform attribute)": [[2, "backend.apps.generation.forms.FlashcardDeleteForm.declared_fields", false]], "declared_fields (backend.apps.generation.forms.flashcardform attribute)": [[2, "backend.apps.generation.forms.FlashcardForm.declared_fields", false]], "declared_fields (backend.apps.generation.forms.flashcardsetform attribute)": [[2, "backend.apps.generation.forms.FlashcardSetForm.declared_fields", false]], "document (class in backend.apps.documents.models)": [[1, "backend.apps.documents.models.Document", false]], "document (backend.apps.generation.models.flashcardset attribute)": [[2, "backend.apps.generation.models.FlashcardSet.document", false]], "document.doesnotexist": [[1, "backend.apps.documents.models.Document.DoesNotExist", false]], "document.multipleobjectsreturned": [[1, "backend.apps.documents.models.Document.MultipleObjectsReturned", false]], "document_id (backend.apps.generation.models.flashcardset attribute)": [[2, "backend.apps.generation.models.FlashcardSet.document_id", false]], "documents (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.documents", false]], "documentuploadform (class in backend.apps.documents.forms)": [[1, "backend.apps.documents.forms.DocumentUploadForm", false]], "documentuploadform.meta (class in backend.apps.documents.forms)": [[1, "backend.apps.documents.forms.DocumentUploadForm.Meta", false]], "email (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.email", false]], "fields (backend.apps.accounts.forms.profileupdateform.meta attribute)": [[0, "backend.apps.accounts.forms.ProfileUpdateForm.Meta.fields", false]], "fields (backend.apps.accounts.forms.registrationform.meta attribute)": [[0, "backend.apps.accounts.forms.RegistrationForm.Meta.fields", false]], "fields (backend.apps.documents.forms.documentuploadform.meta attribute)": [[1, "backend.apps.documents.forms.DocumentUploadForm.Meta.fields", false]], "fields (backend.apps.generation.forms.flashcardform.meta attribute)": [[2, "backend.apps.generation.forms.FlashcardForm.Meta.fields", false]], "fields (backend.apps.generation.forms.flashcardsetform.meta attribute)": [[2, "backend.apps.generation.forms.FlashcardSetForm.Meta.fields", false]], "file (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.file", false]], "file_type (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.file_type", false]], "first_name (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.first_name", false]], "flashcard (class in backend.apps.generation.models)": [[2, "backend.apps.generation.models.Flashcard", false]], "flashcard.doesnotexist": [[2, "backend.apps.generation.models.Flashcard.DoesNotExist", false]], "flashcard.multipleobjectsreturned": [[2, "backend.apps.generation.models.Flashcard.MultipleObjectsReturned", false]], "flashcard_set (backend.apps.generation.models.flashcard attribute)": [[2, "backend.apps.generation.models.Flashcard.flashcard_set", false]], "flashcard_set_id (backend.apps.generation.models.flashcard attribute)": [[2, "backend.apps.generation.models.Flashcard.flashcard_set_id", false]], "flashcarddeleteform (class in backend.apps.generation.forms)": [[2, "backend.apps.generation.forms.FlashcardDeleteForm", false]], "flashcardform (class in backend.apps.generation.forms)": [[2, "backend.apps.generation.forms.FlashcardForm", false]], "flashcardform.meta (class in backend.apps.generation.forms)": [[2, "backend.apps.generation.forms.FlashcardForm.Meta", false]], "flashcards (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.flashcards", false]], "flashcards (backend.apps.generation.models.flashcardset attribute)": [[2, "backend.apps.generation.models.FlashcardSet.flashcards", false]], "flashcardset (class in backend.apps.generation.models)": [[2, "backend.apps.generation.models.FlashcardSet", false]], "flashcardset.doesnotexist": [[2, "backend.apps.generation.models.FlashcardSet.DoesNotExist", false]], "flashcardset.multipleobjectsreturned": [[2, "backend.apps.generation.models.FlashcardSet.MultipleObjectsReturned", false]], "flashcardset_set (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.flashcardset_set", false]], "flashcardsetform (class in backend.apps.generation.forms)": [[2, "backend.apps.generation.forms.FlashcardSetForm", false]], "flashcardsetform.meta (class in backend.apps.generation.forms)": [[2, "backend.apps.generation.forms.FlashcardSetForm.Meta", false]], "generate_flashcards_view() (in module backend.apps.generation.views)": [[2, "backend.apps.generation.views.generate_flashcards_view", false]], "get_file_type_display() (backend.apps.documents.models.document method)": [[1, "backend.apps.documents.models.Document.get_file_type_display", false]], "get_next_by_created_at() (backend.apps.generation.models.flashcardset method)": [[2, "backend.apps.generation.models.FlashcardSet.get_next_by_created_at", false]], "get_next_by_date_joined() (backend.apps.accounts.models.customuser method)": [[0, "backend.apps.accounts.models.CustomUser.get_next_by_date_joined", false]], "get_next_by_updated_at() (backend.apps.generation.models.flashcard method)": [[2, "backend.apps.generation.models.Flashcard.get_next_by_updated_at", false]], "get_next_by_upload_date() (backend.apps.documents.models.document method)": [[1, "backend.apps.documents.models.Document.get_next_by_upload_date", false]], "get_previous_by_created_at() (backend.apps.generation.models.flashcardset method)": [[2, "backend.apps.generation.models.FlashcardSet.get_previous_by_created_at", false]], "get_previous_by_date_joined() (backend.apps.accounts.models.customuser method)": [[0, "backend.apps.accounts.models.CustomUser.get_previous_by_date_joined", false]], "get_previous_by_updated_at() (backend.apps.generation.models.flashcard method)": [[2, "backend.apps.generation.models.Flashcard.get_previous_by_updated_at", false]], "get_previous_by_upload_date() (backend.apps.documents.models.document method)": [[1, "backend.apps.documents.models.Document.get_previous_by_upload_date", false]], "get_status_display() (backend.apps.documents.models.document method)": [[1, "backend.apps.documents.models.Document.get_status_display", false]], "get_subscription_status_display() (backend.apps.accounts.models.customuser method)": [[0, "backend.apps.accounts.models.CustomUser.get_subscription_status_display", false]], "groups (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.groups", false]], "id (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.id", false]], "id (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.id", false]], "id (backend.apps.generation.models.flashcard attribute)": [[2, "backend.apps.generation.models.Flashcard.id", false]], "id (backend.apps.generation.models.flashcardset attribute)": [[2, "backend.apps.generation.models.FlashcardSet.id", false]], "index() (in module backend.apps.documents.views)": [[1, "backend.apps.documents.views.index", false]], "is_active (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.is_active", false]], "is_staff (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.is_staff", false]], "is_superuser (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.is_superuser", false]], "last_login (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.last_login", false]], "last_name (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.last_name", false]], "logentry_set (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.logentry_set", false]], "backend.apps.accounts.forms": [[0, "module-backend.apps.accounts.forms", false]], "backend.apps.accounts.models": [[0, "module-backend.apps.accounts.models", false]], "backend.apps.accounts.views": [[0, "module-backend.apps.accounts.views", false]], "backend.apps.documents.forms": [[1, "module-backend.apps.documents.forms", false]], "backend.apps.documents.models": [[1, "module-backend.apps.documents.models", false]], "backend.apps.documents.services": [[1, "module-backend.apps.documents.services", false]], "backend.apps.documents.views": [[1, "module-backend.apps.documents.views", false]], "backend.apps.generation.forms": [[2, "module-backend.apps.generation.forms", false]], "backend.apps.generation.models": [[2, "module-backend.apps.generation.models", false]], "backend.apps.generation.services": [[2, "module-backend.apps.generation.services", false]], "backend.apps.generation.views": [[2, "module-backend.apps.generation.views", false]], "media (backend.apps.accounts.forms.customauthenticationform property)": [[0, "backend.apps.accounts.forms.CustomAuthenticationForm.media", false]], "media (backend.apps.accounts.forms.profileupdateform property)": [[0, "backend.apps.accounts.forms.ProfileUpdateForm.media", false]], "media (backend.apps.accounts.forms.registrationform property)": [[0, "backend.apps.accounts.forms.RegistrationForm.media", false]], "media (backend.apps.documents.forms.documentuploadform property)": [[1, "backend.apps.documents.forms.DocumentUploadForm.media", false]], "media (backend.apps.generation.forms.flashcarddeleteform property)": [[2, "backend.apps.generation.forms.FlashcardDeleteForm.media", false]], "media (backend.apps.generation.forms.flashcardform property)": [[2, "backend.apps.generation.forms.FlashcardForm.media", false]], "media (backend.apps.generation.forms.flashcardsetform property)": [[2, "backend.apps.generation.forms.FlashcardSetForm.media", false]], "metadata (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.metadata", false]], "model (backend.apps.accounts.forms.profileupdateform.meta attribute)": [[0, "backend.apps.accounts.forms.ProfileUpdateForm.Meta.model", false]], "model (backend.apps.accounts.forms.registrationform.meta attribute)": [[0, "backend.apps.accounts.forms.RegistrationForm.Meta.model", false]], "model (backend.apps.documents.forms.documentuploadform.meta attribute)": [[1, "backend.apps.documents.forms.DocumentUploadForm.Meta.model", false]], "model (backend.apps.generation.forms.flashcardform.meta attribute)": [[2, "backend.apps.generation.forms.FlashcardForm.Meta.model", false]], "model (backend.apps.generation.forms.flashcardsetform.meta attribute)": [[2, "backend.apps.generation.forms.FlashcardSetForm.Meta.model", false]], "module": [[0, "module-backend.apps.accounts.forms", false], [0, "module-backend.apps.accounts.models", false], [0, "module-backend.apps.accounts.views", false], [1, "module-backend.apps.documents.forms", false], [1, "module-backend.apps.documents.models", false], [1, "module-backend.apps.documents.services", false], [1, "module-backend.apps.documents.views", false], [2, "module-backend.apps.generation.forms", false], [2, "module-backend.apps.generation.models", false], [2, "module-backend.apps.generation.services", false], [2, "module-backend.apps.generation.views", false]], "objects (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.objects", false]], "objects (backend.apps.generation.models.flashcard attribute)": [[2, "backend.apps.generation.models.Flashcard.objects", false]], "objects (backend.apps.generation.models.flashcardset attribute)": [[2, "backend.apps.generation.models.FlashcardSet.objects", false]], "original_text (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.original_text", false]], "owner (backend.apps.generation.models.flashcardset attribute)": [[2, "backend.apps.generation.models.FlashcardSet.owner", false]], "owner_id (backend.apps.generation.models.flashcardset attribute)": [[2, "backend.apps.generation.models.FlashcardSet.owner_id", false]], "password (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.password", false]], "preferences (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.preferences", false]], "profileupdateform (class in backend.apps.accounts.forms)": [[0, "backend.apps.accounts.forms.ProfileUpdateForm", false]], "profileupdateform.meta (class in backend.apps.accounts.forms)": [[0, "backend.apps.accounts.forms.ProfileUpdateForm.Meta", false]], "question (backend.apps.generation.models.flashcard attribute)": [[2, "backend.apps.generation.models.Flashcard.question", false]], "registrationform (class in backend.apps.accounts.forms)": [[0, "backend.apps.accounts.forms.RegistrationForm", false]], "registrationform.meta (class in backend.apps.accounts.forms)": [[0, "backend.apps.accounts.forms.RegistrationForm.Meta", false]], "save() (backend.apps.accounts.forms.registrationform method)": [[0, "backend.apps.accounts.forms.RegistrationForm.save", false]], "status (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.status", false]], "subscription_choices (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.SUBSCRIPTION_CHOICES", false]], "subscription_status (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.subscription_status", false]], "title (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.title", false]], "title (backend.apps.generation.models.flashcardset attribute)": [[2, "backend.apps.generation.models.FlashcardSet.title", false]], "updated_at (backend.apps.generation.models.flashcard attribute)": [[2, "backend.apps.generation.models.Flashcard.updated_at", false]], "upload_date (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.upload_date", false]], "user (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.user", false]], "user_id (backend.apps.documents.models.document attribute)": [[1, "backend.apps.documents.models.Document.user_id", false]], "user_permissions (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.user_permissions", false]], "username (backend.apps.accounts.models.customuser attribute)": [[0, "backend.apps.accounts.models.CustomUser.username", false]], "widgets (backend.apps.generation.forms.flashcardform.meta attribute)": [[2, "backend.apps.generation.forms.FlashcardForm.Meta.widgets", false]], "widgets (backend.apps.generation.forms.flashcardsetform.meta attribute)": [[2, "backend.apps.generation.forms.FlashcardSetForm.Meta.widgets", false]]}, "objects": {"backend.apps.accounts": [[0, 0, 0, "-", "forms"], [0, 0, 0, "-", "models"], [0, 0, 0, "-", "views"]], "backend.apps.accounts.forms": [[0, 1, 1, "", "CustomAuthenticationForm"], [0, 1, 1, "", "ProfileUpdateForm"], [0, 1, 1, "", "RegistrationForm"]], "backend.apps.accounts.forms.CustomAuthenticationForm": [[0, 2, 1, "", "base_fields"], [0, 2, 1, "", "declared_fields"], [0, 3, 1, "", "media"]], "backend.apps.accounts.forms.ProfileUpdateForm": [[0, 1, 1, "", "Meta"], [0, 2, 1, "", "base_fields"], [0, 2, 1, "", "declared_fields"], [0, 3, 1, "", "media"]], "backend.apps.accounts.forms.ProfileUpdateForm.Meta": [[0, 2, 1, "", "fields"], [0, 2, 1, "", "model"]], "backend.apps.accounts.forms.RegistrationForm": [[0, 1, 1, "", "Meta"], [0, 2, 1, "", "base_fields"], [0, 2, 1, "", "declared_fields"], [0, 3, 1, "", "media"], [0, 4, 1, "", "save"]], "backend.apps.accounts.forms.RegistrationForm.Meta": [[0, 2, 1, "", "fields"], [0, 2, 1, "", "model"]], "backend.apps.accounts.models": [[0, 1, 1, "", "CustomUser"]], "backend.apps.accounts.models.CustomUser": [[0, 5, 1, "", "DoesNotExist"], [0, 5, 1, "", "MultipleObjectsReturned"], [0, 2, 1, "", "SUBSCRIPTION_CHOICES"], [0, 2, 1, "", "date_joined"], [0, 2, 1, "", "documents"], [0, 2, 1, "", "email"], [0, 2, 1, "", "first_name"], [0, 2, 1, "", "flashcardset_set"], [0, 4, 1, "", "get_next_by_date_joined"], [0, 4, 1, "", "get_previous_by_date_joined"], [0, 4, 1, "", "get_subscription_status_display"], [0, 2, 1, "", "groups"], [0, 2, 1, "", "id"], [0, 2, 1, "", "is_active"], [0, 2, 1, "", "is_staff"], [0, 2, 1, "", "is_superuser"], [0, 2, 1, "", "last_login"], [0, 2, 1, "", "last_name"], [0, 2, 1, "", "logentry_set"], [0, 2, 1, "", "password"], [0, 2, 1, "", "preferences"], [0, 2, 1, "", "subscription_status"], [0, 2, 1, "", "user_permissions"], [0, 2, 1, "", "username"]], "backend.apps.documents": [[1, 0, 0, "-", "forms"], [1, 0, 0, "-", "models"], [1, 0, 0, "-", "services"], [1, 0, 0, "-", "views"]], "backend.apps.documents.forms": [[1, 1, 1, "", "DocumentUploadForm"]], "backend.apps.documents.forms.DocumentUploadForm": [[1, 1, 1, "", "Meta"], [1, 2, 1, "", "base_fields"], [1, 4, 1, "", "clean_file"], [1, 4, 1, "", "clean_title"], [1, 2, 1, "", "declared_fields"], [1, 3, 1, "", "media"]], "backend.apps.documents.forms.DocumentUploadForm.Meta": [[1, 2, 1, "", "fields"], [1, 2, 1, "", "model"]], "backend.apps.documents.models": [[1, 1, 1, "", "Document"]], "backend.apps.documents.models.Document": [[1, 5, 1, "", "DoesNotExist"], [1, 5, 1, "", "MultipleObjectsReturned"], [1, 2, 1, "", "file"], [1, 2, 1, "", "file_type"], [1, 2, 1, "", "flashcards"], [1, 4, 1, "", "get_file_type_display"], [1, 4, 1, "", "get_next_by_upload_date"], [1, 4, 1, "", "get_previous_by_upload_date"], [1, 4, 1, "", "get_status_display"], [1, 2, 1, "", "id"], [1, 2, 1, "", "metadata"], [1, 2, 1, "", "objects"], [1, 2, 1, "", "original_text"], [1, 2, 1, "", "status"], [1, 2, 1, "", "title"], [1, 2, 1, "", "upload_date"], [1, 2, 1, "", "user"], [1, 2, 1, "", "user_id"]], "backend.apps.documents.views": [[1, 6, 1, "", "index"]], "backend.apps.generation": [[2, 0, 0, "-", "forms"], [2, 0, 0, "-", "models"], [2, 0, 0, "-", "services"], [2, 0, 0, "-", "views"]], "backend.apps.generation.forms": [[2, 1, 1, "", "FlashcardDeleteForm"], [2, 1, 1, "", "FlashcardForm"], [2, 1, 1, "", "FlashcardSetForm"]], "backend.apps.generation.forms.FlashcardDeleteForm": [[2, 2, 1, "", "base_fields"], [2, 2, 1, "", "declared_fields"], [2, 3, 1, "", "media"]], "backend.apps.generation.forms.FlashcardForm": [[2, 1, 1, "", "Meta"], [2, 2, 1, "", "base_fields"], [2, 2, 1, "", "declared_fields"], [2, 3, 1, "", "media"]], "backend.apps.generation.forms.FlashcardForm.Meta": [[2, 2, 1, "", "fields"], [2, 2, 1, "", "model"], [2, 2, 1, "", "widgets"]], "backend.apps.generation.forms.FlashcardSetForm": [[2, 1, 1, "", "Meta"], [2, 2, 1, "", "base_fields"], [2, 2, 1, "", "declared_fields"], [2, 3, 1, "", "media"]], "backend.apps.generation.forms.FlashcardSetForm.Meta": [[2, 2, 1, "", "fields"], [2, 2, 1, "", "model"], [2, 2, 1, "", "widgets"]], "backend.apps.generation.models": [[2, 1, 1, "", "Flashcard"], [2, 1, 1, "", "FlashcardSet"]], "backend.apps.generation.models.Flashcard": [[2, 5, 1, "", "DoesNotExist"], [2, 5, 1, "", "MultipleObjectsReturned"], [2, 2, 1, "", "answer"], [2, 2, 1, "", "flashcard_set"], [2, 2, 1, "", "flashcard_set_id"], [2, 4, 1, "", "get_next_by_updated_at"], [2, 4, 1, "", "get_previous_by_updated_at"], [2, 2, 1, "", "id"], [2, 2, 1, "", "objects"], [2, 2, 1, "", "question"], [2, 2, 1, "", "updated_at"]], "backend.apps.generation.models.FlashcardSet": [[2, 5, 1, "", "DoesNotExist"], [2, 5, 1, "", "MultipleObjectsReturned"], [2, 2, 1, "", "created_at"], [2, 2, 1, "", "document"], [2, 2, 1, "", "document_id"], [2, 2, 1, "", "flashcards"], [2, 4, 1, "", "get_next_by_created_at"], [2, 4, 1, "", "get_previous_by_created_at"], [2, 2, 1, "", "id"], [2, 2, 1, "", "objects"], [2, 2, 1, "", "owner"], [2, 2, 1, "", "owner_id"], [2, 2, 1, "", "title"]], "backend.apps.generation.views": [[2, 6, 1, "", "generate_flashcards_view"]]}, "objnames": {"0": ["py", "module", "Python module"], "1": ["py", "class", "Python class"], "2": ["py", "attribute", "Python attribute"], "3": ["py", "property", "Python property"], "4": ["py", "method", "Python method"], "5": ["py", "exception", "Python exception"], "6": ["py", "function", "Python function"]}, "objtypes": {"0": "py:module", "1": "py:class", "2": "py:attribute", "3": "py:property", "4": "py:method", "5": "py:exception", "6": "py:function"}, "terms": {"": [0, 1, 2], "1": 1, "A": [0, 1, 2], "In": [0, 1, 2], "It": 1, "The": [0, 1], "abstractus": 0, "accept": 2, "access": 1, "accessor": [0, 1, 2], "account": 3, "add": 0, "addit": 0, "after": 0, "against": 1, "alia": [0, 1, 2], "all": [0, 1, 2], "allow": [0, 1], "an": [0, 1, 2], "answer": 2, "app": 3, "ar": 0, "arg": [0, 1, 2], "assign": 1, "attribut": 1, "auth": 0, "authent": 0, "authenticationform": 0, "auto_id": [0, 1, 2], "base": [0, 1, 2], "⟪ 2327 characters skipped ⟫ 2], "last_login": 0, "last_nam": 0, "later": 0, "like": 1, "load": [0, 1, 2], "logentry_set": 0, "manag": [0, 1, 2], "mani": [0, 1, 2], "manual": 0, "manytomanydescriptor": 0, "manytomanyfield": 0, "backend": [0, 1, 2], "media": [0, 1, 2], "meta": [0, 1, 2], "metadata": 1, "method": 0, "model": [0, 1, 2], "modelchoicefield": 2, "modelform": [0, 1, 2], "most": [0, 1, 2], "multipleobjectsreturn": [0, 1, 2], "myapp": 1, "mymodel": 1, "none": [0, 1, 2], "object": [0, 1, 2], "objectdoesnotexist": [0, 1, 2], "one": [0, 1, 2], "open": 1, "option": 2, "original_text": 1, "otherwis": 0, "owner": 2, "owner_id": 2, "paramet": 0, "parent": [0, 1, 2], "password": 0, "password1": 0, "password2": 0, "path": 1, "pdf": 2, "pizza": 0, "pk": 1, "prefer": 0, "prefix": [0, 1, 2], "premium": 0, "profil": 0, "profileupdateform": [0, 3], "properti": [0, 1, 2], "provid": 1, "queri": [0, 1, 2], "question": 2, "read": [0, 1, 2], "registr": 0, "registrationform": [0, 3], "relat": [0, 1, 2], "related_nam": [0, 1, 2], "render": [0, 1, 2], "repres": 1, "request": [0, 1, 2], "requir": [0, 1, 2], "restructuredtext": [], "return": [0, 1, 2], "revers": [0, 1, 2], "reversemanytoonedescriptor": [0, 1, 2], "save": [⟪ 728 characters skipped ⟫"view": [1, 2], "when": [0, 1, 2], "which": 0, "widget": [0, 1, 2], "world": 1, "wrapper": [0, 1, 2], "write": 1, "you": 1, "your": []}, "titles": ["accounts App", "documents App", "generation App", "backend documentation"], "titleterms": {"account": 0, "app": [0, 1, 2], "content": 3, "document": [1, 3], "gener": 2, "backend": 3}})
+
+docs/_build/html/_sources/accounts.rst.txt:
+   3  
+   4: .. automodule:: backend.apps.accounts.models
+   5     :members:
+
+   8  
+   9: .. automodule:: backend.apps.accounts.views
+  10     :members:
+
+  13  
+  14: .. automodule:: backend.apps.accounts.forms
+  15     :members:
+
+docs/_build/html/_sources/documents.rst.txt:
+   3  
+   4: .. automodule:: backend.apps.documents.models
+   5     :members:
+
+   8  
+   9: .. automodule:: backend.apps.documents.views
+  10     :members:
+
+  13  
+  14: .. automodule:: backend.apps.documents.forms
+  15     :members:
+
+  18  
+  19: .. automodule:: backend.apps.documents.services
+  20     :members:
+
+docs/_build/html/_sources/generation.rst.txt:
+   3  
+   4: .. automodule:: backend.apps.generation.models
+   5     :members:
+
+   8  
+   9: .. automodule:: backend.apps.generation.views
+  10     :members:
+
+  13  
+  14: .. automodule:: backend.apps.generation.forms
+  15     :members:
+
+  18  
+  19: .. automodule:: backend.apps.generation.services
+  20     :members:
+
+docs/_build/html/_sources/index.rst.txt:
+  1: backend documentation
+  2  =======================

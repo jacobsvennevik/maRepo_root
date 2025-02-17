@@ -3,16 +3,16 @@
 import os
 import sys
 
-# 1) Insert the parent directory so that Sphinx can locate 'maProject'.
+# 1) Insert the parent directory so that Sphinx can locate 'backend'.
 sys.path.insert(0, os.path.abspath('..'))
 
 # 2) Point to your Django settings and initialize Django.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'maProject.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 import django
 django.setup()
 
 # -- Project information
-project = 'maProject'
+project = 'backend'
 author = 'SvenMedSpenn'
 release = '0.0.1'
 
