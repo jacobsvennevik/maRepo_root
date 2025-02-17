@@ -39,7 +39,7 @@ def write_directory_structure(root_dir, output_file, gitignore_path=".gitignore"
                 f.write(f"{indent}   📄 {filename}\n")
 
 if __name__ == "__main__":
-    project_dir = "/Users/jacobhornsvennevik/Documents/GitHub/MaRepo_root/maProject/frontend"
+    project_dir = "/Users/jacobhornsvennevik/Documents/GitHub/MaRepo_root/frontend/src"
     output_file = "directory_structure.txt"
     write_directory_structure(project_dir, output_file)
     print(f"Directory structure written to {output_file}, using .gitignore rules.")
