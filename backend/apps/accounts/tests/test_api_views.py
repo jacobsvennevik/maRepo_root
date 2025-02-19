@@ -25,21 +25,17 @@ def test_user_list_api():
 
 @pytest.mark.django_db
 def test_create_user_api():
-    """
-    Test creating a new user via the API.
-    """
     client = APIClient()
     payload = {
         "username": "newuser",
         "email": "newuser@example.com",
-        # Depending on your serializer, you might need to handle password separately.
         "password": "newpass123"
     }
-    url = reverse('user-list')
+    url = reverse('user-list')  # e.g. points to CustomUserViewSet
     response = client.post(url, payload, format="json")
-    
-    # Assuming creation returns HTTP 201
+
     assert response.status_code == status.HTTP_201_CREATED
+
     data = response.json()
     assert data["username"] == payload["username"]
     assert data["email"] == payload["email"]

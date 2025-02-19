@@ -1,6 +1,9 @@
 from django.urls import path
+from .views_api import UserCreateView
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 urlpatterns = [
-    # e.g., path('login/', views.LoginView.as_view(), name='login'),
-    # or leave it empty if you have no routes yet
+    path("register/", UserCreateView.as_view(), name="register"),
+    path("api/auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    # ... other API endpoints ...
 ]

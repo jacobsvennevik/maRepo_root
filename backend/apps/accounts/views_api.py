@@ -9,6 +9,5 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == "create":
-            # Allow anyone to create a user (i.e., register)
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
