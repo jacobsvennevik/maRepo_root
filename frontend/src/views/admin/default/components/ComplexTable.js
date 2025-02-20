@@ -25,12 +25,25 @@ import Menu from "components/menu/MainMenu";
 
 // Assets
 import { MdCheckCircle, MdCancel, MdOutlineError } from "react-icons/md";
+/**
+ * ColumnsTable Component
+ *
+ * This component renders a complex table with columns for NAME, STATUS, DATE, and PROGRESS.
+ * It utilizes react-table for features like sorting, filtering, and pagination.
+ *
+ * @param {object} props - The props object.
+ * @param {array} props.columnsData - The data for the columns.
+ * @param {array} props.tableData - The data for the table.
+ * @returns {ReactElement} The rendered component.
+ */
 export default function ColumnsTable(props) {
   const { columnsData, tableData } = props;
 
+  // Memoize columns and data to avoid unnecessary re-renders
   const columns = useMemo(() => columnsData, [columnsData]);
   const data = useMemo(() => tableData, [tableData]);
 
+  // Create table instance with necessary plugins
   const tableInstance = useTable(
     {
       columns,
@@ -41,6 +54,7 @@ export default function ColumnsTable(props) {
     usePagination
   );
 
+  // Destructure table instance properties for ease of use
   const {
     getTableProps,
     getTableBodyProps,
@@ -49,10 +63,12 @@ export default function ColumnsTable(props) {
     prepareRow,
     initialState,
   } = tableInstance;
-  initialState.pageSize = 5;
+  initialState.pageSize = 5; // Set initial page size
 
+  // Define color modes for text and borders
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
+
   return (
     <Card
       direction='column'
@@ -60,6 +76,7 @@ export default function ColumnsTable(props) {
       px='0px'
       overflowX={{ sm: "scroll", lg: "hidden" }}>
       <Flex px='25px' justify='space-between' mb='10px' align='center'>
+        {/* Table title */}
         <Text
           color={textColor}
           fontSize='22px'
@@ -98,6 +115,7 @@ export default function ColumnsTable(props) {
               <Tr {...row.getRowProps()} key={index}>
                 {row.cells.map((cell, index) => {
                   let data = "";
+                  // Render cell content based on column header
                   if (cell.column.Header === "NAME") {
                     data = (
                       <Text color={textColor} fontSize='sm' fontWeight='700'>

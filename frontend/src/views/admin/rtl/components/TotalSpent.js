@@ -20,20 +20,34 @@ import {
   lineChartOptionsTotalSpent,
 } from "variables/charts";
 
+/**
+ * TotalSpent component displays a card with total spent and variation
+ * compared to the previous month, with a button to change the time period
+ * and a line chart displaying the data.
+ *
+ * @param {Object} props - The properties passed to the component.
+ * @returns {JSX.Element} The rendered TotalSpent component.
+ */
 export default function TotalSpent(props) {
   const { ...rest } = props;
 
   // Chakra Color Mode
-
+  // The text color used in the component
   const textColor = useColorModeValue("secondaryGray.900", "white");
+  // The secondary text color used in the component
   const textColorSecondary = useColorModeValue("secondaryGray.600", "white");
+  // The background color used in the component
   const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
+  // The icon color used in the component
   const iconColor = useColorModeValue("brand.500", "white");
+  // The background color used for the button
   const bgButton = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
+  // The background color used for the button hover
   const bgHover = useColorModeValue(
     { bg: "secondaryGray.400" },
     { bg: "whiteAlpha.50" }
   );
+  // The background color used for the button focus
   const bgFocus = useColorModeValue(
     { bg: "secondaryGray.300" },
     { bg: "whiteAlpha.100" }
@@ -46,7 +60,9 @@ export default function TotalSpent(props) {
       w='100%'
       mb='0px'
       {...rest}>
+      {/* Header with buttons to change the time period */}
       <Flex justify='space-between' ps='0px' pe='20px' pt='5px'>
+        {/* This month button */}
         <Flex align='center' w='100%'>
           <Button
             bg={boxBg}
@@ -61,6 +77,7 @@ export default function TotalSpent(props) {
             />
             This month
           </Button>
+          {/* Button to open the chart options */}
           <Button
             ms='auto'
             align='center'
@@ -78,8 +95,11 @@ export default function TotalSpent(props) {
           </Button>
         </Flex>
       </Flex>
+      {/* Card body with total spent and chart */}
       <Flex w='100%' flexDirection={{ base: "column", lg: "row" }}>
+        {/* Total spent and variation */}
         <Flex flexDirection='column' me='20px' mt='28px'>
+          {/* Total spent */}
           <Text
             color={textColor}
             fontSize='34px'
@@ -88,6 +108,7 @@ export default function TotalSpent(props) {
             lineHeight='100%'>
             $37.5K
           </Text>
+          {/* Variation compared to the previous month */}
           <Flex align='center' mb='20px'>
             <Text
               color='secondaryGray.600'
@@ -105,6 +126,7 @@ export default function TotalSpent(props) {
             </Flex>
           </Flex>
 
+          {/* Status of the total spent */}
           <Flex align='center'>
             <Icon as={IoCheckmarkCircle} color='green.500' me='4px' />
             <Text color='green.500' fontSize='md' fontWeight='700'>
@@ -112,6 +134,7 @@ export default function TotalSpent(props) {
             </Text>
           </Flex>
         </Flex>
+        {/* Chart displaying the data */}
         <Box minH='260px' minW='75%' mt='auto'>
           <LineChart
             chartData={lineChartDataTotalSpent}

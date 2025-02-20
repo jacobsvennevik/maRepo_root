@@ -15,7 +15,14 @@ import React from "react";
 // Assets
 import { MdOutlineCloudDone } from "react-icons/md";
 
-export default function Banner(props) {
+/**
+ * Storage component displays the amount of used and total storage space.
+ * @param {Object} props - The properties passed to the component.
+ * @param {number} props.used - The amount of used storage space in GB.
+ * @param {number} props.total - The total amount of storage space in GB.
+ * @returns {JSX.Element} The rendered Storage component.
+ */
+export default function Storage(props) {
   const { used, total } = props;
   // Chakra Color Mode
   const textColorPrimary = useColorModeValue("secondaryGray.900", "white");
@@ -28,6 +35,7 @@ export default function Banner(props) {
         <Menu ms='auto' />
       </Flex>
       <IconBox
+        // Icon box that displays the cloud done icon
         mx='auto'
         h='100px'
         w='100px'
@@ -36,26 +44,45 @@ export default function Banner(props) {
         }
         bg={box}
       />
-      <Text color={textColorPrimary} fontWeight='bold' fontSize='2xl' mt='10px'>
+      <Text
+        // The title of the storage component
+        color={textColorPrimary}
+        fontWeight='bold'
+        fontSize='2xl'
+        mt='10px'
+      >
         Your storage
       </Text>
       <Text
+        // The description of the storage component
         color={textColorSecondary}
         fontSize='md'
         maxW={{ base: "100%", xl: "80%", "3xl": "60%" }}
-        mx='auto'>
+        mx='auto'
+      >
         Supervise your drive space in the easiest way
       </Text>
       <Box w='100%' mt='auto'>
         <Flex w='100%' justify='space-between' mb='10px'>
-          <Text color={textColorSecondary} fontSize='sm' maxW='40%'>
+          <Text
+            // The text that displays the amount of used storage space
+            color={textColorSecondary}
+            fontSize='sm'
+            maxW='40%'
+          >
             {used} GB
           </Text>
-          <Text color={textColorSecondary} fontSize='sm' maxW='40%'>
+          <Text
+            // The text that displays the total amount of storage space
+            color={textColorSecondary}
+            fontSize='sm'
+            maxW='40%'
+          >
             {total} GB
           </Text>
         </Flex>
         <Progress
+          // The progress bar that displays the amount of used storage space
           align='start'
           colorScheme='brandScheme'
           value={(used / total) * 100}

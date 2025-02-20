@@ -6,6 +6,15 @@ import Card from "components/card/Card.js";
 // Assets
 import { FaEthereum } from "react-icons/fa";
 
+/**
+ * A component to display a history item in the marketplace view.
+ * @prop {string} image - The image of the NFT.
+ * @prop {string} name - The name of the NFT.
+ * @prop {string} author - The author of the NFT.
+ * @prop {string} date - The date of the NFT.
+ * @prop {string} price - The price of the NFT.
+ * @returns A JSX element containing a history item.
+ */
 export default function NFT(props) {
   const { image, name, author, date, price } = props;
   // Chakra Color Mode

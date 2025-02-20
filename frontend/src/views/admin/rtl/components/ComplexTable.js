@@ -25,12 +25,32 @@ import Menu from "components/menu/MainMenu";
 
 // Assets
 import { MdCheckCircle, MdCancel, MdOutlineError } from "react-icons/md";
+/**
+ * ColumnsTable
+ *
+ * This component renders a table with 4 columns.
+ * The table will have a header with 4 columns: "NAME", "PROGRESS", "QUANTITY", and "DATE".
+ * The table will have a body with data that is passed as a prop.
+ *
+ * @param {object} props - The props object.
+ * @param {array} props.columnsData - The data for the columns.
+ * @param {array} props.tableData - The data for the table.
+ * @returns {ReactElement} The rendered component.
+ */
 export default function ColumnsTable(props) {
   const { columnsData, tableData } = props;
 
+  /**
+   * Memoize the columns and data.
+   * @type {Object}
+   */
   const columns = useMemo(() => columnsData, [columnsData]);
   const data = useMemo(() => tableData, [tableData]);
 
+  /**
+   * Create an instance of the table with necessary plugins.
+   * @type {Object}
+   */
   const tableInstance = useTable(
     {
       columns,
@@ -41,6 +61,10 @@ export default function ColumnsTable(props) {
     usePagination
   );
 
+  /**
+   * Get the props of the table.
+   * @type {Object}
+   */
   const {
     getTableProps,
     getTableBodyProps,
@@ -51,6 +75,10 @@ export default function ColumnsTable(props) {
   } = tableInstance;
   initialState.pageSize = 5;
 
+  /**
+   * Define color modes for text and borders.
+   * @type {Object}
+   */
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
   return (

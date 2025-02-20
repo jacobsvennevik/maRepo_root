@@ -28,6 +28,19 @@ import { NavLink } from "react-router-dom";
 import { SidebarContext } from "contexts/SidebarContext";
 import routes from "routes.js";
 
+
+
+/**
+ * AuthNavbar component
+ * A responsive navigation bar that can be used to navigate through the pages of the application
+ * @param {Object} props - component props
+ * @param {string} [props.logo] - logo of the application
+ * @param {string} [props.logoText] - text of the logo
+ * @param {boolean} [props.secondary] - if true, the navbar will be displayed in a secondary color
+ * @param {string} [props.sidebarWidth] - width of the sidebar
+ * @param {Object} [rest] - additional props
+ * @returns {ReactElement} - AuthNavbar component
+ */
 export default function AuthNavbar(props) {
   const { logo, logoText, secondary, sidebarWidth, ...rest } = props;
   const { colorMode } = useColorMode();
@@ -149,6 +162,11 @@ export default function AuthNavbar(props) {
     // navbarPosition = "fixed";
   }
 
+  /**
+   * Creates the links from the secondary accordions (for example auth -> sign-in -> default)
+   * @param {Array} routes - The routes of the sidebar
+   * @returns {Object} The JSX of the component
+   */
   const createPagesLinks = (routes) => {
     return routes.map((link) => {
       if (
@@ -223,6 +241,11 @@ export default function AuthNavbar(props) {
     });
   };
 
+  /**
+   * Creates the links for the 'Extra' section of the sidebar.
+   * @param {Array} routes - The routes of the sidebar
+   * @returns {Object} The JSX of the component
+   */
   const createExtraLinks = (routes) => {
     return routes.map((link) => {
       return (
@@ -240,6 +263,14 @@ export default function AuthNavbar(props) {
       );
     });
   };
+
+/**
+ * Creates the authentication links for the sidebar.
+ * Handles both collapsible and non-collapsible links.
+ * Recursively generates links for nested items if a link is collapsible.
+ * @param {Array} routes - The routes of the sidebar
+ * @returns {Array} An array of JSX elements representing the authentication links
+ */
 
   const createAuthLinks = (routes) => {
     return routes.map((link) => {
@@ -280,6 +311,11 @@ export default function AuthNavbar(props) {
     });
   };
 
+  /**
+   * Creates the links for the 'Application' section of the sidebar.
+   * @param {Array} routes - The routes of the sidebar
+   * @returns {Array} An array of JSX elements representing the links
+   */
   const createApplicationLinks = (routes) => {
     return routes.map((link) => {
       return (
@@ -297,6 +333,11 @@ export default function AuthNavbar(props) {
     });
   };
 
+  /**
+   * Creates the links for the 'Ecommerce' section of the sidebar.
+   * @param {Array} routes - The routes of the sidebar
+   * @returns {Array} An array of JSX elements representing the links
+   */
   const createEcommerceLinks = (routes) => {
     return routes.map((link) => {
       if (link.authIcon) {

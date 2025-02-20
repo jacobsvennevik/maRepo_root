@@ -14,11 +14,18 @@ import {
 // Assets
 import { RiArrowUpSFill } from "react-icons/ri";
 
+/**
+ * DailyTraffic component displays a card with daily traffic stats and a bar chart.
+ * 
+ * @param {Object} props - The properties passed to the component.
+ * @returns {JSX.Element} The rendered DailyTraffic component.
+ */
 export default function DailyTraffic(props) {
   const { ...rest } = props;
 
-  // Chakra Color Mode
+  // Determine text color based on color mode
   const textColor = useColorModeValue("secondaryGray.900", "white");
+
   return (
     <Card align='center' direction='column' w='100%' {...rest}>
       <Flex justify='space-between' align='start' px='10px' pt='5px'>
@@ -57,6 +64,7 @@ export default function DailyTraffic(props) {
         </Flex>
       </Flex>
       <Box h='240px' mt='auto'>
+        {/* Render the bar chart with daily traffic data */}
         <BarChart
           chartData={barChartDataDailyTraffic}
           chartOptions={barChartOptionsDailyTraffic}

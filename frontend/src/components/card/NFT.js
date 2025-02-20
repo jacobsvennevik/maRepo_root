@@ -17,11 +17,28 @@ import Card from "components/card/Card.js";
 import React, { useState } from "react";
 import { IoHeart, IoHeartOutline } from "react-icons/io5";
 
+/**
+ * A component that renders an NFT card with the image, name, author, bidders, download link, and current bid.
+ *
+ * @param {object} props - The props object.
+ * @param {string} props.image - The URL of the image.
+ * @param {string} props.name - The name of the NFT.
+ * @param {string} props.author - The author of the NFT.
+ * @param {array} props.bidders - An array of URLs of the bidders.
+ * @param {string} props.download - The URL of the download link.
+ * @param {string} props.currentbid - The current bid.
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function NFT(props) {
   const { image, name, author, bidders, download, currentbid } = props;
+  // State to keep track of whether the user has liked the NFT
   const [like, setLike] = useState(false);
+
+  // Text color based on the mode
   const textColor = useColorModeValue("navy.700", "white");
+  // Text color for the bid
   const textColorBid = useColorModeValue("brand.500", "white");
+
   return (
     <Card p='20px'>
       <Flex direction={{ base: "column" }} justify='center'>
@@ -35,6 +52,7 @@ export default function NFT(props) {
           <Button
             position='absolute'
             bg='white'
+            // On hover, active, and focus, change the background color
             _hover={{ bg: "whiteAlpha.900" }}
             _active={{ bg: "white" }}
             _focus={{ bg: "white" }}
@@ -44,6 +62,7 @@ export default function NFT(props) {
             borderRadius='50%'
             minW='36px'
             h='36px'
+            // Toggle the like state when the button is clicked
             onClick={() => {
               setLike(!like);
             }}>
@@ -51,6 +70,7 @@ export default function NFT(props) {
               transition='0.2s linear'
               w='20px'
               h='20px'
+              // Use the like or unlike icon based on the state
               as={like ? IoHeart : IoHeartOutline}
               color='brand.500'
             />

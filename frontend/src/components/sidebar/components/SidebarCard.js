@@ -9,7 +9,15 @@ import {
 import logoWhite from "assets/img/layout/logoWhite.png";
 import React from "react";
 
+/**
+ * SidebarDocs component
+ * This component renders a sidebar card with branding and support link.
+ * It uses Chakra UI for styling and layout.
+ * 
+ * @returns {ReactElement} The SidebarDocs component
+ */
 export default function SidebarDocs() {
+  // Define background and border colors
   const bgColor = "linear-gradient(135deg, #868CFF 0%, #4318FF 100%)";
   const borderColor = useColorModeValue("white", "navy.800");
 
@@ -22,6 +30,7 @@ export default function SidebarDocs() {
       borderRadius='30px'
       me='20px'
       position='relative'>
+      {/* Logo container */}
       <Flex
         border='5px solid'
         borderColor={borderColor}
@@ -36,8 +45,10 @@ export default function SidebarDocs() {
         left='50%'
         top='-47px'
         transform='translate(-50%, 0%)'>
+        {/* Logo image */}
         <Image src={logoWhite} w='40px' h='40px' />
       </Flex>
+      {/* Text content */}
       <Flex
         direction='column'
         mb='12px'
@@ -45,6 +56,7 @@ export default function SidebarDocs() {
         justify='center'
         px='15px'
         pt='55px'>
+        {/* Title text */}
         <Text
           fontSize={{ base: "lg", xl: "18px" }}
           color='white'
@@ -55,22 +67,24 @@ export default function SidebarDocs() {
           mb='14px'>
           Horizon React
         </Text>
+        {/* Description text */}
         <Text
           fontSize='14px'
-          color={"white"}
+          color='white'
           px='10px'
           mb='14px'
           textAlign='center'>
           Open-Source React App styled with Chakra UI.
         </Text>
       </Flex>
+      {/* Support link button */}
       <Link href='https://appseed.us/support/'>
         <Button
           bg='whiteAlpha.300'
           _hover={{ bg: "whiteAlpha.200" }}
           _active={{ bg: "whiteAlpha.100" }}
           mb={{ sm: "16px", xl: "24px" }}
-          color={"white"}
+          color='white'
           fontWeight='regular'
           fontSize='sm'
           minW='185px'

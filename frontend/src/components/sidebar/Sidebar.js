@@ -25,35 +25,39 @@ import PropTypes from "prop-types";
 // Assets
 import { IoMenuOutline } from "react-icons/io5";
 
+/**
+ * Sidebar component
+ * @param {Object} props - props object
+ * @param {Array} props.routes - array of routes
+ * @returns {ReactElement} - Sidebar component
+ */
 function Sidebar(props) {
   const { routes } = props;
 
-  let variantChange = "0.2s linear";
-  let shadow = useColorModeValue(
-    "14px 17px 40px 4px rgba(112, 144, 176, 0.08)",
-    "unset"
-  );
   // Chakra Color Mode
   let sidebarBg = useColorModeValue("white", "navy.800");
-  let sidebarMargins = "0px";
 
   // SIDEBAR
   return (
-    <Box display={{ sm: "none", xl: "block" }} position='fixed' minH='100%'>
+    <Box
+      display={{ sm: "none", xl: "block" }}
+      position='fixed'
+      minH='100%'
+      overflowX='hidden'
+    >
       <Box
         bg={sidebarBg}
-        transition={variantChange}
         w='300px'
         h='100vh'
-        m={sidebarMargins}
+        m={0}
         minH='100%'
-        overflowX='hidden'
-        boxShadow={shadow}>
+      >
         <Scrollbars
           autoHide
           renderTrackVertical={renderTrack}
           renderThumbVertical={renderThumb}
-          renderView={renderView}>
+          renderView={renderView}
+        >
           <Content routes={routes} />
         </Scrollbars>
       </Box>
@@ -62,16 +66,24 @@ function Sidebar(props) {
 }
 
 // FUNCTIONS
+/**
+ * @function SidebarResponsive
+ * @description This component renders the responsive sidebar
+ * @param {Object} props - The props of the component
+ * @param {Array} props.routes - The routes of the sidebar
+ * @returns {ReactElement} The JSX of the component
+ */
 export function SidebarResponsive(props) {
+  // let isWindows = navigator.platform.startsWith("Win");
+  //  BRAND
   let sidebarBackgroundColor = useColorModeValue("white", "navy.800");
   let menuColor = useColorModeValue("gray.400", "white");
+
   // // SIDEBAR
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef();
 
   const { routes } = props;
-  // let isWindows = navigator.platform.startsWith("Win");
-  //  BRAND
 
   return (
     <Flex display={{ sm: "flex", xl: "none" }} alignItems='center'>

@@ -8,14 +8,39 @@ import { Box, useColorModeValue } from "@chakra-ui/react";
 // Layout components
 import { SidebarContext } from "contexts/SidebarContext";
 
-// Custom Chakra theme
+// Layout component for the authentication pages
+
+// Chakra imports
+import { Box, useColorModeValue } from "@chakra-ui/react";
+
+// Layout components
+import { SidebarContext } from "contexts/SidebarContext";
+
+/**
+ * The Auth component renders the authentication pages. It uses the
+ * SidebarContext to provide the toggleSidebar state and the
+ * setToggleSidebar function to the components.
+ */
 export default function Auth() {
   // states and functions
+  /**
+   * The toggleSidebar state is used to change the width of the sidebar
+   * based on the user's preferences.
+   */
   const [toggleSidebar, setToggleSidebar] = useState(false);
-  // functions for changing the states from components
+  /**
+   * The getRoute function is used to determine if the user is on a full
+   * screen map page or not. If the user is on a full screen map page, the
+   * sidebar is hidden.
+   */
   const getRoute = () => {
     return window.location.pathname !== "/auth/full-screen-maps";
   };
+  /**
+   * The getRoutes function is used to create the routes for the
+   * authentication pages. It maps over the routes array and returns a
+   * Route component for each route.
+   */
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.layout === "/auth") {
@@ -37,8 +62,18 @@ export default function Auth() {
       }
     });
   };
+  /**
+   * The authBg variable is used to set the background color of the
+   * authentication pages based on the user's color mode preference.
+   */
   const authBg = useColorModeValue("white", "navy.900");
+  /**
+   * Set the direction of the page to left-to-right.
+   */
   document.documentElement.dir = "ltr";
+  /**
+   * Return the JSX of the component.
+   */
   return (
     <Box>
       <SidebarContext.Provider

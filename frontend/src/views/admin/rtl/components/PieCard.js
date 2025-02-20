@@ -7,16 +7,26 @@ import { pieChartData, pieChartOptions } from "variables/charts";
 import { VSeparator } from "components/separator/Separator";
 import React from "react";
 
+/**
+ * Conversion component
+ *
+ * This component renders a card with a pie chart and details about the conversion
+ * between your files and system files.
+ *
+ * @param {Object} props - The props object.
+ * @returns {ReactElement} - The rendered Conversion component.
+ */
 export default function Conversion(props) {
   const { ...rest } = props;
 
-  // Chakra Color Mode
+  // Chakra Color Mode settings
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const cardColor = useColorModeValue("white", "navy.700");
   const cardShadow = useColorModeValue(
     "0px 18px 40px rgba(112, 144, 176, 0.12)",
     "unset"
   );
+
   return (
     <Card p='20px' align='center' direction='column' w='100%' {...rest}>
       <Flex
@@ -25,9 +35,11 @@ export default function Conversion(props) {
         alignItems='center'
         w='100%'
         mb='8px'>
+        {/* Title of the pie chart */}
         <Text color={textColor} fontSize='md' fontWeight='600' mt='4px'>
           Your Pie Chart
         </Text>
+        {/* Dropdown to select the time period */}
         <Select
           fontSize='sm'
           variant='subtle'
@@ -40,12 +52,15 @@ export default function Conversion(props) {
         </Select>
       </Flex>
 
+      {/* Pie Chart component */}
       <PieChart
         h='100%'
         w='100%'
         chartData={pieChartData}
         chartOptions={pieChartOptions}
       />
+
+      {/* Card displaying conversion details */}
       <Card
         bg={cardColor}
         flexDirection='row'

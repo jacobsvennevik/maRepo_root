@@ -17,6 +17,12 @@ import {
 } from "variables/charts";
 import { MdBarChart } from "react-icons/md";
 
+/**
+ * WeeklyRevenue component displays a card with weekly revenue and a bar chart.
+ * 
+ * @param {Object} props - The properties passed to the component.
+ * @returns {JSX.Element} The rendered WeeklyRevenue component.
+ */
 export default function WeeklyRevenue(props) {
   const { ...rest } = props;
 
@@ -34,7 +40,9 @@ export default function WeeklyRevenue(props) {
   );
   return (
     <Card align='center' direction='column' w='100%' {...rest}>
+      {/* Header with title and button */}
       <Flex align='center' w='100%' px='15px' py='10px'>
+        {/* Title */}
         <Text
           me='auto'
           color={textColor}
@@ -43,6 +51,7 @@ export default function WeeklyRevenue(props) {
           lineHeight='100%'>
           Weekly Revenue
         </Text>
+        {/* Button to change the date range */}
         <Button
           align='center'
           justifyContent='center'
@@ -55,10 +64,12 @@ export default function WeeklyRevenue(props) {
           lineHeight='100%'
           borderRadius='10px'
           {...rest}>
+          {/* Icon representing the button action */}
           <Icon as={MdBarChart} color={iconColor} w='24px' h='24px' />
         </Button>
       </Flex>
 
+      {/* Bar chart displaying weekly revenue data */}
       <Box h='240px' mt='auto'>
         <BarChart
           chartData={barChartDataConsumption}

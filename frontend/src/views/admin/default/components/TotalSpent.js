@@ -20,20 +20,55 @@ import {
   lineChartOptionsTotalSpent,
 } from "variables/charts";
 
+/**
+ * TotalSpent
+ *
+ * This component is used to display the total spent and the variation compared to the previous month
+ *
+ * @param {Object} props - The props passed to the component
+ * @returns {ReactElement} - The component
+ */
 export default function TotalSpent(props) {
   const { ...rest } = props;
 
   // Chakra Color Mode
 
+  /**
+   * The text color used in the component
+   */
   const textColor = useColorModeValue("secondaryGray.900", "white");
+
+  /**
+   * The secondary text color used in the component
+   */
   const textColorSecondary = useColorModeValue("secondaryGray.600", "white");
+
+  /**
+   * The background color used in the component
+   */
   const boxBg = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
+
+  /**
+   * The icon color used in the component
+   */
   const iconColor = useColorModeValue("brand.500", "white");
+
+  /**
+   * The background color used for the button
+   */
   const bgButton = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
+
+  /**
+   * The background color used for the button hover
+   */
   const bgHover = useColorModeValue(
     { bg: "secondaryGray.400" },
     { bg: "whiteAlpha.50" }
   );
+
+  /**
+   * The background color used for the button focus
+   */
   const bgFocus = useColorModeValue(
     { bg: "secondaryGray.300" },
     { bg: "whiteAlpha.100" }

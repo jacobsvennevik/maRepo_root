@@ -13,6 +13,16 @@ import PropTypes from "prop-types";
 import React, { useState, useEffect } from "react";
 import AdminNavbarLinks from "components/navbar/NavbarLinksAdmin";
 
+/**
+ * AdminNavbar component
+ * @param {object} props - Props passed to the component
+ * @param {string} props.brandText - Brand text
+ * @param {string} props.variant - Variant of the navbar
+ * @param {boolean} props.secondary - If the navbar is secondary
+ * @param {boolean} props.fixed - If the navbar is fixed
+ * @param {function} props.onOpen - Function to open the sidebar
+ * @returns {JSX.Element} - Rendered component
+ */
 export default function AdminNavbar(props) {
   const [scrolled, setScrolled] = useState(false);
 
@@ -64,7 +74,7 @@ export default function AdminNavbar(props) {
       borderStyle='solid'
       transitionDelay='0s, 0s, 0s, 0s'
       transitionDuration=' 0.25s, 0.25s, 0.25s, 0s'
-      transition-property='box-shadow, background-color, filter, border'
+      transitionProperty='box-shadow, background-color, filter, border'
       transitionTimingFunction='linear, linear, linear, linear'
       alignItems={{ xl: "center" }}
       display={secondary ? "block" : "flex"}
@@ -100,7 +110,8 @@ export default function AdminNavbar(props) {
         alignItems={{ xl: "center" }}
         mb={gap}>
         <Box mb={{ sm: "8px", md: "0px" }}>
-          <Breadcrumb>
+          {/* Breadcrumbs are only visible on mobile */}
+          <Breadcrumb display={{ sm: "flex", md: "none" }}>
             <BreadcrumbItem color={secondaryText} fontSize='sm' mb='5px'>
               <BreadcrumbLink href='#' color={secondaryText}>
                 Pages

@@ -21,29 +21,23 @@ import {
   MdOutlineSettings,
 } from "react-icons/md";
 
+/**
+ * A functional component that renders a menu with four options.
+ * @param {object} props - The props object.
+ * @param {string} props.variant - The variant of the menu.
+ * @param {string} props.color - The color of the menu.
+ * @param {string} props.bg - The background color of the menu.
+ * @param {string} props.bgShadow - The shadow color of the menu.
+ * @param {string} props.textHover - The color of the text when hovered.
+ * @param {string} props.iconColor - The color of the icon.
+ * @param {string} props.bgList - The background color of the menu list.
+ * @param {string} props.bgButton - The background color of the menu button.
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function Banner(props) {
-  const { ...rest } = props;
+  const { variant, color, bg, bgShadow, textHover, iconColor, bgList, bgButton, ...rest } = props;
 
   const textColor = useColorModeValue("secondaryGray.500", "white");
-  const textHover = useColorModeValue(
-    { color: "secondaryGray.900", bg: "unset" },
-    { color: "secondaryGray.500", bg: "unset" }
-  );
-  const iconColor = useColorModeValue("brand.500", "white");
-  const bgList = useColorModeValue("white", "whiteAlpha.100");
-  const bgShadow = useColorModeValue(
-    "14px 17px 40px 4px rgba(112, 144, 176, 0.08)",
-    "unset"
-  );
-  const bgButton = useColorModeValue("secondaryGray.300", "whiteAlpha.100");
-  const bgHover = useColorModeValue(
-    { bg: "secondaryGray.400" },
-    { bg: "whiteAlpha.50" }
-  );
-  const bgFocus = useColorModeValue(
-    { bg: "secondaryGray.300" },
-    { bg: "whiteAlpha.100" }
-  );
 
   // Ellipsis modals
   const {

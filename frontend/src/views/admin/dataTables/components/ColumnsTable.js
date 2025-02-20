@@ -20,6 +20,18 @@ import {
 // Custom components
 import Card from "components/card/Card";
 import Menu from "components/menu/MainMenu";
+/**
+ * ColumnsTable
+ *
+ * This component renders a table with 4 columns.
+ * The table will have a header with 4 columns: "NAME", "PROGRESS", "QUANTITY", and "DATE".
+ * The table will have a body with data that is passed as a prop.
+ *
+ * @param {object} props - The props object.
+ * @param {array} props.columnsData - The data for the columns.
+ * @param {array} props.tableData - The data for the table.
+ * @returns {ReactElement} The rendered component.
+ */
 export default function ColumnsTable(props) {
   const { columnsData, tableData } = props;
 
@@ -48,6 +60,7 @@ export default function ColumnsTable(props) {
 
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
+
   return (
     <Card
       direction='column'

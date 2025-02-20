@@ -23,12 +23,25 @@ import {
   useTable,
 } from "react-table";
 
+/**
+ * DevelopmentTable
+ *
+ * This component renders a development table with columns for NAME, TECH, DATE, and PROGRESS.
+ * It utilizes react-table for table functionalities like sorting, filtering, and pagination.
+ *
+ * @param {object} props - The props object.
+ * @param {array} props.columnsData - The data for the columns.
+ * @param {array} props.tableData - The data for the table.
+ * @returns {ReactElement} The rendered component.
+ */
 export default function DevelopmentTable(props) {
   const { columnsData, tableData } = props;
 
+  // Memoize columns and data to avoid unnecessary re-renders
   const columns = useMemo(() => columnsData, [columnsData]);
   const data = useMemo(() => tableData, [tableData]);
 
+  // Create table instance with necessary plugins
   const tableInstance = useTable(
     {
       columns,
@@ -49,9 +62,11 @@ export default function DevelopmentTable(props) {
   } = tableInstance;
   initialState.pageSize = 11;
 
+  // Define color modes for text and icons
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const iconColor = useColorModeValue("secondaryGray.500", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
+
   return (
     <Card
       direction='column'
@@ -70,6 +85,7 @@ export default function DevelopmentTable(props) {
       </Flex>
       <Table {...getTableProps()} variant='simple' color='gray.500' mb='24px'>
         <Thead>
+          {/* Render table headers */}
           {headerGroups.map((headerGroup, index) => (
             <Tr {...headerGroup.getHeaderGroupProps()} key={index}>
               {headerGroup.headers.map((column, index) => (
@@ -91,12 +107,14 @@ export default function DevelopmentTable(props) {
           ))}
         </Thead>
         <Tbody {...getTableBodyProps()}>
+          {/* Render table rows */}
           {page.map((row, index) => {
             prepareRow(row);
             return (
               <Tr {...row.getRowProps()} key={index}>
                 {row.cells.map((cell, index) => {
                   let data = "";
+                  // Render cell data based on column type
                   if (cell.column.Header === "NAME") {
                     data = (
                       <Text color={textColor} fontSize='sm' fontWeight='700'>

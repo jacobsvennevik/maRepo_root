@@ -9,6 +9,15 @@ import { Box, Flex, HStack, Text, useColorModeValue } from "@chakra-ui/react";
 import AuthApi from "../../../api/auth";
 
 
+/**
+ * SidebarLinks component renders the links in the sidebar.
+ * It includes logic for handling user logout, color modes, and active route detection.
+ * 
+ * @param {Object} props - Props containing the routes for the sidebar.
+ * @param {Array} props.routes - Array of route objects to generate links from.
+ * @returns {JSX.Element} The JSX representing the sidebar links.
+ */
+
 export function SidebarLinks(props) {
   const history = useHistory();
   const { setUser } = useAuth();
@@ -142,6 +151,14 @@ export function SidebarLinks(props) {
       }
     });
   };
+  /**
+   * Creates the links for the logout routes. It will create a logout link
+   * for each route in the routes array. The logout link will have the name
+   * of the route and an icon if the route has an icon. The logout link will
+   * be highlighted if the route is the one active in the browser.
+   * @param {Array} routes - The routes of the sidebar
+   * @returns {Object} The JSX of the component
+   */
   const createLogout = (routes) => {
     return routes.map((route, key) => {
       return (

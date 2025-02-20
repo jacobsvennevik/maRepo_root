@@ -50,15 +50,35 @@ import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { RiEyeCloseLine } from "react-icons/ri";
 import { useAuth } from "../../../auth-context/auth.context";
 import AuthApi from "../../../api/auth";
+/**
+ * SignIn component
+ * @component
+ * @example
+ * <SignIn />
+ */
 function SignIn() {
-  const [email, setEmail] = useState("");  // <-- Default values HERE
-  const [password, setPassword] = useState("");       // <-- Default values HERE
+  /**
+   * State variables
+   */
+  const [email, setEmail] = useState(""); // <-- Default values HERE
+  const [password, setPassword] = useState(""); // <-- Default values HERE
   const [error, setError] = useState(undefined);
   const [buttonText, setButtonText] = useState("Sign in");
+
+  /**
+   * Use the router to navigate
+   */
   const history = useHistory();
+
+  /**
+   * Use the auth context
+   */
   const { setUser } = useAuth();
   const { user } = useAuth();
-  // Chakra color mode
+
+  /**
+   * Chakra color mode
+   */
   const textColor = useColorModeValue("navy.700", "white");
   const textColorSecondary = "gray.400";
   const textColorDetails = useColorModeValue("navy.700", "secondaryGray.600");
@@ -74,8 +94,17 @@ function SignIn() {
     { bg: "secondaryGray.300" },
     { bg: "whiteAlpha.200" }
   );
+
+  /**
+   * Show/hide the password
+   */
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
+
+  /**
+   * Login function
+   * @param {event} event - The event triggered by the form
+   */
   const login = async (event) => {
     if (event) {
       event.preventDefault();
@@ -109,6 +138,11 @@ function SignIn() {
       return setError("There has been an error.");
     }
   };
+
+  /**
+   * Set the user profile
+   * @param {object} response - The response from the API
+   */
   const setProfile = async (response) => {
     let user = { ...response.data.user };
     user.token = response.data.token;
@@ -117,6 +151,7 @@ function SignIn() {
     localStorage.setItem("user", user);
     return history.push("/dashboards");
   };
+
   return (
     <DefaultAuth illustrationBackground={illustration} image={illustration}>
       <Flex

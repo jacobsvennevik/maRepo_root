@@ -30,6 +30,13 @@ import { MdNotificationsNone, MdInfoOutline } from "react-icons/md";
 import { IoMdMoon, IoMdSunny } from "react-icons/io";
 import { FaEthereum } from "react-icons/fa";
 import routes from "routes.js";
+/**
+ * HeaderLinks component
+ *
+ * @param {Object} props Component props
+ * @param {Boolean} [props.secondary=false] If true, the navbar will be used as secondary
+ * @returns {ReactElement} HeaderLinks component
+ */
 export default function HeaderLinks(props) {
   const history = useHistory();
   const { setUser } = useAuth();
@@ -49,6 +56,9 @@ export default function HeaderLinks(props) {
     "14px 17px 40px 4px rgba(112, 144, 176, 0.18)",
     "14px 17px 40px 4px rgba(112, 144, 176, 0.06)"
   );
+  /**
+   * Handle logout by removing user from local storage and pushing to signin page
+   */
   const handleLogout = async () => {
     await AuthApi.Logout(user);
     await setUser(null);

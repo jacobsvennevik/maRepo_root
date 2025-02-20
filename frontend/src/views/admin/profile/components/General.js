@@ -5,7 +5,18 @@ import Card from "components/card/Card.js";
 import React from "react";
 import Information from "views/admin/profile/components/Information";
 
-// Assets
+// Chakra imports
+import { SimpleGrid, Text, useColorModeValue } from "@chakra-ui/react";
+// Custom components
+import Card from "components/card/Card.js";
+import React from "react";
+import Information from "views/admin/profile/components/Information";
+
+/**
+ * General information component
+ * @param {Object} props - Component props
+ * @returns {ReactElement} General information component
+ */
 export default function GeneralInformation(props) {
   const { ...rest } = props;
   // Chakra Color Mode
@@ -34,8 +45,11 @@ export default function GeneralInformation(props) {
       </Text>
       <SimpleGrid columns='2' gap='20px'>
         <Information
+          // Box shadow
           boxShadow={cardShadow}
+          // Title
           title='Education'
+          // Value
           value='Stanford University'
         />
         <Information

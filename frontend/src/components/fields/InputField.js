@@ -9,6 +9,19 @@ import {
 // Custom components
 import React from "react";
 
+/**
+ * Default is a functional component that displays a basic input field.
+ * It includes a label, input field, and optional extra content.
+ * @param {Object} props - The component props.
+ * @param {string} props.id - The id of the input field.
+ * @param {string} props.label - The label for the input field.
+ * @param {string} props.extra - The extra content to display next to the label.
+ * @param {string} props.placeholder - The placeholder text for the input field.
+ * @param {string} props.type - The type of input field to display (e.g. text, password, etc.).
+ * @param {string} props.mb - The margin bottom for the component.
+ * @param {Object} props.rest - The rest of the props for the input field.
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function Default(props) {
   const { id, label, extra, placeholder, type, mb, ...rest } = props;
   // Chakra Color Mode
@@ -16,6 +29,7 @@ export default function Default(props) {
 
   return (
     <Flex direction='column' mb={mb ? mb : "30px"}>
+      {/* The label for the input field */}
       <FormLabel
         display='flex'
         ms='10px'
@@ -25,10 +39,10 @@ export default function Default(props) {
         fontWeight='bold'
         _hover={{ cursor: "pointer" }}>
         {label}
-        <Text fontSize='sm' fontWeight='400' ms='2px'>
-          {extra}
-        </Text>
+        {/* Optional extra content to display next to the label */}
+        {extra && <Text fontSize='sm' fontWeight='400' ms='2px'>{extra}</Text>}
       </FormLabel>
+      {/* The input field */}
       <Input
         {...rest}
         type={type}

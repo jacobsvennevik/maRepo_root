@@ -52,6 +52,12 @@ import { FcGoogle } from "react-icons/fc";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { RiEyeCloseLine } from "react-icons/ri";
 
+/**
+ * SignIn component
+ * @component
+ * @example
+ * <SignIn />
+ */
 function SignIn() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -79,6 +85,16 @@ function SignIn() {
   );
   const [show, setShow] = React.useState(false);
   const handleClick = () => setShow(!show);
+/**
+ * Handles user registration by validating input fields and making an API request.
+ * If validation fails, sets an error message. On successful registration, redirects
+ * the user to the sign-in page. Displays appropriate error messages for failed
+ * registration attempts.
+ *
+ * @param {Object} event - The event triggered by the form submission, used to prevent
+ *                         the default form submission behavior.
+ */
+
   const register = async (event) => {
     if (event) {
       event.preventDefault();

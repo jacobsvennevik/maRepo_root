@@ -31,6 +31,19 @@ import { SidebarContext } from "contexts/SidebarContext";
 import { GoChevronDown, GoChevronRight } from "react-icons/go";
 import routes from "routes.js";
 
+/**
+ * @function AuthNavbar
+ * @description Render the navbar for the authentication routes
+ * @param {Object} props Component props
+ * @param {string} [props.color=primary] Navbar color
+ * @param {string} [props.brandText] Brand text
+ * @param {boolean} [props.secondary=false] If true, the navbar will be used as secondary
+ * @param {string} [props.sidebarWidth] Sidebar width
+ * @param {Object} [props.routes] Routes configuration
+ * @param {Object} [props.rest] Additional props
+ * @returns {ReactElement} Navbar component
+ */
+
 export default function AuthNavbar(props) {
   const { logo, logoText, secondary, sidebarWidth, ...rest } = props;
   const { colorMode } = useColorMode();
@@ -55,23 +68,40 @@ export default function AuthNavbar(props) {
     onOpen: onOpenNft,
     onClose: onCloseNft,
   } = useDisclosure();
-  // Menus
+  /**
+   * Retrieves the links associated with a given route name.
+   * @param {string} routeName - The name of the route to find.
+   * @returns {Array} The items (links) of the found route.
+   */
   function getLinks(routeName) {
-    let foundRoute = routes.filter(function (route) {
-      return route.items && route.name === routeName;
-    });
-    console.log(foundRoute);
-    return foundRoute[0].items;
-  }
-  function getLinksCollapse(routeName) {
+    // Filter the routes to find the one matching the given route name
     let foundRoute = routes.filter(function (route) {
       return route.items && route.name === routeName;
     });
 
+    // Log the found route for debugging purposes
+    console.log(foundRoute);
+
+    // Return the items of the found route
+    return foundRoute[0].items;
+  }
+  /**
+   * Retrieves the links associated with a given route name and the collapse property is true.
+   * @param {string} routeName - The name of the route to find.
+   * @returns {Array} The items (links) of the found route.
+   */
+  function getLinksCollapse(routeName) {
+    // Filter the routes to find the one matching the given route name
+    let foundRoute = routes.filter(function (route) {
+      return route.items && route.name === routeName;
+    });
+
+    // Filter the items of the found route to find the ones with the collapse property set to true
     let foundLinks = foundRoute[0].items.filter(function (link) {
       return link.collapse === true;
     });
 
+    // Return the items of the found route
     return foundLinks;
   }
   let authObject = getLinksCollapse("Authentication");
@@ -133,8 +163,15 @@ export default function AuthNavbar(props) {
     // colorButton = useColorModeValue("white", "gray.700");
     // navbarPosition = "fixed";
   }
+  /**
+   * Creates the links associated with the "NFTs" route.
+   * @param {Array} routes - The routes of the sidebar
+   * @returns {Object} The JSX of the component
+   */
   const createNftsLinks = (routes) => {
+    // Map the routes to create the links
     return routes.map((link, key) => {
+      // Return the link component
       return (
         <NavLink
           key={key}
@@ -161,8 +198,18 @@ export default function AuthNavbar(props) {
       );
     });
   };
+  /**
+   * Creates the links associated with the "Main" route.
+   * @param {Array} routes - The routes of the sidebar
+   * @returns {Object} The JSX of the component
+   */
   const createMainLinks = (routes) => {
     return routes.map((link, key) => {
+      /**
+       * If the link has a collapse property set to true, then
+       * it will render a dropdown menu with the links of the
+       * collapse items.
+       */
       if (link.collapse === true) {
         return (
           <Stack key={key} direction='column' maxW='max-content'>
@@ -186,7 +233,13 @@ export default function AuthNavbar(props) {
               />
             </Stack>
             <Stack direction='column' bg={menuBg}>
-              {createMainLinks(link.items)}
+              {
+                /**
+                 * Recursively calls the function to generate the links
+                 * of the collapse items.
+                 */
+                createMainLinks(link.items)
+              }
             </Stack>
           </Stack>
         );

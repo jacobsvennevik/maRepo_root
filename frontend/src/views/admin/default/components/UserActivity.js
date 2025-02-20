@@ -9,11 +9,18 @@ import {
   barChartOptionsUserActivity,
 } from "variables/charts";
 
+/**
+ * UserActivity component displays user activity statistics with a bar chart.
+ *
+ * @param {Object} props - The properties passed to the component.
+ * @returns {JSX.Element} The rendered UserActivity component.
+ */
 export default function UserActivity(props) {
   const { ...rest } = props;
 
-  // Chakra Color Mode
+  // Determine text color based on color mode
   const textColor = useColorModeValue("secondaryGray.900", "white");
+
   return (
     <Card align='center' direction='column' w='100%' {...rest}>
       <Flex align='center' w='100%' px='15px' py='10px'>
@@ -25,6 +32,7 @@ export default function UserActivity(props) {
           lineHeight='100%'>
           User Activity
         </Text>
+        {/* Dropdown to select the time period for user activity */}
         <Select
           id='user_type'
           w='unset'
@@ -38,6 +46,7 @@ export default function UserActivity(props) {
         </Select>
       </Flex>
 
+      {/* Bar chart displaying user activity data */}
       <Box h='240px' mt='auto'>
         <BarChart
           chartData={barChartDataUserActivity}

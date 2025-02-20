@@ -7,6 +7,14 @@ import { pieChartData, pieChartOptions } from "variables/charts";
 import { VSeparator } from "components/separator/Separator";
 import React from "react";
 
+/**
+ * Conversion component
+ *
+ * This component renders a pie chart to display the conversion between your files and the system files.
+ *
+ * @param {Object} props - The props object.
+ * @returns {ReactElement} - The Conversion component.
+ */
 export default function Conversion(props) {
   const { ...rest } = props;
 
@@ -17,15 +25,28 @@ export default function Conversion(props) {
     "0px 18px 40px rgba(112, 144, 176, 0.12)",
     "unset"
   );
+
   return (
-    <Card p='20px' align='center' direction='column' w='100%' {...rest}>
+    <Card
+      p='20px'
+      align='center'
+      direction='column'
+      w='100%'
+      {...rest}
+    >
       <Flex
         px={{ base: "0px", "2xl": "10px" }}
         justifyContent='space-between'
         alignItems='center'
         w='100%'
-        mb='8px'>
-        <Text color={textColor} fontSize='md' fontWeight='600' mt='4px'>
+        mb='8px'
+      >
+        <Text
+          color={textColor}
+          fontSize='md'
+          fontWeight='600'
+          mt='4px'
+        >
           Your Pie Chart
         </Text>
         <Select
@@ -33,7 +54,8 @@ export default function Conversion(props) {
           variant='subtle'
           defaultValue='monthly'
           width='unset'
-          fontWeight='700'>
+          fontWeight='700'
+        >
           <option value='daily'>Daily</option>
           <option value='monthly'>Monthly</option>
           <option value='yearly'>Yearly</option>
@@ -46,6 +68,7 @@ export default function Conversion(props) {
         chartData={pieChartData}
         chartOptions={pieChartOptions}
       />
+
       <Card
         bg={cardColor}
         flexDirection='row'
@@ -54,35 +77,65 @@ export default function Conversion(props) {
         p='15px'
         px='20px'
         mt='15px'
-        mx='auto'>
+        mx='auto'
+      >
+        {/* First element of the pie chart */}
         <Flex direction='column' py='5px'>
           <Flex align='center'>
-            <Box h='8px' w='8px' bg='brand.500' borderRadius='50%' me='4px' />
+            <Box
+              h='8px'
+              w='8px'
+              bg='brand.500'
+              borderRadius='50%'
+              me='4px'
+            />
             <Text
               fontSize='xs'
               color='secondaryGray.600'
               fontWeight='700'
-              mb='5px'>
+              mb='5px'
+            >
               Your files
             </Text>
           </Flex>
-          <Text fontSize='lg' color={textColor} fontWeight='700'>
+          <Text
+            fontSize='lg'
+            color={textColor}
+            fontWeight='700'
+          >
             63%
           </Text>
         </Flex>
-        <VSeparator mx={{ base: "60px", xl: "60px", "2xl": "60px" }} />
+
+        {/* Vertical separator */}
+        <VSeparator
+          mx={{ base: "60px", xl: "60px", "2xl": "60px" }}
+        />
+
+        {/* Second element of the pie chart */}
         <Flex direction='column' py='5px' me='10px'>
           <Flex align='center'>
-            <Box h='8px' w='8px' bg='#6AD2FF' borderRadius='50%' me='4px' />
+            <Box
+              h='8px'
+              w='8px'
+              bg='#6AD2FF'
+              borderRadius='50%'
+              me='4px'
+            />
             <Text
               fontSize='xs'
               color='secondaryGray.600'
               fontWeight='700'
-              mb='5px'>
+              mb='5px'
+            >
               System
             </Text>
           </Flex>
-          <Text fontSize='lg' color={textColor} fontWeight='700'>
+          <Text
+            fontSize='lg'
+            color={textColor}
+            fontWeight='700'
+          >
             25%
           </Text>
         </Flex>

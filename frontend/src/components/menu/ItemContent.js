@@ -3,10 +3,21 @@ import { Icon, Flex, Text, useColorModeValue } from "@chakra-ui/react";
 import { MdUpgrade } from "react-icons/md";
 import React from "react";
 
+/**
+ * A component that renders a notification item for the dashboard.
+ *
+ * @component
+ * @example
+ * return (
+ *   <ItemContent info="New Update: 4.0.0" />
+ * )
+ */
 export function ItemContent(props) {
   const textColor = useColorModeValue("navy.700", "white");
+
   return (
     <>
+      {/* The icon */}
       <Flex
         justify='center'
         align='center'
@@ -19,6 +30,7 @@ export function ItemContent(props) {
         bg='linear-gradient(135deg, #868CFF 0%, #4318FF 100%)'>
         <Icon as={MdUpgrade} color='white' w={8} h={14} />
       </Flex>
+      {/* The text */}
       <Flex flexDirection='column'>
         <Text
           mb='5px'

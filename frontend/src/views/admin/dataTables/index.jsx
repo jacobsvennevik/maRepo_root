@@ -38,7 +38,13 @@ import tableDataColumns from "views/admin/dataTables/variables/tableDataColumns.
 import tableDataComplex from "views/admin/dataTables/variables/tableDataComplex.json";
 import React from "react";
 
-export default function Settings() {
+/**
+ * Data Table page for the Horizon UI.
+ *
+ * @component
+ * @returns {ReactElement} The Data Table page.
+ */
+export default function DataTable() {
   // Chakra Color Mode
   return (
     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
@@ -46,15 +52,19 @@ export default function Settings() {
         mb='20px'
         columns={{ sm: 1, md: 2 }}
         spacing={{ base: "20px", xl: "20px" }}>
+        {/* Development Table */}
         <DevelopmentTable
           columnsData={columnsDataDevelopment}
           tableData={tableDataDevelopment}
         />
+        {/* Check Table */}
         <CheckTable columnsData={columnsDataCheck} tableData={tableDataCheck} />
+        {/* Columns Table */}
         <ColumnsTable
           columnsData={columnsDataColumns}
           tableData={tableDataColumns}
         />
+        {/* Complex Table */}
         <ComplexTable
           columnsData={columnsDataComplex}
           tableData={tableDataComplex}

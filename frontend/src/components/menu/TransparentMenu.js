@@ -19,6 +19,12 @@ import {
   MdOutlineLightbulb,
   MdOutlineSettings,
 } from "react-icons/md";
+/**
+ * A functional component that renders a menu with four options.
+ * @param {object} props - The props object.
+ * @param {React.ReactElement} props.icon - The icon to be rendered.
+ * @returns {React.ReactElement} The rendered component.
+ */
 export default function Banner(props) {
   const { icon, ...rest } = props;
 
@@ -30,7 +36,6 @@ export default function Banner(props) {
   } = useDisclosure();
 
   // Chakra color mode
-
   const textColor = useColorModeValue("secondaryGray.500", "white");
   const textHover = useColorModeValue(
     { color: "secondaryGray.900", bg: "unset" },
@@ -42,6 +47,7 @@ export default function Banner(props) {
     "unset"
   );
 
+  // Render the menu
   return (
     <Menu isOpen={isOpen1} onClose={onClose1}>
       <MenuButton {...rest} onClick={onOpen1}>
@@ -58,6 +64,9 @@ export default function Banner(props) {
         borderRadius='20px'
         p='15px'>
         <MenuItem
+          /**
+           * Panel 1
+           */
           transition='0.2s linear'
           color={textColor}
           _hover={textHover}
@@ -78,6 +87,9 @@ export default function Banner(props) {
           </Flex>
         </MenuItem>
         <MenuItem
+          /**
+           * Panel 2
+           */
           transition='0.2s linear'
           p='0px'
           borderRadius='8px'
@@ -98,6 +110,9 @@ export default function Banner(props) {
           </Flex>
         </MenuItem>
         <MenuItem
+          /**
+           * Panel 3
+           */
           transition='0.2s linear'
           p='0px'
           borderRadius='8px'
@@ -118,6 +133,9 @@ export default function Banner(props) {
           </Flex>
         </MenuItem>
         <MenuItem
+          /**
+           * Panel 4
+           */
           transition='0.2s linear'
           color={textColor}
           _hover={textHover}

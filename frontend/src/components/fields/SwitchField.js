@@ -10,6 +10,20 @@ import {
 // Custom components
 import React from "react";
 
+/**
+ * Default export of `SwitchField` component.
+ *
+ * @param {object} props component props
+ * @param {string} props.id id of the switch
+ * @param {string} props.label label of the switch
+ * @param {boolean} props.isChecked checked state of the switch
+ * @param {function} props.onChange function to handle onChange event
+ * @param {string} props.desc description of the switch
+ * @param {string} props.textWidth max width of the text
+ * @param {boolean} props.reversed reversed layout of the switch
+ * @param {string} props.fontSize font size of the text
+ * @returns {ReactElement} component
+ */
 export default function Default(props) {
   const {
     id,
@@ -29,6 +43,8 @@ export default function Default(props) {
         <Flex align='center' borderRadius='16px'>
           {isChecked && onChange ? (
             <Switch
+              // If the switch is checked and onChange is defined, render the switch
+              // with the onChange function
               isChecked={isChecked}
               id={id}
               variant='main'
@@ -37,6 +53,7 @@ export default function Default(props) {
               onChange={onChange}
             />
           ) : (
+            // Otherwise, render the switch without the onChange function
             <Switch
               id={id}
               variant='main'
@@ -45,6 +62,7 @@ export default function Default(props) {
             />
           )}
           <FormLabel
+            // Margin start (ms) is set to 15px
             ms='15px'
             htmlFor={id}
             _hover={{ cursor: "pointer" }}
@@ -65,6 +83,8 @@ export default function Default(props) {
           </FormLabel>
         </Flex>
       ) : (
+        // If the switch is not reversed, render the switch with the label on the
+        // left side and the switch on the right side
         <Flex justify='space-between' align='center' borderRadius='16px'>
           <FormLabel
             htmlFor={id}
@@ -85,6 +105,8 @@ export default function Default(props) {
           </FormLabel>
           {isChecked && onChange ? (
             <Switch
+              // If the switch is checked and onChange is defined, render the switch
+              // with the onChange function
               isChecked={isChecked}
               id={id}
               variant='main'
@@ -93,6 +115,7 @@ export default function Default(props) {
               onChange={onChange}
             />
           ) : (
+            // Otherwise, render the switch without the onChange function
             <Switch
               id={id}
               variant='main'

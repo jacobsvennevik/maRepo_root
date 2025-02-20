@@ -79,17 +79,51 @@ export const globalStyles = {
     },
   },
   styles: {
+    /**
+     * Global styles for the application.
+     *
+     * @param {Object} props The props object.
+     * @returns {Object} The global styles object.
+     */
     global: (props) => ({
+      /**
+       * The body of the HTML document.
+       */
       body: {
+        /**
+         * Hide the horizontal scrollbar.
+         */
         overflowX: "hidden",
+        /**
+         * Set the background color of the body to a light gray color in light mode.
+         * In dark mode, set the background color to the dark blue color.
+         */
         bg: mode("secondaryGray.300", "navy.900")(props),
+        /**
+         * Set the font family of the body to DM Sans.
+         */
         fontFamily: "DM Sans",
+        /**
+         * Set the letter spacing of the body to -0.5px.
+         */
         letterSpacing: "-0.5px",
       },
+      /**
+       * The input fields.
+       */
       input: {
+        /**
+         * Set the color of the input fields to a dark gray color.
+         */
         color: "gray.700",
       },
+      /**
+       * The HTML element.
+       */
       html: {
+        /**
+         * Set the font family of the HTML element to DM Sans.
+         */
         fontFamily: "DM Sans",
       },
     }),

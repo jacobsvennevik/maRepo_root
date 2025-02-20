@@ -10,15 +10,29 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import routes from "routes.js";
 
 // Custom Chakra theme
+/**
+ * The Admin Layout component
+ * @param {Object} props - The props of the component
+ * @returns {ReactElement} The JSX of the component
+ */
 export default function Dashboard(props) {
   const { ...rest } = props;
   // states and functions
   const [fixed] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(false);
   // functions for changing the states from components
+  /**
+   * Get the route of the page
+   * @returns {Boolean} If the route is the full screen maps
+   */
   const getRoute = () => {
     return window.location.pathname !== "/admin/full-screen-maps";
   };
+  /**
+   * Get the active route
+   * @param {Array} routes - The routes of the sidebar
+   * @returns {String} The active route
+   */
   const getActiveRoute = (routes) => {
     let activeRoute = "Default Brand Text";
     for (let i = 0; i < routes.length; i++) {
@@ -42,6 +56,11 @@ export default function Dashboard(props) {
     }
     return activeRoute;
   };
+  /**
+   * Get the active navbar
+   * @param {Array} routes - The routes of the sidebar
+   * @returns {Boolean} If the navbar is active
+   */
   const getActiveNavbar = (routes) => {
     let activeNavbar = false;
     for (let i = 0; i < routes.length; i++) {
@@ -65,6 +84,11 @@ export default function Dashboard(props) {
     }
     return activeNavbar;
   };
+  /**
+   * Get the active navbar text
+   * @param {Array} routes - The routes of the sidebar
+   * @returns {String} The active navbar text
+   */
   const getActiveNavbarText = (routes) => {
     let activeNavbar = false;
     for (let i = 0; i < routes.length; i++) {
@@ -88,6 +112,11 @@ export default function Dashboard(props) {
     }
     return activeNavbar;
   };
+  /**
+   * Get the routes
+   * @param {Array} routes - The routes of the sidebar
+   * @returns {ReactElement} The JSX of the routes
+   */
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {

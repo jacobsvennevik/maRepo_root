@@ -21,12 +21,27 @@ import {
 // Custom components
 import Card from "components/card/Card";
 import Menu from "components/menu/MainMenu";
+/**
+ * @description This component renders a table with checkboxes.
+ * @param {Object} props
+ * @param {Array} props.columnsData - The columns of the table.
+ * @param {Array} props.tableData - The data of the table.
+ * @returns JSX.Element
+ */
 export default function CheckTable(props) {
   const { columnsData, tableData } = props;
 
+  /**
+   * @description Memoize the columns and data.
+   * @type {Object}
+   */
   const columns = useMemo(() => columnsData, [columnsData]);
   const data = useMemo(() => tableData, [tableData]);
 
+  /**
+   * @description Create an instance of the table.
+   * @type {Object}
+   */
   const tableInstance = useTable(
     {
       columns,
@@ -37,6 +52,10 @@ export default function CheckTable(props) {
     usePagination
   );
 
+  /**
+   * @description Get the props of the table.
+   * @type {Object}
+   */
   const {
     getTableProps,
     getTableBodyProps,
@@ -47,8 +66,17 @@ export default function CheckTable(props) {
   } = tableInstance;
   initialState.pageSize = 11;
 
+  /**
+   * @description Get the text color and border color.
+   * @type {String}
+   */
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
+
+  /**
+   * @description Render the table.
+   * @returns JSX.Element
+   */
   return (
     <Card
       direction='column'
@@ -102,7 +130,10 @@ export default function CheckTable(props) {
                           colorScheme='brandScheme'
                           me='10px'
                         />
-                        <Text color={textColor} fontSize='sm' fontWeight='700'>
+                        <Text
+                          color={textColor}
+                          fontSize='sm'
+                          fontWeight='700'>
                           {cell.value[0]}
                         </Text>
                       </Flex>
@@ -121,13 +152,19 @@ export default function CheckTable(props) {
                     );
                   } else if (cell.column.Header === "QUANTITY") {
                     data = (
-                      <Text color={textColor} fontSize='sm' fontWeight='700'>
+                      <Text
+                        color={textColor}
+                        fontSize='sm'
+                        fontWeight='700'>
                         {cell.value}
                       </Text>
                     );
                   } else if (cell.column.Header === "DATE") {
                     data = (
-                      <Text color={textColor} fontSize='sm' fontWeight='700'>
+                      <Text
+                        color={textColor}
+                        fontSize='sm'
+                        fontWeight='700'>
                         {cell.value}
                       </Text>
                     );

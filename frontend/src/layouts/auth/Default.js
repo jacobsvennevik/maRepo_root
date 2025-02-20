@@ -9,6 +9,14 @@ import { NavLink } from "react-router-dom";
 // Assets
 import { FaChevronLeft } from "react-icons/fa";
 
+/**
+ * AuthIllustration
+ * A component that renders the illustration on the right side of the page
+ * @param {Object} props - The props object
+ * @param {String} props.illustrationBackground - The background image for the illustration
+ * @param {ReactNode} props.children - The children elements to render
+ */
+
 function AuthIllustration(props) {
   const { children, illustrationBackground } = props;
   // Chakra color mode
@@ -16,6 +24,7 @@ function AuthIllustration(props) {
     <Flex position='relative' h='max-content'>
       <Flex
         h={{
+          // Make the height of the container the height of the viewport minus the height of the footer
           sm: "initial",
           md: "unset",
           lg: "100vh",
@@ -32,6 +41,7 @@ function AuthIllustration(props) {
         <NavLink
           to='/admin'
           style={() => ({
+            // Add a margin top to the link to make it look like a button
             width: "fit-content",
             marginTop: "40px",
           })}>

@@ -7,6 +7,16 @@ import TransparentMenu from "components/menu/TransparentMenu";
 // Custom icons
 import { IoEllipsisVertical } from "react-icons/io5";
 
+/**
+ * A functional component that renders a profile card with an avatar, name, job, and a menu.
+ *
+ * @param {object} props - The props object.
+ * @param {string} props.avatar - The URL of the avatar image.
+ * @param {string} props.name - The name of the person.
+ * @param {string} props.job - The job title of the person.
+ * @param {object} rest - Additional props to be passed to the Card component.
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function Default(props) {
   const { avatar, name, job, ...rest } = props;
   const textColor = useColorModeValue("secondaryGray.900", "white");

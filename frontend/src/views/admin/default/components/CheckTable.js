@@ -21,12 +21,21 @@ import {
 // Custom components
 import Card from "components/card/Card";
 import Menu from "components/menu/MainMenu";
+/**
+ * @description This component renders a table with checkboxes.
+ * @param {Object} props
+ * @param {Array} props.columnsData - The columns of the table.
+ * @param {Array} props.tableData - The data of the table.
+ * @returns JSX.Element
+ */
 export default function CheckTable(props) {
   const { columnsData, tableData } = props;
 
+  // Memoize the columns and data to optimize performance
   const columns = useMemo(() => columnsData, [columnsData]);
   const data = useMemo(() => tableData, [tableData]);
 
+  // Create an instance of the table with necessary plugins
   const tableInstance = useTable(
     {
       columns,
@@ -37,6 +46,7 @@ export default function CheckTable(props) {
     usePagination
   );
 
+  // Destructure table instance properties for ease of use
   const {
     getTableProps,
     getTableBodyProps,
@@ -45,10 +55,12 @@ export default function CheckTable(props) {
     prepareRow,
     initialState,
   } = tableInstance;
-  initialState.pageSize = 11;
+  initialState.pageSize = 11; // Set initial page size
 
+  // Define color modes for text and borders
   const textColor = useColorModeValue("secondaryGray.900", "white");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.100");
+
   return (
     <Card
       direction='column'
@@ -56,6 +68,7 @@ export default function CheckTable(props) {
       px='0px'
       overflowX={{ sm: "scroll", lg: "hidden" }}>
       <Flex px='25px' justify='space-between' align='center'>
+        {/* Table title */}
         <Text
           color={textColor}
           fontSize='22px'
@@ -80,6 +93,7 @@ export default function CheckTable(props) {
                     align='center'
                     fontSize={{ sm: "10px", lg: "12px" }}
                     color='gray.400'>
+                    {/* Render column header */}
                     {column.render("Header")}
                   </Flex>
                 </Th>
@@ -94,6 +108,7 @@ export default function CheckTable(props) {
               <Tr {...row.getRowProps()} key={index}>
                 {row.cells.map((cell, index) => {
                   let data = "";
+                  // Render cell data based on column header
                   if (cell.column.Header === "NAME") {
                     data = (
                       <Flex align='center'>

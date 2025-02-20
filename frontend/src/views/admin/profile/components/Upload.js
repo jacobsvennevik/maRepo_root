@@ -14,12 +14,22 @@ import React from "react";
 import { MdUpload } from "react-icons/md";
 import Dropzone from "views/admin/profile/components/Dropzone";
 
+/**
+ * Upload component renders a card with a dropzone for file uploads
+ * and a section to complete the user's profile.
+ * 
+ * @param {Object} props - The properties passed to the component.
+ * @param {number} props.used - The amount of used storage space in GB.
+ * @param {number} props.total - The total amount of storage space in GB.
+ * @returns {JSX.Element} The rendered Upload component.
+ */
 export default function Upload(props) {
   const { used, total, ...rest } = props;
-  // Chakra Color Mode
+  // Chakra Color Mode settings
   const textColorPrimary = useColorModeValue("secondaryGray.900", "white");
   const brandColor = useColorModeValue("brand.500", "white");
   const textColorSecondary = "gray.400";
+
   return (
     <Card {...rest} mb='20px' align='center' p='20px'>
       <Flex h='100%' direction={{ base: "column", "2xl": "row" }}>
@@ -30,12 +40,15 @@ export default function Upload(props) {
           minH={{ base: "60%", lg: "50%", "2xl": "100%" }}
           content={
             <Box>
+              {/* Upload icon */}
               <Icon as={MdUpload} w='80px' h='80px' color={brandColor} />
               <Flex justify='center' mx='auto' mb='12px'>
+                {/* Upload text */}
                 <Text fontSize='xl' fontWeight='700' color={brandColor}>
                   Upload Files
                 </Text>
               </Flex>
+              {/* File type instructions */}
               <Text fontSize='sm' fontWeight='500' color='secondaryGray.500'>
                 PNG, JPG and GIF files are allowed
               </Text>
@@ -43,6 +56,7 @@ export default function Upload(props) {
           }
         />
         <Flex direction='column' pe='44px'>
+          {/* Profile completion heading */}
           <Text
             color={textColorPrimary}
             fontWeight='bold'
@@ -51,6 +65,7 @@ export default function Upload(props) {
             mt={{ base: "20px", "2xl": "50px" }}>
             Complete your profile
           </Text>
+          {/* Profile completion description */}
           <Text
             color={textColorSecondary}
             fontSize='md'
@@ -61,6 +76,7 @@ export default function Upload(props) {
             to plan, coordinate and discuss
           </Text>
           <Flex w='100%'>
+            {/* Publish button */}
             <Button
               me='100%'
               mb='50px'
