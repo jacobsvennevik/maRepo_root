@@ -1,4 +1,4 @@
-import axios from "./index";
+import axios from "axios";
 
 class AuthApi {
   /**

@@ -5,12 +5,6 @@ import Card from "components/card/Card.js";
 import React from "react";
 import Information from "views/admin/profile/components/Information";
 
-// Chakra imports
-import { SimpleGrid, Text, useColorModeValue } from "@chakra-ui/react";
-// Custom components
-import Card from "components/card/Card.js";
-import React from "react";
-import Information from "views/admin/profile/components/Information";
 
 /**
  * General information component

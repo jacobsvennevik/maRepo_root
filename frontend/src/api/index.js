@@ -1,3 +1,9 @@
+import axios from "axios";
+
+// Either hardcode your API base URL:
+const base = process.env.REACT_APP_BACKEND_SERVER;
+
+
 /**
  * A class providing static methods for handling user authentication.
  */

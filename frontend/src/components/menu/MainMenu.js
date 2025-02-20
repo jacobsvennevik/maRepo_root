@@ -21,6 +21,9 @@ import {
   MdOutlineSettings,
 } from "react-icons/md";
 
+const bgHover = { bg: "gray.100" };
+const bgFocus = { bg: "gray.200" };
+
 /**
  * A functional component that renders a menu with four options.
  * @param {object} props - The props object.

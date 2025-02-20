@@ -10,12 +10,6 @@ import { SidebarContext } from "contexts/SidebarContext";
 
 // Layout component for the authentication pages
 
-// Chakra imports
-import { Box, useColorModeValue } from "@chakra-ui/react";
-
-// Layout components
-import { SidebarContext } from "contexts/SidebarContext";
-
 /**
  * The Auth component renders the authentication pages. It uses the
  * SidebarContext to provide the toggleSidebar state and the
