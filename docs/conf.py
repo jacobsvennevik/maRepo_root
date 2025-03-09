@@ -12,7 +12,7 @@ import django
 django.setup()
 
 # -- Project information
-project = 'backend'
+project = 'YesYes'
 author = 'SvenMedSpenn'
 release = '0.0.1'
 
@@ -20,7 +20,7 @@ release = '0.0.1'
 extensions = [
     'sphinx.ext.autodoc',   # Pull docstrings automatically
     'sphinx.ext.napoleon',  # Parse Google/NumPy style docstrings
-    'sphinx.ext.intersphinx'
+    "sphinx_js",
 ]
 
 templates_path = ['_templates']
@@ -38,3 +38,8 @@ autoclass_content = 'both'
 # -- Options for HTML output
 html_theme = 'alabaster'  # or 'sphinx_rtd_theme'
 html_static_path = ['_static']
+
+
+# Configuration for sphinx-js
+jsdoc_config_path = "jsdoc_config.json"
+

@@ -1,6 +1,17 @@
 import React, { Component } from "react";
 import Chart from "react-apexcharts";
 
+/**
+ * A component to render a bar chart
+ *
+ * This component is a wrapper around the ReactApexChart component. It takes two
+ * props: chartData and chartOptions.
+ *
+ * @prop {Object[]} chartData - The data to render on the chart. Each element in the
+ * array should have an 'x' key and a 'y' key.
+ * @prop {Object} chartOptions - Options to pass to the ReactApexChart component.
+ * See the ReactApexChart documentation for more information.
+ */
 class ColumnChart extends Component {
   /**
    * Construct a new ColumnChart component

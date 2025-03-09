@@ -2,7 +2,7 @@ import os
 
 def load_gitignore(gitignore_path):
     """
-    Reads a .gitignore file and returns a set of ignored file patterns.
+    Reads a .gitignore file and returns a set of ignored file patterns and directories.
     """
     ignored_files = set()
     ignored_dirs = set()
@@ -12,7 +12,7 @@ def load_gitignore(gitignore_path):
             for line in f:
                 line = line.strip()
                 if line and not line.startswith("#"):  # Ignore comments
-                    if line.endswith("/"):  
+                    if line.endswith("/"):
                         ignored_dirs.add(line.rstrip("/"))  # Remove trailing slash
                     else:
                         ignored_files.add(line)
@@ -22,9 +22,13 @@ def load_gitignore(gitignore_path):
 
 def write_directory_structure(root_dir, output_file, gitignore_path=".gitignore"):
     """
-    Writes the directory structure to a file, excluding files and directories from .gitignore.
+    Writes the directory structure to a file, excluding files and directories from .gitignore
+    and explicitly excluding the 'node_modules' directory.
     """
     exclude_files, exclude_dirs = load_gitignore(gitignore_path)
+    
+    # Explicitly exclude 'node_modules'
+    exclude_dirs.add("node_modules")
 
     with open(output_file, "w", encoding="utf-8") as f:
         for dirpath, dirnames, filenames in os.walk(root_dir):
@@ -42,4 +46,4 @@ if __name__ == "__main__":
     project_dir = "/Users/jacobhornsvennevik/Documents/GitHub/MaRepo_root/frontend"
     output_file = "directory_structure.txt"
     write_directory_structure(project_dir, output_file)
-    print(f"Directory structure written to {output_file}, using .gitignore rules.")
+    print(f"Directory structure written to {output_file}, using .gitignore rules and excluding 'node_modules'.")
