@@ -1,16 +1,16 @@
 # backend/apps/generation/tests/test_flashcard_forms.py
 
 import pytest
-from backend.apps.generation.forms import (
+from backend.apps.generation.flashcards.forms import (
     FlashcardForm,
     FlashcardSetForm,
     FlashcardDeleteForm,
     FlashcardFormSet,
 )
-from backend.apps.generation.models import FlashcardSet, Flashcard
+from backend.apps.generation.flashcards.models import FlashcardSet, Flashcard
 from backend.apps.documents.tests.factories import DocumentFactory
 from backend.apps.accounts.tests.factories import CustomUserFactory
-from .factories import FlashcardSetFactory  # Import your FlashcardSetFactory
+from .factories.flashcard import FlashcardSetFactory  # Import your FlashcardSetFactory
 
 # --- FlashcardForm Tests ---
 

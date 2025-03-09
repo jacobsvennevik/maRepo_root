@@ -5,8 +5,8 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.test import APIClient
 from backend.apps.accounts.tests.factories import CustomUserFactory
-from backend.apps.generation.models import Flashcard
-from backend.apps.generation.tests.factories import FlashcardSetFactory
+from backend.apps.generation.flashcards.models import Flashcard
+from backend.apps.generation.tests.factories.flashcard import FlashcardSetFactory
 
 @pytest.fixture
 def auth_client_with_flashcard_permission():

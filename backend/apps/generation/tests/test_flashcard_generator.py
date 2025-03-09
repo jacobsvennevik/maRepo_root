@@ -3,10 +3,10 @@ from django.contrib.auth import get_user_model
 from unittest.mock import patch
 import os
 from backend.apps.documents.models import Document
-from backend.apps.generation.models import FlashcardSet, Flashcard
+from backend.apps.generation.flashcards.models import FlashcardSet, Flashcard
 from backend.apps.documents.services.pdf_reader import read_pdf
 from django.core.files.uploadedfile import SimpleUploadedFile
-from backend.apps.generation.services.flashcard_generator import (
+from backend.apps.generation.flashcards.services.services import (
     parse_flashcards,
     save_flashcards_to_db,
     generate_flashcards,

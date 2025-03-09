@@ -9,7 +9,7 @@ import debug_toolbar
 from rest_framework.routers import DefaultRouter
 from backend.apps.accounts.views_api import CustomUserViewSet
 from backend.apps.documents.views_api import DocumentViewSet
-from backend.apps.generation.views_api import FlashcardSetViewSet, FlashcardViewSet
+from backend.apps.generation.flashcards.views_api import FlashcardSetViewSet, FlashcardViewSet
 
 
 

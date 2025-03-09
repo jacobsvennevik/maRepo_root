@@ -1,7 +1,7 @@
 import re
 from django.contrib.auth import get_user_model
 from backend.apps.documents.models import Document
-from backend.apps.generation.models import FlashcardSet, Flashcard
+from backend.apps.generation.flashcards.models import FlashcardSet, Flashcard
 from backend.apps.documents.services.pdf_reader import read_pdf  # Ensure this function saves text to DB
 from backend.apps.generation.services.api_client import AIClient  # Your AI integration
 

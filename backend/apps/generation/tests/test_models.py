@@ -1,10 +1,10 @@
 import pytest
 import time
 from django.utils import timezone
-from backend.apps.generation.models import FlashcardSet, Flashcard
+from backend.apps.generation.flashcards.models import FlashcardSet, Flashcard
 from backend.apps.accounts.tests.factories import CustomUserFactory
 from backend.apps.documents.tests.factories import DocumentFactory
-from .factories import FlashcardSetFactory, FlashcardFactory  # Adjust the import path if needed
+from .factories.flashcard import FlashcardSetFactory, FlashcardFactory  # Adjust the import path if needed
 
 # --- FlashcardSet Model Tests ---
 
