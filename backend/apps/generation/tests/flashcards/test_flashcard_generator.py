@@ -6,7 +6,7 @@ from backend.apps.documents.models import Document
 from backend.apps.generation.flashcards.models import FlashcardSet, Flashcard
 from backend.apps.documents.services.pdf_reader import read_pdf
 from django.core.files.uploadedfile import SimpleUploadedFile
-from backend.apps.generation.flashcards.services.services import (
+from backend.apps.generation.flashcards.services import (
     parse_flashcards,
     save_flashcards_to_db,
     generate_flashcards,
@@ -84,7 +84,7 @@ def test_generate_flashcards(mocker):
     Test generate_flashcards by mocking the AI response.
     """
     mocker.patch(
-        "backend.apps.generation.services.flashcard_generator.AIClient.get_response",
+        "backend.apps.generation.services.api_client.AIClient.get_response",
         return_value="Front: What is AI? Back: Artificial Intelligence"
     )
 

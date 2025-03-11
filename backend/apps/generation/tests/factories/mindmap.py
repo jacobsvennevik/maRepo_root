@@ -1,10 +1,8 @@
 import factory
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
-from backend.apps.documents.models import Document
-from backend.apps.documents.tests.factories import DocumentFactory
-from backend.apps.generation.flashcards.models import FlashcardSet, Flashcard
+from backend.apps.generation.mindmap.models import MindMap
 from backend.apps.accounts.tests.factories import CustomUserFactory
+
 
 
 User = get_user_model()  # This references your custom user model

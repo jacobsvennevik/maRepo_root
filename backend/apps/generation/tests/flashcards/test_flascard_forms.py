@@ -1,4 +1,4 @@
-# backend/apps/generation/tests/test_flashcard_forms.py
+# backend/apps/generation/tests/flashcards/test_flashcard_forms.py
 
 import pytest
 from backend.apps.generation.flashcards.forms import (
@@ -10,7 +10,8 @@ from backend.apps.generation.flashcards.forms import (
 from backend.apps.generation.flashcards.models import FlashcardSet, Flashcard
 from backend.apps.documents.tests.factories import DocumentFactory
 from backend.apps.accounts.tests.factories import CustomUserFactory
-from .factories.flashcard import FlashcardSetFactory  # Import your FlashcardSetFactory
+from backend.apps.generation.tests.factories.flashcard import FlashcardSetFactory
+
 
 # --- FlashcardForm Tests ---
 
