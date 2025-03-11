@@ -1,10 +1,10 @@
 import pytest
 import time
 from django.utils import timezone
-from backend.apps.generation.models import FlashcardSet, Flashcard
+from backend.apps.generation.models import FlashcardSet, Flashcard, MindMap
 from backend.apps.accounts.tests.factories import CustomUserFactory
 from backend.apps.documents.tests.factories import DocumentFactory
-from .factories import FlashcardSetFactory, FlashcardFactory  # Adjust the import path if needed
+from .factories import FlashcardSetFactory, FlashcardFactory, MindMapFactory  # Adjust the import path if needed
 
 # --- FlashcardSet Model Tests ---
 
@@ -89,3 +89,36 @@ def test_flashcard_updated_at_changes():
     flashcard.refresh_from_db()
     
     assert flashcard.updated_at > initial_updated_at
+
+
+@pytest.mark.django_db
+def test_mindmap_creation():
+    """
+    Test that a MindMap instance is created with the expected field values.
+    """
+    user = CustomUserFactory.create()
+    document = DocumentFactory.create()
+    mindmap = MindMap.objects.create(
+        owner=user,
+        document=document,
+        title="Test MindMap",
+        mindmap_data={"root": {"name": "Test", "children": []}}
+    )
+
+    assert mindmap.pk is not None
+    assert mindmap.title == "Test MindMap"
+    assert mindmap.owner == user
+    assert mindmap.document == document
+    assert mindmap.mindmap_data == {"root": {"name": "Test", "children": []}}
+    assert mindmap.created_at is not None
+
+@pytest.mark.django_db
+def test_mindmap_str():
+    """
+    Test that the __str__ method of MindMap returns the expected string format.
+    """
+    user = CustomUserFactory.create()
+    # Create a MindMap instance using the factory with a custom title.
+    mindmap = MindMapFactory.create(owner=user, title="Custom MindMap")
+    expected_str = f"Custom MindMap (Owner: {user.username})"
+    assert str(mindmap) == expected_str
