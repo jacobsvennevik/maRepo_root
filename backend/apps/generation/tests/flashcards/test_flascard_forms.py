@@ -10,12 +10,8 @@ from backend.apps.generation.forms import (
 from backend.apps.generation.models import FlashcardSet, Flashcard
 from backend.apps.documents.tests.factories import DocumentFactory
 from backend.apps.accounts.tests.factories import CustomUserFactory
-<<<<<<< HEAD:backend/apps/generation/tests/flashcards/test_flascard_forms.py
 from backend.apps.generation.tests.factories.flashcard import FlashcardSetFactory
 
-=======
-from .factories import FlashcardSetFactory  # Import your FlashcardSetFactory
->>>>>>> parent of 9fb4331c (Refactored a little):backend/apps/generation/tests/test_flascard_forms.py
 
 # --- FlashcardForm Tests ---
 

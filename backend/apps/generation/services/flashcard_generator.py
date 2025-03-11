@@ -13,7 +13,6 @@ import re
 def parse_flashcards(content):
     """
     Parses flashcards from AI-generated content.
-
     Expected format:
       Front: <question>
       Back: <answer>

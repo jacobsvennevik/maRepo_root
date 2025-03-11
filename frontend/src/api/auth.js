@@ -1,11 +1,12 @@
 import axios from "axios";
+
+class AuthApi {
   /**
    * Api for authentication
    * 
    * @param {Object} data - contains email and password
    * @returns {Promise} - returns a promise with the response data
    */
-class AuthApi {
   static Login = (data) => {
     return axios.post(`${base}/login`, data);
   };

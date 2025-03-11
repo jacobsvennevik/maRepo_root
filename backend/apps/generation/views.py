@@ -8,15 +8,10 @@ from django.contrib.auth.decorators import login_required
 
 # Import common service functions
 from backend.apps.documents.services.pdf_reader import read_pdf
-<<<<<<< HEAD
 
 # Flashcards imports
-from backend.apps.generation.flashcards.services import generate_flashcards, save_flashcards_to_db
-from backend.apps.generation.flashcards.models import FlashcardSet
-=======
-from backend.apps.generation.services.flashcard_generator import generate_flashcards, save_flashcards_to_db
+from backend.apps.generation.services import generate_flashcards, save_flashcards_to_db
 from backend.apps.generation.models import FlashcardSet
->>>>>>> parent of 9fb4331c (Refactored a little)
 
 # ------------------------------
 # Flashcards Generation View
@@ -95,7 +90,7 @@ def generate_mindmap_view(request):
             
             # Generate a mind map using AI.
             # Import the mind map generation service function.
-            from backend.apps.generation.mindmap.services import generate_mindmap
+            from backend.apps.generation.services.mindmap_generator import generate_mindmap
             mindmap_content = generate_mindmap(extracted_text)
             
             # Here you might want to save the generated mind map to the DB,

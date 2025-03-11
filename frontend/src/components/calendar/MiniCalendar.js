@@ -15,7 +15,7 @@ import Card from "components/card/Card.js";
  * @param {boolean} props.selectRange - Whether to select a range of dates or not.
  * @returns A JSX element for the MiniCalendar component.
  */
-function MiniCalendar(props) {
+export default function MiniCalendar(props) {
   const { selectRange, ...rest } = props;
   const [value, onChange] = useState(new Date());
 
@@ -47,7 +47,3 @@ function MiniCalendar(props) {
     </Card>
   );
 }
-
-// Export as a named export
-export { MiniCalendar };
-export default MiniCalendar;
