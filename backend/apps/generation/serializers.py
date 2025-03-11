@@ -29,20 +29,12 @@ class FlashcardSetSerializer(serializers.ModelSerializer):
         ]
 
 
-<<<<<<< HEAD
-=======
 # backend/apps/generation/serializers.py
 
->>>>>>> generation-of-docs
 from rest_framework import serializers
 from .models import MindMap
 
 class MindMapSerializer(serializers.ModelSerializer):
     class Meta:
         model = MindMap
-<<<<<<< HEAD
-        fields = ['id', 'owner', 'title', 'content', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'owner', 'created_at', 'updated_at']
-=======
         fields = ['id', 'title', 'document', 'owner', 'created_at', 'mindmap_data']
->>>>>>> generation-of-docs
