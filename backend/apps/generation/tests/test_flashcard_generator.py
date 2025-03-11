@@ -6,7 +6,7 @@ from backend.apps.documents.models import Document
 from backend.apps.generation.models import FlashcardSet, Flashcard
 from backend.apps.documents.services.pdf_reader import read_pdf
 from django.core.files.uploadedfile import SimpleUploadedFile
-from backend.apps.generation.services import (
+from backend.apps.generation.services.flashcard_generator import (
     parse_flashcards,
     save_flashcards_to_db,
     generate_flashcards,

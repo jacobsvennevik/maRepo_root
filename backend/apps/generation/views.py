@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from backend.apps.documents.services.pdf_reader import read_pdf
 
 # Flashcards imports
-from backend.apps.generation.services import generate_flashcards, save_flashcards_to_db
+from backend.apps.generation.services.flashcard_generator import generate_flashcards, save_flashcards_to_db
 from backend.apps.generation.models import FlashcardSet
 
 # ------------------------------
