@@ -1,8 +1,8 @@
 import pytest
-from backend.apps.generation.flashcards.models import Flashcard, FlashcardSet
-from backend.apps.generation.flashcards.serializers import FlashcardSerializer, FlashcardSetSerializer
+from backend.apps.generation.models import Flashcard, FlashcardSet
+from backend.apps.generation.serializers import FlashcardSerializer, FlashcardSetSerializer
 from backend.apps.accounts.tests.factories import CustomUserFactory
-from backend.apps.generation.tests.factories.flashcard import FlashcardSetFactory, FlashcardFactory
+from backend.apps.generation.tests.factories import FlashcardSetFactory, FlashcardFactory
 
 @pytest.mark.django_db
 def test_flashcard_serializer_output():

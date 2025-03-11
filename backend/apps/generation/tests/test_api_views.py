@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from backend.apps.generation.tests.factories.flashcard import FlashcardSetFactory
+from backend.apps.generation.tests.factories import FlashcardSetFactory
 from backend.apps.accounts.tests.factories import CustomUserFactory
 
 @pytest.mark.django_db

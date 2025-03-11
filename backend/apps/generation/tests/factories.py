@@ -3,7 +3,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from backend.apps.documents.models import Document
 from backend.apps.documents.tests.factories import DocumentFactory
-from backend.apps.generation.flashcards.models import FlashcardSet, Flashcard
+from backend.apps.generation.models import FlashcardSet, Flashcard
 from backend.apps.accounts.tests.factories import CustomUserFactory
 
 
@@ -19,7 +19,7 @@ class FlashcardSetFactory(factory.django.DjangoModelFactory):
     title = factory.Sequence(lambda n: f"Flashcard Set {n}")
     document = factory.SubFactory(DocumentFactory)
 
-from backend.apps.generation.flashcards.models import FlashcardSet
+from backend.apps.generation.models import FlashcardSet
 
 class FlashcardFactory(factory.django.DjangoModelFactory):
     class Meta:

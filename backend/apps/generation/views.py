@@ -8,10 +8,15 @@ from django.contrib.auth.decorators import login_required
 
 # Import common service functions
 from backend.apps.documents.services.pdf_reader import read_pdf
+<<<<<<< HEAD
 
 # Flashcards imports
 from backend.apps.generation.flashcards.services import generate_flashcards, save_flashcards_to_db
 from backend.apps.generation.flashcards.models import FlashcardSet
+=======
+from backend.apps.generation.services.flashcard_generator import generate_flashcards, save_flashcards_to_db
+from backend.apps.generation.models import FlashcardSet
+>>>>>>> parent of 9fb4331c (Refactored a little)
 
 # ------------------------------
 # Flashcards Generation View
