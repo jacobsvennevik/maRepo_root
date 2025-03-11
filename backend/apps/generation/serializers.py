@@ -27,3 +27,14 @@ class FlashcardSetSerializer(serializers.ModelSerializer):
             'created_at',
             'flashcards'   # nested list of flashcards
         ]
+
+
+# backend/apps/generation/serializers.py
+
+from rest_framework import serializers
+from .models import MindMap
+
+class MindMapSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MindMap
+        fields = ['id', 'title', 'document', 'owner', 'created_at', 'mindmap_data']
