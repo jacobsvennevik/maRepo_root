@@ -1,4 +1,4 @@
-// app/(public)/layout.tsx
+// app/(landing/layout.tsx
 import React from 'react'
 import '../globals.css'
 

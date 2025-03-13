@@ -1,20 +1,13 @@
-// app/layout.tsx
-import React from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+// app/layout.tsx (Server Component)
+import { QueryProvider } from '@/components/QueryProvider'
 
-const queryClient = new QueryClient()
-
-export default function RootLayout({
-  children
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <QueryClientProvider client={queryClient}>
+        <QueryProvider>
           {children}
-        </QueryClientProvider>
+        </QueryProvider>
       </body>
     </html>
   )

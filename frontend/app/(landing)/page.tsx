@@ -1,4 +1,4 @@
-// app/(public)/page.tsx
+// app/(landing)/page.tsx
 export default function PublicHomePage() {
   return (
     <section>
