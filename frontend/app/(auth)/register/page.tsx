@@ -5,6 +5,14 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { registerUser } from '@/services/authService'
 
+/**
+ * RegisterPage component renders a user registration form.
+ * It includes input fields for username, email, and two password fields.
+ * The form validates that the passwords match before submitting.
+ * On successful registration, it redirects to the login page.
+ * Displays error messages if registration fails or passwords do not match.
+ */
+
 export default function RegisterPage() {
   const router = useRouter()
   const [username, setUsername] = useState('')
@@ -13,6 +21,16 @@ export default function RegisterPage() {
   const [password2, setPassword2] = useState('')
   const [error, setError] = useState('')
 
+  /**
+   * Handles the form submission for user registration.
+   * Prevents the default form submission behavior, checks if the two passwords match,
+   * and attempts to register the user using the registerUser service with the provided
+   * username, email, and password.
+   * On successful registration, redirects the user to the login page.
+   * Sets an error message if the passwords do not match or if registration fails.
+   *
+   * @param e - The form submission event.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (password1 !== password2) {
