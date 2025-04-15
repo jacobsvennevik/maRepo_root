@@ -1,271 +1,115 @@
 "use client"
-
-import { useMemo } from "react"
-import { motion } from "framer-motion"
-import { useMediaQuery } from "@/hooks/use-mobile"
 import Image from "next/image"
+import { useEffect, useRef } from "react"
 
-// 2D Underwater Background Component
-export default function OceanBackground() {
-  const isMobile = useMediaQuery("(max-width: 768px)")
+export function OceanBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  return (
-    <div className="absolute inset-0 overflow-hidden bg-gradient-to-b from-cyan-400 via-blue-400 to-teal-400">
-      {/* Background gradient layers for depth */}
-      <div className="absolute inset-0 bg-gradient-radial from-cyan-300/30 to-transparent" />
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
 
-      {/* Light rays */}
-      <div className="absolute inset-0">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div
-            key={`ray-${i}`}
-            className="absolute top-0 bg-gradient-to-b from-white/20 to-transparent"
-            style={{
-              left: `${10 + i * 20}%`,
-              width: "8%",
-              height: "70%",
-              transform: `rotate(${-5 + i * 2}deg)`,
-              transformOrigin: "top center",
-              opacity: 0.4 + (i % 3) * 0.1,
-            }}
-          />
-        ))}
-      </div>
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
 
-      {/* Bubbles */}
-      <Bubbles count={isMobile ? 30 : 60} />
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
 
-      {/* Seaweed */}
-      <div className="absolute bottom-0 w-full h-[30%] pointer-events-none">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <Seaweed
-            key={`seaweed-${i}`}
-            position={{
-              left: `${5 + i * 12}%`,
-              height: `${15 + Math.random() * 15}%`,
-            }}
-          />
-        ))}
-      </div>
+    // Create gradient background
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
+    gradient.addColorStop(0, "rgba(79, 70, 229, 0.2)") // indigo
+    gradient.addColorStop(0.3, "rgba(6, 182, 212, 0.2)") // cyan
+    gradient.addColorStop(0.6, "rgba(249, 168, 212, 0.2)") // pink
+    gradient.addColorStop(1, "rgba(255, 255, 255, 0.2)") // white
 
-      {/* Fish */}
-      <div className="absolute inset-0 pointer-events-none">
-        <FishSchool count={isMobile ? 8 : 15} />
-      </div>
+    // Draw flowing wave-like patterns
+    const drawWaves = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      {/* Whale */}
-      <Whale />
-    </div>
-  )
-}
+      // Fill background
+      ctx.fillStyle = gradient
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-// Bubbles Component
-function Bubbles({ count = 50 }) {
-  const bubbles = useMemo(() => {
-    return Array.from({ length: count }).map((_, i) => ({
-      id: i,
-      size: 10 + Math.random() * 30,
-      left: `${Math.random() * 100}%`,
-      animationDuration: 15 + Math.random() * 30,
-      animationDelay: Math.random() * -30,
-      opacity: 0.5 + Math.random() * 0.5,
-      pulseDelay: Math.random() * 5,
-    }))
-  }, [count])
+      const time = Date.now() * 0.001
 
-  return (
-    <div className="absolute inset-0 pointer-events-none">
-      {bubbles.map((bubble) => (
-        <motion.div
-          key={bubble.id}
-          className="absolute rounded-full bg-gradient-to-br from-white/80 to-white/40"
-          style={{
-            left: bubble.left,
-            bottom: "-10%",
-            width: bubble.size,
-            height: bubble.size,
-            opacity: bubble.opacity,
-          }}
-          animate={{
-            y: [0, -window.innerHeight * 1.1],
-            x: [0, Math.sin(bubble.id) * 50],
-          }}
-          transition={{
-            y: {
-              duration: bubble.animationDuration,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-              delay: bubble.animationDelay,
-            },
-            x: {
-              duration: bubble.animationDuration / 3,
-              repeat: Number.POSITIVE_INFINITY,
-              repeatType: "mirror",
-              ease: "easeInOut",
-              delay: bubble.animationDelay,
-            },
-          }}
-        >
-          <motion.div
-            className="w-full h-full rounded-full bg-gradient-to-br from-white/90 to-white/50"
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{
-              duration: 2,
-              repeat: Number.POSITIVE_INFINITY,
-              delay: bubble.pulseDelay,
-            }}
-          />
-        </motion.div>
-      ))}
-    </div>
-  )
-}
+      // Draw multiple wave layers
+      for (let i = 1; i <= 3; i++) {
+        ctx.beginPath()
 
-// Seaweed Component
-function Seaweed({ position }) {
-  return (
-    <motion.div
-      className="absolute bottom-0 origin-bottom"
-      style={{
-        left: position.left,
-        height: position.height,
-        width: "30px",
-      }}
-      animate={{
-        rotateZ: [0, 5, -5, 0],
-      }}
-      transition={{
-        duration: 4,
-        repeat: Number.POSITIVE_INFINITY,
-        ease: "easeInOut",
-      }}
-    >
-      <div className="w-full h-full bg-gradient-to-t from-emerald-600 to-teal-400 rounded-t-full" />
-    </motion.div>
-  )
-}
+        const amplitude = 50 / i // Decreasing amplitude for each layer
+        const frequency = 0.005 * i // Increasing frequency for each layer
+        const speed = 0.2 * i // Increasing speed for each layer
 
-// Fish Component using the provided images
-function Fish({ position, size, direction = 1, fishType = 1 }) {
-  // Choose fish image based on type
-  const fishImage = fishType === 1 ? "/images/cartoon-fish1.png" : "/images/cartoon-fish2.png"
+        ctx.moveTo(0, canvas.height / 2)
 
-  // Determine correct transform based on fish type and direction
-  // Fish type 1 (orange/blue) is facing left in the original image
-  // Fish type 2 (green/teal) is facing right in the original image
-  const shouldFlip = (fishType === 1 && direction > 0) || (fishType === 2 && direction < 0)
+        for (let x = 0; x < canvas.width; x += 5) {
+          const y = Math.sin(x * frequency + time * speed) * amplitude + canvas.height / (1.5 + i * 0.2)
+          ctx.lineTo(x, y)
+        }
 
-  // Adjust animation direction based on fish type to ensure consistent movement
-  const animationX =
-    fishType === 1 ? (direction > 0 ? [0, 100, 0] : [0, -100, 0]) : direction > 0 ? [0, 100, 0] : [0, -100, 0]
+        ctx.lineTo(canvas.width, canvas.height)
+        ctx.lineTo(0, canvas.height)
+        ctx.closePath()
 
-  return (
-    <motion.div
-      className="absolute"
-      style={{
-        top: position.top,
-        left: position.left,
-        width: size,
-        height: size * 0.6,
-        zIndex: Math.floor(Number.parseInt(position.top)),
-      }}
-      animate={{
-        x: animationX,
-        y: [0, 20, 0],
-      }}
-      transition={{
-        x: {
-          duration: 10 + Math.random() * 10,
-          repeat: Number.POSITIVE_INFINITY,
-          ease: "easeInOut",
-        },
-        y: {
-          duration: 5 + Math.random() * 5,
-          repeat: Number.POSITIVE_INFINITY,
-          repeatType: "mirror",
-          ease: "easeInOut",
-        },
-      }}
-    >
-      <div className="relative w-full h-full">
-        <Image
-          src={fishImage || "/placeholder.svg"}
-          alt="Cartoon fish"
-          fill
-          style={{
-            objectFit: "contain",
-            transform: shouldFlip ? "scaleX(-1)" : "none",
-          }}
-        />
-      </div>
-    </motion.div>
-  )
-}
+        // Set gradient for each wave
+        const waveGradient = ctx.createLinearGradient(0, 0, canvas.width, 0)
 
-// Fish School Component
-function FishSchool({ count = 15 }) {
-  const fishSchool = useMemo(() => {
-    return Array.from({ length: count }).map((_, i) => ({
-      id: i,
-      position: {
-        top: `${10 + Math.random() * 80}%`,
-        left: `${Math.random() * 100}%`,
-      },
-      size: 40 + Math.random() * 40,
-      direction: Math.random() > 0.5 ? 1 : -1,
-      fishType: Math.random() > 0.5 ? 1 : 2, // Randomly choose between the two fish types
-    }))
-  }, [count])
+        if (i === 1) {
+          waveGradient.addColorStop(0, "rgba(79, 70, 229, 0.1)")
+          waveGradient.addColorStop(1, "rgba(6, 182, 212, 0.1)")
+        } else if (i === 2) {
+          waveGradient.addColorStop(0, "rgba(6, 182, 212, 0.1)")
+          waveGradient.addColorStop(1, "rgba(249, 168, 212, 0.1)")
+        } else {
+          waveGradient.addColorStop(0, "rgba(249, 168, 212, 0.1)")
+          waveGradient.addColorStop(1, "rgba(79, 70, 229, 0.1)")
+        }
+
+        ctx.fillStyle = waveGradient
+        ctx.fill()
+      }
+
+      requestAnimationFrame(drawWaves)
+    }
+
+    drawWaves()
+
+    // Handle resize
+    const handleResize = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [])
 
   return (
     <>
-      {fishSchool.map((fish) => (
-        <Fish
-          key={fish.id}
-          position={fish.position}
-          size={fish.size}
-          direction={fish.direction}
-          fishType={fish.fishType}
-        />
-      ))}
-    </>
-  )
-}
-
-// Whale Component using the provided image
-function Whale() {
-  const isMobile = useMediaQuery("(max-width: 768px)")
-  const size = isMobile ? 180 : 250
-
-  return (
-    <motion.div
-      className="absolute"
-      style={{
-        bottom: "10%",
-        right: "-20%",
-        width: size,
-        height: size * 0.8,
-      }}
-      animate={{
-        x: [-size, -window.innerWidth + size * 0.8],
-      }}
-      transition={{
-        duration: 40,
-        repeat: Number.POSITIVE_INFINITY,
-        repeatType: "loop",
-        ease: "linear",
-      }}
-    >
-      <div className="relative w-full h-full">
+      {/* Ocean Image Background - Added back */}
+      <div className="fixed inset-0 z-0 overflow-hidden">
         <Image
-          src="/images/cartoon-whale.png"
-          alt="Cartoon whale"
+          src="/images/ocean-background.jpg"
+          alt="Ocean background"
           fill
-          style={{
-            objectFit: "contain",
-          }}
+          priority
+          quality={100}
+          sizes="100vw"
+          className="object-cover opacity-60"
         />
       </div>
-    </motion.div>
+
+      {/* Animated Canvas Overlay */}
+      <canvas ref={canvasRef} className="fixed inset-0 z-1 pointer-events-none opacity-70" aria-hidden="true" />
+
+      {/* Subtle gradient overlay to improve text contrast */}
+      <div
+        className="fixed inset-0 z-2 bg-gradient-to-b from-white/20 to-white/40 pointer-events-none"
+        aria-hidden="true"
+      />
+    </>
   )
 }

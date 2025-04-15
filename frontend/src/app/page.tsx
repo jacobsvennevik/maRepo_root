@@ -1,9 +1,8 @@
-import Hero from "@/components/hero"
+import Image from "next/image";
+import OceanHero from "@/components/ocean-hero";
 
-export default function LandingPage() {
+export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col relative">
-      <Hero />
-    </main>
-  )
+      <OceanHero />
+  );
 }
