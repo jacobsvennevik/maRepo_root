@@ -1,6 +1,6 @@
 "use client"
 
-import { OceanBackground } from "@/components/ocean-background"
+import { OceanBackground } from "@/components/common/ocean-background"
 import { Footer } from "@/components/layout/footer"
 import { HeroSection } from "@/components/sections/hero-section"
 import { FeaturesSection } from "@/components/sections/features-section"
