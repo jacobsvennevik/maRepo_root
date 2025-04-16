@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props} data-testid="login-form">
       <Card className="overflow-hidden border-0 shadow-2xl bg-white/90 backdrop-blur-sm rounded-2xl">
         <CardContent className="grid md:grid-cols-2 gap-0 !p-0">
           {/* Left Column - Form */}
@@ -129,4 +129,4 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       </div>
     </div>
   )
-}
+} 
