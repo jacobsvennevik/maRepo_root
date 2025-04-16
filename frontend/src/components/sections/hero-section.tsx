@@ -25,16 +25,22 @@ export function HeroSection() {
             <Button 
               variant="solid-blue" 
               size="xl"
+              asChild
             >
-              Start Learning
+              <Link href="/login">
+                Start Learning
+              </Link>
             </Button>
             <Button
               variant="outline-blue"
               size="xl"
               className="flex items-center"
+              asChild
             >
-              View Demo
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <Link href="/login">
+                Try for Free
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
             </Button>
           </div>
         </div>
@@ -54,12 +60,15 @@ export function HeroSection() {
               Our AI analyzes your learning patterns and creates custom study plans that adapt to your progress,
               ensuring you focus on what matters most.
             </p>
-            <Link
-              href="#"
-              className="text-[#06b6d4] hover:text-ocean-deep transition-colors flex items-center font-medium"
+            <Button
+              variant="link"
+              className="text-[#06b6d4] hover:text-ocean-deep p-0 h-auto font-medium"
+              asChild
             >
-              Learn more <ArrowRight className="ml-2 w-4 h-4" />
-            </Link>
+              <Link href="/login" className="flex items-center">
+                Get Started <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </Button>
           </div>
         </div>
       </div>

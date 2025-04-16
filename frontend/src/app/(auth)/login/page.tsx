@@ -1,15 +1,18 @@
+import { LoginForm } from "@/components/login-form"
+import { EmeraldBackground } from "@/components/common/backgrounds/emerald-background"
+
 export default function LoginPage() {
   return (
-    <>
-      <div className="text-center">
-        <h2 className="mt-6 text-3xl font-bold tracking-tight">
-          Sign in to your account
-        </h2>
+    <div className="min-h-screen">
+      {/* Emerald Background */}
+      <EmeraldBackground />
+
+      {/* Main Content */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center">
+        <div className="w-[900px]">
+          <LoginForm />
+        </div>
       </div>
-      <div className="mt-8">
-        {/* Login form will go here */}
-        <p className="text-center">Login form placeholder</p>
-      </div>
-    </>
+    </div>
   )
 } 
