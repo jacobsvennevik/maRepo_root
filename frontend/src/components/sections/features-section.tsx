@@ -1,6 +1,6 @@
 "use client"
 
-import { BookOpen, ScrollText, FlaskConical } from "lucide-react"
+import Image from "next/image"
 import { FeatureCard } from "@/components/ui/cards/feature-card"
 
 export function FeaturesSection() {
@@ -15,10 +15,10 @@ export function FeaturesSection() {
         { text: "Adapts to your learning pace and retention" },
         { text: "Tracks progress and identifies knowledge gaps" }
       ],
-      icon: <BookOpen className="w-7 h-7 text-aqua" />,
+      icon: <Image src="/images/icons/book.svg" alt="Book icon" width={28} height={28} />,
       buttonText: "Try Flashcards",
-      imageUrl: "/placeholder.svg?height=600&width=900",
-      iconBgColor: "aqua/10",
+      imageUrl: "/images/placeholders/flashcards.svg",
+      iconBgColor: "blue-50",
       iconColor: "aqua",
       reverse: false
     },
@@ -31,10 +31,10 @@ export function FeaturesSection() {
         { text: "Interactive drag-and-drop interface" },
         { text: "Export and share your concept maps" }
       ],
-      icon: <ScrollText className="w-7 h-7 text-ocean-medium" />,
+      icon: <Image src="/images/icons/scroll.svg" alt="Scroll icon" width={28} height={28} />,
       buttonText: "Try Concept Maps",
-      imageUrl: "/placeholder.svg?height=600&width=900",
-      iconBgColor: "ocean-medium/10",
+      imageUrl: "/images/placeholders/concept-maps.svg",
+      iconBgColor: "blue-50",
       iconColor: "ocean-medium",
       reverse: true
     },
@@ -47,17 +47,17 @@ export function FeaturesSection() {
         { text: "Detailed performance analytics" },
         { text: "Personalized study recommendations" }
       ],
-      icon: <FlaskConical className="w-7 h-7 text-ocean-deep" />,
+      icon: <Image src="/images/icons/flask.svg" alt="Flask icon" width={28} height={28} />,
       buttonText: "Try Adaptive Tests",
-      imageUrl: "/placeholder.svg?height=600&width=900",
-      iconBgColor: "ocean-deep/10",
+      imageUrl: "/images/placeholders/adaptive-tests.svg",
+      iconBgColor: "blue-50",
       iconColor: "ocean-deep",
       reverse: false
     }
   ]
 
   return (
-    <section id="tools" className="relative z-10 py-16 bg-white/90">
+    <section id="tools" className="relative z-10 py-16 bg-[#f5f7fa]">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h2 className="text-3xl font-medium text-slate-900 mb-4">AI-Powered Learning Tools</h2>

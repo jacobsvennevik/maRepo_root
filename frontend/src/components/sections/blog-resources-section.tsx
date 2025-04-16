@@ -96,7 +96,7 @@ export function BlogResourcesSection() {
 
         {/* View all button */}
         <div className="mt-12 text-center">
-          <Button variant="outline" className="border-ocean-medium text-ocean-deep hover:bg-ocean-medium/10">
+          <Button variant="ocean-outline">
             View All Resources
           </Button>
         </div>

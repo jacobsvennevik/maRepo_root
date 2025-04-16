@@ -9,7 +9,7 @@ export const blogPosts: BlogPost[] = [
     title: "The Science of Memory Retention in Digital Learning",
     description:
       "Explore the latest research on how spaced repetition and active recall techniques can dramatically improve knowledge retention when studying complex topics.",
-    image: "/placeholder.svg?height=600&width=800",
+    image: "/images/placeholders/article.svg",
     date: "April 10, 2023",
     author: "Dr. Emma Waters",
     readTime: "8 min read",
@@ -21,7 +21,7 @@ export const blogPosts: BlogPost[] = [
     title: "How AI is Transforming Personalized Learning Paths",
     description:
       "Our lead AI researcher demonstrates how machine learning algorithms analyze learning patterns to create truly personalized study experiences.",
-    image: "/placeholder.svg?height=600&width=800",
+    image: "/images/placeholders/article.svg",
     date: "March 22, 2023",
     author: "Prof. James Chen",
     readTime: "12 min watch",
@@ -33,7 +33,7 @@ export const blogPosts: BlogPost[] = [
     title: "University Success Story: 40% Improvement in Student Engagement",
     description:
       "Learn how Pacific Coast University implemented our adaptive learning platform and saw dramatic improvements in student performance and satisfaction.",
-    image: "/placeholder.svg?height=600&width=800",
+    image: "/images/placeholders/article.svg",
     date: "February 15, 2023",
     author: "Sarah Johnson",
     readTime: "6 min read",
@@ -45,7 +45,7 @@ export const blogPosts: BlogPost[] = [
     title: "Creating Effective Concept Maps for Complex Subjects",
     description:
       "A step-by-step guide to using our concept mapping tools to visualize relationships between ideas and enhance understanding of difficult topics.",
-    image: "/placeholder.svg?height=600&width=800",
+    image: "/images/placeholders/article.svg",
     date: "January 30, 2023",
     author: "Michael Torres",
     readTime: "10 min read",
@@ -59,7 +59,7 @@ export const featuredBlogPost = {
   date: "April 15, 2023",
   duration: "60 min webinar",
   presenter: "Dr. Maya Patel",
-  imageUrl: "/placeholder.svg?height=800&width=1200"
+  imageUrl: "/images/placeholders/webinar.svg"
 }
 
 // Category filter options

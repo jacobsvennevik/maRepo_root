@@ -14,16 +14,22 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-white shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        ocean: "bg-ocean-deep text-white shadow-sm hover:bg-blue-800 font-medium",
+        "ocean-outline": "border border-ocean-medium bg-white text-ocean-deep shadow-sm hover:bg-ocean-light/10 font-medium",
+        "solid-blue": "bg-[#1a4971] text-white font-medium shadow-sm hover:bg-[#13385a]",
+        "outline-blue": "bg-white border border-[#1a4971] text-[#1a4971] font-medium shadow-sm hover:bg-blue-50",
+        "custom-aqua": "bg-[#47B5FF] text-white font-medium shadow-sm hover:bg-[#47B5FF]/90",
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
+        lg: "h-10 rounded-md px-6 py-2.5 text-base",
+        xl: "h-12 rounded-md px-8 py-3 text-lg",
         icon: "h-9 w-9",
       },
     },

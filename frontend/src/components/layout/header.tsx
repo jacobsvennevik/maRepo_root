@@ -35,6 +35,9 @@ export function Header() {
       }
     }
 
+    // Initial check on mount
+    handleScroll()
+    
     window.addEventListener("scroll", handleScroll)
     return () => {
       window.removeEventListener("scroll", handleScroll)
@@ -69,7 +72,7 @@ export function Header() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-[9999]">
-      <header className={`transition-all duration-300 ${scrolled ? "bg-white shadow-md py-3" : "glass-nav py-4"}`}>
+      <header className={`transition-all duration-300 ${scrolled ? "bg-white shadow-md py-3" : "bg-transparent py-4"}`}>
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="text-xl font-medium text-ocean-deep flex items-center">
@@ -164,7 +167,7 @@ export function Header() {
               <Link href="#" className="text-slate-800 hover:text-aqua transition-colors">
                 Log in
               </Link>
-              <Button className="bg-ocean-deep hover:bg-blue-900 text-white">Try for free</Button>
+              <Button variant="solid-blue">Try for free</Button>
             </div>
           </div>
         </div>

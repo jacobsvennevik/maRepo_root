@@ -23,7 +23,7 @@ export function FeaturedBlogCard({
   presenter,
   buttonText = "Watch Webinar",
   buttonUrl = "#",
-  imageUrl = "/placeholder.svg?height=800&width=1200"
+  imageUrl = "/images/placeholders/webinar.svg"
 }: FeaturedBlogCardProps) {
   return (
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all hover:shadow-2xl">
@@ -49,7 +49,10 @@ export function FeaturedBlogCard({
             <span>With {presenter}</span>
           </div>
           <div>
-            <Button className="bg-ocean-deep hover:bg-blue-900 text-white flex items-center">
+            <Button 
+              variant="ocean"
+              onClick={() => window.open(buttonUrl, '_blank')}
+            >
               {buttonText}
               <ChevronRight className="ml-1 w-4 h-4" />
             </Button>
@@ -62,6 +65,11 @@ export function FeaturedBlogCard({
               alt={title}
               fill
               className="object-cover transform transition-transform hover:scale-105 duration-700"
+              priority={true}
+              onError={(e) => {
+                // @ts-ignore - TypeScript doesn't like this, but it works
+                e.target.src = "/images/placeholders/webinar.svg";
+              }}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-ocean-deep/40 to-transparent opacity-60" />
             <div className="absolute inset-0 flex items-center justify-center">

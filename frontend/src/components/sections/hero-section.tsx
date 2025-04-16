@@ -22,12 +22,16 @@ export function HeroSection() {
             personalized study tools and real-time feedback.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button className="bg-ocean-deep hover:bg-blue-900 text-white px-8 py-6 rounded-md text-lg">
+            <Button 
+              variant="solid-blue" 
+              size="xl"
+            >
               Start Learning
             </Button>
             <Button
-              variant="outline"
-              className="border-ocean-medium text-ocean-deep hover:bg-ocean-medium/10 px-8 py-6 rounded-md text-lg flex items-center"
+              variant="outline-blue"
+              size="xl"
+              className="flex items-center"
             >
               View Demo
               <ArrowRight className="ml-2 w-5 h-5" />

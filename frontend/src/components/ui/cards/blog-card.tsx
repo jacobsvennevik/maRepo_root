@@ -45,11 +45,16 @@ export function BlogCard({ post }: BlogCardProps) {
       <div className="relative">
         <div className="aspect-[16/10] relative overflow-hidden">
           <Image
-            src={post.image || "/placeholder.svg"}
+            src={post.image || "/images/placeholders/article.svg"}
             alt={post.title}
             width={800}
             height={600}
             className="object-cover w-full h-full transform transition-transform hover:scale-105 duration-500"
+            priority={true}
+            onError={(e) => {
+              // @ts-ignore - TypeScript doesn't like this, but it works
+              e.target.src = "/images/placeholders/article.svg";
+            }}
           />
         </div>
         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center">
