@@ -9,12 +9,14 @@ import { PricingSection } from "@/components/sections/pricing-section"
 
 export default function OceanHero() {
   return (
-    <div className="relative overflow-x-hidden min-h-screen">
+    <div className="relative overflow-x-hidden">
       {/* Ocean Background */}
       <OceanBackground />
 
       {/* Hero Section */}
-      <HeroSection />
+      <div className="h-screen">
+        <HeroSection />
+      </div>
 
       {/* Features Section */}
       <FeaturesSection />
