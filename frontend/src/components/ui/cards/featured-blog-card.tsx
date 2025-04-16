@@ -50,7 +50,7 @@ export function FeaturedBlogCard({
           </div>
           <div>
             <Button 
-              variant="ocean"
+              variant="solid-blue"
               onClick={() => window.open(buttonUrl, '_blank')}
             >
               {buttonText}

@@ -72,7 +72,7 @@ export function BlogCard({ post }: BlogCardProps) {
         </div>
         <Link
           href={`/blog/${post.id}`}
-          className="inline-flex items-center text-ocean-medium hover:text-ocean-deep font-medium"
+          className="inline-flex items-center text-[#06b6d4] hover:text-ocean-deep font-medium"
         >
           Read more
           <ChevronRight className="ml-1 w-4 h-4" />

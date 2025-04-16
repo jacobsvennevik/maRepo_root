@@ -12,7 +12,7 @@ export function HeroSection() {
         {/* Left Column - Text Content */}
         <div className="max-w-xl">
           <div className="mb-6">
-            <span className="text-aqua font-medium">AI-Powered Learning</span>
+            <span className="text-[#06b6d4] font-medium text-xl">AI-Powered Learning</span>
           </div>
           <h1 className="text-3xl md:text-5xl font-medium text-slate-900 mb-6 leading-tight">
             Transform your study experience
@@ -56,7 +56,7 @@ export function HeroSection() {
             </p>
             <Link
               href="#"
-              className="text-aqua hover:text-ocean-deep transition-colors flex items-center font-medium"
+              className="text-[#06b6d4] hover:text-ocean-deep transition-colors flex items-center font-medium"
             >
               Learn more <ArrowRight className="ml-2 w-4 h-4" />
             </Link>
