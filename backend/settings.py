@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "backend.apps.accounts",
     "backend.apps.documents", 
     "backend.apps.generation",
+    "backend.apps.study_materials",
     'debug_toolbar',  
     'rest_framework',
     'corsheaders',

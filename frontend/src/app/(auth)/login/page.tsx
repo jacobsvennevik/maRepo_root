@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/LoginForm"
+import { LoginForm } from "../components/LoginForm"
 import { EmeraldBackground } from "@/components/common/backgrounds/emerald-background"
 
 export default function LoginPage() {

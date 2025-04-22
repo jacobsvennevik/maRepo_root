@@ -42,7 +42,7 @@ class MindMap(models.Model):
         return self.title
 
 
-class MindMap(models.Model):
+class MindMapSet(models.Model):
     """
     Model to store generated mind maps.
     """
