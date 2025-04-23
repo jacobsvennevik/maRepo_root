@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Header } from "@/components/layout/header";
+import { RootLayoutContent } from "@/components/layout/root-layout-content";
+import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -25,12 +26,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script 
+          src="http://localhost:8097"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <Header />
-        {children}
+        <RootLayoutContent>
+          {children}
+        </RootLayoutContent>
       </body>
     </html>
   );

@@ -1,39 +1,49 @@
-import React from 'react'
+"use client"
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+import { ReactNode, useState } from "react"
+import { NavbarDashboard } from "./components/navbar"
+
+interface DashboardLayoutProps {
+  children: ReactNode
+}
+
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const [isNavOpen, setIsNavOpen] = useState(false)
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Top Navigation Bar Placeholder */}
-      <header className="bg-white shadow">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 justify-between">
-            <div className="flex">
-              {/* Logo placeholder */}
-              <div className="flex flex-shrink-0 items-center">
-                <span className="text-xl font-bold">Dashboard</span>
-              </div>
+    <div className="min-h-screen bg-[#e5e7eb]">
+      <div className="flex min-h-screen flex-col">
+        {/* Main content */}
+        <div className="flex-1">
+          {/* Top navigation */}
+          <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+            <div className="container flex h-16 items-center justify-between py-4">
+              <NavbarDashboard
+                label="Dashboard"
+                isOpen={isNavOpen}
+                onToggle={() => setIsNavOpen(!isNavOpen)}
+                onMouseEnter={() => setIsNavOpen(true)}
+                onMouseLeave={() => setIsNavOpen(false)}
+              >
+                <div className="p-2">
+                  <nav className="grid gap-1">
+                    <a href="/dashboard" className="block px-3 py-2 text-sm hover:bg-slate-100 rounded-md">
+                      Overview
+                    </a>
+                    <a href="/dashboard/settings" className="block px-3 py-2 text-sm hover:bg-slate-100 rounded-md">
+                      Settings
+                    </a>
+                  </nav>
+                </div>
+              </NavbarDashboard>
             </div>
-          </div>
+          </header>
+          
+          {/* Page content */}
+          <main className="flex-1">
+            {children}
+          </main>
         </div>
-      </header>
-
-      {/* Main Content Area */}
-      <div className="flex">
-        {/* Sidebar Placeholder */}
-        <div className="w-64 bg-white shadow">
-          <nav className="flex flex-col p-4">
-            <p className="text-sm text-gray-600">Navigation placeholder</p>
-          </nav>
-        </div>
-
-        {/* Main Content */}
-        <main className="flex-1 p-8">
-          {children}
-        </main>
       </div>
     </div>
   )
