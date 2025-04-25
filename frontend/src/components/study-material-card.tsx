@@ -1,93 +1,124 @@
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import Image from "next/image"
-import Link from "next/link"
-import { ChevronRight } from "lucide-react"
+import { useState } from "react"
+import { ChevronDown, ChevronUp, Clock, MapPin, FileText, Book, Video } from "lucide-react"
 import type { ReactNode } from "react"
 
 interface StudyMaterialCardProps {
   title: string
   type: string
-  progress: number
-  lastReviewed: string
-  tags: string[]
-  status: "In Progress" | "Mastered" | "Not Started"
-  icon: ReactNode
+  progress?: number
+  lastReviewed?: string
+  tags?: string[]
+  status: "In Progress" | "Completed" | "Not Started"
+  icon?: ReactNode
   description?: string
-  image?: string
+  studyTime?: string
+  category?: string
+  timeAgo?: string
   id: string
+  isExpanded?: boolean
+  hideExpansionButton?: boolean
 }
 
 export function StudyMaterialCard({
   title,
   type,
-  progress,
-  lastReviewed,
-  tags,
   status,
-  icon,
   description = "Study material with AI-generated content to help you learn more effectively.",
-  image = "/placeholder.svg?height=120&width=240",
+  studyTime = "45 minutes study time",
+  category = "General",
+  timeAgo = "2h ago",
   id = "material-1",
+  isExpanded = false,
+  hideExpansionButton = false,
 }: StudyMaterialCardProps) {
+  const [expanded, setExpanded] = useState(isExpanded)
+  
+  // Determine icon and background color based on type
+  const getIconAndColor = () => {
+    switch (type.toLowerCase()) {
+      case "pdf":
+        return { icon: <FileText className="h-6 w-6 text-white" />, bgColor: "bg-ocean-500" }
+      case "video":
+        return { icon: <Video className="h-6 w-6 text-white" />, bgColor: "bg-indigo-500" }
+      case "course":
+      case "tutorial":
+        return { icon: <Book className="h-6 w-6 text-white" />, bgColor: "bg-emerald-500" }
+      default:
+        return { icon: <FileText className="h-6 w-6 text-white" />, bgColor: "bg-ocean-500" }
+    }
+  }
+  
+  const { icon, bgColor } = getIconAndColor()
+  
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden transform transition-all hover:shadow-md hover:-translate-y-0.5 h-full flex flex-col">
-      <div className="relative">
-        <Image
-          src={image || "/placeholder.svg"}
-          alt={title}
-          width={240}
-          height={120}
-          className="object-cover w-full h-full transform transition-transform hover:scale-105 duration-500 overflow-hidden"
-          priority={true}
-          onError={(e) => {
-            // @ts-ignore - TypeScript doesn't like this, but it works
-            e.target.src = "/placeholder.svg?height=120&width=240"
-          }}
-        />
-        <div className="absolute top-1.5 left-1.5 bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded-full flex items-center">
-          <div className="mr-0.5">{icon}</div>
-          <span className="text-[10px] font-medium text-slate-700">{type}</span>
+    <div className="py-4">
+      <div className="flex items-start gap-4">
+        <div className={`flex-shrink-0 w-12 h-12 rounded ${bgColor} flex items-center justify-center`}>
+          {icon}
         </div>
-
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-1.5">
-          <Badge
-            variant={status === "Mastered" ? "default" : "outline"}
-            className={`text-[10px] px-1.5 py-0 ${
-              status === "Mastered" ? "bg-primary text-white" : "border-white text-white bg-black/30 backdrop-blur-sm"
-            }`}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3">
+            <h3 className="text-base font-medium text-slate-800">{title}</h3>
+            <Badge 
+              className={`${
+                status === "Completed" 
+                  ? "bg-slate-800 text-white" 
+                  : "bg-slate-200 text-slate-700"
+              } border-none text-xs px-2 py-0.5 rounded-md`}
+            >
+              {status}
+            </Badge>
+          </div>
+          <p className="text-sm text-slate-500 mt-0.5">{studyTime}</p>
+        </div>
+        {!hideExpansionButton && (
+          <button 
+            className="flex-shrink-0 rounded-full p-2 bg-slate-200 hover:bg-slate-300"
+            onClick={() => setExpanded(!expanded)}
           >
-            {status}
-          </Badge>
-        </div>
+            {expanded ? (
+              <ChevronUp className="h-5 w-5 text-slate-500" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-slate-500" />
+            )}
+          </button>
+        )}
       </div>
 
-      <div className="p-2 flex-1 flex flex-col">
-        <h3 className="text-sm font-medium text-slate-900 mb-0.5 line-clamp-1">{title}</h3>
-        <p className="text-slate-600 mb-1.5 line-clamp-1 text-[10px]">{description}</p>
-
-        <div className="mb-1.5 mt-auto">
-          <div className="flex justify-between text-[10px] mb-0.5">
-            <span className="text-slate-600">Progress</span>
-            <span className="text-ocean font-medium">{progress}%</span>
+      {expanded && (
+        <div className="mt-3 ml-16 space-y-3">
+          <div className="flex gap-2">
+            <Badge
+              variant="outline"
+              className="text-xs bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-full px-3"
+            >
+              Self-paced
+            </Badge>
+            <Badge
+              variant="outline"
+              className="text-xs bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-full px-3"
+            >
+              {type}
+            </Badge>
           </div>
-          <Progress value={progress} className="h-1 bg-ocean-100" indicatorClassName="bg-ocean" />
-        </div>
 
-        <div className="flex justify-between items-center">
-          <div className="text-[10px] text-slate-500">
-            <span>Last: {lastReviewed}</span>
+          <p className="text-sm text-slate-600">
+            {description}
+          </p>
+
+          <div className="flex items-center gap-4 text-sm text-slate-500">
+            <div className="flex items-center gap-1">
+              <MapPin className="h-4 w-4" />
+              <span>{category}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock className="h-4 w-4" />
+              <span>{timeAgo}</span>
+            </div>
           </div>
-
-          <Link
-            href={`/materials/${id}`}
-            className="inline-flex items-center text-[10px] text-aqua hover:text-ocean-deep font-medium"
-          >
-            Continue
-            <ChevronRight className="ml-0.5 w-2.5 h-2.5" />
-          </Link>
         </div>
-      </div>
+      )}
     </div>
   )
 }

@@ -1,3 +1,4 @@
-export { default as Header } from './header';
-export { default as Navbar } from './navbar';
-export { default as Footer } from './footer'; 
+export * from "./footer";
+export * from "./header";
+export * from "./navbar";
+export * from "./dashboard-layout"; 
