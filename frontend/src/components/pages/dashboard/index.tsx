@@ -1,7 +1,7 @@
 "use client"
 
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
-import { DashboardHeader } from "@/components/sections/dashboard/dashboard-header"
+import { DashboardHeader } from "@/components/layout/dashboard-header"
 import { DashboardOverview } from "@/components/sections/dashboard/dashboard-overview"
 
 export default function Dashboard() {
