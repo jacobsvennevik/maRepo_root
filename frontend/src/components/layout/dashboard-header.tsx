@@ -38,7 +38,7 @@ export function DashboardHeader() {
               <span>OceanLearn</span>
             </Link>
             
-            <nav className="hidden md:flex ml-10 space-x-8">
+            <nav className="hidden md:flex ml-32 space-x-10">
               <Link href="/dashboard" className="text-[#47B5FF] hover:text-[#3da5ec] font-medium">
                 Dashboard
               </Link>

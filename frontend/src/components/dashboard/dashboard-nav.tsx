@@ -57,12 +57,12 @@ export function DashboardNav() {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Left side: Logo and nav links */}
-          <div className="flex items-center space-x-8">
-            <div className="flex-none mr-8">
+          <div className="flex items-center">
+            <div className="flex-none mr-32">
               <OceanLearnLogo />
             </div>
             
-            <nav className="hidden md:flex items-center space-x-6">
+            <nav className="hidden md:flex items-center space-x-10 ml-12">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
