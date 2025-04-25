@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Droplets, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function DashboardHeader() {
   const [scrolled, setScrolled] = useState(false)
+  const pathname = usePathname()
 
   // Track scroll position
   useEffect(() => {
@@ -28,6 +30,11 @@ export function DashboardHeader() {
     }
   }, [])
 
+  // Check if current path starts with a specific route
+  const isActive = (path: string) => {
+    return pathname === path || pathname.startsWith(`${path}/`)
+  }
+
   return (
     <header className={`sticky top-0 z-[9999] ${scrolled ? "bg-white shadow-md py-3" : "bg-white py-4"}`}>
       <div className="px-6">
@@ -39,16 +46,40 @@ export function DashboardHeader() {
             </Link>
             
             <nav className="hidden md:flex ml-32 space-x-10">
-              <Link href="/dashboard" className="text-[#47B5FF] hover:text-[#3da5ec] font-medium">
+              <Link 
+                href="/dashboard" 
+                className={isActive('/dashboard') 
+                  ? "text-[#47B5FF] hover:text-[#3da5ec] font-medium" 
+                  : "text-slate-600 hover:text-slate-900 transition-colors"
+                }
+              >
                 Dashboard
               </Link>
-              <Link href="/projects" className="text-slate-600 hover:text-slate-900 transition-colors">
+              <Link 
+                href="/projects" 
+                className={isActive('/projects') 
+                  ? "text-[#47B5FF] hover:text-[#3da5ec] font-medium" 
+                  : "text-slate-600 hover:text-slate-900 transition-colors"
+                }
+              >
                 Projects
               </Link>
-              <Link href="/analytics" className="text-slate-600 hover:text-slate-900 transition-colors">
+              <Link 
+                href="/analytics" 
+                className={isActive('/analytics') 
+                  ? "text-[#47B5FF] hover:text-[#3da5ec] font-medium" 
+                  : "text-slate-600 hover:text-slate-900 transition-colors"
+                }
+              >
                 Analytics
               </Link>
-              <Link href="/resources" className="text-slate-600 hover:text-slate-900 transition-colors">
+              <Link 
+                href="/resources" 
+                className={isActive('/resources') 
+                  ? "text-[#47B5FF] hover:text-[#3da5ec] font-medium" 
+                  : "text-slate-600 hover:text-slate-900 transition-colors"
+                }
+              >
                 Resources
               </Link>
             </nav>

@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { CheckIcon } from "lucide-react";
 
 interface GoalTrackerProps {
-  completedDays: string[];
+  completedDays?: string[];
   targetDays?: string[];
+  progress?: number;
 }
 
 export function GoalTracker({ 
   completedDays = ["M", "T", "W", "Th", "F"], 
-  targetDays = ["M", "T", "W", "Th", "F", "S", "S"] 
+  targetDays = ["M", "T", "W", "Th", "F", "Sa", "Su"],
+  progress
 }: GoalTrackerProps) {
   
   const weekdays = [
@@ -20,12 +22,13 @@ export function GoalTracker({
     { id: "W", label: "W", full: "Wednesday" },
     { id: "Th", label: "Th", full: "Thursday" },
     { id: "F", label: "F", full: "Friday" },
-    { id: "S", label: "S", full: "Saturday" },
-    { id: "S", label: "S", full: "Sunday" }
+    { id: "Sa", label: "Sa", full: "Saturday" },
+    { id: "Su", label: "Su", full: "Sunday" }
   ];
   
-  const progressPercentage = Math.round((completedDays.length / targetDays.length) * 100);
-  const isExceeded = completedDays.length >= 5;
+  // Calculate progress percentage either from the progress prop or completed days
+  const progressPercentage = progress || Math.round((completedDays.length / targetDays.length) * 100);
+  const isExceeded = progressPercentage > 100 || completedDays.length >= 5;
   
   return (
     <Card className="bg-white shadow-sm border-0">
