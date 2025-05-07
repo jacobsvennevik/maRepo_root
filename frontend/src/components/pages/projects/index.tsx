@@ -3,6 +3,8 @@
 import { DashboardHeader } from "@/components/layout/dashboard-header"
 import { ProjectLayout } from "@/components/layout/project-layout"
 import { ProjectSidebar } from "@/components/layout/project-sidebar"
+import { AddProjectCard } from "./components/add-project-card"
+import { ProjectCard } from "./components/project-card"
 
 export default function Projects() {
   return (
@@ -19,10 +21,13 @@ export default function Projects() {
           {/* Main content area */}
           <main className="flex-1 p-6">
             <h1 className="text-2xl font-bold text-slate-900 mb-6">Projects</h1>
-            {/* Project content will be added here later */}
-            <div className="p-4 border border-dashed border-slate-300 rounded-lg bg-white">
-              <p className="text-slate-600">Project content placeholder</p>
-            </div>
+            <AddProjectCard />
+            <ProjectCard 
+              id="biology-research"
+              title="Biology Research Project"
+              description="Study of cellular structures and DNA replication"
+              lastUpdated="2 days ago"
+            />
           </main>
         </div>
       </div>

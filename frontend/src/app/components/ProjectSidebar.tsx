@@ -1,13 +1,13 @@
-"use client"
+'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Book, FileText, Brain, ClipboardList, StickyNote, File, BarChart2 } from 'lucide-react';
 
 interface ProjectSidebarProps {
-  projectId?: string;
-  projectName?: string;
+  projectId: string;
+  projectName: string;
 }
 
 const sidebarItems = [
@@ -20,12 +20,12 @@ const sidebarItems = [
   { name: 'Analytics', href: 'analytics', icon: BarChart2 },
 ];
 
-export function ProjectSidebar({ projectId, projectName }: ProjectSidebarProps) {
+export default function ProjectSidebar({ projectId, projectName }: ProjectSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   const currentTool = pathname.split('/').pop() || 'overview';
-  const isProjectView = projectId && projectName;
 
   return (
     <div className={`flex flex-col h-screen bg-white border-r border-gray-200 transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
@@ -38,7 +38,7 @@ export function ProjectSidebar({ projectId, projectName }: ProjectSidebarProps) 
       </button>
 
       {/* Breadcrumbs */}
-      {!isCollapsed && isProjectView && (
+      {!isCollapsed && (
         <div className="px-4 py-2 text-sm text-gray-600">
           <Link href="/projects" className="hover:text-blue-600">Projects</Link>
           <span className="mx-2">/</span>
@@ -51,14 +51,11 @@ export function ProjectSidebar({ projectId, projectName }: ProjectSidebarProps) 
         {sidebarItems.map((item) => {
           const isActive = currentTool === item.href;
           const Icon = item.icon;
-          const href = isProjectView 
-            ? `/projects/${projectId}/${item.href}`
-            : `/projects/${item.href}`;
           
           return (
             <Link
               key={item.href}
-              href={href}
+              href={`/projects/${projectId}/${item.href}`}
               className={`flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                 isActive
                   ? 'bg-blue-50 text-blue-600'
@@ -73,17 +70,15 @@ export function ProjectSidebar({ projectId, projectName }: ProjectSidebarProps) 
       </nav>
 
       {/* Back to Projects */}
-      {isProjectView && (
-        <div className="p-4 border-t border-gray-200">
-          <Link
-            href="/projects"
-            className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900"
-          >
-            <ChevronLeft size={20} className="mr-2" />
-            {!isCollapsed && <span>Back to All Projects</span>}
-          </Link>
-        </div>
-      )}
+      <div className="p-4 border-t border-gray-200">
+        <Link
+          href="/projects"
+          className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900"
+        >
+          <ChevronLeft size={20} className="mr-2" />
+          {!isCollapsed && <span>Back to All Projects</span>}
+        </Link>
+      </div>
     </div>
   );
 } 
