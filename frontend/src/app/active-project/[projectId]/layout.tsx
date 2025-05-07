@@ -29,8 +29,10 @@ export default function ActiveProjectLayout({
       <DashboardHeader />
       <div className="flex flex-1">
         <ProjectSidebar projectId={projectId} projectName={projectName} />
-        <main className="flex-1 overflow-y-auto p-6">
-          {children}
+        <main className="flex-1 overflow-y-auto p-8">
+          <div className="max-w-[1400px] mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>

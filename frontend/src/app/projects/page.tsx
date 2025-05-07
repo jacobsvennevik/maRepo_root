@@ -1,56 +1,80 @@
 'use client';
 
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import Link from 'next/link';
+import { ProjectCard } from "./components/project-card";
+import { AddProjectCard } from "./components/add-project-card";
+import { mockProjects } from "./data/mock-projects";
+import { ProjectType } from "./types";
+import { useState } from "react";
 
-const projects = [
-  {
-    id: 'biology',
-    title: 'Biology Research',
-    description: 'Study of cellular structures and DNA replication',
-    lastUpdated: '2 days ago',
-  },
-  {
-    id: 'chemistry',
-    title: 'Chemistry Lab',
-    description: 'Chemical reactions and molecular structures',
-    lastUpdated: '1 day ago',
-  },
-  {
-    id: 'physics',
-    title: 'Physics Project',
-    description: 'Mechanics and thermodynamics',
-    lastUpdated: '3 days ago',
-  },
+const projectTypes: ProjectType[] = [
+  'biology',
+  'chemistry',
+  'physics',
+  'math',
+  'computer-science',
+  'literature',
+  'history',
+  'geography',
 ];
 
 export default function Projects() {
+  const [selectedType, setSelectedType] = useState<ProjectType | 'all'>('all');
+
+  const filteredProjects = selectedType === 'all' 
+    ? mockProjects
+    : mockProjects.filter(project => project.type === selectedType);
+
   return (
     <div className="flex flex-col min-h-screen bg-[#f8fafc]">
       <DashboardHeader />
       
-      <main className="flex-1 p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-            New Project
-          </button>
-        </div>
+      <main className="flex-1 p-8">
+        <div className="flex flex-col space-y-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map((project) => (
-            <Link
-              key={project.id}
-              href={`/active-project/${project.id}`}
-              className="block p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+          {/* Project Type Filter */}
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedType('all')}
+              className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors
+                ${selectedType === 'all' 
+                  ? 'bg-blue-100 text-blue-700' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
             >
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">{project.title}</h2>
-              <p className="text-gray-600 mb-4">{project.description}</p>
-              <div className="text-sm text-gray-500">
-                Last updated: {project.lastUpdated}
-              </div>
-            </Link>
-          ))}
+              All
+            </button>
+            {projectTypes.map(type => (
+              <button
+                key={type}
+                onClick={() => setSelectedType(type)}
+                className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors
+                  ${selectedType === type 
+                    ? 'bg-blue-100 text-blue-700' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+              >
+                {type.split('-').map(word => 
+                  word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ')}
+              </button>
+            ))}
+          </div>
+
+          <div className="max-w-[1400px] mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <AddProjectCard />
+              {filteredProjects.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  {...project}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </main>
     </div>
