@@ -53,7 +53,7 @@ export function DashboardNav() {
   ]
 
   return (
-    <header className="w-full border-b border-cyan-400 bg-white shadow-sm">
+    <header className="w-full border-b-2 border-cyan-300 bg-white shadow-md">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Left side: Logo and nav links */}
