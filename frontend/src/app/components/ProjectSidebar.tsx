@@ -28,7 +28,7 @@ export default function ProjectSidebar({ projectId, projectName }: ProjectSideba
   const currentTool = pathname.split('/').pop() || 'overview';
 
   return (
-    <div className={`flex flex-col h-screen bg-white border-r border-gray-200 transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
+    <div className={`flex flex-col h-screen bg-white/60 backdrop-blur-md border-r border-emerald-100 shadow-lg transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
       {/* Collapse Toggle */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}

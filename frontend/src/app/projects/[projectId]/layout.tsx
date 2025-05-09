@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import ProjectSidebar from '@/app/components/ProjectSidebar';
+import { ProjectBackground } from '@/components/common/backgrounds/project-background';
 
 // This would typically come from your database/API
 const getProjectName = (projectId: string) => {
@@ -25,11 +26,14 @@ export default function ProjectLayout({
   const projectName = getProjectName(projectId);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f8fafc]">
+    <div className="flex flex-col min-h-screen relative">
+      <ProjectBackground />
       <DashboardHeader />
       <div className="flex flex-1">
-        <ProjectSidebar projectId={projectId} projectName={projectName} />
-        <main className="flex-1 overflow-y-auto p-6">
+        <div className="z-10">
+          <ProjectSidebar projectId={projectId} projectName={projectName} />
+        </div>
+        <main className="flex-1 overflow-y-auto p-6 z-10">
           {children}
         </main>
       </div>

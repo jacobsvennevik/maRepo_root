@@ -6,6 +6,7 @@ import { AddProjectCard } from "./components/add-project-card";
 import { mockProjects } from "./data/mock-projects";
 import { ProjectType } from "./types";
 import { useState } from "react";
+import { ProjectBackground } from '@/components/common/backgrounds/project-background';
 
 const projectTypes: ProjectType[] = [
   'biology',
@@ -26,7 +27,8 @@ export default function Projects() {
     : mockProjects.filter(project => project.type === selectedType);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f8fafc]">
+    <div className="flex flex-col min-h-screen relative">
+      <ProjectBackground />
       <DashboardHeader />
       
       <main className="flex-1 p-8">
