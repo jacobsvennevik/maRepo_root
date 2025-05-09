@@ -3,6 +3,8 @@
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight, Plus, Brain, BookOpen, Tag, AlertCircle } from 'lucide-react';
+import { FlashcardStatCard } from './components/FlashcardStatCard';
+import { FlashcardTopicCard } from './components/FlashcardTopicCard';
 
 export default function ProjectFlashcards() {
   const params = useParams();
@@ -83,26 +85,11 @@ export default function ProjectFlashcards() {
 
         {/* Flashcard Stats */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="glass-card p-4 rounded-lg hover:scale-102 transition-all duration-300 backdrop-blur-sm">
-            <h3 className="font-medium text-emerald-800">Total Flashcards</h3>
-            <p className="text-2xl font-bold text-emerald-600">{projectData.totalFlashcards}</p>
-          </div>
-          <div className="glass-card p-4 rounded-lg hover:scale-102 transition-all duration-300 backdrop-blur-sm">
-            <h3 className="font-medium text-emerald-800">Mastered</h3>
-            <p className="text-2xl font-bold text-emerald-500">{projectData.mastered}</p>
-          </div>
-          <div className="glass-card p-4 rounded-lg hover:scale-102 transition-all duration-300 backdrop-blur-sm">
-            <h3 className="font-medium text-emerald-800">Needs Review</h3>
-            <p className="text-2xl font-bold text-yellow-500">{projectData.needsReview}</p>
-          </div>
-          <div className="glass-card p-4 rounded-lg hover:scale-102 transition-all duration-300 backdrop-blur-sm">
-            <h3 className="font-medium text-emerald-800">Source Documents</h3>
-            <p className="text-2xl font-bold text-ocean-500">{projectData.sourceDocuments}</p>
-          </div>
-          <div className="glass-card p-4 rounded-lg hover:scale-102 transition-all duration-300 backdrop-blur-sm">
-            <h3 className="font-medium text-emerald-800">Topics</h3>
-            <p className="text-2xl font-bold text-indigo-500">{projectData.topicsCovered}</p>
-          </div>
+          <FlashcardStatCard label="Total Flashcards" value={projectData.totalFlashcards} colorClass="text-emerald-600" />
+          <FlashcardStatCard label="Mastered" value={projectData.mastered} colorClass="text-emerald-500" />
+          <FlashcardStatCard label="Needs Review" value={projectData.needsReview} colorClass="text-yellow-500" />
+          <FlashcardStatCard label="Source Documents" value={projectData.sourceDocuments} colorClass="text-ocean-500" />
+          <FlashcardStatCard label="Topics" value={projectData.topicsCovered} colorClass="text-indigo-500" />
         </div>
 
         {/* Review Prompt */}
@@ -129,44 +116,17 @@ export default function ProjectFlashcards() {
           </div>
           <div className="divide-y divide-emerald-100">
             {projectData.topics.map((topic, index) => (
-              <div key={index} className="p-4 hover:bg-emerald-50/50 transition-all duration-300">
-                <div className="flex justify-between items-center">
-                  <div className="space-y-1">
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-medium text-emerald-900">{topic.title}</h3>
-                      {topic.isAIGenerated && (
-                        <span className="px-2 py-1 text-xs font-medium bg-gradient-to-r from-ocean-100 to-ocean-200 text-ocean-800 rounded-full">
-                          AI Generated
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-4 text-sm text-emerald-600">
-                      <span>{topic.cardCount} cards</span>
-                      <span>•</span>
-                      <span>Last reviewed {topic.lastReviewed}</span>
-                      <span>•</span>
-                      <span>{topic.sourceDoc}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      topic.status === 'mastered' 
-                        ? 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800'
-                        : 'bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800'
-                    }`}>
-                      {topic.status === 'mastered' ? 'Mastered' : 'Needs Review'}
-                    </span>
-                    <div className="flex space-x-2">
-                      <button className="px-3 py-1 text-sm bg-gradient-to-r from-emerald-600 to-emerald-500 text-white rounded-lg hover:from-emerald-700 hover:to-emerald-600 transition-all duration-300 shadow-sm">
-                        Review Now
-                      </button>
-                      <button className="px-3 py-1 text-sm border-2 border-emerald-500 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-all duration-300">
-                        Generate More
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <FlashcardTopicCard
+                key={index}
+                title={topic.title}
+                cardCount={topic.cardCount}
+                lastReviewed={topic.lastReviewed}
+                status={topic.status as 'mastered' | 'needs_review'}
+                sourceDoc={topic.sourceDoc}
+                isAIGenerated={topic.isAIGenerated}
+                onReview={() => {}}
+                onGenerateMore={() => {}}
+              />
             ))}
           </div>
         </div>
