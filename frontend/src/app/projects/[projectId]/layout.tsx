@@ -1,6 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+import { DashboardHeader } from "@/components/layout/dashboard-header";
 import ProjectSidebar from '@/app/components/ProjectSidebar';
 
 // This would typically come from your database/API
@@ -24,11 +25,14 @@ export default function ProjectLayout({
   const projectName = getProjectName(projectId);
 
   return (
-    <div className="flex h-screen">
-      <ProjectSidebar projectId={projectId} projectName={projectName} />
-      <main className="flex-1 overflow-y-auto p-6">
-        {children}
-      </main>
+    <div className="flex flex-col min-h-screen bg-[#f8fafc]">
+      <DashboardHeader />
+      <div className="flex flex-1">
+        <ProjectSidebar projectId={projectId} projectName={projectName} />
+        <main className="flex-1 overflow-y-auto p-6">
+          {children}
+        </main>
+      </div>
     </div>
   );
 } 

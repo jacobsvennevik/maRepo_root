@@ -21,7 +21,7 @@ export function ProjectCard({
 
   return (
     <Link
-      href={`/active-project/${id}`}
+      href={`/projects/${id}/overview`}
       className="group block p-6 bg-white rounded-lg shadow hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
     >
       <div className="flex items-start justify-between mb-4">

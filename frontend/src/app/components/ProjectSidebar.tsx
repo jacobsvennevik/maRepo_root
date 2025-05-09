@@ -55,7 +55,9 @@ export default function ProjectSidebar({ projectId, projectName }: ProjectSideba
           return (
             <Link
               key={item.href}
-              href={`/projects/${projectId}/${item.href}`}
+              href={{
+                pathname: `/projects/${projectId}/${item.href}`
+              }}
               className={`flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                 isActive
                   ? 'bg-blue-50 text-blue-600'
