@@ -364,6 +364,32 @@ class MCQParser:
             choice['letter'] = letters[i]
         
         return randomized_choices
+    
+    def update_explanation_with_mapping(self, explanation: str, letter_mapping: Dict[str, str]) -> str:
+        """
+        Update explanation text to reflect the new letter mapping after randomization.
+        Only replaces the correct answer letter, not the rest of the explanation.
+        """
+        updated_explanation = explanation
+        for old_letter, new_letter in letter_mapping.items():
+            # Replace only the first occurrence after 'Correct:', 'Answer:', etc.
+            patterns = [
+                rf'(Correct:\s*){old_letter}(\b)',
+                rf'(\*\*Correct:\s*){old_letter}(\*\*)',
+                rf'(Answer:\s*){old_letter}(\b)',
+                rf'(\*\*Answer:\s*){old_letter}(\*\*)',
+                rf'(The answer is\s*){old_letter}(\b)',
+                rf'(Answer is\s*){old_letter}(\b)'
+            ]
+            for pattern in patterns:
+                updated_explanation = re.sub(
+                    pattern,
+                    lambda m: m.group(1) + new_letter + (m.group(2) if m.lastindex >= 2 else ''),
+                    updated_explanation,
+                    count=1,  # Only replace the first occurrence
+                    flags=re.IGNORECASE
+                )
+        return updated_explanation
 
 
 def parse_mcq_text(text: str) -> List[Dict]:
@@ -379,26 +405,34 @@ def parse_mcq_text(text: str) -> List[Dict]:
     parser = MCQParser()
     questions = parser.parse_questions(text)
     
-    # Randomize choices for each question and update correct answer
+    # Randomize choices for each question and update correct answer and explanation
     for question in questions:
         original_correct_letter = question['original_correct_letter']
         
-        # Find the choice that was originally correct
-        original_correct_choice = None
+        # Create a mapping of original letters to new letters
+        original_choices = question['choices'].copy()
+        randomized_choices = parser.randomize_choices(question['choices'])
+        
+        # Create letter mapping
+        letter_mapping = {}
+        for i, original_choice in enumerate(original_choices):
+            new_letter = randomized_choices[i]['letter']
+            old_letter = original_choice['original_letter']
+            letter_mapping[old_letter] = new_letter
+        
+        # Update the correct answer based on the mapping
+        if original_correct_letter and original_correct_letter in letter_mapping:
+            new_correct_letter = letter_mapping[original_correct_letter]
+            question['correct_answer'] = new_correct_letter
+            
+            # Update the explanation to reflect the new letter
+            question['explanation'] = parser.update_explanation_with_mapping(
+                question['explanation'], letter_mapping
+            )
+        
+        # Update choices and mark the correct one
+        question['choices'] = randomized_choices
         for choice in question['choices']:
-            if choice['original_letter'] == original_correct_letter:
-                original_correct_choice = choice
-                break
-        
-        # Randomize the choices
-        question['choices'] = parser.randomize_choices(question['choices'])
-        
-        # Update the correct answer based on the new letter of the originally correct choice
-        if original_correct_choice:
-            for choice in question['choices']:
-                if choice['text'] == original_correct_choice['text']:
-                    choice['is_correct'] = True
-                    question['correct_answer'] = choice['letter']
-                    break
+            choice['is_correct'] = (choice['letter'] == question['correct_answer'])
     
     return questions 
