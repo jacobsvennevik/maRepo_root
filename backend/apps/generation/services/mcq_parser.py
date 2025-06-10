@@ -33,163 +33,53 @@ class MCQParser:
     
     def parse_questions(self, text: str) -> List[Dict]:
         """
-        Parse the text and extract multiple-choice questions.
-        
-        Args:
-            text: The input text containing questions in various formats
-            
-        Returns:
-            List of dictionaries containing parsed questions
+        Parse the text and extract multiple-choice questions using a more robust find-all approach.
+        This method is designed to be more resilient to headers or extra text between questions.
         """
         questions = []
         
-        # Try different parsing strategies
-        parsed_questions = []
-        
-        # Strategy 1: Split by question markers
-        for pattern in self.question_patterns:
-            sections = re.split(r'(?=<question>|<q>|Question:|Q[0-9]*\.?|^\d+\.)', text, flags=re.MULTILINE)
-            if len(sections) > 1:
-                parsed_questions.extend(self._parse_sections(sections))
-                break
-        
-        # Strategy 2: If no questions found, try to find questions by looking for choice patterns
-        if not parsed_questions:
-            parsed_questions = self._parse_by_choices(text)
-        
-        # Clean and validate questions
-        for question_data in parsed_questions:
+        # This pattern non-greedily captures the content between <question> and <explanation>
+        # and the content of <explanation>, stopping at the next <question> or end of string.
+        pattern = re.compile(r'<question>(.*?)<explanation>(.*?)(?=<question>|$)', re.DOTALL | re.IGNORECASE)
+
+        for match in pattern.finditer(text):
+            question_block = match.group(1).strip()
+            explanation = match.group(2).strip()
+
+            # The question text is everything in the block before the choices start.
+            choices = self._parse_choices(question_block)
+            if not choices:
+                continue # Skip if no choices are found in the block.
+
+            # Find where the choices start to isolate the question text
+            question_text = question_block
+            # Find the start of the first choice to isolate the question from the choice list
+            first_choice_pattern = r'^([A-D])\.\s*' # A common start pattern
+            for p in self.choice_patterns:
+                if re.search(p, question_block, re.MULTILINE):
+                    first_choice_pattern = p
+                    break
+            
+            first_match = re.search(first_choice_pattern, question_block, re.MULTILINE)
+            if first_match:
+                question_text = question_block[:first_match.start()].strip()
+
+
+            correct_letter = self._extract_correct_answer(explanation)
+            question_type = self._determine_question_type(question_text, explanation)
+
+            question_data = {
+                'question_text': question_text,
+                'choices': choices,
+                'explanation': explanation,
+                'question_type': question_type,
+                'correct_answer': correct_letter,
+                'original_correct_letter': correct_letter
+            }
+
             if self._validate_question(question_data):
                 questions.append(question_data)
-        
-        return questions
-    
-    def _parse_sections(self, sections: List[str]) -> List[Dict]:
-        """
-        Parse sections into questions.
-        
-        Args:
-            sections: List of text sections
-            
-        Returns:
-            List of question dictionaries
-        """
-        questions = []
-        
-        for section in sections:
-            if not section.strip():
-                continue
-            
-            # Extract question text using multiple patterns
-            question_text = None
-            for pattern in self.question_patterns:
-                match = re.search(pattern, section, re.DOTALL | re.IGNORECASE)
-                if match:
-                    question_text = match.group(1).strip()
-                    break
-            
-            if not question_text:
-                continue
-            
-            # Extract explanation using multiple patterns
-            explanation = ""
-            for pattern in self.explanation_patterns:
-                match = re.search(pattern, section, re.DOTALL | re.IGNORECASE)
-                if match:
-                    explanation = match.group(1).strip()
-                    break
-            
-            # Parse choices from question text
-            choices = self._parse_choices(question_text)
-            
-            if choices:
-                # Determine correct answer from explanation
-                correct_letter = self._extract_correct_answer(explanation)
                 
-                # Store the original correct answer before randomization
-                original_correct_letter = correct_letter
-                
-                # Determine question type based on content
-                question_type = self._determine_question_type(question_text, explanation)
-                
-                questions.append({
-                    'question_text': question_text,
-                    'choices': choices,
-                    'explanation': explanation,
-                    'question_type': question_type,
-                    'correct_answer': correct_letter,
-                    'original_correct_letter': original_correct_letter
-                })
-        
-        return questions
-    
-    def _parse_by_choices(self, text: str) -> List[Dict]:
-        """
-        Parse questions by looking for choice patterns when no clear question markers are found.
-        
-        Args:
-            text: The input text
-            
-        Returns:
-            List of question dictionaries
-        """
-        questions = []
-        
-        # Split text into potential question blocks
-        # Look for patterns that indicate question boundaries
-        blocks = re.split(r'\n\s*\n', text)
-        
-        for block in blocks:
-            if not block.strip():
-                continue
-            
-            # Look for choice patterns in the block
-            choices = self._parse_choices(block)
-            
-            if len(choices) >= 2:  # At least 2 choices to be a valid MCQ
-                # Extract question text (everything before the first choice)
-                lines = block.split('\n')
-                question_lines = []
-                
-                for line in lines:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    
-                    # Check if this line contains a choice
-                    is_choice = False
-                    for pattern in self.choice_patterns:
-                        if re.match(pattern, line, re.IGNORECASE):
-                            is_choice = True
-                            break
-                    
-                    if is_choice:
-                        break
-                    
-                    question_lines.append(line)
-                
-                question_text = '\n'.join(question_lines).strip()
-                
-                if question_text:
-                    # Try to find explanation in the same block or next block
-                    explanation = self._find_explanation(block, text)
-                    
-                    # Determine correct answer
-                    correct_letter = self._extract_correct_answer(explanation)
-                    original_correct_letter = correct_letter
-                    
-                    # Determine question type
-                    question_type = self._determine_question_type(question_text, explanation)
-                    
-                    questions.append({
-                        'question_text': question_text,
-                        'choices': choices,
-                        'explanation': explanation,
-                        'question_type': question_type,
-                        'correct_answer': correct_letter,
-                        'original_correct_letter': original_correct_letter
-                    })
-        
         return questions
     
     def _parse_choices(self, question_text: str) -> List[Dict]:
@@ -218,7 +108,7 @@ class MCQParser:
                     choice_text = match.group(2).strip()
                     
                     # Validate that it's a valid choice letter
-                    if letter in ['A', 'B', 'C', 'D']:
+                    if letter in ['A', 'B', 'C', 'D', 'E', 'F']: # Allow more choices
                         choices.append({
                             'letter': letter,
                             'text': choice_text,
@@ -270,18 +160,18 @@ class MCQParser:
         """
         # Look for various patterns indicating correct answers
         patterns = [
-            r'Correct:\s*([A-D])',
-            r'\*\*Correct:\s*([A-D])\*\*',
-            r'Answer:\s*([A-D])',
-            r'\*\*Answer:\s*([A-D])\*\*',
-            r'([A-D])\.\s*.*?correct',
-            r'([A-D])\.\s*.*?Correct',
-            r'The answer is\s*([A-D])',
-            r'Answer is\s*([A-D])',
-            r'([A-D])\s*is correct',
-            r'([A-D])\s*is the correct',
-            r'([A-D])\s*is right',
-            r'([A-D])\s*is the right',
+            r'Correct:\s*([A-F])',
+            r'\*\*Correct:\s*([A-F])\*\*',
+            r'Answer:\s*([A-F])',
+            r'\*\*Answer:\s*([A-F])\*\*',
+            r'([A-F])\.\s*.*?correct',
+            r'([A-F])\.\s*.*?Correct',
+            r'The answer is\s*([A-F])',
+            r'Answer is\s*([A-F])',
+            r'([A-F])\s*is correct',
+            r'([A-F])\s*is the correct',
+            r'([A-F])\s*is right',
+            r'([A-F])\s*is the right',
         ]
         
         for pattern in patterns:
@@ -334,7 +224,7 @@ class MCQParser:
             return False
         
         # Check if all choices have valid letters
-        valid_letters = {'A', 'B', 'C', 'D'}
+        valid_letters = {'A', 'B', 'C', 'D', 'E', 'F'}
         choice_letters = {choice['letter'] for choice in choices}
         
         if not choice_letters.issubset(valid_letters):
@@ -358,8 +248,8 @@ class MCQParser:
         # Shuffle the choices
         random.shuffle(randomized_choices)
         
-        # Update the letters to maintain A, B, C, D order
-        letters = ['A', 'B', 'C', 'D']
+        # Update the letters to maintain A, B, C, D... order
+        letters = [chr(ord('A') + i) for i in range(len(randomized_choices))]
         for i, choice in enumerate(randomized_choices):
             choice['letter'] = letters[i]
         
@@ -368,27 +258,27 @@ class MCQParser:
     def update_explanation_with_mapping(self, explanation: str, letter_mapping: Dict[str, str]) -> str:
         """
         Update explanation text to reflect the new letter mapping after randomization.
-        Only replaces the correct answer letter, not the rest of the explanation.
+        This will replace all standalone letters (A, B, C, D) in the explanation simultaneously.
         """
-        updated_explanation = explanation
-        for old_letter, new_letter in letter_mapping.items():
-            # Replace only the first occurrence after 'Correct:', 'Answer:', etc.
-            patterns = [
-                rf'(Correct:\s*){old_letter}(\b)',
-                rf'(\*\*Correct:\s*){old_letter}(\*\*)',
-                rf'(Answer:\s*){old_letter}(\b)',
-                rf'(\*\*Answer:\s*){old_letter}(\*\*)',
-                rf'(The answer is\s*){old_letter}(\b)',
-                rf'(Answer is\s*){old_letter}(\b)'
-            ]
-            for pattern in patterns:
-                updated_explanation = re.sub(
-                    pattern,
-                    lambda m: m.group(1) + new_letter + (m.group(2) if m.lastindex >= 2 else ''),
-                    updated_explanation,
-                    count=1,  # Only replace the first occurrence
-                    flags=re.IGNORECASE
-                )
+        # Create a regex pattern that matches any of the old letters as whole words.
+        # e.g., \b(A|B|C|D)\b
+        # We sort keys by length to prevent partial matches, e.g., matching 'C' inside 'Correct'.
+        sorted_keys = sorted(letter_mapping.keys(), key=len, reverse=True)
+        if not sorted_keys:
+            return explanation
+            
+        pattern = re.compile(
+            r'\b(' + '|'.join(re.escape(k) for k in sorted_keys) + r')\b'
+        )
+
+        # Use a replacer function that looks up the matched letter in the mapping.
+        # The matched letter (group 0) is used as the key.
+        # The `get` method provides a fallback to the original match if a key is not found.
+        updated_explanation = pattern.sub(
+            lambda m: letter_mapping.get(m.group(0).upper(), m.group(0)),
+            explanation
+        )
+            
         return updated_explanation
 
 
@@ -407,32 +297,45 @@ def parse_mcq_text(text: str) -> List[Dict]:
     
     # Randomize choices for each question and update correct answer and explanation
     for question in questions:
-        original_correct_letter = question['original_correct_letter']
-        
-        # Create a mapping of original letters to new letters
         original_choices = question['choices'].copy()
-        randomized_choices = parser.randomize_choices(question['choices'])
-        
-        # Create letter mapping
+        if not original_choices:
+            continue
+
+        # Find the text of the originally correct choice
+        original_correct_letter = question['original_correct_letter']
+        correct_choice_text = ""
+        for choice in original_choices:
+            if choice['original_letter'] == original_correct_letter:
+                correct_choice_text = choice['text']
+                break
+
+        # Randomize the choices. The `randomized_choices` list now has new letters.
+        randomized_choices = parser.randomize_choices(original_choices)
+
+        # Create the mapping from old letter to new letter by matching text content
         letter_mapping = {}
-        for i, original_choice in enumerate(original_choices):
-            new_letter = randomized_choices[i]['letter']
-            old_letter = original_choice['original_letter']
-            letter_mapping[old_letter] = new_letter
+        for r_choice in randomized_choices:
+            for o_choice in original_choices:
+                if o_choice['text'] == r_choice['text']:
+                    letter_mapping[o_choice['original_letter']] = r_choice['letter']
+                    break
         
-        # Update the correct answer based on the mapping
-        if original_correct_letter and original_correct_letter in letter_mapping:
-            new_correct_letter = letter_mapping[original_correct_letter]
-            question['correct_answer'] = new_correct_letter
-            
-            # Update the explanation to reflect the new letter
+        # Update the explanation using this new, correct mapping
+        if letter_mapping:
             question['explanation'] = parser.update_explanation_with_mapping(
                 question['explanation'], letter_mapping
             )
-        
-        # Update choices and mark the correct one
+
+        # Find the new correct letter and set the flags
+        new_correct_letter = ""
+        for choice in randomized_choices:
+            if choice['text'] == correct_choice_text:
+                choice['is_correct'] = True
+                new_correct_letter = choice['letter']
+            else:
+                choice['is_correct'] = False
+
+        question['correct_answer'] = new_correct_letter
         question['choices'] = randomized_choices
-        for choice in question['choices']:
-            choice['is_correct'] = (choice['letter'] == question['correct_answer'])
-    
+
     return questions 
