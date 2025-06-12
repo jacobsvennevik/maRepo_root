@@ -1,4 +1,5 @@
 import React from 'react';
+import { getDaysSinceLastReview } from '@/lib/date';
 
 interface FlashcardTopicCardProps {
   title: string;
@@ -9,13 +10,6 @@ interface FlashcardTopicCardProps {
   isAIGenerated?: boolean;
   onReview?: () => void;
   onGenerateMore?: () => void;
-}
-
-function getDaysSinceLastReview(lastReviewed: string): number {
-  // Assumes format like '2 days ago', '5 days ago', '1 day ago'
-  const match = lastReviewed.match(/(\d+) day/);
-  if (match) return parseInt(match[1], 10);
-  return 0;
 }
 
 export function FlashcardTopicCard({

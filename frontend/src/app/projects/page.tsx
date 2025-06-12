@@ -6,7 +6,7 @@ import { AddProjectCard } from "./components/add-project-card";
 import { mockProjects } from "./data/mock-projects";
 import { ProjectType } from "./types";
 import { useState } from "react";
-import { ProjectBackground } from '@/components/common/backgrounds/project-background';
+import { WhiteBackground } from '@/components/common/backgrounds/white-background';
 
 const projectTypes: ProjectType[] = [
   'biology',
@@ -28,7 +28,7 @@ export default function Projects() {
 
   return (
     <div className="flex flex-col min-h-screen relative">
-      <ProjectBackground />
+      <WhiteBackground />
       <DashboardHeader />
       
       <main className="flex-1 p-8">
@@ -43,8 +43,8 @@ export default function Projects() {
               onClick={() => setSelectedType('all')}
               className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors
                 ${selectedType === 'all' 
-                  ? 'bg-blue-100 text-blue-700' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-emerald-600 text-white shadow' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-emerald-100 hover:text-emerald-800'
                 }`}
             >
               All
@@ -55,8 +55,8 @@ export default function Projects() {
                 onClick={() => setSelectedType(type)}
                 className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors
                   ${selectedType === type 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-emerald-600 text-white shadow' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-emerald-100 hover:text-emerald-800'
                   }`}
               >
                 {type.split('-').map(word => 

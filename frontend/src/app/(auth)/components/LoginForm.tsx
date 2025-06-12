@@ -1,12 +1,56 @@
-import type React from "react"
+'use client';
+
+import * as React from "react"
 import Image from "next/image"
+import Link from "next/link"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/cards/login-card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+const formSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+})
+
+type FormData = z.infer<typeof formSchema>
+
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
+  const [isLoading, setIsLoading] = React.useState(false)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+  })
+
+  async function onSubmit(data: FormData) {
+    setIsLoading(true)
+    console.log("Form data:", data)
+    // TODO: Replace with your actual API call
+    // Example:
+    // try {
+    //   const response = await fetch('/api/login', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(data),
+    //   })
+    //   if (response.ok) {
+    //     // Handle successful login (e.g., redirect)
+    //   } else {
+    //     // Handle login error
+    //   }
+    // } catch (error) {
+    //   // Handle network error
+    // }
+    setTimeout(() => setIsLoading(false), 2000) // Simulate network request
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props} data-testid="login-form">
       <Card className="overflow-hidden border-0 shadow-2xl bg-white/90 backdrop-blur-sm rounded-2xl">
@@ -19,7 +63,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 <p className="text-slate-600">Sign in to your YesYes account</p>
               </div>
 
-              <form className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm text-slate-700">
                     Email
@@ -28,9 +72,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     id="email"
                     type="email"
                     placeholder="m@example.com"
-                    required
+                    {...register("email")}
                     className="h-11 px-3 py-2 text-base bg-white border border-slate-200 focus:border-emerald-400 focus:ring-emerald-400"
                   />
+                  {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -38,26 +83,28 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     <Label htmlFor="password" className="text-sm text-slate-700">
                       Password
                     </Label>
-                    <a
-                      href="#"
+                    <Link
+                      href="/forgot-password" // TODO: Update with correct route if different
                       className="text-sm text-emerald-600 hover:text-emerald-700 hover:underline underline-offset-4"
                     >
                       Forgot your password?
-                    </a>
+                    </Link>
                   </div>
                   <Input
                     id="password"
                     type="password"
-                    required
+                    {...register("password")}
                     className="h-11 px-3 py-2 text-base bg-white border border-slate-200 focus:border-emerald-400 focus:ring-emerald-400"
                   />
+                  {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
                 </div>
 
                 <Button 
                   type="submit" 
                   className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
+                  disabled={isLoading}
                 >
-                  Sign in
+                  {isLoading ? "Signing in..." : "Sign in"}
                 </Button>
               </form>
 
@@ -93,9 +140,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
               <div className="text-center text-sm">
                 <span className="text-slate-600">Don't have an account? </span>
-                <a href="#" className="text-emerald-600 hover:text-emerald-700 hover:underline underline-offset-4">
+                <Link href="/signup" className="text-emerald-600 hover:text-emerald-700 hover:underline underline-offset-4">
                   Sign up
-                </a>
+                </Link>
               </div>
             </div>
           </div>

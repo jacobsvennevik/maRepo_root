@@ -59,7 +59,7 @@ class MCQTerminalQuiz:
             line = line.strip()
             if not line:
                 continue
-            if re.match(r'^[A-D]\.', line):
+            if re.match(r'^[A-D][\.\)]', line):
                 break
             question_text_lines.append(line)
         

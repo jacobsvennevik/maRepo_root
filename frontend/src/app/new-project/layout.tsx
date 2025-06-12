@@ -1,7 +1,7 @@
 'use client';
 
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { ProjectBackground } from '@/components/common/backgrounds/project-background';
+import { WhiteBackground } from '@/components/common/backgrounds/white-background';
 import ProjectSidebar from '@/app/components/ProjectSidebar';
 
 export default function NewProjectLayout({
@@ -11,7 +11,7 @@ export default function NewProjectLayout({
 }) {
   return (
     <div className="flex flex-col min-h-screen relative">
-      <ProjectBackground />
+      <WhiteBackground />
       <DashboardHeader />
       <div className="flex flex-1">
         <div className="z-10">

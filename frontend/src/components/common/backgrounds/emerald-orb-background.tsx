@@ -1,6 +1,6 @@
 'use client';
 
-export function ProjectBackground() {
+export function EmeraldOrbBackground() {
   return (
     <div className="fixed inset-0 z-[-10] pointer-events-none">
       {/* Base gradient - Made more emerald-focused */}

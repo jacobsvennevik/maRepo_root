@@ -22,7 +22,7 @@ export function ProjectCard({
   return (
     <Link
       href={`/projects/${id}/overview`}
-      className="group block p-6 bg-white rounded-lg shadow hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+      className="group block p-6 bg-gradient-to-br from-emerald-50 to-blue-100 rounded-lg shadow hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
     >
       <div className="flex items-start justify-between mb-4">
         <div className={`p-2 rounded-lg ${colorClasses}`}>

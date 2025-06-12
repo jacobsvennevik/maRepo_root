@@ -1,14 +1,10 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Book, FileText, Brain, ClipboardList, StickyNote, File, BarChart2 } from 'lucide-react';
-
-interface ProjectSidebarProps {
-  projectId: string;
-  projectName: string;
-}
+import { useProject } from '../projects/[projectId]/_context/project-context';
 
 const sidebarItems = [
   { name: 'Overview', href: 'overview', icon: Book },
@@ -20,10 +16,10 @@ const sidebarItems = [
   { name: 'Analytics', href: 'analytics', icon: BarChart2 },
 ];
 
-export default function ProjectSidebar({ projectId, projectName }: ProjectSidebarProps) {
+export default function ProjectSidebar() {
+  const { projectId, projectName } = useProject();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
 
   const currentTool = pathname.split('/').pop() || 'overview';
 
