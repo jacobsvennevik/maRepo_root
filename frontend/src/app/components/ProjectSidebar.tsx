@@ -24,7 +24,24 @@ export default function ProjectSidebar() {
   const currentTool = pathname.split('/').pop() || 'overview';
 
   return (
-    <div className={`flex flex-col h-screen bg-white/60 backdrop-blur-md border-r-2 border-gray-400 shadow-xl transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
+    <div
+      className={`
+        fixed top-[88px] left-8 z-50
+        bg-white/80 backdrop-blur-md
+        rounded-2xl shadow-2xl border border-gray-200
+        transition-all duration-300
+        ${isCollapsed ? 'w-16' : 'w-64'}
+        flex flex-col
+        min-h-[70vh] max-h-[90vh]
+        overflow-hidden
+      `}
+    >
+      {/* Project Name */}
+      {!isCollapsed && (
+        <div className="px-4 pt-4 pb-2 font-bold text-lg text-gray-800 truncate">
+          {projectName}
+        </div>
+      )}
       {/* Collapse Toggle */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}

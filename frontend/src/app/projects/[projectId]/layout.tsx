@@ -23,21 +23,22 @@ export default async function ProjectLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { projectId: string };
+  params: Promise<{ projectId: string }>;
 }) {
-  const projectName = await getProjectName(params.projectId);
-  const projectData = { projectId: params.projectId, projectName };
+  const { projectId } = await params;
+  const projectName = await getProjectName(projectId);
+  const projectData = { projectId, projectName };
 
   return (
     <ProjectProvider value={projectData}>
-      <div className="flex flex-col min-h-screen relative">
+      <div className="flex flex-col min-h-screen relative overflow-hidden">
         <WhiteBackground />
         <DashboardHeader />
         <div className="flex flex-1">
-          <div className="z-10">
+          <div className="z-50">
             <ProjectSidebar />
           </div>
-          <main className="flex-1 overflow-y-auto p-6 z-10">
+          <main className="flex-1 p-6 z-10 ml-72">
             {children}
           </main>
         </div>

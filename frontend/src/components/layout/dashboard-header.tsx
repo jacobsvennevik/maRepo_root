@@ -36,7 +36,13 @@ export function DashboardHeader() {
   }
 
   return (
-    <header className={`sticky top-0 z-[9999] border-b-2 border-gray-400 ${scrolled ? "bg-white shadow-md py-3" : "bg-white py-4"}`}>
+    <header className={`
+      bg-white/90 backdrop-blur-md
+      rounded-2xl shadow-lg border border-gray-200
+      mx-8 mt-2 px-6 py-4
+      flex items-center justify-between
+      relative z-[9999]
+    `}>
       <div className="px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
