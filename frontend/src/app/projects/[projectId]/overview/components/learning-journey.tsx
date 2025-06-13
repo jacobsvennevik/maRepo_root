@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Eye, Waves, BookOpen, Activity } from 'lucide-react';
+import PropTypes from 'prop-types';
 
 interface JourneyItem {
   id: number;
@@ -16,6 +17,12 @@ interface LearningJourneyProps {
   floatingCards: boolean;
 }
 
+/**
+ * Component that displays the user's learning journey with animated timeline items.
+ * @param {object} props
+ * @param {number} props.waveOffset - Current wave animation offset
+ * @param {boolean} props.floatingCards - Whether cards should float/animate
+ */
 export function LearningJourney({ waveOffset, floatingCards }: LearningJourneyProps) {
   const learningJourney: JourneyItem[] = [
     { id: 1, milestone: "Completed Ocean Biology Quiz", time: "2 hours ago", type: "quiz", status: "completed" },
@@ -78,4 +85,9 @@ export function LearningJourney({ waveOffset, floatingCards }: LearningJourneyPr
       </CardContent>
     </Card>
   );
-} 
+}
+
+LearningJourney.propTypes = {
+  waveOffset: PropTypes.number.isRequired,
+  floatingCards: PropTypes.bool.isRequired,
+}; 

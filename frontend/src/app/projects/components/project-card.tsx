@@ -1,9 +1,21 @@
 import Link from 'next/link';
 import { Users } from 'lucide-react';
 import { Project, projectIcons, projectColors } from '../types';
+import PropTypes from 'prop-types';
 
 interface ProjectCardProps extends Project {}
 
+/**
+ * Card component for displaying a project overview in the projects grid.
+ * @param {object} props
+ * @param {string} props.id - Project ID
+ * @param {string} props.title - Project title
+ * @param {string} props.description - Project description
+ * @param {string} props.lastUpdated - Last updated timestamp
+ * @param {string} props.type - Project type
+ * @param {number} [props.progress] - Project progress percentage
+ * @param {number} [props.collaborators] - Number of collaborators
+ */
 export function ProjectCard({ 
   id, 
   title, 
@@ -78,4 +90,14 @@ export function ProjectCard({
       </div>
     </Link>
   );
-} 
+}
+
+ProjectCard.propTypes = {
+  id: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  lastUpdated: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  progress: PropTypes.number,
+  collaborators: PropTypes.number,
+}; 

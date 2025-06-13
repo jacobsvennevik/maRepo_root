@@ -1,11 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 interface OceanBackgroundProps {
   children: React.ReactNode;
 }
 
+/**
+ * Background component that provides an animated ocean-themed backdrop.
+ * @param {object} props
+ * @param {React.ReactNode} props.children - Child components to render
+ */
 export function OceanBackground({ children }: OceanBackgroundProps) {
   const [waveOffset, setWaveOffset] = useState(0);
 
@@ -45,4 +51,8 @@ export function OceanBackground({ children }: OceanBackgroundProps) {
       `}</style>
     </div>
   );
-} 
+}
+
+OceanBackground.propTypes = {
+  children: PropTypes.node.isRequired,
+}; 

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, Star, Eye, Clock } from 'lucide-react';
+import PropTypes from 'prop-types';
 
 interface StatCard {
   title: string;
@@ -21,6 +22,12 @@ interface FloatingStatsCardsProps {
   floatingCards: boolean;
 }
 
+/**
+ * Component that displays animated floating statistics cards with ocean theme.
+ * @param {object} props
+ * @param {number} props.waveOffset - Current wave animation offset
+ * @param {boolean} props.floatingCards - Whether cards should float/animate
+ */
 export function FloatingStatsCards({ waveOffset, floatingCards }: FloatingStatsCardsProps) {
   const oceanStats: StatCard[] = [
     {
@@ -104,4 +111,9 @@ export function FloatingStatsCards({ waveOffset, floatingCards }: FloatingStatsC
       ))}
     </div>
   );
-} 
+}
+
+FloatingStatsCards.propTypes = {
+  waveOffset: PropTypes.number.isRequired,
+  floatingCards: PropTypes.bool.isRequired,
+}; 

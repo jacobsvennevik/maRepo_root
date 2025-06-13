@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Book, FileText, Brain, ClipboardList, StickyNote, File, BarChart2 } from 'lucide-react';
 import { useProject } from '../projects/[projectId]/_context/project-context';
+import PropTypes from 'prop-types';
 
 const sidebarItems = [
   { name: 'Overview', href: 'overview', icon: Book },
@@ -16,6 +17,9 @@ const sidebarItems = [
   { name: 'Analytics', href: 'analytics', icon: BarChart2 },
 ];
 
+/**
+ * Sidebar navigation for project tools and navigation links.
+ */
 export default function ProjectSidebar() {
   const { projectId, projectName } = useProject();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -87,4 +91,6 @@ export default function ProjectSidebar() {
       </div>
     </div>
   );
-} 
+}
+
+ProjectSidebar.propTypes = {}; 

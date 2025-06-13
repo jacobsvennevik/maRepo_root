@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navigation } from 'lucide-react';
+import PropTypes from 'prop-types';
 
 interface VoyageItem {
   id: number;
@@ -16,6 +17,12 @@ interface UpcomingVoyagesProps {
   floatingCards: boolean;
 }
 
+/**
+ * Component that displays upcoming learning voyages with animated cards.
+ * @param {object} props
+ * @param {number} props.waveOffset - Current wave animation offset
+ * @param {boolean} props.floatingCards - Whether cards should float/animate
+ */
 export function UpcomingVoyages({ waveOffset, floatingCards }: UpcomingVoyagesProps) {
   const upcomingVoyages: VoyageItem[] = [
     { id: 1, destination: "Review Chapter 5 concepts", due: "Today", priority: "high", depth: "Deep waters" },
@@ -67,4 +74,9 @@ export function UpcomingVoyages({ waveOffset, floatingCards }: UpcomingVoyagesPr
       </CardContent>
     </Card>
   );
-} 
+}
+
+UpcomingVoyages.propTypes = {
+  waveOffset: PropTypes.number.isRequired,
+  floatingCards: PropTypes.bool.isRequired,
+}; 

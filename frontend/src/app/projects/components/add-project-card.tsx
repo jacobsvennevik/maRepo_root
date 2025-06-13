@@ -1,3 +1,8 @@
+import PropTypes from 'prop-types';
+
+/**
+ * Card button for creating a new project in the projects grid.
+ */
 export function AddProjectCard() {
   return (
     <button className="block w-full p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow border-2 border-dashed border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-500">
@@ -20,4 +25,6 @@ export function AddProjectCard() {
       </div>
     </button>
   );
-} 
+}
+
+AddProjectCard.propTypes = {}; 

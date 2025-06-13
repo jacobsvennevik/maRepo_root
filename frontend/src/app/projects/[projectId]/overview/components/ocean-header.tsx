@@ -2,12 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { Droplets, Navigation, Sparkles, ArrowRight } from 'lucide-react';
+import PropTypes from 'prop-types';
 
 interface OceanHeaderProps {
   title?: string;
   subtitle?: string;
 }
 
+/**
+ * Header component for the overview page with ocean-themed styling.
+ * @param {object} props
+ * @param {string} [props.title] - The main title text
+ * @param {string} [props.subtitle] - The subtitle text
+ */
 export function OceanHeader({ 
   title = "Learning Voyage", 
   subtitle = "Navigate through your educational journey" 
@@ -36,4 +43,8 @@ export function OceanHeader({
       </div>
     </div>
   );
+}
+
+OceanHeader.propTypes = {
+  title: PropTypes.string,
 } 

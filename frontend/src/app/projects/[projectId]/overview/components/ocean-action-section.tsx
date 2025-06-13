@@ -2,7 +2,13 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Eye, BookOpen, CheckCircle, Waves } from 'lucide-react';
+import PropTypes from 'prop-types';
 
+/**
+ * Action section component that provides quick access to learning activities.
+ * This component displays three main action cards for reviewing concepts,
+ * taking assessments, and studying notes.
+ */
 export function OceanActionSection() {
   return (
     <Card className="bg-gradient-to-r from-blue-50/80 to-cyan-50/80 border-blue-300/50 backdrop-blur-sm">
@@ -42,4 +48,6 @@ export function OceanActionSection() {
       </CardContent>
     </Card>
   );
-} 
+}
+
+// No PropTypes needed for this component as it doesn't accept any props 
