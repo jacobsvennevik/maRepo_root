@@ -2,6 +2,7 @@
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from .factories import CustomUserFactory
 
 User = get_user_model()
@@ -16,9 +17,9 @@ def test_custom_user_creation():
     
     # Verify that the user has been saved (has a primary key)
     assert user.pk is not None
-    # Verify that username and email are correctly set
-    assert user.username.startswith('user')
-    assert user.email == f"{user.username}@example.com"
+    # Verify that email is correctly set and follows the expected pattern
+    assert user.email.startswith('user')
+    assert user.email.endswith('@example.com')
     # Verify that the default subscription_status is 'free'
     assert user.subscription_status == 'free'
     # Verify that the default preferences are an empty dict
@@ -27,11 +28,10 @@ def test_custom_user_creation():
 @pytest.mark.django_db
 def test_custom_user_str_method():
     """
-    Test that the __str__ method returns the username.
+    Test that the __str__ method returns the email.
     """
-    user = CustomUserFactory.create(username="testuser")
-    expected_str = "testuser"  # Expected output of __str__
-    assert str(user) == expected_str
+    user = CustomUserFactory.create(email="test@example.com")
+    assert str(user) == "test@example.com"
 
 @pytest.mark.django_db
 def test_custom_user_update_preferences():
@@ -54,3 +54,24 @@ def test_custom_user_password_check():
     user = CustomUserFactory.create(password=password)
     # The raw password is not stored; use check_password for verification.
     assert user.check_password(password)
+
+@pytest.mark.django_db
+def test_custom_user_email_unique():
+    """
+    Test that users cannot be created with duplicate emails.
+    """
+    email = "test@example.com"
+    CustomUserFactory.create(email=email)
+    
+    with pytest.raises(ValidationError):
+        user2 = CustomUserFactory.build(email=email)
+        user2.full_clean()
+
+@pytest.mark.django_db
+def test_custom_user_email_required():
+    """
+    Test that email is required.
+    """
+    with pytest.raises(ValidationError):
+        user = CustomUserFactory.build(email="")
+        user.full_clean()

@@ -207,3 +207,73 @@ apps
    :undoc-members:
    :show-inheritance:
 
+.. automodule:: backend.apps.pdf_service
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.admin
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.apps
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.forms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.django_models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.serializers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.ingestion
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.classification
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.vector_store
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.tasks
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.urls
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: backend.apps.pdf_service.views_api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+

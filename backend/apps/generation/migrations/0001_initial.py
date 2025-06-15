@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('documents', '0003_alter_document_file'),
+        ('pdf_service', '0004_document_upload_type'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(default='Untitled Flashcard Set', max_length=255)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('document', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='flashcards', to='documents.document')),
+                ('document', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='flashcards', to='pdf_service.document')),
                 ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(default='Untitled MindMap', max_length=255)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('mindmap_data', models.JSONField()),
-                ('document', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='mindmaps', to='documents.document')),
+                ('document', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='mindmaps', to='pdf_service.document')),
                 ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(default='Untitled Question Set', max_length=255)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('description', models.TextField(blank=True, null=True)),
-                ('document', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='question_sets', to='documents.document')),
+                ('document', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='question_sets', to='pdf_service.document')),
                 ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

@@ -1,12 +1,18 @@
+import pytest
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
-from backend.apps.documents.models import Document
-from ..models import StudyMaterial, Note, Test
+from backend.apps.pdf_service.django_models import Document
+from backend.apps.study_materials.models import StudyMaterial, Note, Test
 
 User = get_user_model()
+
+@pytest.mark.django_db
+def test_study_material_creation():
+    # ...
+    pass
 
 class StudyMaterialModelTests(TestCase):
     def setUp(self):

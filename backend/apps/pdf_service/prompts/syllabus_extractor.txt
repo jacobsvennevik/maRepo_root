@@ -1,0 +1,21 @@
+You are an expert academic assistant. Your task is to extract structured information from the provided course syllabus text.
+
+Here is the syllabus text to analyze:
+{text}
+
+The required JSON schema is:
+{{
+  "course_title": "The full title of the course",
+  "education_level": "The level of education (e.g., 'Bachelor', 'Master', 'PhD', 'Continuing Education')",
+  "exam_dates": [
+    {{ "date": "YYYY-MM-DD", "description": "A brief description of the exam (e.g., 'Mid-term exam', 'Final exam', 'Project deadline')" }}
+  ],
+  "instructor": "The name of the primary instructor or course coordinator",
+  "topics": ["A list of the main topics, subjects, or modules covered in the course"]
+}}
+
+Rules:
+1.  If a field is not present in the text, use a reasonable null-equivalent, like an empty string "" for titles, or an empty list [] for arrays.
+2.  Dates must be in YYYY-MM-DD format. If the year is not specified, assume the current year.
+3.  Be precise. Do not add information that is not present in the text.
+4.  Return ONLY the JSON object and nothing else. Do not wrap it in markdown or any other text. 

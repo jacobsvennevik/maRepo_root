@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from backend.apps.documents.models import Document
+from backend.apps.pdf_service.django_models import Document
 from backend.apps.projects.models import Project
 
 MATERIAL_TYPE_CHOICES = [
@@ -32,6 +32,7 @@ class StudyMaterial(models.Model):
         related_name='study_materials'
     )
     title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
     material_type = models.CharField(
         max_length=20,
         choices=MATERIAL_TYPE_CHOICES

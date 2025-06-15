@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import Project, ImportantDate
+from .models import Project, ImportantDate, UploadedFile
+
+class UploadedFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadedFile
+        fields = ['id', 'file', 'uploaded_at', 'content_hash']
+        read_only_fields = ['id', 'uploaded_at', 'content_hash']
 
 class ImportantDateSerializer(serializers.ModelSerializer):
     class Meta:

@@ -8,7 +8,7 @@ from backend.apps.generation.forms import (
     FlashcardFormSet,
 )
 from backend.apps.generation.models import FlashcardSet, Flashcard
-from backend.apps.documents.tests.factories import DocumentFactory
+from backend.apps.pdf_service.tests.factories import DocumentFactory
 from backend.apps.accounts.tests.factories import CustomUserFactory
 from backend.apps.generation.tests.factories.flashcard import FlashcardSetFactory
 
@@ -68,7 +68,7 @@ def test_flashcard_form_missing_answer():
 # --- FlashcardSetForm Tests ---
 
 @pytest.mark.django_db
-def test_flashcard_set_form_valid_with_document():
+def test_flashcard_set_form_valid():
     """
     Test that FlashcardSetForm is valid when provided with a title and a document.
     """

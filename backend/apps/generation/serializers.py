@@ -1,6 +1,6 @@
 # backend/apps/generation/serializers.py
 from rest_framework import serializers
-from .models import FlashcardSet, Flashcard
+from .models import FlashcardSet, Flashcard, GeneratedContent
 
 class FlashcardSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,3 +38,8 @@ class MindMapSerializer(serializers.ModelSerializer):
     class Meta:
         model = MindMap
         fields = ['id', 'title', 'document', 'owner', 'created_at', 'mindmap_data']
+
+class GeneratedContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GeneratedContent
+        fields = '__all__'

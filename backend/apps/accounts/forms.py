@@ -8,17 +8,19 @@ CustomUser = get_user_model()
 
 class RegistrationForm(UserCreationForm):
     """
-    A registration form that extends Django's UserCreationForm to include an email field.
+    A registration form that uses email as the primary identifier.
     """
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={'placeholder': 'you@example.com'})
+    )
 
     class Meta:
         model = CustomUser
-        fields = ("username", "email", "password1", "password2")
+        fields = ("email", "password1", "password2")
         
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.email = self.cleaned_data["email"]
         if commit:
             user.save()
         return user
@@ -26,9 +28,12 @@ class RegistrationForm(UserCreationForm):
 
 class CustomAuthenticationForm(AuthenticationForm):
     """
-    A custom authentication form that labels the username field as 'Username or Email'.
+    A custom authentication form that uses email for login.
     """
-    username = forms.CharField(label="Username or Email")
+    username = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(attrs={'placeholder': 'you@example.com'})
+    )
 
 
 class ProfileUpdateForm(forms.ModelForm):
@@ -37,5 +42,10 @@ class ProfileUpdateForm(forms.ModelForm):
     """
     class Meta:
         model = CustomUser
-        # Update the fields as necessary.
-        fields = ("username", "email", "first_name", "last_name", "subscription_status")
+        fields = ("email", "first_name", "last_name", "subscription_status")
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and CustomUser.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError('A user with that email already exists.')
+        return email

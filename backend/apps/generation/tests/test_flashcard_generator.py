@@ -1,8 +1,9 @@
 import pytest
 from django.contrib.auth import get_user_model
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import os
-from backend.apps.documents.models import Document
+from backend.apps.pdf_service.django_models import Document
+from backend.apps.pdf_service.ingestion import ingest_pdf
 from backend.apps.generation.models import FlashcardSet, Flashcard
 from backend.apps.documents.services.pdf_reader import read_pdf
 from django.core.files.uploadedfile import SimpleUploadedFile

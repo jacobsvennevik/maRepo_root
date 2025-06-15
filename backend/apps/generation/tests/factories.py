@@ -1,8 +1,9 @@
 import factory
+from factory.django import DjangoModelFactory
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
-from backend.apps.documents.models import Document
-from backend.apps.documents.tests.factories import DocumentFactory
+from backend.apps.pdf_service.django_models import Document
+from backend.apps.pdf_service.tests.factories import DocumentFactory
 from backend.apps.generation.models import FlashcardSet, Flashcard, MindMap
 from backend.apps.accounts.tests.factories import CustomUserFactory
 
@@ -10,7 +11,7 @@ User = get_user_model()  # This references your custom user model
 
 
 
-class FlashcardSetFactory(factory.django.DjangoModelFactory):
+class FlashcardSetFactory(DjangoModelFactory):
     """
     Factory for creating FlashcardSet instances.
     """
@@ -19,7 +20,7 @@ class FlashcardSetFactory(factory.django.DjangoModelFactory):
         model = FlashcardSet
 
     owner = factory.SubFactory(CustomUserFactory)
-    title = factory.Sequence(lambda n: f"Flashcard Set {n}")
+    title = factory.Faker('sentence')
     document = factory.SubFactory(DocumentFactory)
 
 from backend.apps.generation.models import FlashcardSet

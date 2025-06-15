@@ -1,8 +1,8 @@
 import re
 from django.contrib.auth import get_user_model
-from backend.apps.documents.models import Document
+from backend.apps.pdf_service.django_models import Document
 from backend.apps.generation.models import FlashcardSet, Flashcard
-from backend.apps.documents.services.pdf_reader import read_pdf  # Ensure this function saves text to DB
+from backend.apps.pdf_service.ingestion import ingest_pdf
 from backend.apps.generation.services.api_client import AIClient  # Your AI integration
 
 User = get_user_model()
@@ -48,44 +48,19 @@ def save_flashcards_to_db(flashcards, flashcard_set):
     ]
     Flashcard.objects.bulk_create(flashcard_objects)  # Bulk create for efficiency
 
-def generate_flashcards_from_document(document_id, user):
-    """
-    Generates flashcards from the extracted text of a given document and saves them.
-    """
+def generate_flashcards_from_document(document_id: int):
     try:
-        # Retrieve document from DB
         document = Document.objects.get(id=document_id)
-        print(f"📝 Document Found: {document}")
-
-        # Ensure extracted text exists (if not, process the document)
         if not document.original_text:
-            document.original_text = read_pdf(document_id)  # Extract and save
+            # If text is not extracted, run ingestion
+            chunks = ingest_pdf(document.file.path)
+            document.original_text = " ".join([chunk.content for chunk in chunks])
             document.save()
-            print(f"📜 Extracted Text: {document.original_text}")
-
-        # Generate flashcards
-        flashcards = generate_flashcards(document.original_text, MODEL)
-        print(f"📌 Generated Flashcards: {flashcards}")
-
-        if not flashcards:
-            raise ValueError("AI did not generate any flashcards.")
-
-        # Create a FlashcardSet
-        flashcard_set = FlashcardSet.objects.create(
-            title=f"Flashcards for {document.title}",
-            owner=user,
-            document=document
-        )
-        print(f"✅ Created FlashcardSet: {flashcard_set}")
-
-        # Save flashcards to DB
-        save_flashcards_to_db(flashcards, flashcard_set)
-
-        return flashcard_set
+        
+        # Now generate flashcards
+        # This part needs to be implemented
+        pass
 
     except Document.DoesNotExist:
-        raise ValueError(f"Document with ID {document_id} not found.")
-    except Exception as e:
-        print(f"❌ Error generating flashcards: {e}")
-        return None
+        print(f"Document with id {document_id} not found.")
 

@@ -1,4 +1,5 @@
 import pytest
+from rest_framework import serializers
 from backend.apps.accounts.models import CustomUser
 from backend.apps.accounts.serializers import CustomUserSerializer
 
@@ -8,12 +9,12 @@ def test_customuser_serializer_output():
     Test that the CustomUserSerializer correctly serializes a user instance.
     """
     user = CustomUser.objects.create_user(
-        username="testuser",
         email="testuser@example.com",
         password="testpass123"
     )
+    
     serializer = CustomUserSerializer(user)
     data = serializer.data
-    assert data["username"] == user.username
-    assert data["email"] == user.email
-    # Add more assertions as needed
+    
+    assert data["email"] == "testuser@example.com"
+    assert "password" not in data  # Password should not be serialized

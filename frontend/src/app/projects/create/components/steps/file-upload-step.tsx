@@ -1,126 +1,123 @@
-import { useState, useRef, useCallback } from 'react';
-import { Button } from "@/components/ui/button";
-import { Upload, FileText } from "lucide-react";
+'use client';
+
+import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { FileUpload } from '@/components/ui/file-upload';
+import { createProject, uploadFileWithProgress, APIError } from '../../services/api';
 
 interface FileUploadStepProps {
-  uploadedFiles: File[];
-  onFilesChange: (files: File[]) => void;
-  onFileRemove: (index: number) => void;
+  onExtractionComplete: (projectId: string) => void;
 }
 
-export function FileUploadStep({
-  uploadedFiles,
-  onFilesChange,
-  onFileRemove
-}: FileUploadStepProps) {
-  const [isDragOver, setIsDragOver] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+export function FileUploadStep({ onExtractionComplete }: FileUploadStepProps) {
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
+  const handleUpload = useCallback(async (newFiles: File[]) => {
+    setFiles(newFiles);
+    setError(null);
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
+    if (newFiles.length === 0) return;
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    onFilesChange([...uploadedFiles, ...droppedFiles]);
-  }, [uploadedFiles, onFilesChange]);
+    try {
+      // 1. Create a draft project
+      const fileName = newFiles[0].name;
+      const projectName = fileName.replace(/\.[^/.]+$/, ''); // Remove file extension
+      
+      const projectData = {
+        name: projectName,
+        project_type: 'school',
+        course_name: projectName, // Required for school projects
+        is_draft: true,
+      };
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    onFilesChange([...uploadedFiles, ...selectedFiles]);
-  }, [uploadedFiles, onFilesChange]);
+      console.log('Creating project with data:', projectData);
+      const newProject = await createProject(projectData);
+      console.log('Project created:', newProject);
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+      // 2. Upload each file with progress tracking
+      for (const file of newFiles) {
+        try {
+          console.log('Uploading file:', file.name);
+          await uploadFileWithProgress(
+            newProject.id,
+            file, 
+            (progress) => {
+              setUploadProgress(prev => ({
+                ...prev,
+                [file.name]: progress
+              }));
+            }
+          );
+          console.log('File upload complete:', file.name);
+        } catch (error) {
+          console.error('File upload error:', error);
+          if (error instanceof APIError) {
+            setError(`Upload failed: ${error.message}`);
+          } else {
+            setError(`Failed to upload ${file.name}. Please try again.`);
+          }
+          
+          setUploadProgress(prev => ({
+            ...prev,
+            [file.name]: -1
+          }));
+          return;
+        }
+      }
+
+      // 3. Notify parent component
+      onExtractionComplete(newProject.id);
+
+    } catch (error) {
+      console.error("Upload failed:", error);
+      
+      if (error instanceof APIError) {
+        if (error.statusCode === 401) {
+            setError("Your session has expired. Please log in again.");
+          router.push('/login');
+        } else {
+            setError(error.message);
+        }
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    }
+  }, [onExtractionComplete, router]);
+
+  const handleRemove = useCallback((index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+    setError(null);
+    
+    // Clear progress for the removed file
+    const removedFile = files[index];
+    if (removedFile) {
+      setUploadProgress(prev => {
+        const newProgress = { ...prev };
+        delete newProgress[removedFile.name];
+        return newProgress;
+      });
+    }
+  }, [files]);
 
   return (
     <div className="space-y-6">
-      {/* Drag & Drop Zone */}
-      <div
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${
-          isDragOver 
-            ? 'border-blue-400 bg-blue-50/50 scale-105' 
-            : 'border-gray-300 hover:border-blue-300 hover:bg-gray-50/50'
-        }`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <div className="space-y-4">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-600 rounded-full flex items-center justify-center">
-            <Upload className="h-8 w-8 text-white" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">
-              {isDragOver ? 'Drop your files here!' : 'Upload your study materials'}
-            </h3>
-            <p className="text-slate-600 mb-4">
-              Upload all the documents, notes, textbooks, and materials you have for this project.
-            </p>
-            <p className="text-xs text-gray-500 mb-4">
-              Supported formats: PDF, DOCX, PPTX, TXT, PNG, JPG, CSV, MD, ZIP, MP4
-            </p>
-            <Button 
-              variant="outline" 
-              onClick={() => fileInputRef.current?.click()}
-              className="border-blue-200 text-blue-600 hover:bg-blue-50"
-            >
-              Or browse files
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        className="hidden"
-        onChange={handleFileSelect}
-        accept=".pdf,.docx,.pptx,.txt,.png,.jpg,.jpeg,.csv,.md,.zip,.mp4"
+      <FileUpload
+        onUpload={handleUpload}
+        onRemove={handleRemove}
+        accept=".pdf"
+        maxFiles={1}
+        maxSize={10 * 1024 * 1024} // 10MB
+        required={true}
+        title="Upload your course syllabus"
+        description="We'll automatically extract course details, deadlines, and topics to set up your project."
+        buttonText="Browse for a file"
+        files={files}
+        uploadProgress={uploadProgress}
+        error={error || undefined}
       />
-
-      {/* Uploaded Files List */}
-      {uploadedFiles.length > 0 && (
-        <div className="space-y-3">
-          <h4 className="font-medium text-slate-900">Uploaded Files ({uploadedFiles.length})</h4>
-          <div className="space-y-2 max-h-60 overflow-y-auto">
-            {uploadedFiles.map((file, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <FileText className="h-5 w-5 text-blue-500" />
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">{file.name}</p>
-                    <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onFileRemove(index)}
-                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                >
-                  Remove
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 } 

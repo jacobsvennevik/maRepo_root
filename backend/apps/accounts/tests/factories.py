@@ -7,12 +7,10 @@ User = get_user_model()
 
 class CustomUserFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = User  # This will reference your custom user model
+        model = User
 
-    username = factory.Sequence(lambda n: f'user{n}')
-    email = factory.LazyAttribute(lambda obj: f'{obj.username}@example.com')
-    # The password is set using the provided post-generation hook so that
-    # the .set_password() method is used (ensuring proper hashing)
+    email = factory.Sequence(lambda n: f'user{n}@example.com')
     password = factory.PostGenerationMethodCall('set_password', 'password123')
-    subscription_status = 'free'  # Default value for testing
-    preferences = {}  # Default empty dict for JSONField
+    subscription_status = 'free'
+    preferences = {}
+    is_active = True

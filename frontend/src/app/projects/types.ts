@@ -1,4 +1,12 @@
-import { LucideIcon, Dna, Flask, Atom, Calculator, BookOpen, Code2, History, Globe } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
+import { Dna } from 'lucide-react';
+import { Atom } from 'lucide-react';
+import { Calculator } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
+import { Code2 } from 'lucide-react';
+import { History } from 'lucide-react';
+import { Globe } from 'lucide-react';
+import { TestTubes } from 'lucide-react';
 
 export type ProjectType = 'biology' | 'chemistry' | 'physics' | 'math' | 'history' | 'computer-science' | 'geography' | 'literature';
 
@@ -14,7 +22,7 @@ export interface Project {
 
 export const projectIcons: Record<string, LucideIcon> = {
   'biology': Dna,
-  'chemistry': Flask,
+  'chemistry': TestTubes,
   'physics': Atom,
   'math': Calculator,
   'literature': BookOpen,

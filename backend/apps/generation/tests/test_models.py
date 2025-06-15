@@ -3,7 +3,7 @@ import time
 from django.utils import timezone
 from backend.apps.generation.models import FlashcardSet, Flashcard, MindMap
 from backend.apps.accounts.tests.factories import CustomUserFactory
-from backend.apps.documents.tests.factories import DocumentFactory
+from backend.apps.pdf_service.tests.factories import DocumentFactory
 from .factories import FlashcardSetFactory, FlashcardFactory, MindMapFactory  # Adjust the import path if needed
 
 # --- FlashcardSet Model Tests ---

@@ -11,16 +11,26 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/cards/login-card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useRouter } from "next/navigation"
+import { AuthService } from "../services/auth"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import axiosInstance from '@/lib/axios';
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  email: z.string()
+    .email({ message: "Please enter a valid email address." })
+    .refine(value => value.includes('@'), {
+      message: "Email must contain @"
+    }),
+  password: z.string()
+    .min(8, { message: "Password must be at least 8 characters." })
 })
 
 type FormData = z.infer<typeof formSchema>
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
   const {
     register,
     handleSubmit,
@@ -28,27 +38,57 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   })
+  const router = useRouter()
 
   async function onSubmit(data: FormData) {
     setIsLoading(true)
-    console.log("Form data:", data)
-    // TODO: Replace with your actual API call
-    // Example:
-    // try {
-    //   const response = await fetch('/api/login', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(data),
-    //   })
-    //   if (response.ok) {
-    //     // Handle successful login (e.g., redirect)
-    //   } else {
-    //     // Handle login error
-    //   }
-    // } catch (error) {
-    //   // Handle network error
-    // }
-    setTimeout(() => setIsLoading(false), 2000) // Simulate network request
+    setError(null)
+
+    // Add a try-catch block specifically for the login attempt
+    try {
+      // Test localStorage first
+      try {
+        localStorage.setItem('test-storage', 'test');
+        const testValue = localStorage.getItem('test-storage');
+        localStorage.removeItem('test-storage');
+      } catch (storageError) {
+        throw new Error('Browser storage is not available. Please enable cookies and local storage.');
+      }
+
+      await AuthService.login({
+        email: data.email,
+        password: data.password
+      });
+      
+      // Verify tokens were stored
+      const authToken = localStorage.getItem('authToken');
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      if (!authToken || !refreshToken) {
+        throw new Error('Login succeeded but tokens were not stored');
+      }
+
+      // Test authenticated request
+      try {
+        const testResponse = await axiosInstance.get('/api/users/me/');
+      } catch (testError) {
+      }
+
+      router.push('/dashboard');
+    } catch (error: any) {
+      
+      // Set a more specific error message
+      let errorMessage = 'Login failed. Please try again.';
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -63,19 +103,30 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 <p className="text-slate-600">Sign in to your YesYes account</p>
               </div>
 
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm text-slate-700">
-                    Email
+                    Email address
                   </Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="m@example.com"
+                    placeholder="you@example.com"
                     {...register("email")}
-                    className="h-11 px-3 py-2 text-base bg-white border border-slate-200 focus:border-emerald-400 focus:ring-emerald-400"
+                    className={cn(
+                      "h-11 px-3 py-2 text-base bg-white border border-slate-200",
+                      errors.email ? "border-red-500 focus:border-red-500" : "focus:border-emerald-400 focus:ring-emerald-400"
+                    )}
                   />
-                  {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+                  {errors.email && (
+                    <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">

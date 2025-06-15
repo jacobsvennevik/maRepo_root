@@ -1,7 +1,8 @@
 #backend/apps/generation/models.py
 from django.db import models
 from django.conf import settings
-from backend.apps.documents.models import Document
+from django.utils import timezone
+from backend.apps.pdf_service.django_models import Document
 
 class FlashcardSet(models.Model):
     """
@@ -101,3 +102,6 @@ class Choice(models.Model):
 
     def __str__(self):
         return f"{self.choice_letter}. {self.choice_text[:30]}..."
+
+class GeneratedContent(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='generated_contents')

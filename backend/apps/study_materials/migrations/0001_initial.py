@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('documents', '0004_document_upload_type'),
+        ('pdf_service', '0004_document_upload_type'),
         ('projects', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('material_type', models.CharField(choices=[('note', 'Note'), ('test', 'Test'), ('mind_map', 'Mind Map')], max_length=20)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='study_materials', to='documents.document')),
+                ('document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='study_materials', to='pdf_service.document')),
                 ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='study_materials', to=settings.AUTH_USER_MODEL)),
                 ('project', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='study_materials', to='projects.project')),
             ],
