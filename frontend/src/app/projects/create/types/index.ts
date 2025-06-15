@@ -1,21 +1,18 @@
 export interface ProjectSetup {
   projectName: string;
   purpose: string;
-  testLevel?: string;
+  testLevel: string;
   gradeLevel?: string;
   assignmentDescription?: string;
-  courseFiles?: File[];
-  evaluationTypes?: string[];
-  testFiles?: File[];
-  importantDates?: ImportantDate[];
-  focusAreas?: string[];
-  learningMaterials?: File[];
-  learningGoal?: string;
-  uploadedFiles?: File[];
-  timeframe?: string;
-  goal?: string;
-  studyFrequency?: string;
-  collaboration?: string;
+  courseFiles: File[];
+  evaluationTypes: string[];
+  testFiles: File[];
+  importantDates: ImportantDate[];
+  uploadedFiles: File[];
+  timeframe: string;
+  goal: string;
+  studyFrequency: string;
+  collaboration: string;
   customDescription?: string;
 }
 

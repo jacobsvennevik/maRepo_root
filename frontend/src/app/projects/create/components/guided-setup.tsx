@@ -28,13 +28,10 @@ import {
   CollaborationStep
 } from './steps';
 
-// Import Self Study components
-import { SelfStudySetup } from './GuidedSetup/SelfStudySetup';
-
 // Import constants and types
 import { 
   SETUP_STEPS,
-  PURPOSE_OPTIONS,
+  SCHOOL_PURPOSE_OPTIONS,
   TEST_LEVEL_OPTIONS,
   GRADE_LEVEL_OPTIONS,
   TIMEFRAME_OPTIONS,
@@ -44,6 +41,7 @@ import {
   DATE_TYPE_OPTIONS
 } from '../constants';
 import { ProjectSetup } from '../types';
+import { formatFileSize, formatDate } from '../utils';
 
 const ReactCalendar = dynamic(() => import('react-calendar'), { 
   ssr: false,
@@ -59,7 +57,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [setup, setSetup] = useState<ProjectSetup>({
     projectName: '',
-    purpose: '',
+    purpose: 'good-grades',
     testLevel: '',
     evaluationTypes: [],
     testFiles: [],
@@ -201,7 +199,14 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
       uploadedFiles: [...(prev.uploadedFiles || []), ...files]
     }));
     setHasUnsavedChanges(true);
+    setIsDragOver(false);
   }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    handleFileUpload(files);
+  }, [handleFileUpload]);
 
   const handleCourseFileUpload = useCallback((files: File[]) => {
     setSetup(prev => ({
@@ -209,7 +214,14 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
       courseFiles: [...(prev.courseFiles || []), ...files]
     }));
     setHasUnsavedChanges(true);
+    setIsCourseDragOver(false);
   }, []);
+
+  const handleCourseDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    handleCourseFileUpload(files);
+  }, [handleCourseFileUpload]);
 
   const handleTestFileUpload = useCallback((files: File[]) => {
     setSetup(prev => ({
@@ -222,7 +234,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   const handleRemoveFile = (index: number) => {
     setSetup(prev => ({
       ...prev,
-      uploadedFiles: prev.uploadedFiles.filter((_, i) => i !== index)
+      uploadedFiles: (prev.uploadedFiles || []).filter((_, i) => i !== index)
     }));
     setHasUnsavedChanges(true);
   };
@@ -230,7 +242,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   const handleRemoveCourseFile = (index: number) => {
     setSetup(prev => ({
       ...prev,
-      courseFiles: prev.courseFiles.filter((_, i) => i !== index)
+      courseFiles: (prev.courseFiles || []).filter((_, i) => i !== index)
     }));
     setHasUnsavedChanges(true);
   };
@@ -243,55 +255,92 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     setHasUnsavedChanges(true);
   };
 
+  // AI callback handlers
   const handleApplyAITopics = (topics: string[]) => {
-    // This would be implemented with actual AI analysis
-    console.log('Applying AI topics:', topics);
+    // For now, we'll add topics to the assignment description
+    const currentDesc = setup.assignmentDescription || '';
+    const topicsText = topics.join(', ');
+    const newDesc = currentDesc ? `${currentDesc}\n\nDetected topics: ${topicsText}` : `Detected topics: ${topicsText}`;
+    setSetup(prev => ({ ...prev, assignmentDescription: newDesc }));
+    setHasUnsavedChanges(true);
   };
 
   const handleApplyAIDates = (dates: any[]) => {
+    // Convert AI dates to the format expected by importantDates
+    const convertedDates = dates.map(date => ({
+      date: date.date,
+      description: date.description,
+      type: date.type
+    }));
     setSetup(prev => ({
       ...prev,
-      importantDates: [...prev.importantDates, ...dates]
+      importantDates: [...prev.importantDates, ...convertedDates]
     }));
     setHasUnsavedChanges(true);
   };
 
   const handleApplyAITestTypes = (types: string[]) => {
+    // Convert AI test types to evaluation types
+    const convertedTypes = types.map(type => {
+      switch (type.toLowerCase()) {
+        case 'multiple choice': return 'exams';
+        case 'essay': return 'essays';
+        case 'problem solving': return 'exams';
+        case 'lab practical': return 'labs';
+        case 'oral exam': return 'presentations';
+        case 'take-home': return 'projects';
+        default: return 'exams';
+      }
+    }).filter((type, index, self) => self.indexOf(type) === index); // Remove duplicates
+
     setSetup(prev => ({
       ...prev,
-      evaluationTypes: [...prev.evaluationTypes, ...types]
+      evaluationTypes: [...prev.evaluationTypes, ...convertedTypes].filter((type, index, self) => self.indexOf(type) === index)
     }));
     setHasUnsavedChanges(true);
   };
 
   const handleApplyAIRecommendations = (recommendations: any[]) => {
-    // Apply AI recommendations to setup
-    setSetup(prev => ({
-      ...prev,
-      ...recommendations
-    }));
+    // Apply smart recommendations to various fields
+    recommendations.forEach(rec => {
+      switch (rec.type) {
+        case 'schedule':
+          // Auto-set study frequency based on schedule recommendation
+          if (!setup.studyFrequency) {
+            setSetup(prev => ({ ...prev, studyFrequency: 'daily' }));
+          }
+          break;
+        case 'material':
+          // Add study materials note
+          const currentDesc = setup.assignmentDescription || '';
+          const materialNote = `\n\nStudy Materials: ${rec.description}`;
+          setSetup(prev => ({ 
+            ...prev, 
+            assignmentDescription: currentDesc + materialNote 
+          }));
+          break;
+        case 'strategy':
+          // Add strategy note
+          const currentGoal = setup.goal || '';
+          const strategyNote = `\n\nTest Strategy: ${rec.description}`;
+          setSetup(prev => ({ 
+            ...prev, 
+            goal: currentGoal + strategyNote 
+          }));
+          break;
+        case 'timeline':
+          // Auto-set timeframe if not set
+          if (!setup.timeframe) {
+            setSetup(prev => ({ ...prev, timeframe: '3-months' }));
+          }
+          break;
+      }
+    });
     setHasUnsavedChanges(true);
   };
 
   const handleSkipTimeline = () => {
-    handleOptionSelect('timeframe', 'flexible');
     handleNext();
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
   };
 
   const isStepComplete = () => {
@@ -302,15 +351,20 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
       case 'purpose':
         return !!setup.purpose;
       case 'courseDetails':
-        return !!setup.testLevel && setup.evaluationTypes.length > 0;
+        return setup.purpose === 'school' ? (
+          !!setup.testLevel && 
+          (!!setup.assignmentDescription || (setup.courseFiles && setup.courseFiles.length > 0) || (setup.evaluationTypes && setup.evaluationTypes.length > 0))
+        ) : true;
       case 'testTimeline':
-        return true; // Optional step
+        return setup.purpose === 'school' ? (
+          (setup.testFiles && setup.testFiles.length > 0) && (setup.importantDates && setup.importantDates.length > 0)
+        ) : true;
       case 'uploadFiles':
-        return true; // Optional step
+        return (setup.uploadedFiles || []).length > 0;
       case 'timeframe':
         return !!setup.timeframe;
       case 'goal':
-        return !!setup.goal.trim();
+        return !!setup.goal;
       case 'studyFrequency':
         return !!setup.studyFrequency;
       case 'collaboration':
@@ -321,23 +375,27 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   };
 
   const shouldShowStep = (stepId: string) => {
-    // For now, show all steps for school course flow
+    if (stepId === 'courseDetails' || stepId === 'testTimeline') {
+      return setup.purpose === 'school';
+    }
     return true;
   };
 
   const getCurrentStepIndex = () => {
-    let visibleStepCount = 0;
+    let actualStep = 0;
     for (let i = 0; i <= currentStep; i++) {
       if (shouldShowStep(SETUP_STEPS[i].id)) {
-        visibleStepCount++;
+        actualStep++;
       }
     }
-    return visibleStepCount;
+    return actualStep;
   };
 
   const getTotalSteps = () => {
     return SETUP_STEPS.filter(step => shouldShowStep(step.id)).length;
   };
+
+  const progress = (getCurrentStepIndex() / getTotalSteps()) * 100;
 
   const renderStepContent = () => {
     const stepId = currentStepData.id;
@@ -353,11 +411,11 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
       case 'purpose':
         return (
           <PurposeStep
-            purpose={setup.purpose}
-            customDescription={setup.customDescription}
-            onPurposeChange={(purpose) => handleOptionSelect('purpose', purpose)}
-            onCustomDescriptionChange={(desc) => handleOptionSelect('customDescription', desc)}
-            purposeOptions={PURPOSE_OPTIONS}
+            value={setup.purpose}
+            onSelect={(value) => handleOptionSelect('purpose', value)}
+            options={SCHOOL_PURPOSE_OPTIONS}
+            customValue={setup.customDescription || ''}
+            onCustomChange={(value) => handleOptionSelect('customDescription', value)}
           />
         );
       case 'courseDetails':
@@ -366,36 +424,44 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             testLevel={setup.testLevel}
             gradeLevel={setup.gradeLevel}
             assignmentDescription={setup.assignmentDescription}
-            courseFiles={setup.courseFiles || []}
+            courseFiles={setup.courseFiles}
             evaluationTypes={setup.evaluationTypes}
             onTestLevelChange={(level) => handleOptionSelect('testLevel', level)}
             onGradeLevelChange={(grade) => handleOptionSelect('gradeLevel', grade)}
             onAssignmentDescriptionChange={(desc) => handleOptionSelect('assignmentDescription', desc)}
-            onCourseFileUpload={handleCourseFileUpload}
+            onCourseFilesChange={handleCourseFileUpload}
             onCourseFileRemove={handleRemoveCourseFile}
             onEvaluationTypeToggle={handleEvaluationTypeToggle}
+            onApplyAITopics={handleApplyAITopics}
+            onApplyAIDates={handleApplyAIDates}
+            onApplyAITestTypes={handleApplyAITestTypes}
             onApplyAIRecommendations={handleApplyAIRecommendations}
+            testLevelOptions={TEST_LEVEL_OPTIONS}
+            gradeLevelOptions={GRADE_LEVEL_OPTIONS}
+            evaluationTypeOptions={EVALUATION_TYPE_OPTIONS}
           />
         );
       case 'testTimeline':
         return (
           <TestTimelineStep
-            testFiles={setup.testFiles || []}
+            testFiles={setup.testFiles}
             importantDates={setup.importantDates}
-            newDate={newDate}
-            onTestFileUpload={handleTestFileUpload}
+            onTestFilesChange={handleTestFileUpload}
             onTestFileRemove={handleRemoveTestFile}
             onAddDate={handleAddDate}
             onRemoveDate={handleRemoveDate}
-            onNewDateChange={setNewDate}
+            onApplyAITopics={handleApplyAITopics}
+            onApplyAIDates={handleApplyAIDates}
+            onApplyAITestTypes={handleApplyAITestTypes}
             onApplyAIRecommendations={handleApplyAIRecommendations}
+            dateTypeOptions={DATE_TYPE_OPTIONS}
           />
         );
       case 'uploadFiles':
         return (
           <FileUploadStep
             uploadedFiles={setup.uploadedFiles}
-            onFileUpload={handleFileUpload}
+            onFilesChange={handleFileUpload}
             onFileRemove={handleRemoveFile}
           />
         );
@@ -404,7 +470,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
           <TimelineStep
             timeframe={setup.timeframe}
             onTimeframeChange={(timeframe) => handleOptionSelect('timeframe', timeframe)}
-            timelineOptions={TIMEFRAME_OPTIONS}
+            timeframeOptions={TIMEFRAME_OPTIONS}
           />
         );
       case 'goal':
@@ -439,40 +505,39 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     return <ProjectSummary setup={setup} onBack={() => setShowSummary(false)} />;
   }
 
-  // If purpose is selected and it's self-study, show Self Study setup
-  if (setup.purpose === 'self-study') {
-    return <SelfStudySetup onBack={() => {
-      setSetup(prev => ({ ...prev, purpose: '' }));
-      setCurrentStep(1); // Go back to purpose selection
-    }} />;
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 sm:mb-8">
-          <button
-            onClick={handleBack}
-            className="flex items-center text-sm text-gray-600 hover:text-blue-600"
-          >
-            <ChevronLeft className="h-4 w-4 mr-1" />
+        <div className="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
+          <Button variant="ghost" onClick={handleBack} className="flex items-center">
+            <ChevronLeft size={16} className="mr-1" />
             Back
-          </button>
-          <div className="text-center">
-            <h1 className="text-lg sm:text-xl font-semibold text-slate-900">Guided Setup</h1>
-            <p className="text-sm text-slate-600">Step {getCurrentStepIndex()} of {getTotalSteps()}</p>
+          </Button>
+          <div className="flex items-center gap-2 sm:gap-4">
+            {hasUnsavedChanges && (
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-600">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="hidden sm:inline">Auto-saved</span>
+              </div>
+            )}
+            <div className="text-xs sm:text-sm text-gray-600">
+              Step {getCurrentStepIndex()} of {getTotalSteps()}
+            </div>
           </div>
-          <div className="w-20"></div> {/* Spacer for centering */}
         </div>
 
         {/* Progress Bar */}
-        <div className="mb-6 sm:mb-8">
-          <Progress value={(getCurrentStepIndex() / getTotalSteps()) * 100} className="h-2" />
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs sm:text-sm font-medium text-gray-700">Progress</span>
+            <span className="text-xs sm:text-sm text-gray-500">{Math.round(progress)}%</span>
+          </div>
+          <Progress value={progress} className="h-2" />
         </div>
 
         {/* Step Content */}
-        <Card>
+        <Card className="max-w-2xl mx-auto">
           <CardHeader className="text-center">
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
               <currentStepData.icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
@@ -482,41 +547,34 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6">
             {renderStepContent()}
+            
+            {/* Navigation */}
+            <div className="flex justify-between pt-4 sm:pt-6">
+              <Button variant="outline" onClick={handleBack} className="text-sm">
+                {currentStep === 0 ? 'Back to Selection' : 'Previous'}
+              </Button>
+              <div className="flex gap-2">
+                {currentStepData.id !== 'courseDetails' && (
+                  <Button 
+                    variant="outline" 
+                    onClick={handleSkip}
+                    className="text-sm text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                  >
+                    Skip
+                  </Button>
+                )}
+                <Button 
+                  onClick={handleNext}
+                  disabled={!isStepComplete()}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-sm"
+                >
+                  {currentStep === SETUP_STEPS.length - 1 ? 'Review & Create' : 'Next'}
+                  <ChevronRight size={16} className="ml-2" />
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
-
-        {/* Navigation */}
-        <div className="flex justify-between items-center mt-6 sm:mt-8">
-          <Button
-            variant="outline"
-            onClick={handleBack}
-            className="flex items-center gap-2"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Previous
-          </Button>
-
-          <div className="flex gap-3">
-            {currentStep < SETUP_STEPS.length - 1 && (
-              <Button
-                variant="ghost"
-                onClick={handleSkip}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                Skip
-              </Button>
-            )}
-            
-            <Button
-              onClick={handleNext}
-              disabled={!isStepComplete()}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
-            >
-              {currentStep === SETUP_STEPS.length - 1 ? 'Review & Create' : 'Next'}
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -527,18 +585,18 @@ function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack: () => 
   const router = useRouter();
 
   const handleCreateProject = () => {
-    // TODO: Implement project creation logic
-    console.log('Creating project with setup:', setup);
-    
-    // Navigate to projects page after creating
-    router.push('/projects');
+    // In a real app, you'd send this to your backend
+    console.log("Creating project:", setup);
+    // Clear storage after successful creation
+    localStorage.removeItem('guided-setup');
+    router.push('/projects/create/success');
   };
 
   const getPurposeLabel = (value: string) => {
     if (value === 'custom' && setup.customDescription) {
       return setup.customDescription;
     }
-    return PURPOSE_OPTIONS.find(opt => opt.value === value)?.label || value;
+    return SCHOOL_PURPOSE_OPTIONS.find(opt => opt.value === value)?.label || value;
   };
 
   const getTestLevelLabel = (value: string) => {
@@ -567,24 +625,6 @@ function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack: () => 
 
   const getDateTypeLabel = (value: string) => {
     return DATE_TYPE_OPTIONS.find(opt => opt.value === value)?.label || value;
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
   };
 
   return (

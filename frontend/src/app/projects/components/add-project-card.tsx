@@ -1,13 +1,12 @@
 import Link from 'next/link';
-import PropTypes from 'prop-types';
 
 /**
  * Card button for creating a new project in the projects grid.
  */
 export function AddProjectCard() {
   return (
-    <Link href="/projects/create" className="block w-full p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow border-2 border-dashed border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-500">
-      <div className="flex flex-col items-center justify-center">
+    <Link href="/projects/create" className="block w-full h-full p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow border-2 border-dashed border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-500">
+      <div className="flex flex-col items-center justify-center h-full">
         <svg
           className="w-8 h-8 mb-2"
           fill="none"
@@ -26,6 +25,4 @@ export function AddProjectCard() {
       </div>
     </Link>
   );
-}
-
-AddProjectCard.propTypes = {}; 
+} 

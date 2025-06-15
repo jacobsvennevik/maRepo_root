@@ -85,11 +85,11 @@ export const SETUP_STEPS: SetupStep[] = [
 ];
 
 export const PURPOSE_OPTIONS: PurposeOption[] = [
-  { value: 'school-course', label: 'School Course', description: 'For academic coursework or classes' },
+  { value: 'school', label: 'School Course', description: 'For academic coursework or classes' },
   { value: 'self-study', label: 'Self Study', description: 'Personal learning and skill development' },
   { value: 'tutoring', label: 'Tutoring', description: 'Teaching or helping others learn' },
   { value: 'research', label: 'Research Project', description: 'Academic or professional research' },
-  { value: 'other', label: 'Other', description: 'Something else - I\'ll describe it myself' }
+  { value: 'custom', label: 'Other', description: 'Something else - I\'ll describe it myself' }
 ];
 
 export const TEST_LEVEL_OPTIONS: EducationLevelOption[] = [
@@ -161,4 +161,8 @@ export const DATE_TYPE_OPTIONS: DateTypeOption[] = [
   { value: 'project', label: 'Project', color: 'bg-green-100 text-green-800' },
   { value: 'lab', label: 'Lab/Experiment', color: 'bg-orange-100 text-orange-800' },
   { value: 'other', label: 'Other', color: 'bg-gray-100 text-gray-800' }
-]; 
+];
+
+export * from './steps';
+export * from './options';
+export * from './evaluation'; 

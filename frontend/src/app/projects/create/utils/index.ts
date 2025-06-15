@@ -69,4 +69,7 @@ export const getCurrentStepIndex = (currentStep: number, setup: ProjectSetup): n
 
 export const getTotalSteps = (setup: ProjectSetup): number => {
   return SETUP_STEPS.filter(step => shouldShowStep(step.id, setup)).length;
-}; 
+};
+
+export * from './ai-analysis';
+export * from './formatters'; 
