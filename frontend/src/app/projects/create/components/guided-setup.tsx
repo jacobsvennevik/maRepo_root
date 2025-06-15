@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { useAutoSave } from '../hooks/useAutoSave';
 import dynamic from 'next/dynamic';
+import { createProject, uploadFile, ProjectData } from '../services/api';
 
 // Import modular step components
 import { 
@@ -76,6 +77,10 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const courseFileInputRef = useRef<HTMLInputElement>(null);
   const [newDate, setNewDate] = useState({ date: '', description: '', type: 'exam' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // TODO: Replace with actual auth token
+  const authToken = '203e2ee2825aaf19fbd5a9a5c4768c243944058c';
 
   // Auto-save functionality
   const { loadFromStorage, clearStorage } = useAutoSave({
@@ -193,7 +198,8 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     setIsCourseDragOver(false);
   }, []);
 
-  const handleFileUpload = useCallback((files: File[]) => {
+  const handleFileUpload = useCallback(async (files: File[]) => {
+    // For now, just add to the list. Upload will happen on submission.
     setSetup(prev => ({
       ...prev,
       uploadedFiles: [...(prev.uploadedFiles || []), ...files]
@@ -208,7 +214,8 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     handleFileUpload(files);
   }, [handleFileUpload]);
 
-  const handleCourseFileUpload = useCallback((files: File[]) => {
+  const handleCourseFileUpload = useCallback(async (files: File[]) => {
+    // For now, just add to the list. Upload will happen on submission.
     setSetup(prev => ({
       ...prev,
       courseFiles: [...(prev.courseFiles || []), ...files]
@@ -223,7 +230,8 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     handleCourseFileUpload(files);
   }, [handleCourseFileUpload]);
 
-  const handleTestFileUpload = useCallback((files: File[]) => {
+  const handleTestFileUpload = useCallback(async (files: File[]) => {
+    // For now, just add to the list. Upload will happen on submission.
     setSetup(prev => ({
       ...prev,
       testFiles: [...(prev.testFiles || []), ...files]
@@ -582,14 +590,47 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
 
 // Project Summary Component
 function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const handleCreateProject = () => {
-    // In a real app, you'd send this to your backend
-    console.log("Creating project:", setup);
-    // Clear storage after successful creation
-    localStorage.removeItem('guided-setup');
-    router.push('/projects/create/success');
+  // TODO: Replace with actual auth token
+  const authToken = '203e2ee2825aaf19fbd5a9a5c4768c243944058c';
+
+  const handleCreateProject = async () => {
+    setIsSubmitting(true);
+    try {
+      // 1. Upload files and get their URLs
+      const courseFileUrls = await Promise.all(
+        setup.courseFiles.map(file => uploadFile(file, 'course-files', authToken))
+      );
+      const testFileUrls = await Promise.all(
+        setup.testFiles.map(file => uploadFile(file, 'test-files', authToken))
+      );
+
+      // 2. Prepare project data
+      const projectData: ProjectData = {
+        name: setup.projectName,
+        project_type: 'school', // This is the school setup
+        course_name: setup.purpose, // Assuming purpose is course name for now
+        goal_description: setup.goal,
+        study_frequency: setup.studyFrequency,
+        important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
+        // Add other fields from the 'setup' object as needed
+      };
+
+      // 3. Create project
+      const newProject = await createProject(projectData, authToken);
+
+      // 4. Clear autosave and redirect
+      // clearStorage(); // You might need to pass clearStorage down to this component
+      router.push(`/projects/${newProject.id}/success` as any);
+
+    } catch (error) {
+      console.error("Failed to create project:", error);
+      // Handle error (e.g., show a toast notification)
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getPurposeLabel = (value: string) => {
@@ -775,16 +816,10 @@ function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack: () => 
               </div>
             )}
 
-            <div className="flex justify-between pt-4 sm:pt-6">
-              <Button variant="outline" onClick={onBack} className="text-sm">
-                Edit Configuration
-              </Button>
-              <Button 
-                onClick={handleCreateProject}
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-sm"
-              >
-                Create Project
-                <Check size={16} className="ml-2" />
+            <div className="mt-8 flex justify-end gap-4">
+              <Button variant="outline" onClick={onBack}>Edit</Button>
+              <Button onClick={handleCreateProject} disabled={isSubmitting}>
+                {isSubmitting ? 'Creating Project...' : 'Create Project & Start Learning'}
               </Button>
             </div>
           </CardContent>

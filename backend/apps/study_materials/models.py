@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from backend.apps.documents.models import Document
+from backend.apps.projects.models import Project
 
 MATERIAL_TYPE_CHOICES = [
     ('note', 'Note'),
@@ -13,6 +14,13 @@ class StudyMaterial(models.Model):
     Base model for all study materials (notes, tests, mind maps, etc.)
     Acts as a polymorphic parent for specific material types.
     """
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='study_materials',
+        null=True,
+        blank=True
+    )
     document = models.ForeignKey(
         Document,
         on_delete=models.CASCADE,

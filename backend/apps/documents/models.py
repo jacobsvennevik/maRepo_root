@@ -16,6 +16,12 @@ STATUS_CHOICES = [
     ('error', 'Error'),
 ]
 
+UPLOAD_TYPE_CHOICES = [
+    ('course_files', 'Course Files'),
+    ('test_files', 'Test Files'),
+    ('learning_materials', 'Learning Materials'),
+]
+
 class Document(models.Model):
     """
     Represents an uploaded document belonging to a user.
@@ -24,6 +30,7 @@ class Document(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='documents')
     file = models.FileField(upload_to='uploads/%Y/%m/%d/', max_length=255)
+    upload_type = models.CharField(max_length=50, choices=UPLOAD_TYPE_CHOICES, default='learning_materials')
 
     file_type = models.CharField(max_length=50, choices=FILE_TYPE_CHOICES)
     upload_date = models.DateTimeField(auto_now_add=True)

@@ -42,8 +42,10 @@ INSTALLED_APPS = [
     "backend.apps.documents", 
     "backend.apps.generation",
     "backend.apps.study_materials",
+    "backend.apps.projects",
     'debug_toolbar',  
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
 ]
 
@@ -158,10 +160,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication', 
-        # or 'rest_framework.authentication.TokenAuthentication', etc.
+        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'rest_framework.permissions.IsAuthenticated',
     ],
 }

@@ -10,6 +10,7 @@ from rest_framework.routers import DefaultRouter
 from backend.apps.accounts.views_api import CustomUserViewSet
 from backend.apps.documents.views_api import DocumentViewSet
 from backend.apps.generation.views_api import FlashcardSetViewSet, FlashcardViewSet, MindMapViewSet
+from backend.apps.projects.views import ProjectViewSet
 
 
 
@@ -19,6 +20,7 @@ router.register(r'documents', DocumentViewSet, basename='document')
 router.register(r'flashcardsets', FlashcardSetViewSet, basename='flashcardset')
 router.register(r'flashcards', FlashcardViewSet, basename='flashcard')
 router.register(r'mindmaps', MindMapViewSet, basename='mindmap')
+router.register(r'projects', ProjectViewSet, basename='project')
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -27,4 +29,5 @@ urlpatterns = [
     path('generation/', include('backend.apps.generation.urls')),
     path('documents/', include('backend.apps.documents.urls')),
     path('api/', include(router.urls)),
+    path('api/', include('backend.apps.documents.urls')),
 ]

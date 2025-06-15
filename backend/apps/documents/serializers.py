@@ -16,4 +16,5 @@ class DocumentSerializer(serializers.ModelSerializer):
             'original_text',
             'file',
             'user',  # Now marked as read-only
+            'upload_type',
         ]

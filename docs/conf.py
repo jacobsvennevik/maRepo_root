@@ -2,9 +2,18 @@
 
 import os
 import sys
+from decouple import Config, RepositoryEnv
 
 # 1) Insert the parent directory so that Sphinx can locate 'backend'.
 sys.path.insert(0, os.path.abspath('..'))
+
+# Load .env file from the backend directory
+env_path = os.path.abspath('../backend/.env')
+if os.path.exists(env_path):
+    config = Config(RepositoryEnv(env_path))
+    # Load environment variables into os.environ
+    for key, value in config.__dict__['data'].items():
+        os.environ[key] = value
 
 # 2) Point to your Django settings and initialize Django.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')

@@ -34,7 +34,7 @@ class MindMap(models.Model):
     )
     title = models.CharField(max_length=255)
     # Store the mind map content (for example, XML, markdown, or JSON)
-    content = models.TextField()
+    content = models.TextField(default="", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
