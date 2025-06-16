@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .django_models import Document
 from .serializers import DocumentSerializer
-from .tasks import process_pdf_and_classify
+from .tasks import process_document
 
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
@@ -20,7 +20,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
         """
         try:
             document = self.get_object()
-            process_pdf_and_classify.delay(document.id)
+            process_document.delay(document.id)
             return Response(
                 {'status': 'processing_started'},
                 status=status.HTTP_202_ACCEPTED

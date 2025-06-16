@@ -1,80 +1,51 @@
-import uuid
-from django.test import TestCase, override_settings
-from django.contrib.auth import get_user_model
+import pytest
 from unittest.mock import patch, MagicMock
-
-from backend.apps.projects.models import Project
-from backend.apps.study_materials.models import StudyMaterial
-from ..django_models import Document
-from ..tasks import process_pdf_and_classify
-from ..models import Syllabus
+from django.contrib.auth import get_user_model
+from backend.apps.pdf_service.tasks import process_document
+from backend.apps.pdf_service.django_models import Document
 
 User = get_user_model()
 
-@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-class ProcessPdfAndClassifyTaskTest(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='password')
-        self.project = Project.objects.create(
-            name='Test Project',
-            owner=self.user,
-            id=uuid.uuid4()
-        )
-        self.document = Document.objects.create(
-            user=self.user,
-            file='test.pdf',
-            title='Test Document'
-        )
-        self.study_material = StudyMaterial.objects.create(
-            project=self.project,
-            document=self.document,
-            owner=self.user,
-            title='Test Material'
-        )
+@pytest.mark.django_db
+def test_process_document_task():
+    """
+    Tests the process_document celery task.
+    """
+    # Arrange
+    # Create a user and a document instance to be processed
+    user = User.objects.create_user(email='test@example.com', password='password')
+    document = Document.objects.create(
+        id=1,
+        user=user,
+        file="path/to/fake.pdf",
+        original_text="", # Ensure it's empty to trigger ingestion
+        status='pending'
+    )
 
-    @patch('backend.apps.pdf_service.tasks.get_vector_store')
-    @patch('backend.apps.pdf_service.tasks.classify_syllabus')
-    @patch('backend.apps.pdf_service.tasks.ingest_pdf')
-    def test_process_pdf_and_classify_success(self, mock_ingest_pdf, mock_classify_syllabus, mock_get_vector_store):
-        # Mock the external services
-        mock_ingest_pdf.return_value = (['chunk1', 'chunk2'], {'pages': 2})
+    # Patch the dependencies of the task
+    with patch('backend.apps.pdf_service.tasks.ingest_pdf') as mock_ingest, \
+         patch('backend.apps.pdf_service.tasks.DocumentDispatcher') as MockDispatcher:
+
+        # Configure mocks
+        mock_ingest.return_value = (["text chunk 1"], {"source": "test"})
+        mock_dispatcher_instance = MockDispatcher.return_value
+
+        # Act
+        process_document(document.id)
+
+        # Assert
+        # Verify that ingestion was called
+        mock_ingest.assert_called_once()
+
+        # Refresh document state from DB
+        document.refresh_from_db()
+
+        # Verify that the dispatcher was initialized with the updated document
+        MockDispatcher.assert_called_once()
+        assert MockDispatcher.call_args[1]['document'].original_text == "text chunk 1"
         
-        mock_syllabus = Syllabus(
-            course_name="Introduction to AI",
-            course_code="CS101",
-            teacher_name="Dr. Smith"
-        )
-        mock_classify_syllabus.return_value = mock_syllabus
+        # Verify that dispatch was called
+        mock_dispatcher_instance.dispatch.assert_called_once()
 
-        mock_vector_store = MagicMock()
-        mock_get_vector_store.return_value = mock_vector_store
-
-        # Execute the task
-        process_pdf_and_classify.delay(self.document.id)
-
-        # Refresh the objects from the database
-        self.document.refresh_from_db()
-        self.project.refresh_from_db()
-
-        # Assertions
-        self.assertEqual(self.document.status, 'completed')
-        self.assertEqual(self.project.syllabus['course_name'], 'Introduction to AI')
-        
-        mock_ingest_pdf.assert_called_once()
-        mock_classify_syllabus.assert_called_once()
-        mock_get_vector_store.assert_called_once_with(collection_name=f"project_{self.project.id}_documents")
-        mock_vector_store.add_texts.assert_called_once()
-
-    @patch('backend.apps.pdf_service.tasks.ingest_pdf')
-    def test_process_pdf_and_classify_error(self, mock_ingest_pdf):
-        # Mock an error during ingestion
-        mock_ingest_pdf.side_effect = Exception("PDF parsing failed")
-
-        # Execute the task
-        process_pdf_and_classify.delay(self.document.id)
-
-        # Refresh the document from the database
-        self.document.refresh_from_db()
-
-        # Assert that the status is set to 'error'
-        self.assertEqual(self.document.status, 'error') 
+        # Verify the final status
+        assert document.status == 'completed' 

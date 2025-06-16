@@ -1,6 +1,7 @@
 import json
 import google.generativeai as genai
 from openai import OpenAI
+from .base import BaseAIClient
 
 # Configuration Keys
 GEMINI_API_KEY = "AIzaSyC_98PLPHHj6uTXq7SsDLsFWNrrRve08QI"
@@ -12,7 +13,7 @@ openai_client = OpenAI(api_key=OPENAI_API_KEY)
 # Configure Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
 
-class AIClient:
+class AIClient(BaseAIClient):
     def __init__(self, model: str):
         """
         Initialize the AI client with the chosen model.

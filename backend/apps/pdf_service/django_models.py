@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from .constants import DocumentType
 
 # Choices for file types
 FILE_TYPE_CHOICES = [
@@ -32,6 +33,13 @@ class Document(models.Model):
     file = models.FileField(upload_to='uploads/%Y/%m/%d/', max_length=255)
     upload_type = models.CharField(max_length=50, choices=UPLOAD_TYPE_CHOICES, default='learning_materials')
 
+    document_type = models.CharField(
+        max_length=20,
+        choices=[(tag.value, tag.name.title()) for tag in DocumentType],
+        default=DocumentType.UNKNOWN,
+        blank=True,
+        null=True,
+    )
     file_type = models.CharField(max_length=50, choices=FILE_TYPE_CHOICES)
     upload_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -43,3 +51,12 @@ class Document(models.Model):
 
     def __str__(self):
         return f"Document {self.id} - {self.title} uploaded by {self.user.username}"
+
+
+class ProcessedData(models.Model):
+    document = models.OneToOneField(Document, on_delete=models.CASCADE, related_name='processed_data')
+    data = models.JSONField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Processed data for Document {self.document.id}"

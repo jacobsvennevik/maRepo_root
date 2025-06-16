@@ -29,7 +29,7 @@ def ingest_pdf(file_path: str) -> Tuple[List[str], Dict[str, Any]]:
     metadata = {"source": file_path}
     
     try:
-        text = pymupdf4llm.to_markdown(file_path=file_path)
+        text = pymupdf4llm.to_markdown(file_path)
     except Exception as e:
         print(f"pymupdf4llm failed for {file_path}: {e}")
         raise FileNotFoundError(f"Could not process the PDF file at {file_path}")
