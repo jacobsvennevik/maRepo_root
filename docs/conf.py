@@ -12,7 +12,7 @@ env_path = os.path.abspath('../backend/.env')
 if os.path.exists(env_path):
     config = Config(RepositoryEnv(env_path))
     # Load environment variables into os.environ
-    for key, value in config.__dict__['data'].items():
+    for key, value in config.repository.data.items():
         os.environ[key] = value
 
 # 2) Point to your Django settings and initialize Django.
@@ -29,8 +29,11 @@ release = '0.0.1'
 extensions = [
     'sphinx.ext.autodoc',   # Pull docstrings automatically
     'sphinx.ext.napoleon',  # Parse Google/NumPy style docstrings
-    "sphinx_js",
 ]
+
+# Conditionally add sphinx_js for full builds
+if not os.environ.get('BUILD_BACKEND_ONLY'):
+    extensions.append('sphinx_js')
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
@@ -50,5 +53,6 @@ html_static_path = ['_static']
 
 
 # Configuration for sphinx-js
-jsdoc_config_path = "jsdoc_config.json"
+if not os.environ.get('BUILD_BACKEND_ONLY'):
+    jsdoc_config_path = "jsdoc_config.json"
 

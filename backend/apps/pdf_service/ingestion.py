@@ -6,9 +6,7 @@ Handles the ingestion of PDF files, extracting text and splitting it into manage
 import os
 import uuid
 from openai import OpenAI
-import pdfplumber
-from pdfplumber.page import Page
-from langchain_community.document_loaders import PyPDFLoader
+import pymupdf4llm
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from typing import Tuple, List, Dict, Any
 from pinecone import Pinecone
@@ -17,8 +15,7 @@ from .models import PDFChunk
 
 def ingest_pdf(file_path: str) -> Tuple[List[str], Dict[str, Any]]:
     """
-    Extracts text from a PDF and splits it into chunks.
-    Tries pdfplumber first, then falls back to PyPDFLoader.
+    Extracts text from a PDF using pymupdf4llm and splits it into chunks.
 
     Args:
         file_path: The local path to the PDF file.
@@ -29,23 +26,13 @@ def ingest_pdf(file_path: str) -> Tuple[List[str], Dict[str, Any]]:
     Raises:
         FileNotFoundError: If the file cannot be found at the given path.
     """
-    text = ""
     metadata = {"source": file_path}
     
     try:
-        with pdfplumber.open(file_path) as pdf:
-            metadata["pages"] = len(pdf.pages)
-            pages = [page.extract_text() for page in pdf.pages]
-            text = "\n".join(p for p in pages if p)
-    except Exception:
-        try:
-            loader = PyPDFLoader(file_path)
-            docs = loader.load()
-            text = "\n".join([doc.page_content for doc in docs])
-        except Exception as e:
-            # If both methods fail, raise the error.
-            print(f"Both pdfplumber and PyPDFLoader failed for {file_path}: {e}")
-            raise FileNotFoundError(f"Could not process the PDF file at {file_path}")
+        text = pymupdf4llm.to_markdown(file_path=file_path)
+    except Exception as e:
+        print(f"pymupdf4llm failed for {file_path}: {e}")
+        raise FileNotFoundError(f"Could not process the PDF file at {file_path}")
 
     if not text:
         return [], metadata
