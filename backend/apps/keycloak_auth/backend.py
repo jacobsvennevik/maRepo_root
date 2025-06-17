@@ -113,9 +113,8 @@ class KeycloakAuthenticationBackend(BaseBackend):
             
             # Get or create user
             user, created = User.objects.get_or_create(
-                username=sub,
+                email=email,
                 defaults={
-                    'email': email,
                     'first_name': decoded_token.get('given_name', ''),
                     'last_name': decoded_token.get('family_name', ''),
                 }

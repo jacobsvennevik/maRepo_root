@@ -37,7 +37,7 @@ from .models import MindMap
 class MindMapSerializer(serializers.ModelSerializer):
     class Meta:
         model = MindMap
-        fields = ['id', 'title', 'document', 'owner', 'created_at', 'mindmap_data']
+        fields = ['id', 'title', 'content', 'owner', 'created_at', 'updated_at']
 
 class GeneratedContentSerializer(serializers.ModelSerializer):
     class Meta:

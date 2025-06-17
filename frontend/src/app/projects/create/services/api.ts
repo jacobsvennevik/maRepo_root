@@ -19,7 +19,32 @@ export interface ProjectData {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+// Test mode - set to true to bypass API calls and use mock data
+const TEST_MODE = process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_TEST_MODE !== 'false';
+
 export const createProject = async (projectData: ProjectData) => {
+  // TEST MODE: Return mock project data
+  if (TEST_MODE) {
+    console.log('🧪 TEST MODE: Creating mock project instead of API call', projectData);
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
+    
+    const mockProject = {
+      id: Math.random().toString(36).substr(2, 9), // Generate random ID
+      name: projectData.name,
+      project_type: projectData.project_type,
+      course_name: projectData.course_name,
+      course_code: projectData.course_code,
+      teacher_name: projectData.teacher_name,
+      is_draft: projectData.is_draft,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      ...projectData
+    };
+    
+    console.log('🧪 TEST MODE: Mock project created:', mockProject);
+    return mockProject;
+  }
+
   try {
     const response = await axiosInstance.post('/api/projects/', projectData);
     return response.data;
@@ -44,6 +69,28 @@ export const uploadFileWithProgress = async (
   file: File,
   onProgress: (progress: number) => void
 ) => {
+  // TEST MODE: Simulate file upload with progress
+  if (TEST_MODE) {
+    console.log('🧪 TEST MODE: Simulating file upload with progress', { projectId, fileName: file.name });
+    
+    // Simulate upload progress
+    for (let progress = 0; progress <= 100; progress += 20) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      onProgress(progress);
+    }
+    
+    const mockResponse = {
+      id: Math.random().toString(36).substr(2, 9),
+      filename: file.name,
+      size: file.size,
+      upload_date: new Date().toISOString(),
+      project_id: projectId
+    };
+    
+    console.log('🧪 TEST MODE: Mock file uploaded:', mockResponse);
+    return mockResponse;
+  }
+
   try {
     const formData = new FormData();
     formData.append('file', file);
@@ -82,6 +129,18 @@ export const uploadFileWithProgress = async (
 };
 
 export async function uploadSyllabus(projectId: string, file: File): Promise<any> {
+  // TEST MODE: Return mock syllabus upload
+  if (TEST_MODE) {
+    console.log('🧪 TEST MODE: Mock syllabus upload', { projectId, fileName: file.name });
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return {
+      id: Math.random().toString(36).substr(2, 9),
+      filename: file.name,
+      project_id: projectId,
+      upload_type: 'syllabus'
+    };
+  }
+
   const formData = new FormData();
   formData.append('file', file);
 

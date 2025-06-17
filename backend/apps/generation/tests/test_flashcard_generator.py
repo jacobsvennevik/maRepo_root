@@ -5,7 +5,7 @@ import os
 from backend.apps.pdf_service.django_models import Document
 from backend.apps.pdf_service.ingestion import ingest_pdf
 from backend.apps.generation.models import FlashcardSet, Flashcard
-from backend.apps.documents.services.pdf_reader import read_pdf
+from backend.apps.pdf_service.services.pdf_reader import read_pdf
 from django.core.files.uploadedfile import SimpleUploadedFile
 from backend.apps.generation.services.flashcard_generator import (
     parse_flashcards,
@@ -13,6 +13,8 @@ from backend.apps.generation.services.flashcard_generator import (
     generate_flashcards,
     generate_flashcards_from_document,
 )
+from backend.apps.accounts.tests.factories import CustomUserFactory
+from backend.apps.pdf_service.models import PDFChunk
 
 User = get_user_model()
 
@@ -53,7 +55,7 @@ def test_save_flashcards_to_db():
     """
     Test that flashcards are correctly saved to the database when passed to save_flashcards_to_db.
     """
-    user = User.objects.create_user(username="testuser", email="testuser@example.com", password="testpass")
+    user = CustomUserFactory.create()
     document = Document.objects.create(user=user, file="uploads/test.pdf", file_type="pdf", title="Test Document")
 
     # Create a flashcard set linked to the document
@@ -97,30 +99,29 @@ def test_generate_flashcards(mocker):
 
 # ✅ Test generating flashcards from a document
 @pytest.mark.django_db
-@patch("backend.apps.generation.services.flashcard_generator.read_pdf", return_value="Front: What is AI? Back: Artificial Intelligence")
+@patch("backend.apps.generation.services.flashcard_generator.ingest_pdf")
 @patch("backend.apps.generation.services.flashcard_generator.AIClient.get_response", return_value="Front: What is AI? Back: Artificial Intelligence")
-def test_generate_flashcards_from_document(mock_ai_response, mock_read_pdf):
+def test_generate_flashcards_from_document(mock_ai_response, mock_ingest_pdf):
     """
     Test that generate_flashcards_from_document extracts text, generates flashcards, and saves them to the database.
     """
-    user = User.objects.create_user(username="testuser", email="testuser@example.com", password="testpass")
+    # Create mock PDFChunk objects
+    mock_chunk = PDFChunk(id="1", page_number=1, content="Front: What is AI? Back: Artificial Intelligence")
+    mock_ingest_pdf.return_value = ([mock_chunk], {})
     
-    # Use `tmp_path` to create a real test file
-   # Create a dummy PDF file using SimpleUploadedFile
+    user = CustomUserFactory.create()
+    
+    # Create a dummy PDF file using SimpleUploadedFile
     uploaded_file = SimpleUploadedFile("test.pdf", b"Dummy PDF content", content_type="application/pdf")
     document = Document.objects.create(user=user, file=uploaded_file, file_type="pdf", title="Test Document")
 
-
-    # Ensure file exists before running test
-    assert os.path.exists(document.file.path), "Test PDF file was not created!"
-
-    flashcard_set = generate_flashcards_from_document(document.id, user)
+    flashcard_set = generate_flashcards_from_document(document.id)
 
     # ✅ Verify that the flashcard set was created
     assert flashcard_set is not None
 
     # 🔥 Ensure mocks were called!
-    mock_read_pdf.assert_called_once_with(document.id)
+    mock_ingest_pdf.assert_called_once_with(document.file.path)
     mock_ai_response.assert_called_once()
 
     
@@ -132,5 +133,5 @@ def test_generate_flashcards_from_document(mock_ai_response, mock_read_pdf):
     assert stored_flashcards[0].question == "What is AI?"
     assert stored_flashcards[0].answer == "Artificial Intelligence"
 
-    # ✅ Ensure `read_pdf` was called once to extract text
-    mock_read_pdf.assert_called_once_with(document.id)
+    # ✅ Ensure `ingest_pdf` was called once to extract text
+    mock_ingest_pdf.assert_called_once_with(document.file.path)

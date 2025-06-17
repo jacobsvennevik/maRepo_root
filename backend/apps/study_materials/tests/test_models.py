@@ -17,7 +17,6 @@ def test_study_material_creation():
 class StudyMaterialModelTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            username='testuser',
             email='test@example.com',
             password='testpass123'
         )
@@ -65,7 +64,6 @@ class StudyMaterialModelTests(TestCase):
 class NoteModelTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            username='testuser',
             email='test@example.com',
             password='testpass123'
         )
@@ -115,7 +113,6 @@ class NoteModelTests(TestCase):
 class TestModelTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            username='testuser',
             email='test@example.com',
             password='testpass123'
         )

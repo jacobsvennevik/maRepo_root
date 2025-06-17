@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+require('jest-fetch-mock').enableMocks()
 
 // Mock ResizeObserver which is not available in jsdom
 global.ResizeObserver = class ResizeObserver {

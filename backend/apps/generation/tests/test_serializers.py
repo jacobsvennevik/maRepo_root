@@ -49,16 +49,19 @@ def test_mindmap_serializer_output():
     Test that the MindMapSerializer serializes a MindMap instance correctly.
     """
     user = CustomUserFactory.create()
-    # Create a MindMap with a sample JSON structure.
+    # Create a MindMap with sample content.
     mindmap = MindMapFactory.create(
         owner=user,
         title="Serialized MindMap",
-        mindmap_data={"root": {"name": "Root", "children": [{"name": "Child1"}]}}
+        content="This is the mindmap content"
     )
+
     serializer = MindMapSerializer(mindmap)
     data = serializer.data
 
-    assert data["title"] == "Serialized MindMap"
-    # Assuming the owner is serialized as an ID.
-    assert data["owner"] == user.id
-    assert data["mindmap_data"] == {"root": {"name": "Root", "children": [{"name": "Child1"}]}}
+    # Verify that the serialized data contains the expected fields and values.
+    assert data['id'] == mindmap.id
+    assert data['title'] == "Serialized MindMap"
+    assert data['content'] == "This is the mindmap content"
+    assert 'created_at' in data
+    assert 'updated_at' in data

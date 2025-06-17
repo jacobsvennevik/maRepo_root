@@ -1,48 +1,38 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { FileUpload } from '@/components/ui/file-upload';
-import { createProject, uploadFileWithProgress, APIError, ProjectData } from '../../services/api';
+import { uploadFileWithProgress, APIError } from '../../services/api';
 
-interface SyllabusUploadStepProps {
-  onUploadComplete: (projectId: string) => void;
+interface TestUploadStepProps {
+  projectId: string;
+  onUploadComplete: (uploadedFiles: File[]) => void;
+  onSkip?: () => void;
 }
 
-export function SyllabusUploadStep({ onUploadComplete }: SyllabusUploadStepProps) {
+export function TestUploadStep({ projectId, onUploadComplete, onSkip }: TestUploadStepProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleUpload = useCallback(async (newFiles: File[]) => {
     setFiles(newFiles);
     setError(null);
+    setIsUploading(true);
 
-    if (newFiles.length === 0) return;
+    if (newFiles.length === 0) {
+      setIsUploading(false);
+      return;
+    }
 
     try {
-      // 1. Create a draft project
-      const fileName = newFiles[0].name;
-      const projectName = fileName.replace(/\.[^/.]+$/, ''); // Remove file extension
-      
-      const projectData: Partial<ProjectData> = {
-        name: projectName,
-        project_type: 'school',
-        course_name: projectName, // Required for school projects
-        is_draft: true,
-      };
-
-      console.log('Creating project with data:', projectData);
-      const newProject = await createProject(projectData as ProjectData);
-      console.log('Project created:', newProject);
-
-      // 2. Upload each file with progress tracking
+      // Upload each file with progress tracking
       for (const file of newFiles) {
         try {
-          console.log('Uploading file:', file.name);
+          console.log('Uploading test file:', file.name);
           await uploadFileWithProgress(
-            newProject.id,
+            projectId,
             file, 
             (progress) => {
               setUploadProgress(prev => ({
@@ -51,9 +41,9 @@ export function SyllabusUploadStep({ onUploadComplete }: SyllabusUploadStepProps
               }));
             }
           );
-          console.log('File upload complete:', file.name);
+          console.log('Test file upload complete:', file.name);
         } catch (error) {
-          console.error('File upload error:', error);
+          console.error('Test file upload error:', error);
           if (error instanceof APIError) {
             setError(`Upload failed: ${error.message}`);
           } else {
@@ -64,28 +54,26 @@ export function SyllabusUploadStep({ onUploadComplete }: SyllabusUploadStepProps
             ...prev,
             [file.name]: -1
           }));
+          setIsUploading(false);
           return;
         }
       }
 
-      // 3. Notify parent component that the upload is done
-      onUploadComplete(newProject.id);
+      // Notify parent component that the upload is done
+      onUploadComplete(newFiles);
+      setIsUploading(false);
 
     } catch (error) {
-      console.error("Upload failed:", error);
+      console.error("Test upload failed:", error);
       
       if (error instanceof APIError) {
-        if (error.statusCode === 401) {
-            setError("Your session has expired. Please log in again.");
-          router.push('/login');
-        } else {
-            setError(error.message);
-        }
+        setError(error.message);
       } else {
         setError("An unexpected error occurred. Please try again.");
       }
+      setIsUploading(false);
     }
-  }, [onUploadComplete, router]);
+  }, [projectId, onUploadComplete]);
 
   const handleRemove = useCallback((index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
@@ -102,22 +90,41 @@ export function SyllabusUploadStep({ onUploadComplete }: SyllabusUploadStepProps
     }
   }, [files]);
 
+  const handleSkip = () => {
+    if (onSkip) {
+      onSkip();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <FileUpload
         onUpload={handleUpload}
         onRemove={handleRemove}
-        accept=".pdf"
-        maxFiles={1}
-        maxSize={10 * 1024 * 1024} // 10MB
-        required={true}
-        title="Upload your course syllabus"
-        description="Upload your syllabus and we'll automatically extract course details, deadlines, and topics to set up your project."
-        buttonText="Browse for syllabus"
+        accept=".pdf,.doc,.docx,.txt"
+        maxFiles={5}
+        maxSize={10 * 1024 * 1024} // 10MB per file
+        required={false}
+        title="Upload your test materials"
+        description="Upload past exams, practice tests, or study guides. This helps us understand what types of questions to expect."
+        buttonText="Browse for test files"
         files={files}
         uploadProgress={uploadProgress}
         error={error || undefined}
+        disabled={isUploading}
       />
+      
+      {onSkip && (
+        <div className="text-center">
+          <button
+            onClick={handleSkip}
+            className="text-sm text-gray-500 hover:text-gray-700 underline"
+            disabled={isUploading}
+          >
+            Skip this step
+          </button>
+        </div>
+      )}
     </div>
   );
 } 

@@ -7,18 +7,13 @@ const config = {
     '\\.(css|less|sass|scss)$': 'identity-obj-proxy'
   },
   transform: {
-    '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest'
+    '^.+\\.(ts|tsx|js|jsx)$': '@swc/jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
   transformIgnorePatterns: [
     '/node_modules/(?!axios)/'
   ],
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.json'
-    }
-  }
 }
 
 module.exports = config 

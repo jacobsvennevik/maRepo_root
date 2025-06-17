@@ -3,6 +3,7 @@ URL configuration for backend project.
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
@@ -20,6 +21,9 @@ router.register('mind-maps', MindMapViewSet)
 router.register('projects', ProjectViewSet, basename='project')
 
 urlpatterns = [
+    # Redirect root to admin
+    path('', RedirectView.as_view(url='/admin/', permanent=True)),
+    
     # Admin
     path('admin/', admin.site.urls),
     

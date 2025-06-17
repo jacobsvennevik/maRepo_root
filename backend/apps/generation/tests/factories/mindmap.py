@@ -1,6 +1,6 @@
 import factory
 from django.contrib.auth import get_user_model
-from backend.apps.generation.mindmap.models import MindMap
+from backend.apps.generation.models import MindMap
 from backend.apps.accounts.tests.factories import CustomUserFactory
 
 

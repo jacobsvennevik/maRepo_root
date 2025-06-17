@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from backend.apps.pdf_service.django_models import Document
 from backend.apps.projects.models import Project
 

@@ -53,14 +53,26 @@ def generate_flashcards_from_document(document_id: int):
         document = Document.objects.get(id=document_id)
         if not document.original_text:
             # If text is not extracted, run ingestion
-            chunks = ingest_pdf(document.file.path)
+            chunks, metadata = ingest_pdf(document.file.path)  # Unpack the tuple
             document.original_text = " ".join([chunk.content for chunk in chunks])
             document.save()
         
         # Now generate flashcards
-        # This part needs to be implemented
-        pass
+        flashcards = generate_flashcards(document.original_text)
+        
+        # Create flashcard set
+        flashcard_set = FlashcardSet.objects.create(
+            title=f"Flashcards for {document.title}",
+            owner=document.user,
+            document=document
+        )
+        
+        # Save flashcards to database
+        save_flashcards_to_db(flashcards, flashcard_set)
+        
+        return flashcard_set
 
     except Document.DoesNotExist:
         print(f"Document with id {document_id} not found.")
+        return None
 

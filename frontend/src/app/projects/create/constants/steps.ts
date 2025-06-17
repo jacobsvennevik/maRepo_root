@@ -4,6 +4,8 @@ import {
   BookOpen, 
   CalendarDays, 
   Upload, 
+  FileText,
+  CheckCircle,
   Users
 } from 'lucide-react';
 import { SetupStep } from '../types';
@@ -35,9 +37,21 @@ export const SETUP_STEPS: SetupStep[] = [
   },
   {
     id: 'uploadFiles',
-    title: 'Upload your study materials',
-    description: 'Upload all the documents and files you have for this project, including any other materials.',
+    title: 'Upload your syllabus',
+    description: 'Upload your course syllabus to automatically extract course details and setup your project.',
     icon: Upload
+  },
+  {
+    id: 'extractionResults',
+    title: 'Review extracted information',
+    description: 'Review and confirm the information we extracted from your syllabus.',
+    icon: CheckCircle
+  },
+  {
+    id: 'testUpload',
+    title: 'Upload test materials',
+    description: 'Upload past exams, practice tests, or study guides to help us understand what to expect.',
+    icon: FileText
   },
   {
     id: 'timeframe',

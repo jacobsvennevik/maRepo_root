@@ -24,7 +24,7 @@ def test_ingest_pdf(mock_to_markdown, tmp_path):
     # Assert
     mock_to_markdown.assert_called_once_with(str(test_file))
     assert len(chunks) > 0
-    assert chunks[0] == "This is the content of the PDF."
+    assert chunks[0].content == "This is the content of the PDF."
     assert metadata["source"] == str(test_file)
 
 # Add more tests for other methods in PdfIngestionService 

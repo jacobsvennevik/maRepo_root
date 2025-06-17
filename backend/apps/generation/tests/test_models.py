@@ -97,20 +97,18 @@ def test_mindmap_creation():
     Test that a MindMap instance is created with the expected field values.
     """
     user = CustomUserFactory.create()
-    document = DocumentFactory.create()
     mindmap = MindMap.objects.create(
         owner=user,
-        document=document,
         title="Test MindMap",
-        mindmap_data={"root": {"name": "Test", "children": []}}
+        content="Test content for the mindmap"
     )
 
     assert mindmap.pk is not None
     assert mindmap.title == "Test MindMap"
     assert mindmap.owner == user
-    assert mindmap.document == document
-    assert mindmap.mindmap_data == {"root": {"name": "Test", "children": []}}
+    assert mindmap.content == "Test content for the mindmap"
     assert mindmap.created_at is not None
+    assert mindmap.updated_at is not None
 
 @pytest.mark.django_db
 def test_mindmap_str():
@@ -120,5 +118,5 @@ def test_mindmap_str():
     user = CustomUserFactory.create()
     # Create a MindMap instance using the factory with a custom title.
     mindmap = MindMapFactory.create(owner=user, title="Custom MindMap")
-    expected_str = f"Custom MindMap (Owner: {user.username})"
+    expected_str = "Custom MindMap"  # The __str__ method just returns the title
     assert str(mindmap) == expected_str

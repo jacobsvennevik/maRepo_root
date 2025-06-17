@@ -13,7 +13,7 @@ from pinecone import Pinecone
 
 from .models import PDFChunk
 
-def ingest_pdf(file_path: str) -> Tuple[List[str], Dict[str, Any]]:
+def ingest_pdf(file_path: str) -> Tuple[List[PDFChunk], Dict[str, Any]]:
     """
     Extracts text from a PDF using pymupdf4llm and splits it into chunks.
 
@@ -21,7 +21,7 @@ def ingest_pdf(file_path: str) -> Tuple[List[str], Dict[str, Any]]:
         file_path: The local path to the PDF file.
 
     Returns:
-        A tuple containing a list of text chunks and a metadata dictionary.
+        A tuple containing a list of PDFChunk objects and a metadata dictionary.
         
     Raises:
         FileNotFoundError: If the file cannot be found at the given path.
@@ -59,4 +59,4 @@ def ingest_pdf(file_path: str) -> Tuple[List[str], Dict[str, Any]]:
             )
         )
         
-    return chunks, metadata 
+    return pdf_chunks, metadata 

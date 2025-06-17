@@ -25,12 +25,15 @@ import {
   PurposeStep,
   CourseDetailsStep,
   TestTimelineStep,
-  FileUploadStep,
+  SyllabusUploadStep,
+  ExtractionResultsStep,
+  TestUploadStep,
   TimelineStep,
   GoalStep,
   StudyFrequencyStep,
   CollaborationStep
 } from './steps';
+import { ExtractedData } from './steps/extraction-results-step';
 
 // Import constants and types
 import { 
@@ -52,6 +55,9 @@ const ReactCalendar = dynamic(() => import('react-calendar'), {
   loading: () => <div className="w-full h-64 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">Loading calendar...</div>
 });
 
+// Test mode - set to true to bypass API calls and use mock data
+const TEST_MODE = process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_TEST_MODE !== 'false';
+
 interface GuidedSetupProps {
   onBack: () => void;
 }
@@ -59,6 +65,9 @@ interface GuidedSetupProps {
 export function GuidedSetup({ onBack }: GuidedSetupProps) {
   const router = useRouter();
   const [showSummary, setShowSummary] = useState(false);
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
+  const [syllabusFileName, setSyllabusFileName] = useState<string>('');
 
   const {
     setup,
@@ -233,6 +242,99 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     router.push(`/projects/${projectId}` as any);
   };
 
+  // Transform backend data to ExtractedData format
+  const transformBackendData = (backendData: any): ExtractedData => {
+    // Handle both real backend data and mock test data
+    const metadata = backendData.metadata || backendData;
+    
+    return {
+      courseName: metadata?.course_name || metadata?.title,
+      instructor: metadata?.instructor,
+      semester: metadata?.semester,
+      credits: metadata?.credits,
+      topics: (metadata?.topics || []).map((topic: any, index: number) => ({
+        id: `topic-${index}`,
+        label: topic.name || topic.label || topic,
+        confidence: topic.confidence || 85
+      })),
+      dates: (metadata?.assignments || metadata?.important_dates || metadata?.exam_dates || [])
+        .map((item: any, index: number) => ({
+          id: `date-${index}`,
+          date: item.due_date || item.date,
+          description: item.description || item.name || item.title,
+          type: item.type || 'assignment',
+          weight: item.weight
+        }))
+        .concat(
+          (metadata?.exam_dates || []).map((exam: any, index: number) => ({
+            id: `exam-${index}`,
+            date: exam.date,
+            description: exam.name || exam.title,
+            type: 'exam',
+            weight: exam.weight
+          }))
+        ),
+      testTypes: (metadata?.test_types || []).map((type: any, index: number) => ({
+        id: `test-${index}`,
+        type: type.name || type.type || type,
+        confidence: type.confidence || 80
+      })),
+      grading: (metadata?.grading || []).map((grade: any) => ({
+        category: grade.category || grade.name,
+        weight: grade.weight || grade.percentage
+      }))
+    };
+  };
+
+  const handleSyllabusUploadComplete = (newProjectId: string, backendData: any, fileName?: string) => {
+    // Store the project ID and transform the extracted data
+    setProjectId(newProjectId);
+    const transformed = transformBackendData(backendData);
+    setExtractedData(transformed);
+    setSyllabusFileName(fileName || backendData.file || 'syllabus.pdf');
+    
+    if (newProjectId === 'test-mode') {
+      console.log(`🧪 TEST MODE: Syllabus analyzed. Moving to extraction results to review.`);
+    } else {
+      console.log(`Syllabus uploaded for project ${newProjectId}. Moving to extraction results.`);
+    }
+    handleNext();
+  };
+
+  const handleExtractionResultsConfirm = async () => {
+    // User confirmed the extraction results
+    if (projectId === 'test-mode') {
+      // In test mode, create the project now with the extracted data
+      console.log('🧪 TEST MODE: Creating project with confirmed extraction data...');
+      
+      const projectName = extractedData?.courseName || 'Computer Science 101';
+      const projectData: Partial<ProjectData> = {
+        name: projectName,
+        project_type: 'school',
+        course_name: projectName,
+        is_draft: true,
+      };
+
+      try {
+        const newProject = await createProject(projectData as ProjectData);
+        console.log('🧪 TEST MODE: Project created after confirmation:', newProject);
+        setProjectId(newProject.id);
+      } catch (error) {
+        console.error('Failed to create project after extraction confirmation:', error);
+        // Continue anyway for demo purposes in test mode
+      }
+    }
+    
+    console.log('Extraction results confirmed. Moving to test upload.');
+    handleNext();
+  };
+
+  const handleTestUploadComplete = (uploadedFiles: File[]) => {
+    // Handle test files upload completion
+    console.log(`Test files uploaded:`, uploadedFiles);
+    handleNext();
+  };
+
   const renderStepContent = () => {
     const stepId = currentStepData.id;
     
@@ -295,7 +397,30 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
         );
       case 'uploadFiles':
         return (
-          <FileUploadStep onExtractionComplete={handleExtractionComplete} />
+          <SyllabusUploadStep
+            onUploadComplete={handleSyllabusUploadComplete}
+          />
+        );
+      case 'extractionResults':
+        return extractedData ? (
+          <ExtractionResultsStep
+            extractedData={extractedData}
+            fileName={syllabusFileName}
+            onConfirm={handleExtractionResultsConfirm}
+            onEdit={() => {
+              // Optional: Add edit functionality later
+              console.log('Edit functionality not implemented yet');
+            }}
+            isTestMode={projectId === 'test-mode'}
+          />
+        ) : null;
+      case 'testUpload':
+        return (
+          <TestUploadStep
+            projectId={projectId || ''}
+            onUploadComplete={handleTestUploadComplete}
+            onSkip={handleNext}
+          />
         );
       case 'timeframe':
         return (

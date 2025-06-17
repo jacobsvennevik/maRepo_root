@@ -12,6 +12,7 @@ def test_flashcardset_list_api():
     """
     client = APIClient()
     user = CustomUserFactory.create()
+    client.force_authenticate(user=user)  # Authenticate the client
     flashcard_set = FlashcardSetFactory(owner=user)
     
     url = reverse('flashcardset-list')  # router basename set as 'flashcardset'
