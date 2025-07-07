@@ -1,5 +1,5 @@
 # backend/apps/pdf_service/views_api.py
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .django_models import Document
@@ -9,9 +9,25 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Custom permission to only allow owners of a document to access it.
+    """
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are only allowed to the owner of the document
+        return obj.user == request.user
+
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        """
+        This view should return a list of all documents
+        for the currently authenticated user.
+        """
+        return Document.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
