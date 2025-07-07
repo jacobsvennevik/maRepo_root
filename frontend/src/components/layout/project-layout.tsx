@@ -1,6 +1,7 @@
 "use client"
 
 import { ReactNode } from "react"
+import { BaseLayout } from "./base-layout"
 
 interface ProjectLayoutProps {
   children: ReactNode
@@ -8,8 +9,8 @@ interface ProjectLayoutProps {
 
 export function ProjectLayout({ children }: ProjectLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#f8fafc]">
+    <BaseLayout>
       {children}
-    </div>
+    </BaseLayout>
   )
 } 

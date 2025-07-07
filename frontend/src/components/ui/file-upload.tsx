@@ -1,12 +1,13 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import React, { useCallback, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { Upload, X, FileText, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "./button"
 import { Progress } from "./progress"
 import { Alert, AlertDescription } from "./alert"
+import { formatFileSize, formatAcceptedTypes, getUploadStatus, extensionToMimeType } from "@/utils/fileHelpers"
 
 export interface FileUploadProps {
   onUpload: (files: File[]) => void
@@ -101,21 +102,7 @@ export function FileUpload({
     }
   })
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes"
-    const k = 1024
-    const sizes = ["Bytes", "KB", "MB", "GB"]
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
-  }
 
-  const getUploadStatus = (fileName: string): 'uploading' | 'error' | 'success' | 'idle' => {
-    const progress = uploadProgress[fileName]
-    if (progress === undefined) return 'idle'
-    if (progress === -1) return 'error'
-    if (progress === 100) return 'success'
-    return 'uploading'
-  }
 
   return (
     <div className={cn("space-y-4", className)}>
@@ -143,15 +130,7 @@ export function FileUpload({
               {description}
             </p>
             <p className="text-xs text-gray-500 mb-4">
-              Max size: {formatFileSize(maxSize)} • Supported formats: {
-                accept.split(',').map(type => {
-                  const format = type.trim();
-                  if (format === 'application/pdf') return 'PDF';
-                  if (format === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return 'DOCX';
-                  if (format === 'text/plain') return 'TXT';
-                  return format.toUpperCase();
-                }).join(', ')
-              }
+              Max size: {formatFileSize(maxSize)} • Supported formats: {formatAcceptedTypes(accept)}
             </p>
             <Button 
               variant="outline" 
@@ -187,7 +166,7 @@ export function FileUpload({
       {showFileList && files.length > 0 && (
         <div className="space-y-2">
           {files.map((file, index) => {
-            const status = getUploadStatus(file.name)
+            const status = getUploadStatus(file.name, uploadProgress)
             return (
               <div
                 key={file.name}

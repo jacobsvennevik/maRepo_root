@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SETUP_STEPS } from '../constants';
+import { SETUP_STEPS } from '../constants/steps';
 import { ProjectSetup } from '../types';
 
 export const useStepNavigation = (
@@ -7,44 +7,38 @@ export const useStepNavigation = (
   onBack: () => void, 
   setShowSummary: (show: boolean) => void
 ) => {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
-  const shouldShowStep = (stepId: string) => {
-    if (stepId === 'courseDetails' || stepId === 'testTimeline') {
-      return setup.purpose === 'school';
-    }
-    return true;
-  };
+  const shouldShowStep = (_stepId: string) => true;
 
   const handleNext = () => {
-    let nextStep = currentStep + 1;
-    while (nextStep < SETUP_STEPS.length && !shouldShowStep(SETUP_STEPS[nextStep].id)) {
-      nextStep++;
-    }
+    const nextStep = currentStepIndex + 1;
     
     if (nextStep < SETUP_STEPS.length) {
-      setCurrentStep(nextStep);
-    } else {
+      setCurrentStepIndex(nextStep);
+    } else if (currentStepIndex === SETUP_STEPS.length - 1) {
+      // Only call setShowSummary when trying to go beyond the last step
+      // and we're already at the last step
       setShowSummary(true);
     }
   };
 
   const handleBack = () => {
-    let prevStep = currentStep - 1;
-    while (prevStep >= 0 && !shouldShowStep(SETUP_STEPS[prevStep].id)) {
-      prevStep--;
-    }
+    const prevStep = currentStepIndex - 1;
     
     if (prevStep >= 0) {
-      setCurrentStep(prevStep);
+      setCurrentStepIndex(prevStep);
     } else {
       onBack();
     }
   };
 
+  const handlePrevious = handleBack; // Alias for tests
+
+  // Functions for component use (these are called as functions in the UI)
   const getCurrentStepIndex = () => {
     let actualStep = 0;
-    for (let i = 0; i <= currentStep; i++) {
+    for (let i = 0; i <= currentStepIndex; i++) {
       if (shouldShowStep(SETUP_STEPS[i].id)) {
         actualStep++;
       }
@@ -56,19 +50,27 @@ export const useStepNavigation = (
     return SETUP_STEPS.filter(step => shouldShowStep(step.id)).length;
   };
 
-  const progress = (getCurrentStepIndex() / getTotalSteps()) * 100;
+  const totalSteps = getTotalSteps();
+  const currentStepNumber = getCurrentStepIndex();
+  const progress = totalSteps > 1 ? ((currentStepNumber - 1) / (totalSteps - 1)) * 100 : 0;
 
-  const currentStepData = SETUP_STEPS[currentStep];
+  const currentStep = SETUP_STEPS[currentStepIndex]; // Return step object
+  const isFirstStep = currentStepIndex === 0;
+  const isLastStep = currentStepIndex === SETUP_STEPS.length - 1;
 
   return {
-    currentStep,
-    setCurrentStep,
+    currentStepIndex, // Return the actual step index for tests (0-based)
+    currentStep, // Return step object for tests
+    setCurrentStep: setCurrentStepIndex,
     handleNext,
     handleBack,
+    handlePrevious,
     shouldShowStep,
-    getCurrentStepIndex,
-    getTotalSteps,
+    getCurrentStepIndex, // Return function for component use (1-based display)
+    getTotalSteps, // Return function for component use
     progress,
-    currentStepData,
+    currentStepData: currentStep, // Keep for backward compatibility
+    isFirstStep,
+    isLastStep,
   };
 }; 

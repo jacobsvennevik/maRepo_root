@@ -4,6 +4,7 @@ import { useCallback, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { Upload, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { formatFileSize, formatAcceptedTypes, extensionToMimeType } from "@/utils/fileHelpers"
 
 interface FileUploadProps {
   onUpload: (files: File[]) => void
@@ -31,7 +32,12 @@ export function FileUpload({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: accept.split(",").reduce((acc, type) => ({ ...acc, [type]: [] }), {}),
+    accept: accept.split(",").reduce((acc, type) => {
+      const mimeType = type.trim().startsWith('.') 
+        ? extensionToMimeType(type.trim())
+        : type.trim();
+      return { ...acc, [mimeType]: [] };
+    }, {}),
     maxFiles,
   })
 
@@ -64,7 +70,7 @@ export function FileUpload({
                 Drag & drop files here, or click to select files
                 <br />
                 <span className="text-xs text-slate-500">
-                  Accepted formats: {accept.replace(/\./g, "")}
+                  Accepted formats: {formatAcceptedTypes(accept)}
                 </span>
               </p>
             )}
@@ -84,7 +90,7 @@ export function FileUpload({
                   {file.name}
                 </span>
                 <span className="text-xs text-slate-500">
-                  ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                  {formatFileSize(file.size)}
                 </span>
               </div>
               <button

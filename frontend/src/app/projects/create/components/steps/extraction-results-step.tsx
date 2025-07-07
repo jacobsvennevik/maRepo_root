@@ -48,6 +48,15 @@ export interface ExtractedData {
     category: string;
     weight: number;
   }[];
+  // Additional fields from real API response
+  location?: string;
+  meetingTimes?: string;
+  officeHours?: string;
+  materials?: string[];
+  courseDescription?: string;
+  contactInfo?: string;
+  learningOutcomes?: string[];
+  otherInfo?: string;
 }
 
 interface ExtractionResultsStepProps {
@@ -84,8 +93,19 @@ export function ExtractionResultsStep({
   };
 
   const formatDate = (dateString: string) => {
+    // Handle special cases
+    if (!dateString || dateString === 'TBD' || dateString === 'Not specified') {
+      return dateString;
+    }
+    
     try {
-      return new Date(dateString).toLocaleDateString('en-US', {
+      const date = new Date(dateString);
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        return dateString; // Return original string if date is invalid
+      }
+      
+      return date.toLocaleDateString('en-US', {
         weekday: 'short',
         month: 'short',
         day: 'numeric'

@@ -7,10 +7,15 @@ class UnknownProcessorService(BaseProcessor):
     """
 
     def __init__(self, *args, **kwargs):
-        pass # No client needed for this processor
+        super().__init__(*args, **kwargs)
 
     def process(self, text: str) -> BaseModel:
         """
         Returns an empty Pydantic model as there is no processing to be done.
         """
-        return BaseModel() 
+        # Return a basic BaseModel instance with some metadata
+        class UnknownDocument(BaseModel):
+            message: str = "Document type unknown - no processing performed"
+            text_length: int = len(text) if text else 0
+        
+        return UnknownDocument() 

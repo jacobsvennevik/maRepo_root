@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FileUpload } from '@/components/ui/file-upload';
 import { createProject, uploadFileWithProgress, APIError, ProjectData } from '../../services/api';
@@ -14,6 +14,41 @@ export function SyllabusUploadStep({ onUploadComplete }: SyllabusUploadStepProps
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  /**
+   * Enable a quick workflow while developing or running frontend tests.
+   * When NEXT_PUBLIC_TEST_MODE="true" (and NODE_ENV is development) the step
+   * automatically creates a mock project using the shared `createProject` helper
+   * and immediately invokes `onUploadComplete` – no manual file-selection or
+   * network requests required.
+   */
+  const TEST_MODE = process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_TEST_MODE === 'true';
+
+  useEffect(() => {
+    if (!TEST_MODE) return;
+
+    (async () => {
+      try {
+        const mockProjectData: Partial<ProjectData> = {
+          name: 'Test Project',
+          project_type: 'school',
+          course_name: 'Test Course',
+          is_draft: true,
+        };
+
+        console.log('🧪 TEST MODE: Creating mock project automatically');
+        const newProject = await createProject(mockProjectData as ProjectData);
+        console.log('🧪 TEST MODE: Mock project ready → skipping file upload');
+
+        // Immediately signal completion so the wizard can advance
+        onUploadComplete(newProject.id);
+      } catch (err) {
+        console.error('🧪 TEST MODE: Failed to bootstrap mock project', err);
+      }
+    })();
+    // we only want to run this once on mount in test mode
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleUpload = useCallback(async (newFiles: File[]) => {
     setFiles(newFiles);

@@ -6,7 +6,9 @@ import {
   Upload, 
   FileText,
   CheckCircle,
-  Users
+  Users,
+  GraduationCap,
+  BarChart3
 } from 'lucide-react';
 import { SetupStep } from '../types';
 
@@ -24,16 +26,10 @@ export const SETUP_STEPS: SetupStep[] = [
     icon: Target
   },
   {
-    id: 'courseDetails',
-    title: 'Course Details',
-    description: 'Tell us about your education, course, and how you\'ll be evaluated.',
-    icon: BookOpen
-  },
-  {
-    id: 'testTimeline',
-    title: 'Tests & Timeline',
-    description: 'Upload previous tests and add important dates.',
-    icon: CalendarDays
+    id: 'educationLevel',
+    title: 'Education level',
+    description: 'Select your school or study level (e.g. high school, university, graduate).',
+    icon: GraduationCap
   },
   {
     id: 'uploadFiles',
@@ -48,16 +44,40 @@ export const SETUP_STEPS: SetupStep[] = [
     icon: CheckCircle
   },
   {
+    id: 'courseContentUpload',
+    title: 'Upload course content',
+    description: 'Upload slides, handouts, and other course materials (max 100 pages).',
+    icon: Upload
+  },
+  {
+    id: 'courseContentReview',
+    title: 'Review course content extraction',
+    description: 'Preview and confirm extracted information from your course content.',
+    icon: CheckCircle
+  },
+  {
     id: 'testUpload',
     title: 'Upload test materials',
     description: 'Upload past exams, practice tests, or study guides to help us understand what to expect.',
     icon: FileText
   },
   {
+    id: 'testExtractionResults',
+    title: 'Review test analysis',
+    description: 'Review the AI analysis of your test materials including question types and difficulty levels.',
+    icon: BarChart3
+  },
+  {
     id: 'timeframe',
     title: 'What\'s your timeline?',
     description: 'How long do you plan to work on this project?',
     icon: CalendarDays
+  },
+  {
+    id: 'goal',
+    title: 'What\'s your main goal?',
+    description: 'Tell us what you want to achieve with this project.',
+    icon: Target
   },
   {
     id: 'studyFrequency',

@@ -15,6 +15,7 @@ import {
   Brain,
   TrendingUp
 } from "lucide-react";
+import { formatDate } from '../../utils/formatters';
 
 interface DetectedTopic {
   id: string;
@@ -298,7 +299,7 @@ export function AIPreview({
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-gray-900">{date.description}</span>
                       <Badge variant="secondary" className="text-xs">
-                        {new Date(date.date).toLocaleDateString()}
+                        {formatDate(date.date)}
                       </Badge>
                       <Badge variant="outline" className="text-xs capitalize">
                         {date.type}

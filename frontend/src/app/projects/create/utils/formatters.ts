@@ -1,12 +1,26 @@
-export const formatFileSize = (bytes: number) => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
+export { formatFileSize } from './file-helpers';
 
-export const formatDate = (dateString: string) => {
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-  return new Date(dateString).toLocaleDateString(undefined, options);
+/**
+ * Formats a date string into a human-readable date.
+ * Handles special cases (TBD, Not specified, empty) and invalid dates gracefully.
+ * @param dateString - The date string to format
+ * @param options - Intl.DateTimeFormatOptions (optional)
+ * @returns Formatted date string
+ */
+export const formatDate = (
+  dateString: string,
+  options: Intl.DateTimeFormatOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }
+): string => {
+  if (!dateString || dateString === 'TBD' || dateString === 'Not specified') {
+    return dateString;
+  }
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return dateString;
+    }
+    return date.toLocaleDateString('en-US', options);
+  } catch {
+    return dateString;
+  }
 }; 

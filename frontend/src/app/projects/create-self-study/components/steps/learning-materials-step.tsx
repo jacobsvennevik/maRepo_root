@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, FileText, Link, X, Youtube, Github, ExternalLink } from "lucide-react";
 import { LearningMaterial } from '../../types';
 import { LINK_TYPES } from '../../constants';
+import { createDragHandlers, formatFileSize } from '../../../create/utils/file-helpers';
 
 interface LearningMaterialsStepProps {
   learningMaterials: LearningMaterial[];
@@ -22,29 +23,20 @@ export function LearningMaterialsStep({
   const [newLink, setNewLink] = useState({ name: '', url: '', type: 'other' });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    const newMaterials = droppedFiles.map(file => ({
-      id: `file-${Date.now()}-${Math.random()}`,
-      type: 'file' as const,
-      name: file.name,
-      file,
-      size: file.size
-    }));
-    onMaterialsChange([...learningMaterials, ...newMaterials]);
-  }, [learningMaterials, onMaterialsChange]);
+  // Use shared drag and drop handlers with custom transformation
+  const { handleDragOver, handleDragLeave, handleDrop } = createDragHandlers(
+    (droppedFiles) => {
+      const newMaterials = droppedFiles.map(file => ({
+        id: `file-${Date.now()}-${Math.random()}`,
+        type: 'file' as const,
+        name: file.name,
+        file,
+        size: file.size
+      }));
+      onMaterialsChange([...learningMaterials, ...newMaterials]);
+    },
+    setIsDragOver
+  );
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -72,13 +64,7 @@ export function LearningMaterialsStep({
     }
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+
 
   const getLinkIcon = (url: string) => {
     if (url.includes('youtube.com') || url.includes('youtu.be')) return Youtube;

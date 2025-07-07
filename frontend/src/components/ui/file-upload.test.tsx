@@ -1,14 +1,18 @@
+import * as React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { FileUpload } from './file-upload'
 import '@testing-library/jest-dom'
+import { 
+  createTestFile, 
+  setupTestCleanup, 
+  simulateFileUpload 
+} from '../../test-utils/test-helpers';
 
 describe('FileUpload', () => {
   const mockOnUpload = jest.fn()
   const mockOnRemove = jest.fn()
 
-  beforeEach(() => {
-    jest.clearAllMocks()
-  })
+  setupTestCleanup([mockOnUpload, mockOnRemove]);
 
   it('renders with default props', () => {
     render(<FileUpload onUpload={mockOnUpload} />)
@@ -38,7 +42,7 @@ describe('FileUpload', () => {
   it('handles file upload', async () => {
     render(<FileUpload onUpload={mockOnUpload} />)
 
-    const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' })
+    const file = createTestFile()
     const input = screen.getByTestId('file-input')
 
     Object.defineProperty(input, 'files', {
@@ -54,8 +58,8 @@ describe('FileUpload', () => {
 
   it('shows file list', () => {
     const files = [
-      new File(['test1'], 'test1.pdf', { type: 'application/pdf' }),
-      new File(['test2'], 'test2.pdf', { type: 'application/pdf' }),
+      createTestFile('test1.pdf'),
+      createTestFile('test2.pdf'),
     ]
 
     render(
@@ -78,7 +82,7 @@ describe('FileUpload', () => {
 
   it('shows upload progress', () => {
     const files = [
-      new File(['test1'], 'test1.pdf', { type: 'application/pdf' }),
+      createTestFile('test1.pdf'),
     ]
 
     render(
@@ -98,7 +102,7 @@ describe('FileUpload', () => {
   it('validates file type', async () => {
     render(<FileUpload onUpload={mockOnUpload} />)
 
-    const file = new File(['test content'], 'test.txt', { type: 'text/plain' })
+    const file = createTestFile('test.txt', 'test content', 'text/plain')
     const input = screen.getByTestId('file-input')
 
     Object.defineProperty(input, 'files', {
@@ -116,7 +120,7 @@ describe('FileUpload', () => {
     const maxSize = 5 * 1024 // 5KB
     render(<FileUpload onUpload={mockOnUpload} maxSize={maxSize} />)
 
-    const largeFile = new File(['x'.repeat(maxSize + 1)], 'large.pdf', { type: 'application/pdf' })
+    const largeFile = createTestFile('large.pdf', 'x'.repeat(maxSize + 1))
     const input = screen.getByTestId('file-input')
 
     Object.defineProperty(input, 'files', {
@@ -136,7 +140,7 @@ describe('FileUpload', () => {
     const dropzone = screen.getByText('Drag & drop files here').closest('div')
     expect(dropzone).toBeInTheDocument()
 
-    const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' })
+    const file = createTestFile()
     const dataTransfer = {
       files: [file],
       items: [

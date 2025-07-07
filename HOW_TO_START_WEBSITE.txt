@@ -1,0 +1,117 @@
+Running the OceanLearn Website Locally
+====================================
+1. python manage.py runserver, from root folder
+2. cd frontend
+3. npm run dev
+4. go to http://localhost:3000/
+
+
+Running tests
+Cd frontend: npm run test
+
+
+
+
+Prerequisites
+-------------
+1. Python 3.10+ (tested with 3.11)
+2. Node.js 18+ and npm (or yarn/pnpm)
+3. PostgreSQL (or change DATABASE settings for SQLite)
+4. Redis (required for Celery/background tasks)
+
+Backend (Django)
+----------------
+1. Create & activate a virtual-environment (from the project root):
+
+   ```bash
+   python3 -m venv myenv
+   source myenv/bin/activate   # Windows: myenv\Scripts\activate
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   pip install -r backend/requirements.txt
+   # For tests / dev helpers:
+   pip install -r backend/requirements-dev.txt
+   ```
+
+3. Create a `.env` file at the project root and fill in the required variables (the app uses `python-decouple`). A minimal example:
+
+   ```env
+   SECRET_KEY=replace-me
+   DEBUG=True
+   ALLOWED_HOSTS=localhost,127.0.0.1
+
+   # PostgreSQL
+   DB_NAME=oceanlearn
+   DB_USER=postgres
+   DB_PASSWORD=postgres
+   DB_HOST=localhost
+   DB_PORT=5432
+
+   # Redis (Celery broker & cache)
+   REDIS_URL=redis://127.0.0.1:6379/0
+   ```
+
+4. Apply database migrations & (optionally) create an admin user:
+
+   ```bash
+   python manage.py migrate
+   python manage.py createsuperuser
+   ```
+
+5. Run the development server:
+
+   ```bash
+   python manage.py runserver 0.0.0.0:8000
+   ```
+
+   The backend API is now available at http://localhost:8000/ .
+
+6. (Optional) Start Celery workers & Flower dashboard in separate terminals:
+
+   ```bash
+   celery -A backend worker -l info
+   celery -A backend beat -l info   # if you use scheduled tasks
+   flower -A backend --port=5555    # monitoring
+   ```
+
+Frontend (Next.js / React)
+--------------------------
+1. From the project root, move into the `frontend` directory and install packages:
+
+   ```bash
+   cd frontend
+   npm install   # or: yarn install
+   ```
+
+2. Copy the environment template & adjust variables if necessary:
+
+   ```bash
+   cp env.local .env.local
+   # edit .env.local as needed (API_URL etc.)
+   ```
+
+3. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+   The site will be served at http://localhost:3000/ . The dev server auto-reloads on code changes.
+
+
+Shutting down
+-------------
+Press `CTRL+C` in each terminal that is running a dev server or Celery worker to stop it.
+
+
+Troubleshooting
+---------------
+* "SECRET_KEY not set" → make sure your `.env` file is in place and the variable name matches exactly.
+* Database connection errors → verify PostgreSQL is running and credentials in `.env` are correct.
+* Port already in use → change the port via `python manage.py runserver 8001` or `npm run dev -- --port 3001`.
+
+Enjoy hacking on OceanLearn!  
+— The Dev Team 

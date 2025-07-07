@@ -1,6 +1,12 @@
 # backend/celery.py
 import os
+from pathlib import Path
+from dotenv import load_dotenv
 from celery import Celery
+
+# Load the .env file from the backend directory
+env_path = Path(__file__).parent / '.env'
+load_dotenv(dotenv_path=env_path)
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')

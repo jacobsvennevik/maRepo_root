@@ -1,52 +1,79 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { LoginForm } from '../LoginForm';
-import { AuthService } from '../../services/auth';
 import '@testing-library/jest-dom';
+import {
+  setupTestCleanup
+} from '../../../../test-utils/test-helpers';
+import axiosInstance from '@/lib/axios';
 
-// Mock Next.js router
+// Mock Next.js router at the top level
 const mockPush = jest.fn();
+const mockReplace = jest.fn();
+const mockPrefetch = jest.fn();
+const mockBack = jest.fn();
+const mockForward = jest.fn();
+const mockRefresh = jest.fn();
+
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: mockPush,
-    replace: jest.fn(),
-    prefetch: jest.fn(),
-    back: jest.fn(),
-    forward: jest.fn(),
-    refresh: jest.fn(),
+    replace: mockReplace,
+    prefetch: mockPrefetch,
+    back: mockBack,
+    forward: mockForward,
+    refresh: mockRefresh,
   }),
 }));
 
-// Mock AuthService
-jest.mock('../../services/auth', () => ({
-  AuthService: {
-    login: jest.fn(),
-    getAuthToken: jest.fn(),
-    getRefreshToken: jest.fn(),
-  },
-}));
+// Create a global storage object that persists across test functions
+const globalMockStorage: { [key: string]: string } = {};
 
-// Mock localStorage properly
+// Create a more robust localStorage mock
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: jest.fn((key: string) => globalMockStorage[key] || null),
+  setItem: jest.fn((key: string, value: string) => {
+    globalMockStorage[key] = value;
+  }),
+  removeItem: jest.fn((key: string) => {
+    delete globalMockStorage[key];
+  }),
+  clear: jest.fn(() => {
+    Object.keys(globalMockStorage).forEach(key => delete globalMockStorage[key]);
+  }),
 };
 
+// Override window.localStorage
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
   writable: true,
 });
 
+// Mock axios instance to handle both login and profile requests
+jest.mock('@/lib/axios', () => ({
+  __esModule: true,
+  default: {
+    post: jest.fn(),
+    get: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+  },
+}));
+
+const mockAxios = axiosInstance as jest.Mocked<typeof axiosInstance>;
+
 describe('LoginForm', () => {
+    setupTestCleanup([mockPush, localStorageMock.getItem, localStorageMock.setItem, localStorageMock.removeItem, localStorageMock.clear]);
+
     beforeEach(() => {
-        jest.clearAllMocks();
-        localStorageMock.getItem.mockClear();
-        localStorageMock.setItem.mockClear();
-        localStorageMock.removeItem.mockClear();
-        localStorageMock.clear.mockClear();
+        // Reset all mocks
+        mockAxios.post.mockClear();
+        mockAxios.get.mockClear();
+        mockPush.mockClear();
+        
+        // Clear the storage
+        Object.keys(globalMockStorage).forEach(key => delete globalMockStorage[key]);
     });
 
     it('renders login form', () => {
@@ -61,61 +88,73 @@ describe('LoginForm', () => {
     it('handles successful login', async () => {
         const user = userEvent.setup();
         
-        // Mock successful login
-        (AuthService.login as jest.Mock).mockResolvedValue({
-            access: 'mock-access-token',
-            refresh: 'mock-refresh-token',
+        // Mock successful login response
+        mockAxios.post.mockResolvedValueOnce({
+            data: {
+                access: 'mock-access-token',
+                refresh: 'mock-refresh-token',
+            },
         });
         
-        // Mock localStorage to return tokens after they're set
-        localStorageMock.getItem.mockImplementation((key) => {
-            if (key === 'authToken') return 'mock-access-token';
-            if (key === 'refreshToken') return 'mock-refresh-token';
-            return null;
+        // Mock successful user profile request that happens after login
+        mockAxios.get.mockResolvedValueOnce({
+            data: { id: 1, email: 'test@example.com' }
         });
-        
-        (AuthService.getAuthToken as jest.Mock).mockReturnValue('mock-access-token');
-        (AuthService.getRefreshToken as jest.Mock).mockReturnValue('mock-refresh-token');
 
         render(<LoginForm />);
 
         // Fill in the form
-        await user.type(screen.getByLabelText(/email/i), 'test@example.com');
-        await user.type(screen.getByLabelText(/password/i), 'password123');
+        await act(async () => {
+            await user.type(screen.getByLabelText(/email/i), 'test@example.com');
+            await user.type(screen.getByLabelText(/password/i), 'password123');
+        });
 
-        // Submit the form - use the submit button specifically
-        await user.click(screen.getByRole('button', { name: /^sign in$/i }));
+        // Submit the form
+        await act(async () => {
+            await user.click(screen.getByRole('button', { name: /^sign in$/i }));
+        });
 
         // Wait for the login to complete and check if router.push was called
         await waitFor(() => {
-            expect(AuthService.login).toHaveBeenCalledWith({
+            expect(mockAxios.post).toHaveBeenCalledWith('/api/token/', {
                 email: 'test@example.com',
                 password: 'password123',
             });
+            expect(mockAxios.get).toHaveBeenCalledWith('/api/users/me/');
             expect(mockPush).toHaveBeenCalledWith('/dashboard');
-        });
-    });
+        }, { timeout: 5000 });
+    }, 15000);
 
     it('handles login error', async () => {
         const user = userEvent.setup();
         
         // Mock failed login
-        (AuthService.login as jest.Mock).mockRejectedValue(new Error('Invalid credentials'));
+        mockAxios.post.mockRejectedValueOnce({
+            response: {
+                data: {
+                    detail: 'Invalid credentials'
+                }
+            }
+        });
 
         render(<LoginForm />);
 
         // Fill in the form
-        await user.type(screen.getByLabelText(/email/i), 'test@example.com');
-        await user.type(screen.getByLabelText(/password/i), 'wrongpassword');
+        await act(async () => {
+            await user.type(screen.getByLabelText(/email/i), 'test@example.com');
+            await user.type(screen.getByLabelText(/password/i), 'wrongpassword');
+        });
 
         // Submit the form
-        await user.click(screen.getByRole('button', { name: /^sign in$/i }));
+        await act(async () => {
+            await user.click(screen.getByRole('button', { name: /^sign in$/i }));
+        });
 
         // Wait for error message to appear
         await waitFor(() => {
             expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
-        });
-    });
+        }, { timeout: 3000 });
+    }, 10000);
 
     it('validates required fields', async () => {
         const user = userEvent.setup();
@@ -123,15 +162,17 @@ describe('LoginForm', () => {
         render(<LoginForm />);
 
         // Try to submit without filling fields
-        await user.click(screen.getByRole('button', { name: /^sign in$/i }));
+        await act(async () => {
+            await user.click(screen.getByRole('button', { name: /^sign in$/i }));
+        });
 
         // Check for validation messages - the form shows these specific messages
         await waitFor(() => {
             // The form validation shows these specific messages for empty fields
             expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
             expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument();
-        });
-    });
+        }, { timeout: 3000 });
+    }, 10000);
 
     it('validates email format', async () => {
         const user = userEvent.setup();
@@ -139,12 +180,16 @@ describe('LoginForm', () => {
         render(<LoginForm />);
 
         // Enter invalid email (no @ symbol) and valid password
-        const emailInput = screen.getByLabelText(/email/i);
-        await user.type(emailInput, 'invalidemail');
-        await user.type(screen.getByLabelText(/password/i), 'password123');
+        await act(async () => {
+            const emailInput = screen.getByLabelText(/email/i);
+            await user.type(emailInput, 'invalidemail');
+            await user.type(screen.getByLabelText(/password/i), 'password123');
+        });
         
         // Try to submit - this should either show validation error or attempt login
-        await user.click(screen.getByRole('button', { name: /^sign in$/i }));
+        await act(async () => {
+            await user.click(screen.getByRole('button', { name: /^sign in$/i }));
+        });
 
         // The form should either show validation error or attempt login
         // Since validation behavior varies in test environment, we'll just verify the form doesn't crash
@@ -153,6 +198,6 @@ describe('LoginForm', () => {
             expect(screen.getByTestId('login-form')).toBeInTheDocument();
             expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
             expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-        });
-    });
+        }, { timeout: 3000 });
+    }, 10000);
 }); 

@@ -72,4 +72,5 @@ export const getTotalSteps = (setup: ProjectSetup): number => {
 };
 
 export * from './ai-analysis';
-export * from './formatters'; 
+export * from './formatters';
+export * from './file-helpers'; 

@@ -18,7 +18,7 @@ import {
   EVALUATION_TYPE_OPTIONS,
   DATE_TYPE_OPTIONS
 } from '../constants';
-import { formatFileSize, formatDate } from '../utils';
+import { formatFileSize, formatDate } from '../utils/formatters';
 
 export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false);

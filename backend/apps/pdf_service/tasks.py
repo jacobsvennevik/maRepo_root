@@ -26,7 +26,8 @@ def process_document(document_id: int):
         # Step 1: Ingest the PDF to extract text if it hasn't been done already.
         if not document.original_text:
             text_chunks, metadata = ingest_pdf(document.file.path)
-            document.original_text = "\n".join(text_chunks)
+            # Extract content from PDFChunk objects
+            document.original_text = "\n".join(chunk.content for chunk in text_chunks)
             if not document.metadata:
                  document.metadata = metadata
             document.save(update_fields=['original_text', 'metadata'])

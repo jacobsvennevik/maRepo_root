@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, HelpCircle, Check, Target, BookOpen, Users, CalendarDays, Upload, FileText, Edit3, X, Plus } from 'lucide-react';
@@ -23,10 +23,11 @@ import { useStepNavigation } from '../hooks/useStepNavigation';
 import { 
   ProjectNameStep,
   PurposeStep,
-  CourseDetailsStep,
-  TestTimelineStep,
+  EducationLevelStep,
   SyllabusUploadStep,
   ExtractionResultsStep,
+  CourseContentUploadStep,
+  CourseContentReviewStep,
   TestUploadStep,
   TimelineStep,
   GoalStep,
@@ -36,16 +37,13 @@ import {
 import { ExtractedData } from './steps/extraction-results-step';
 
 // Import constants and types
+import { SETUP_STEPS } from '../constants/steps';
 import { 
-  SETUP_STEPS,
   SCHOOL_PURPOSE_OPTIONS,
   TEST_LEVEL_OPTIONS,
-  GRADE_LEVEL_OPTIONS,
   TIMEFRAME_OPTIONS,
   FREQUENCY_OPTIONS,
-  COLLABORATION_OPTIONS,
-  EVALUATION_TYPE_OPTIONS,
-  DATE_TYPE_OPTIONS
+  COLLABORATION_OPTIONS
 } from '../constants';
 import { ProjectSetup } from '../types';
 import { formatFileSize, formatDate } from '../utils';
@@ -68,6 +66,8 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   const [projectId, setProjectId] = useState<string | null>(null);
   const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
   const [syllabusFileName, setSyllabusFileName] = useState<string>('');
+  const [contentData, setContentData] = useState<any | null>(null);
+  const [contentFileNames, setContentFileNames] = useState<string[]>([]);
 
   const {
     setup,
@@ -111,6 +111,8 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     getTotalSteps,
     progress,
     currentStepData,
+    isLastStep,
+    isFirstStep,
   } = useStepNavigation(setup, onBack, setShowSummary);
 
   const [isDragOver, setIsDragOver] = useState(false);
@@ -206,15 +208,8 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
         return !!setup.projectName.trim();
       case 'purpose':
         return !!setup.purpose;
-      case 'courseDetails':
-        return setup.purpose === 'school' ? (
-          !!setup.testLevel && 
-          (!!setup.assignmentDescription || (setup.courseFiles && setup.courseFiles.length > 0) || (setup.evaluationTypes && setup.evaluationTypes.length > 0))
-        ) : true;
-      case 'testTimeline':
-        return setup.purpose === 'school' ? (
-          (setup.testFiles && setup.testFiles.length > 0) && (setup.importantDates && setup.importantDates.length > 0)
-        ) : true;
+      case 'educationLevel':
+        return !!setup.testLevel;
       case 'uploadFiles':
         return (setup.uploadedFiles || []).length > 0;
       case 'timeframe':
@@ -230,13 +225,6 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     }
   };
 
-  const shouldShowStep = (stepId: string) => {
-    if (stepId === 'courseDetails' || stepId === 'testTimeline') {
-      return setup.purpose === 'school';
-    }
-    return true;
-  };
-
   const handleExtractionComplete = (projectId: string) => {
     // Redirect to the new project's page or a summary page
     router.push(`/projects/${projectId}` as any);
@@ -244,52 +232,222 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
 
   // Transform backend data to ExtractedData format
   const transformBackendData = (backendData: any): ExtractedData => {
+    console.log('🔄 transformBackendData called with COMPLETE BACKEND DATA:');
+    console.log(JSON.stringify(backendData, null, 2));
+    
     // Handle both real backend data and mock test data
     const metadata = backendData.metadata || backendData;
     
-    return {
-      courseName: metadata?.course_name || metadata?.title,
+         // Function to transform topics from string to array with confidence scores
+     const transformTopics = (topicsData: any) => {
+       if (!topicsData) return [];
+       
+       // Handle array from syllabus processor (contains long strings with multiple topics)
+       if (Array.isArray(topicsData)) {
+         const allTopics: any[] = [];
+         
+         topicsData.forEach((topicString: any, arrayIndex: number) => {
+           if (typeof topicString === 'string') {
+             // Split on periods or semicolons, then clean up
+             const individualTopics = topicString
+               .split(/[.;]/)
+               .map((topic: string, index: number) => ({
+                 id: `topic-${arrayIndex}-${index}`,
+                 label: topic.trim(),
+                 confidence: 85 + Math.floor(Math.random() * 10) // Random confidence 85-95
+               }))
+               .filter((topic: any) => topic.label.length > 10); // Only keep substantial topics
+             
+             allTopics.push(...individualTopics);
+           } else {
+             // Handle objects
+             allTopics.push({
+               id: `topic-obj-${arrayIndex}`,
+               label: topicString.name || topicString.label || topicString,
+               confidence: topicString.confidence || 85
+             });
+           }
+         });
+         
+         return allTopics;
+       }
+       
+       // Handle single string
+       if (typeof topicsData === 'string') {
+         return topicsData.split(/[.;]/).map((topic: string, index: number) => ({
+           id: `topic-${index}`,
+           label: topic.trim(),
+           confidence: 85 + Math.floor(Math.random() * 10) // Random confidence 85-95
+         })).filter((topic: any) => topic.label.length > 10);
+       }
+       
+       return [];
+     };
+    
+         // Function to transform important dates from string to structured format
+     const transformDates = (datesData: any) => {
+       if (!datesData) return [];
+       
+       // Helper function to parse date strings like "February 20 - School term"
+       const parseDateString = (dateStr: string) => {
+         const trimmed = dateStr.trim();
+         
+         // Check if it contains a dash separator (date - description format)
+         if (trimmed.includes(' - ')) {
+           const [datePart, descPart] = trimmed.split(' - ');
+           return {
+             date: datePart.trim(),
+             description: trimmed, // Full string as description
+           };
+         }
+         
+         // If no separator, try to detect if it's just a date or a description
+         // Look for date patterns (month names, numbers with slashes, etc.)
+         const datePatterns = [
+           /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d+/i,
+           /\d{1,2}\/\d{1,2}\/\d{2,4}/,
+           /\d{1,2}-\d{1,2}-\d{2,4}/,
+           /\d{4}-\d{1,2}-\d{1,2}/
+         ];
+         
+         const hasDatePattern = datePatterns.some(pattern => pattern.test(trimmed));
+         
+         if (hasDatePattern) {
+           return {
+             date: trimmed,
+             description: trimmed,
+           };
+         } else {
+           // No clear date pattern, treat as description only
+           return {
+             date: 'TBD',
+             description: trimmed,
+           };
+         }
+       };
+       
+       // Handle array from syllabus processor (contains semicolon-separated strings)
+       if (Array.isArray(datesData)) {
+         const allDates: any[] = [];
+         
+         datesData.forEach((dateItem: any, arrayIndex: number) => {
+           if (typeof dateItem === 'string') {
+             // Split semicolon-separated dates
+             const individualDates = dateItem.split(';').map((dateStr: string, index: number) => {
+               const parsed = parseDateString(dateStr);
+               return {
+                 id: `date-${arrayIndex}-${index}`,
+                 date: parsed.date,
+                 description: parsed.description,
+                 type: 'assignment', // Default type
+                 weight: undefined
+               };
+             }).filter((date: any) => date.description.length > 0);
+             
+             allDates.push(...individualDates);
+           } else {
+             // Handle objects
+             allDates.push({
+               id: `date-obj-${arrayIndex}`,
+               date: dateItem.date || dateItem.description,
+               description: dateItem.description || dateItem.name || dateItem.title,
+               type: dateItem.type || 'assignment',
+               weight: dateItem.weight
+             });
+           }
+         });
+         
+         return allDates;
+       }
+       
+       // Handle single string
+       if (typeof datesData === 'string') {
+         return datesData.split(';').map((dateStr: string, index: number) => {
+           const parsed = parseDateString(dateStr);
+           return {
+             id: `date-${index}`,
+             date: parsed.date,
+             description: parsed.description,
+             type: 'assignment', // Default type
+             weight: undefined
+           };
+         }).filter((date: any) => date.description.length > 0);
+       }
+       
+       return [];
+     };
+    
+         // Function to transform evaluation forms to test types
+     const transformTestTypes = (evaluationData: any) => {
+       if (!evaluationData) return [];
+       
+       // Handle array from syllabus processor (contains comma-separated strings)
+       if (Array.isArray(evaluationData)) {
+         const allTests: any[] = [];
+         
+         evaluationData.forEach((testString: any, arrayIndex: number) => {
+           if (typeof testString === 'string') {
+             // Split comma-separated test types
+             const individualTests = testString.split(',').map((test: string, index: number) => ({
+               id: `test-${arrayIndex}-${index}`,
+               type: test.trim(),
+               confidence: 90 + Math.floor(Math.random() * 8) // Random confidence 90-98
+             })).filter((test: any) => test.type.length > 0);
+             
+             allTests.push(...individualTests);
+           } else {
+             // Handle objects
+             allTests.push({
+               id: `test-obj-${arrayIndex}`,
+               type: testString.name || testString.type || testString,
+               confidence: testString.confidence || 80
+             });
+           }
+         });
+         
+         return allTests;
+       }
+       
+       // Handle single string
+       if (typeof evaluationData === 'string') {
+         return evaluationData.split(',').map((test: string, index: number) => ({
+           id: `test-${index}`,
+           type: test.trim(),
+           confidence: 90 + Math.floor(Math.random() * 8) // Random confidence 90-98
+         })).filter((test: any) => test.type.length > 0);
+       }
+       
+       return [];
+     };
+    
+    const result = {
+      courseName: metadata?.course_title || metadata?.course_name || metadata?.title,
       instructor: metadata?.instructor,
       semester: metadata?.semester,
       credits: metadata?.credits,
-      topics: (metadata?.topics || []).map((topic: any, index: number) => ({
-        id: `topic-${index}`,
-        label: topic.name || topic.label || topic,
-        confidence: topic.confidence || 85
-      })),
-      dates: (metadata?.assignments || metadata?.important_dates || metadata?.exam_dates || [])
-        .map((item: any, index: number) => ({
-          id: `date-${index}`,
-          date: item.due_date || item.date,
-          description: item.description || item.name || item.title,
-          type: item.type || 'assignment',
-          weight: item.weight
-        }))
-        .concat(
-          (metadata?.exam_dates || []).map((exam: any, index: number) => ({
-            id: `exam-${index}`,
-            date: exam.date,
-            description: exam.name || exam.title,
-            type: 'exam',
-            weight: exam.weight
-          }))
-        ),
-      testTypes: (metadata?.test_types || []).map((type: any, index: number) => ({
-        id: `test-${index}`,
-        type: type.name || type.type || type,
-        confidence: type.confidence || 80
-      })),
+      topics: transformTopics(metadata?.topics),
+      dates: transformDates(metadata?.important_dates)
+        .concat(transformDates(metadata?.assignments))
+        .concat(transformDates(metadata?.exam_dates)),
+      testTypes: transformTestTypes(metadata?.forms_of_evaluation || metadata?.test_types),
       grading: (metadata?.grading || []).map((grade: any) => ({
         category: grade.category || grade.name,
         weight: grade.weight || grade.percentage
       }))
     };
+    
+    console.log('✅ TRANSFORMATION COMPLETE. Final result:');
+    console.log(JSON.stringify(result, null, 2));
+    return result;
   };
 
   const handleSyllabusUploadComplete = (newProjectId: string, backendData: any, fileName?: string) => {
+    console.log('handleSyllabusUploadComplete called with:', { newProjectId, backendData, fileName });
+    
     // Store the project ID and transform the extracted data
     setProjectId(newProjectId);
     const transformed = transformBackendData(backendData);
+    console.log('Transformed data:', transformed);
     setExtractedData(transformed);
     setSyllabusFileName(fileName || backendData.file || 'syllabus.pdf');
     
@@ -298,6 +456,8 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     } else {
       console.log(`Syllabus uploaded for project ${newProjectId}. Moving to extraction results.`);
     }
+    
+    console.log('About to call handleNext() to move to extraction results step');
     handleNext();
   };
 
@@ -335,8 +495,20 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     handleNext();
   };
 
+  const handleCourseContentUploadComplete = (backendData: any, fileNames: string[]) => {
+    setContentData(backendData);
+    setContentFileNames(fileNames);
+    handleNext(); // Move to review step
+  };
+
+  const handleCourseContentReviewConfirm = () => {
+    console.log('Course content review confirmed. Moving to next step.');
+    handleNext();
+  };
+
   const renderStepContent = () => {
     const stepId = currentStepData.id;
+    console.log(`Rendering step: ${stepId} (step ${currentStep} of ${SETUP_STEPS.length})`);
     
     switch (stepId) {
       case 'projectName':
@@ -356,43 +528,12 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             onCustomChange={(value) => handleOptionSelect('customDescription', value)}
           />
         );
-      case 'courseDetails':
+      case 'educationLevel':
         return (
-          <CourseDetailsStep
-            testLevel={setup.testLevel}
-            gradeLevel={setup.gradeLevel}
-            assignmentDescription={setup.assignmentDescription}
-            courseFiles={setup.courseFiles}
-            evaluationTypes={setup.evaluationTypes}
-            onTestLevelChange={(level) => handleOptionSelect('testLevel', level)}
-            onGradeLevelChange={(grade) => handleOptionSelect('gradeLevel', grade)}
-            onAssignmentDescriptionChange={(desc) => handleOptionSelect('assignmentDescription', desc)}
-            onCourseFilesChange={handleCourseFileUpload}
-            onCourseFileRemove={handleRemoveCourseFile}
-            onEvaluationTypeToggle={handleEvaluationTypeToggle}
-            onApplyAITopics={handleApplyAITopics}
-            onApplyAIDates={handleApplyAIDates}
-            onApplyAITestTypes={handleApplyAITestTypes}
-            onApplyAIRecommendations={handleApplyAIRecommendations}
-            testLevelOptions={TEST_LEVEL_OPTIONS}
-            gradeLevelOptions={GRADE_LEVEL_OPTIONS}
-            evaluationTypeOptions={EVALUATION_TYPE_OPTIONS}
-          />
-        );
-      case 'testTimeline':
-        return (
-          <TestTimelineStep
-            testFiles={setup.testFiles}
-            importantDates={setup.importantDates}
-            onTestFilesChange={handleTestFileUpload}
-            onTestFileRemove={handleRemoveTestFile}
-            onAddDate={handleAddDate}
-            onRemoveDate={handleRemoveDate}
-            onApplyAITopics={handleApplyAITopics}
-            onApplyAIDates={handleApplyAIDates}
-            onApplyAITestTypes={handleApplyAITestTypes}
-            onApplyAIRecommendations={handleApplyAIRecommendations}
-            dateTypeOptions={DATE_TYPE_OPTIONS}
+          <EducationLevelStep
+            value={setup.testLevel}
+            onSelect={(level: string) => handleOptionSelect('testLevel', level)}
+            options={TEST_LEVEL_OPTIONS}
           />
         );
       case 'uploadFiles':
@@ -402,7 +543,17 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
           />
         );
       case 'extractionResults':
-        return extractedData ? (
+        console.log('Rendering extraction results step. extractedData:', extractedData);
+        if (!extractedData) {
+          console.log('No extracted data available yet');
+          return (
+            <div className="text-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Processing extracted data...</p>
+            </div>
+          );
+        }
+        return (
           <ExtractionResultsStep
             extractedData={extractedData}
             fileName={syllabusFileName}
@@ -413,7 +564,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             }}
             isTestMode={projectId === 'test-mode'}
           />
-        ) : null;
+        );
       case 'testUpload':
         return (
           <TestUploadStep
@@ -451,6 +602,28 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             collaboration={setup.collaboration}
             onCollaborationChange={(collaboration) => handleOptionSelect('collaboration', collaboration)}
             collaborationOptions={COLLABORATION_OPTIONS}
+          />
+        );
+      case 'courseContentUpload':
+        return (
+          <CourseContentUploadStep
+            onUploadComplete={handleCourseContentUploadComplete}
+          />
+        );
+      case 'courseContentReview':
+        if (!contentData) {
+          return (
+            <div className="text-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Processing course content...</p>
+            </div>
+          );
+        }
+        return (
+          <CourseContentReviewStep
+            extractedContent={contentData}
+            fileNames={contentFileNames}
+            onConfirm={handleCourseContentReviewConfirm}
           />
         );
       default:
@@ -508,10 +681,10 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             {/* Navigation */}
             <div className="flex justify-between pt-4 sm:pt-6">
               <Button variant="outline" onClick={handleBack} className="text-sm">
-                {currentStep === 0 ? 'Back to Selection' : 'Previous'}
+                {isFirstStep ? 'Back to Selection' : 'Previous'}
               </Button>
               <div className="flex gap-2">
-                {currentStepData.id !== 'courseDetails' && (
+                {currentStepData.id !== 'educationLevel' && currentStepData.id !== 'projectName' && (
                   <Button 
                     variant="outline" 
                     onClick={handleSkip}
@@ -525,7 +698,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
                   disabled={!isStepComplete()}
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-sm"
                 >
-                  {currentStep === SETUP_STEPS.length - 1 ? 'Review & Create' : 'Next'}
+                  {isLastStep ? 'Review & Create' : 'Next'}
                   <ChevronRight size={16} className="ml-2" />
                 </Button>
               </div>

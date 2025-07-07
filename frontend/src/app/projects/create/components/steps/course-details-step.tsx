@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 import { AIPreview, AILoading } from "../ai";
 import { analyzeUploadedFiles, DetectedDate } from "../../utils/ai-analysis";
+import { createDragHandlers, formatFileSize } from "../../utils/file-helpers";
 
 export interface EducationLevelOption {
   value: string;
@@ -119,35 +120,18 @@ export function CourseDetailsStep({
     }
   };
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    onCourseFilesChange([...courseFiles, ...droppedFiles]);
-  }, [courseFiles, onCourseFilesChange]);
+  // Use shared drag and drop handlers
+  const { handleDragOver, handleDragLeave, handleDrop } = createDragHandlers(
+    (droppedFiles) => onCourseFilesChange([...courseFiles, ...droppedFiles]),
+    setIsDragOver
+  );
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
     onCourseFilesChange([...courseFiles, ...selectedFiles]);
   }, [courseFiles, onCourseFilesChange]);
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+
 
   const getEvaluationIcon = (type: string) => {
     switch (type) {

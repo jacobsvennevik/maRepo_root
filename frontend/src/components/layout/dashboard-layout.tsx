@@ -1,6 +1,7 @@
 "use client"
 
 import { ReactNode } from "react"
+import { BaseLayout } from "./base-layout"
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -8,8 +9,8 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#f8fafc]">
+    <BaseLayout>
       {children}
-    </div>
+    </BaseLayout>
   )
 } 

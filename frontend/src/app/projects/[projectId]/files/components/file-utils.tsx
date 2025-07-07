@@ -5,6 +5,7 @@ import {
   FileArchive, 
   FileVideo 
 } from 'lucide-react';
+import { formatFileSize as sharedFormatFileSize } from "@/utils/fileHelpers";
 
 export function getFileIcon(type: string) {
   switch (type) {
@@ -40,10 +41,4 @@ export function getFileTypeColor(type: string) {
   }
 }
 
-export function formatFileSize(bytes: number) {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-} 
+export const formatFileSize = sharedFormatFileSize; 
