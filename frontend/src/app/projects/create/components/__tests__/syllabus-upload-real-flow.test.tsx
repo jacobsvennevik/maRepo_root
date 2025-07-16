@@ -268,6 +268,77 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
     });
   });
 
+  describe('Skip Functionality', () => {
+    beforeEach(() => {
+      // Test the skip functionality in both test and production modes
+      process.env.NODE_ENV = 'production';
+      process.env.NEXT_PUBLIC_TEST_MODE = 'false';
+    });
+
+    it('should call onSkip when skip button is clicked and skip extraction results step', async () => {
+      const mockOnSkip = jest.fn();
+      
+      const setup = createMockProjectSetup({ projectName: 'Test Project' });
+
+      render(
+        <SyllabusUploadStep
+          setup={setup}
+          onUploadComplete={mockOnUploadComplete}
+          onSkip={mockOnSkip}
+          onBack={mockOnBack}
+        />
+      );
+
+      // Should show skip button
+      const skipButton = screen.getByTestId('skip-button');
+      expect(skipButton).toBeInTheDocument();
+      
+      // Click skip button
+      await act(async () => {
+        fireEvent.click(skipButton);
+      });
+
+      // Should call onSkip
+      expect(mockOnSkip).toHaveBeenCalledTimes(1);
+      
+      // Should not trigger any upload or analysis
+      expect(mockOnUploadComplete).not.toHaveBeenCalled();
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it('should not show skip button when onSkip prop is not provided', () => {
+      const setup = createMockProjectSetup({ projectName: 'Test Project' });
+
+      render(
+        <SyllabusUploadStep
+          setup={setup}
+          onUploadComplete={mockOnUploadComplete}
+          onBack={mockOnBack}
+        />
+      );
+
+      // Should not show skip button
+      expect(screen.queryByTestId('skip-button')).not.toBeInTheDocument();
+    });
+
+    it('should show skip button text correctly', () => {
+      const mockOnSkip = jest.fn();
+      
+      const setup = createMockProjectSetup({ projectName: 'Test Project' });
+
+      render(
+        <SyllabusUploadStep
+          setup={setup}
+          onUploadComplete={mockOnUploadComplete}
+          onSkip={mockOnSkip}
+          onBack={mockOnBack}
+        />
+      );
+
+      expect(screen.getByText('Skip - I don\'t have a syllabus to upload')).toBeInTheDocument();
+    });
+  });
+
   describe('Test Mode Flow', () => {
     beforeEach(() => {
       // Ensure test mode is enabled for these tests

@@ -26,8 +26,8 @@ import {
   EducationLevelStep,
   SyllabusUploadStep,
   ExtractionResultsStep,
+  LearningPreferencesStep,
   CourseContentUploadStep,
-  CourseContentReviewStep,
   TestUploadStep,
   TimelineStep,
   GoalStep,
@@ -100,7 +100,12 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     timeframe: '',
     goal: '',
     studyFrequency: '',
-    collaboration: ''
+    collaboration: '',
+    courseType: '',
+    learningStyle: '',
+    assessmentType: '',
+    studyPreference: '',
+    learningDifficulties: ''
   });
 
   const {
@@ -113,7 +118,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     currentStepData,
     isLastStep,
     isFirstStep,
-  } = useStepNavigation(setup, onBack, setShowSummary);
+  } = useStepNavigation(setup, onBack, setShowSummary, extractedData);
 
   const [isDragOver, setIsDragOver] = useState(false);
   const [isCourseDragOver, setIsCourseDragOver] = useState(false);
@@ -212,6 +217,21 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
         return !!setup.testLevel;
       case 'uploadFiles':
         return (setup.uploadedFiles || []).length > 0;
+      case 'learningPreferences':
+        // Handle both array and single value formats
+        const hasCourseType = Array.isArray(setup.courseType) 
+          ? setup.courseType.length > 0 
+          : !!setup.courseType;
+        const hasLearningStyle = Array.isArray(setup.learningStyle) 
+          ? setup.learningStyle.length > 0 
+          : !!setup.learningStyle;
+        const hasAssessmentType = Array.isArray(setup.assessmentType) 
+          ? setup.assessmentType.length > 0 
+          : !!setup.assessmentType;
+        const hasStudyPreference = Array.isArray(setup.studyPreference) 
+          ? setup.studyPreference.length > 0 
+          : !!setup.studyPreference;
+        return hasCourseType && hasLearningStyle && hasAssessmentType && hasStudyPreference;
       case 'timeframe':
         return !!setup.timeframe;
       case 'goal':
@@ -485,25 +505,109 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
       }
     }
     
-    console.log('Extraction results confirmed. Moving to test upload.');
+    // Auto-populate learning preferences from extracted data
+    if (extractedData) {
+      console.log('🤖 Auto-populating learning preferences from extracted data...');
+      
+      // Map extracted test types to assessment type
+      const assessmentType = mapTestTypesToAssessmentType(extractedData.testTypes);
+      if (assessmentType && !setup.assessmentType) {
+        handleOptionSelect('assessmentType', assessmentType);
+        console.log('✅ Auto-populated assessmentType:', assessmentType);
+      }
+      
+      // Map course topics to course type
+      const courseType = mapTopicsToCourseType(extractedData.topics);
+      if (courseType && !setup.courseType) {
+        handleOptionSelect('courseType', courseType);
+        console.log('✅ Auto-populated courseType:', courseType);
+      }
+    }
+    
+    console.log('Extraction results confirmed. Moving to learning preferences.');
     handleNext();
   };
 
-  const handleTestUploadComplete = (uploadedFiles: File[]) => {
+  // Helper function to map extracted test types to assessment type
+  const mapTestTypesToAssessmentType = (testTypes: { type: string; confidence: number }[]) => {
+    if (!testTypes || testTypes.length === 0) return null;
+    
+    const typeNames = testTypes.map(t => t.type.toLowerCase());
+    
+    // Check for cumulative final
+    if (typeNames.some(type => type.includes('final') && type.includes('exam'))) {
+      return 'cumulative-final';
+    }
+    
+    // Check for regular quizzes
+    if (typeNames.some(type => type.includes('quiz') || type.includes('test') || type.includes('midterm'))) {
+      return 'regular-quizzes';
+    }
+    
+    // Check for essays/projects
+    if (typeNames.some(type => type.includes('essay') || type.includes('project') || type.includes('assignment') || type.includes('paper'))) {
+      return 'essays-projects';
+    }
+    
+    // If multiple types detected, suggest mixed
+    if (testTypes.length >= 2) {
+      return 'mixed-assessments';
+    }
+    
+    return null;
+  };
+
+  // Helper function to map topics to course type
+  const mapTopicsToCourseType = (topics: { label: string; confidence: number }[]) => {
+    if (!topics || topics.length === 0) return null;
+    
+    const topicLabels = topics.map(t => t.label.toLowerCase()).join(' ');
+    
+    // STEM keywords
+    const stemKeywords = ['math', 'science', 'physics', 'chemistry', 'biology', 'computer', 'programming', 'engineering', 'technology', 'algorithm', 'calculus', 'statistics'];
+    
+    // Humanities keywords
+    const humanitiesKeywords = ['history', 'literature', 'philosophy', 'english', 'writing', 'humanities', 'social', 'political', 'psychology', 'sociology', 'anthropology'];
+    
+    // Language keywords
+    const languageKeywords = ['language', 'spanish', 'french', 'german', 'chinese', 'japanese', 'linguistics', 'translation', 'grammar'];
+    
+    // Business keywords
+    const businessKeywords = ['business', 'economics', 'finance', 'marketing', 'management', 'accounting', 'entrepreneurship'];
+    
+    // Arts keywords
+    const artsKeywords = ['art', 'music', 'design', 'creative', 'visual', 'theater', 'drama', 'photography', 'film'];
+    
+    const stemCount = stemKeywords.filter(keyword => topicLabels.includes(keyword)).length;
+    const humanitiesCount = humanitiesKeywords.filter(keyword => topicLabels.includes(keyword)).length;
+    const languageCount = languageKeywords.filter(keyword => topicLabels.includes(keyword)).length;
+    const businessCount = businessKeywords.filter(keyword => topicLabels.includes(keyword)).length;
+    const artsCount = artsKeywords.filter(keyword => topicLabels.includes(keyword)).length;
+    
+    const maxCount = Math.max(stemCount, humanitiesCount, languageCount, businessCount, artsCount);
+    
+    if (maxCount === 0) return null;
+    
+    if (stemCount === maxCount) return 'stem';
+    if (humanitiesCount === maxCount) return 'humanities';
+    if (languageCount === maxCount) return 'language';
+    if (businessCount === maxCount) return 'business';
+    if (artsCount === maxCount) return 'arts';
+    
+    return null;
+  };
+
+  const handleTestUploadComplete = (extractedTests: any[], fileNames: string[]) => {
     // Handle test files upload completion
-    console.log(`Test files uploaded:`, uploadedFiles);
+    console.log(`Test files uploaded:`, extractedTests);
     handleNext();
   };
 
   const handleCourseContentUploadComplete = (backendData: any, fileNames: string[]) => {
     setContentData(backendData);
     setContentFileNames(fileNames);
-    handleNext(); // Move to review step
-  };
-
-  const handleCourseContentReviewConfirm = () => {
-    console.log('Course content review confirmed. Moving to next step.');
-    handleNext();
+    console.log('Course content uploaded successfully. Skipping review step.');
+    handleNext(); // Skip review step and move directly to next step
   };
 
   const renderStepContent = () => {
@@ -540,6 +644,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
         return (
           <SyllabusUploadStep
             onUploadComplete={handleSyllabusUploadComplete}
+            onSkip={handleNext}
           />
         );
       case 'extractionResults':
@@ -565,12 +670,27 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             isTestMode={projectId === 'test-mode'}
           />
         );
+      case 'learningPreferences':
+        return (
+          <LearningPreferencesStep
+            courseType={setup.courseType}
+            learningStyle={setup.learningStyle}
+            assessmentType={setup.assessmentType}
+            studyPreference={setup.studyPreference}
+            learningDifficulties={setup.learningDifficulties}
+            onCourseTypeChange={(value) => setSetup(prev => ({ ...prev, courseType: value }))}
+            onLearningStyleChange={(value) => setSetup(prev => ({ ...prev, learningStyle: value }))}
+            onAssessmentTypeChange={(value) => setSetup(prev => ({ ...prev, assessmentType: value }))}
+            onStudyPreferenceChange={(value) => setSetup(prev => ({ ...prev, studyPreference: value }))}
+            onLearningDifficultiesChange={(value) => handleOptionSelect('learningDifficulties', value)}
+          />
+        );
       case 'testUpload':
         return (
           <TestUploadStep
-            projectId={projectId || ''}
             onUploadComplete={handleTestUploadComplete}
-            onSkip={handleNext}
+            onNext={handleNext}
+            onBack={handleBack}
           />
         );
       case 'timeframe':
@@ -608,22 +728,8 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
         return (
           <CourseContentUploadStep
             onUploadComplete={handleCourseContentUploadComplete}
-          />
-        );
-      case 'courseContentReview':
-        if (!contentData) {
-          return (
-            <div className="text-center p-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Processing course content...</p>
-            </div>
-          );
-        }
-        return (
-          <CourseContentReviewStep
-            extractedContent={contentData}
-            fileNames={contentFileNames}
-            onConfirm={handleCourseContentReviewConfirm}
+            onNext={handleNext}
+            onBack={handleBack}
           />
         );
       default:

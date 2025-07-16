@@ -8,7 +8,8 @@ import {
   CheckCircle,
   Users,
   GraduationCap,
-  BarChart3
+  BarChart3,
+  Brain
 } from 'lucide-react';
 import { SetupStep } from '../types';
 
@@ -44,28 +45,22 @@ export const SETUP_STEPS: SetupStep[] = [
     icon: CheckCircle
   },
   {
+    id: 'learningPreferences',
+    title: 'Learning preferences',
+    description: 'Tell us about your learning style and preferences to personalize your study experience.',
+    icon: Brain
+  },
+  {
     id: 'courseContentUpload',
     title: 'Upload course content',
     description: 'Upload slides, handouts, and other course materials (max 100 pages).',
     icon: Upload
   },
   {
-    id: 'courseContentReview',
-    title: 'Review course content extraction',
-    description: 'Preview and confirm extracted information from your course content.',
-    icon: CheckCircle
-  },
-  {
     id: 'testUpload',
     title: 'Upload test materials',
     description: 'Upload past exams, practice tests, or study guides to help us understand what to expect.',
     icon: FileText
-  },
-  {
-    id: 'testExtractionResults',
-    title: 'Review test analysis',
-    description: 'Review the AI analysis of your test materials including question types and difficulty levels.',
-    icon: BarChart3
   },
   {
     id: 'timeframe',

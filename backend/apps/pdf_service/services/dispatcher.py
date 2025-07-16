@@ -6,6 +6,7 @@ from ..processors.base import BaseProcessor
 from ..processors.syllabus import SyllabusProcessorService
 from ..processors.exam import ExamProcessorService
 from ..processors.note import NoteProcessorService
+from ..processors.study_content import StudyContentProcessor
 from ..processors.unknown import UnknownProcessorService
 
 
@@ -25,6 +26,7 @@ class DocumentDispatcher:
             DocumentType.SYLLABUS: SyllabusProcessorService(client=client),
             DocumentType.EXAM: ExamProcessorService(client=client),
             DocumentType.NOTE: NoteProcessorService(client=client),
+            DocumentType.STUDY_CONTENT: StudyContentProcessor(client=client),
             DocumentType.UNKNOWN: UnknownProcessorService(client=client),
         }
 

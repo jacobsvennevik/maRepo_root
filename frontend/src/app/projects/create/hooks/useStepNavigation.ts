@@ -5,14 +5,27 @@ import { ProjectSetup } from '../types';
 export const useStepNavigation = (
   setup: ProjectSetup, 
   onBack: () => void, 
-  setShowSummary: (show: boolean) => void
+  setShowSummary: (show: boolean) => void,
+  extractedData?: any | null // Add extractedData parameter
 ) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
-  const shouldShowStep = (_stepId: string) => true;
+  const shouldShowStep = (stepId: string) => {
+    // Skip extraction results step if no data was extracted
+    if (stepId === 'extractionResults' && !extractedData) {
+      return false;
+    }
+    return true;
+  };
 
   const handleNext = () => {
-    const nextStep = currentStepIndex + 1;
+    // Find next step that should be shown
+    let nextStep = currentStepIndex + 1;
+    
+    // Skip steps that shouldn't be shown
+    while (nextStep < SETUP_STEPS.length && !shouldShowStep(SETUP_STEPS[nextStep].id)) {
+      nextStep++;
+    }
     
     if (nextStep < SETUP_STEPS.length) {
       setCurrentStepIndex(nextStep);
@@ -24,7 +37,13 @@ export const useStepNavigation = (
   };
 
   const handleBack = () => {
-    const prevStep = currentStepIndex - 1;
+    // Find previous step that should be shown
+    let prevStep = currentStepIndex - 1;
+    
+    // Skip steps that shouldn't be shown
+    while (prevStep >= 0 && !shouldShowStep(SETUP_STEPS[prevStep].id)) {
+      prevStep--;
+    }
     
     if (prevStep >= 0) {
       setCurrentStepIndex(prevStep);

@@ -169,16 +169,17 @@ jest.mock('../steps', () => ({
       <button onClick={onConfirm}>Confirm</button>
     </div>
   ),
+  LearningPreferencesStep: ({ onCourseTypeChange }: any) => (
+    <div data-testid="learning-preferences-step">
+      <button onClick={() => onCourseTypeChange('stem')}>Set Learning Preferences</button>
+    </div>
+  ),
   CourseContentUploadStep: ({ onUploadComplete }: any) => (
     <div data-testid="course-content-upload-step">
       <button onClick={() => onUploadComplete([], [])}>Upload</button>
     </div>
   ),
-  CourseContentReviewStep: ({ onConfirm }: any) => (
-    <div data-testid="course-content-review-step">
-      <button onClick={onConfirm}>Confirm</button>
-    </div>
-  ),
+
   TestUploadStep: ({ onUploadComplete }: any) => (
     <div data-testid="test-upload-step">
       <button onClick={() => onUploadComplete([])}>Upload</button>

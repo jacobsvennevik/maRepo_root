@@ -76,6 +76,11 @@ export const createMockProjectSetup = (overrides: Partial<ProjectSetup> = {}): P
   goal: 'pass' as const,
   studyFrequency: 'weekly' as const,
   collaboration: 'solo' as const,
+  courseType: 'stem',
+  learningStyle: 'visual',
+  assessmentType: 'cumulative-final',
+  studyPreference: 'mixed',
+  learningDifficulties: '',
   ...overrides,
 });
 

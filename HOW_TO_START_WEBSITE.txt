@@ -1,15 +1,41 @@
 Running the OceanLearn Website Locally
 ====================================
-1. python manage.py runserver, from root folder
-2. cd frontend
-3. npm run dev
-4. go to http://localhost:3000/
+Quick Start
+-----------
+1. Start Redis (if not already running):
+   ```bash
+   brew services start redis   # macOS with Homebrew
+   sudo service redis start    # Linux
+   ```
+
+2. Start Django server (from root folder):
+   ```bash
+   source myenv/bin/activate
+   python manage.py runserver
+   ```
+
+3. Start Celery worker (in a new terminal):
+   ```bash
+   source myenv/bin/activate
+   python -m celery -A backend worker -l info
+   ```
+
+4. Start Next.js dev server (in a new terminal):
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+5. Go to http://localhost:3000/
 
 
 Running tests
-Cd frontend: npm run test
-
-
+------------
+Frontend tests:
+```bash
+cd frontend
+npm run test
+```
 
 
 Prerequisites
@@ -69,13 +95,46 @@ Backend (Django)
 
    The backend API is now available at http://localhost:8000/ .
 
-6. (Optional) Start Celery workers & Flower dashboard in separate terminals:
+6. Start Celery worker (REQUIRED for file processing):
+   In a new terminal, activate the virtual environment and start Celery:
 
    ```bash
-   celery -A backend worker -l info
-   celery -A backend beat -l info   # if you use scheduled tasks
-   flower -A backend --port=5555    # monitoring
+   source myenv/bin/activate
+   python -m celery -A backend worker -l info
    ```
+
+   Optional Celery components:
+   ```bash
+   # For scheduled tasks (if used):
+   celery -A backend beat -l info
+   
+   # For monitoring (Flower dashboard):
+   flower -A backend --port=5555
+   ```
+
+   Note: Celery is REQUIRED for processing uploaded files. Without it running,
+   file uploads will timeout after 5 minutes.
+
+
+-----
+# 1. Deactivate current environment
+deactivate
+deactivate  # Run twice since you have (myenv) (myenv)
+
+# 2. Remove the corrupted virtual environment
+rm -rf myenv
+
+# 3. Create a fresh virtual environment
+python3 -m venv myenv
+
+# 4. Activate it
+source myenv/bin/activate
+
+# 5. Install the requirements
+pip install -r backend/requirements.txt
+
+# 6. Now try running the server
+python manage.py runserver
 
 Frontend (Next.js / React)
 --------------------------
@@ -104,7 +163,12 @@ Frontend (Next.js / React)
 
 Shutting down
 -------------
-Press `CTRL+C` in each terminal that is running a dev server or Celery worker to stop it.
+1. Press `CTRL+C` in each terminal that is running a dev server or Celery worker
+2. Stop Redis if needed:
+   ```bash
+   brew services stop redis    # macOS with Homebrew
+   sudo service redis stop     # Linux
+   ```
 
 
 Troubleshooting
@@ -112,6 +176,8 @@ Troubleshooting
 * "SECRET_KEY not set" → make sure your `.env` file is in place and the variable name matches exactly.
 * Database connection errors → verify PostgreSQL is running and credentials in `.env` are correct.
 * Port already in use → change the port via `python manage.py runserver 8001` or `npm run dev -- --port 3001`.
+* File upload timeouts → ensure Celery worker is running and Redis is accessible.
+* "celery command not found" → use `python -m celery` instead of just `celery`.
 
 Enjoy hacking on OceanLearn!  
 — The Dev Team 

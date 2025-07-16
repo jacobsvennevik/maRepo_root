@@ -1,7 +1,12 @@
-from .helpers.pymupdf_rag import IdentifyHeaders, to_markdown
+import pymupdf
+from .helpers.pymupdf_rag import IdentifyHeaders, TocHeaders, to_markdown
+from .versions_file import MINIMUM_PYMUPDF_VERSION, VERSION
 
-__version__ = "0.0.17"
-version = __version__
+if tuple(map(int, pymupdf.__version__.split("."))) < MINIMUM_PYMUPDF_VERSION:
+    raise ImportError(f"Requires PyMuPDF v. {MINIMUM_PYMUPDF_VERSION}, but you have {pymupdf.__version__}")
+
+__version__ = VERSION
+version = VERSION
 version_tuple = tuple(map(int, version.split(".")))
 
 

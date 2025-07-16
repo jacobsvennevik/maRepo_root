@@ -43,6 +43,7 @@ class Document(models.Model):
     file_type = models.CharField(max_length=50, choices=FILE_TYPE_CHOICES)
     upload_date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    error_message = models.TextField(blank=True, null=True)  # New field to store error details
 
     original_text = models.TextField(blank=True, null=True)  # Extracted text or transcript.
     metadata = models.JSONField(blank=True, null=True)  # Additional metadata (e.g., file size, page count)

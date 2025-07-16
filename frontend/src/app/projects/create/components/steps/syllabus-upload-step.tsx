@@ -71,9 +71,10 @@ interface SyllabusUploadStepProps {
   onUploadComplete: (projectId: string, extractedData: ProcessedDocument, fileName?: string) => void;
   onNext?: () => void;
   onBack?: () => void;
+  onSkip?: () => void; // Add onSkip callback
 }
 
-export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack }: SyllabusUploadStepProps) {
+export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, onSkip }: SyllabusUploadStepProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +82,11 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack }: 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const router = useRouter();
 
+  const handleSkip = useCallback(() => {
+    if (onSkip) {
+      onSkip();
+    }
+  }, [onSkip]);
 
 
   const handleUpload = useCallback(async (newFiles: File[]) => {
@@ -380,8 +386,22 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack }: 
           <button
             onClick={handleAnalyze}
             className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium rounded-lg shadow-sm transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            data-testid="analyze-button"
           >
             🔍 Analyze {files.length} {files.length === 1 ? 'File' : 'Files'}
+          </button>
+        </div>
+      )}
+      
+      {/* Skip Button */}
+      {onSkip && (
+        <div className="flex justify-center pt-4">
+          <button
+            onClick={handleSkip}
+            className="px-6 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 hover:border-gray-400 rounded-lg transition-colors duration-200"
+            data-testid="skip-button"
+          >
+            Skip - I don't have a syllabus to upload
           </button>
         </div>
       )}

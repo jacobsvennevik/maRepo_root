@@ -14,6 +14,12 @@ export interface ProjectSetup {
   studyFrequency: string;
   collaboration: string;
   customDescription?: string;
+  // Learning preferences fields - now support both single values and arrays
+  courseType: string | string[];
+  learningStyle: string | string[];
+  assessmentType: string | string[];
+  studyPreference: string | string[];
+  learningDifficulties: string;
 }
 
 export interface ImportantDate {

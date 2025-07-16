@@ -13,10 +13,17 @@ from .services.dispatcher import DocumentDispatcher
 
 logger = logging.getLogger(__name__)
 
-@shared_task
-def process_document(document_id: int):
+@shared_task(
+    bind=True,
+    max_retries=2,  # Allow 2 retries
+    default_retry_delay=5,  # Wait 5 seconds between retries
+    soft_time_limit=300,  # 5 minutes soft timeout
+    time_limit=360,  # 6 minutes hard timeout
+)
+def process_document(self, document_id: int):
     """
     Celery task to process a document using the DocumentDispatcher.
+    Includes timeout handling and retries for reliability.
     """
     try:
         document = Document.objects.get(id=document_id)
@@ -48,6 +55,12 @@ def process_document(document_id: int):
         try:
             document = Document.objects.get(id=document_id)
             document.status = 'error'
-            document.save(update_fields=['status'])
+            document.error_message = str(e)  # Store error message
+            document.save(update_fields=['status', 'error_message'])
+            
+            # Retry on certain errors, but not on Document.DoesNotExist
+            if not isinstance(e, Document.DoesNotExist):
+                raise self.retry(exc=e)
+                
         except Document.DoesNotExist:
             pass 

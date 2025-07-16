@@ -17,6 +17,108 @@ describe('useStepNavigation', () => {
     expect(result.current.isLastStep).toBe(false);
   });
 
+  it('skips extraction results step when no extracted data is provided', () => {
+    const { result } = renderHook(() => 
+      useStepNavigation(mockSetup, onBack, setShowSummary, null) // No extracted data
+    );
+    
+    // Navigate to uploadFiles step (step index 3)
+    for (let i = 0; i < 3; i++) {
+      act(() => {
+        result.current.handleNext();
+      });
+    }
+    
+    expect(result.current.currentStep.id).toBe('uploadFiles');
+    
+    // Navigate to next step - should skip extractionResults and go to learningPreferences
+    act(() => {
+      result.current.handleNext();
+    });
+    
+    expect(result.current.currentStep.id).toBe('learningPreferences');
+  });
+
+  it('shows extraction results step when extracted data is available', () => {
+    const mockExtractedData = { courseName: 'Test Course', topics: [] };
+    const { result } = renderHook(() => 
+      useStepNavigation(mockSetup, onBack, setShowSummary, mockExtractedData)
+    );
+    
+    // Navigate to uploadFiles step (step index 3)
+    for (let i = 0; i < 3; i++) {
+      act(() => {
+        result.current.handleNext();
+      });
+    }
+    
+    expect(result.current.currentStep.id).toBe('uploadFiles');
+    
+    // Navigate to next step - should show extractionResults
+    act(() => {
+      result.current.handleNext();
+    });
+    
+    expect(result.current.currentStep.id).toBe('extractionResults');
+  });
+
+  it('handles backward navigation correctly when extraction results is skipped', () => {
+    const { result } = renderHook(() => 
+      useStepNavigation(mockSetup, onBack, setShowSummary, null) // No extracted data
+    );
+    
+    // Navigate to courseContentUpload (skipping extractionResults)
+    for (let i = 0; i < 5; i++) {
+      act(() => {
+        result.current.handleNext();
+      });
+    }
+    
+    expect(result.current.currentStep.id).toBe('courseContentUpload');
+    
+    // Navigate back - should skip extractionResults and go to learningPreferences
+    act(() => {
+      result.current.handleBack();
+    });
+    
+    expect(result.current.currentStep.id).toBe('learningPreferences');
+  });
+
+  it('calculates correct progress when steps are skipped', () => {
+    const { result } = renderHook(() => 
+      useStepNavigation(mockSetup, onBack, setShowSummary, null) // No extracted data
+    );
+    
+    const totalStepsWithoutExtraction = SETUP_STEPS.length - 1; // Minus extractionResults
+    
+    // Navigate through a few steps
+    act(() => {
+      result.current.handleNext(); // step 1
+    });
+    
+    const expectedProgress = (1 / (totalStepsWithoutExtraction - 1)) * 100;
+    expect(result.current.progress).toBe(expectedProgress);
+  });
+
+  it('shouldShowStep returns false for extractionResults when no data', () => {
+    const { result } = renderHook(() => 
+      useStepNavigation(mockSetup, onBack, setShowSummary, null)
+    );
+    
+    expect(result.current.shouldShowStep('extractionResults')).toBe(false);
+    expect(result.current.shouldShowStep('uploadFiles')).toBe(true);
+    expect(result.current.shouldShowStep('learningPreferences')).toBe(true);
+  });
+
+  it('shouldShowStep returns true for extractionResults when data is available', () => {
+    const mockExtractedData = { courseName: 'Test Course', topics: [] };
+    const { result } = renderHook(() => 
+      useStepNavigation(mockSetup, onBack, setShowSummary, mockExtractedData)
+    );
+    
+    expect(result.current.shouldShowStep('extractionResults')).toBe(true);
+  });
+
   it('navigates to next step correctly', () => {
     const { result } = renderHook(() => useStepNavigation(mockSetup, onBack, setShowSummary));
     
@@ -90,7 +192,10 @@ describe('useStepNavigation', () => {
   });
 
   it('calculates progress correctly', () => {
-    const { result } = renderHook(() => useStepNavigation(mockSetup, onBack, setShowSummary));
+    const mockExtractedData = { courseName: 'Test Course', topics: [] };
+    const { result } = renderHook(() => 
+      useStepNavigation(mockSetup, onBack, setShowSummary, mockExtractedData) // With extracted data for normal flow
+    );
     
     expect(result.current.progress).toBe(0);
     
@@ -103,9 +208,12 @@ describe('useStepNavigation', () => {
   });
 
   it('validates step transitions for uploadFiles to extractionResults', () => {
-    const { result } = renderHook(() => useStepNavigation(mockSetup, onBack, setShowSummary));
+    const mockExtractedData = { courseName: 'Test Course', topics: [] };
+    const { result } = renderHook(() => 
+      useStepNavigation(mockSetup, onBack, setShowSummary, mockExtractedData) // With extracted data
+    );
     
-    // Navigate to uploadFiles step (step index 3) - wrap each handleNext in its own act()
+    // Navigate to uploadFiles step (step index 3)
     for (let i = 0; i < 3; i++) {
       act(() => {
         result.current.handleNext();
@@ -114,7 +222,7 @@ describe('useStepNavigation', () => {
     
     expect(result.current.currentStep.id).toBe('uploadFiles');
     
-    // Navigate to next step (should be extractionResults)
+    // Navigate to next step (should be extractionResults when data is available)
     act(() => {
       result.current.handleNext();
     });
@@ -122,10 +230,13 @@ describe('useStepNavigation', () => {
     expect(result.current.currentStep.id).toBe('extractionResults');
   });
 
-  it('validates step transitions for extractionResults to courseContentUpload', () => {
-    const { result } = renderHook(() => useStepNavigation(mockSetup, onBack, setShowSummary));
+  it('validates step transitions for extractionResults to learningPreferences', () => {
+    const mockExtractedData = { courseName: 'Test Course', topics: [] };
+    const { result } = renderHook(() => 
+      useStepNavigation(mockSetup, onBack, setShowSummary, mockExtractedData) // With extracted data
+    );
     
-    // Navigate to extractionResults step (step index 4) - wrap each handleNext in its own act()
+    // Navigate to extractionResults step (step index 4)
     for (let i = 0; i < 4; i++) {
       act(() => {
         result.current.handleNext();
@@ -134,12 +245,12 @@ describe('useStepNavigation', () => {
     
     expect(result.current.currentStep.id).toBe('extractionResults');
     
-    // Navigate to next step (should be courseContentUpload)
+    // Navigate to next step (should be learningPreferences)
     act(() => {
       result.current.handleNext();
     });
     
-    expect(result.current.currentStep.id).toBe('courseContentUpload');
+    expect(result.current.currentStep.id).toBe('learningPreferences');
   });
 
   it('has all expected steps in correct order', () => {
@@ -149,10 +260,9 @@ describe('useStepNavigation', () => {
       'educationLevel',
       'uploadFiles',
       'extractionResults',
+      'learningPreferences',
       'courseContentUpload',
-      'courseContentReview',
       'testUpload',
-      'testExtractionResults',
       'timeframe',
       'goal',
       'studyFrequency',
