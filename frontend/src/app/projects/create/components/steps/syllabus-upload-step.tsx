@@ -7,7 +7,6 @@ import { createProject, uploadFileWithProgress, APIError, ProjectData } from '..
 import { ProjectSetup } from '../../types';
 import { 
   API_BASE_URL, 
-  isTestMode, 
   getAuthHeaders,
   uploadFileToService, 
   startDocumentProcessing, 
@@ -17,54 +16,19 @@ import {
   clearProgress
 } from '../../utils/upload-utils';
 import { TestModeBanner, ErrorMessage, AnalyzeButton } from '../shared/upload-ui';
+import { SyllabusMockBanner } from '../shared/mock-mode-banner';
+import { 
+  MOCK_SYLLABUS_PROCESSED_DOCUMENT,
+  MOCK_SYLLABUS_EXTRACTION,
+  createMockProcessedDocument,
+  simulateProcessingDelay,
+  isTestMode,
+  type ProcessedDocument 
+} from '../../services/mock-data';
 
-interface ProcessedDocument {
-  id: number;
-  original_text: string;
-  metadata: any;
-  status: 'pending' | 'processing' | 'completed' | 'error';
-}
 
-// Mock data for test mode
-const MOCK_PROCESSED_DOCUMENT: ProcessedDocument = {
-  id: 123,
-  original_text: "This is a mock analysis of multiple course materials for Computer Science 101. The course covers programming fundamentals, data structures, and algorithms. Assignments are due every two weeks. Final exam is on December 15th.",
-  metadata: {
-    course_name: "Computer Science 101",
-    course_code: "CS101",
-    instructor: "Dr. Jane Smith",
-    semester: "Fall 2024",
-    assignments: [
-      { name: "Assignment 1", due_date: "2024-09-15", description: "Basic Python programming" },
-      { name: "Assignment 2", due_date: "2024-09-29", description: "Data structures implementation" },
-      { name: "Final Project", due_date: "2024-12-01", description: "Comprehensive programming project" }
-    ],
-    topics: [
-      "Python Programming",
-      "Data Structures",
-      "Algorithms",
-      "Object-Oriented Programming",
-      "Database Basics"
-    ],
-    exam_dates: [
-      { name: "Midterm Exam", date: "2024-10-15" },
-      { name: "Final Exam", date: "2024-12-15" }
-    ],
-    test_types: [
-      { type: "Multiple Choice Exams", confidence: 90 },
-      { type: "Programming Assignments", confidence: 95 },
-      { type: "Lab Reports", confidence: 85 },
-      { type: "Group Projects", confidence: 80 }
-    ],
-    grading: [
-      { category: "Exams", weight: 40 },
-      { category: "Assignments", weight: 30 },
-      { category: "Labs", weight: 20 },
-      { category: "Participation", weight: 10 }
-    ]
-  },
-  status: 'completed'
-};
+
+// Note: Mock data is now centralized in services/mock-data.ts
 
 interface SyllabusUploadStepProps {
   setup?: ProjectSetup;
@@ -80,6 +44,8 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [storedResults, setStoredResults] = useState<{ projectId: string, extractedData: ProcessedDocument, fileName?: string } | null>(null);
   const router = useRouter();
 
   const handleSkip = useCallback(() => {
@@ -87,6 +53,13 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
       onSkip();
     }
   }, [onSkip]);
+
+  // Call onUploadComplete immediately when analysis completes for the guided setup
+  React.useEffect(() => {
+    if (showSuccess && storedResults) {
+      onUploadComplete(storedResults.projectId, storedResults.extractedData, storedResults.fileName);
+    }
+  }, [showSuccess, storedResults, onUploadComplete]);
 
 
   const handleUpload = useCallback(async (newFiles: File[]) => {
@@ -116,16 +89,24 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
            setUploadProgress(prev => ({ ...prev, [file.name]: 100 }));
          }
          
-         // Simulate processing time
-         await new Promise(resolve => setTimeout(resolve, 1000));
+         // Simulate processing time with realistic delay
+         await simulateProcessingDelay(1000, 2000);
          
-         // In test mode, use project-123 as projectId to match test expectations
+         // Always use the main mock syllabus extraction data
+         const mockSyllabusData = MOCK_SYLLABUS_EXTRACTION;
+         const mockProcessedDoc = createMockProcessedDocument(mockSyllabusData, 123);
+         
          const fileName = files[0].name;
+         console.log('🧪 TEST MODE: Using main mock syllabus data:', mockSyllabusData.course_title);
          console.log('🧪 TEST MODE: Extraction completed for:', fileName);
 
          setIsAnalyzing(false);
-         // Use 'project-123' as projectId to match test expectations
-         onUploadComplete('project-123', MOCK_PROCESSED_DOCUMENT, fileName);
+         setShowSuccess(true);
+         setStoredResults({
+           projectId: 'project-123',
+           extractedData: mockProcessedDoc,
+           fileName: fileName
+         });
          return;
        }
 
@@ -314,14 +295,21 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
        console.log('Project created:', newProject);
 
        setIsAnalyzing(false);
+       setShowSuccess(true);
+       setStoredResults({
+         projectId: newProject.id,
+         extractedData: processedData,
+         fileName: firstFile.name
+       });
        
        // Use processed data (either real or timeout fallback)
        console.log('🎉 SUCCESS: Using processed data:', processedData);
-       onUploadComplete(newProject.id, processedData, firstFile.name);
 
      } catch (error) {
        console.error("Syllabus analysis failed:", error);
        setIsAnalyzing(false);
+       setShowSuccess(false);
+       setStoredResults(null);
        
        if (error instanceof APIError) {
          if (error.statusCode === 401) {
@@ -353,17 +341,7 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
 
   return (
     <div className="space-y-6" data-testid="syllabus-upload-step">
-      {isTestMode() && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-          <div className="flex items-center space-x-2">
-            <span className="text-yellow-600 text-sm">🧪</span>
-            <span className="text-yellow-800 text-sm font-medium">Test Mode Active</span>
-          </div>
-          <p className="text-yellow-700 text-xs mt-1">
-            Using mock data instead of actual PDF processing. Set NEXT_PUBLIC_TEST_MODE=false to disable.
-          </p>
-        </div>
-      )}
+      <SyllabusMockBanner courseName={MOCK_SYLLABUS_EXTRACTION.course_title} />
       
       <FileUpload
         onUpload={handleUpload}
@@ -381,7 +359,7 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
       />
       
       {/* Analyze Button */}
-      {files.length > 0 && !isAnalyzing && (
+      {files.length > 0 && !isAnalyzing && !showSuccess && (
         <div className="flex justify-center">
           <button
             onClick={handleAnalyze}
@@ -390,6 +368,15 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
           >
             🔍 Analyze {files.length} {files.length === 1 ? 'File' : 'Files'}
           </button>
+        </div>
+      )}
+      
+      {showSuccess && (
+        <div className="flex items-center justify-center p-4 mb-4 text-sm rounded-lg bg-green-50 text-green-800" role="alert">
+          <svg className="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+          </svg>
+          <span className="font-medium">Syllabus analyzed successfully! Click "Next" to continue.</span>
         </div>
       )}
       

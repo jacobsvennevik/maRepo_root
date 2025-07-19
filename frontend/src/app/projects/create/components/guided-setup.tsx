@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import './project-summary-animations.css';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, HelpCircle, Check, Target, BookOpen, Users, CalendarDays, Upload, FileText, Edit3, X, Plus } from 'lucide-react';
@@ -15,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAutoSave } from '../hooks/useAutoSave';
 import dynamic from 'next/dynamic';
 import { createProject, uploadFile, ProjectData } from '../services/api';
-import { ProjectSummary } from './project-summary';
+import { ProjectSummaryColorful } from './project-summary-variants';
 import { useProjectSetup } from '../hooks/useProjectSetup';
 import { useStepNavigation } from '../hooks/useStepNavigation';
 
@@ -57,6 +58,7 @@ const ReactCalendar = dynamic(() => import('react-calendar'), {
 const TEST_MODE = process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_TEST_MODE !== 'false';
 
 interface GuidedSetupProps {
+  
   onBack: () => void;
 }
 
@@ -68,6 +70,8 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   const [syllabusFileName, setSyllabusFileName] = useState<string>('');
   const [contentData, setContentData] = useState<any | null>(null);
   const [contentFileNames, setContentFileNames] = useState<string[]>([]);
+  const [isCourseContentAnalysisComplete, setIsCourseContentAnalysisComplete] = useState(false);
+  const [isTestAnalysisComplete, setIsTestAnalysisComplete] = useState(false);
 
   const {
     setup,
@@ -84,9 +88,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     handleRemoveFile,
     handleRemoveCourseFile,
     handleRemoveTestFile,
-    handleApplyAITopics,
     handleApplyAIDates,
-    handleApplyAITestTypes,
     handleApplyAIRecommendations,
   } = useProjectSetup({
     projectName: '',
@@ -112,6 +114,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     currentStep,
     handleNext,
     handleBack,
+    setCurrentStep,
     getCurrentStepIndex,
     getTotalSteps,
     progress,
@@ -161,7 +164,10 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   };
 
   const handleSkip = () => {
-    handleNext();
+    // Skip both syllabus upload and extraction results steps
+    setExtractedData(null); // Clear any existing extracted data
+    setSyllabusFileName(''); // Clear any existing filename
+    handleNext(); // Move to next step (will skip extraction results since data is null)
   };
 
   const handleCardClick = (field: keyof ProjectSetup, value: string) => {
@@ -208,41 +214,43 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
 
   const isStepComplete = () => {
     const stepId = currentStepData.id;
-    switch (stepId) {
-      case 'projectName':
-        return !!setup.projectName.trim();
-      case 'purpose':
-        return !!setup.purpose;
-      case 'educationLevel':
-        return !!setup.testLevel;
-      case 'uploadFiles':
-        return (setup.uploadedFiles || []).length > 0;
-      case 'learningPreferences':
-        // Handle both array and single value formats
-        const hasCourseType = Array.isArray(setup.courseType) 
-          ? setup.courseType.length > 0 
-          : !!setup.courseType;
-        const hasLearningStyle = Array.isArray(setup.learningStyle) 
-          ? setup.learningStyle.length > 0 
-          : !!setup.learningStyle;
-        const hasAssessmentType = Array.isArray(setup.assessmentType) 
-          ? setup.assessmentType.length > 0 
-          : !!setup.assessmentType;
-        const hasStudyPreference = Array.isArray(setup.studyPreference) 
-          ? setup.studyPreference.length > 0 
-          : !!setup.studyPreference;
-        return hasCourseType && hasLearningStyle && hasAssessmentType && hasStudyPreference;
-      case 'timeframe':
-        return !!setup.timeframe;
-      case 'goal':
-        return !!setup.goal;
-      case 'studyFrequency':
-        return !!setup.studyFrequency;
-      case 'collaboration':
-        return !!setup.collaboration;
-      default:
-        return false;
-    }
+    const result = (() => {
+      switch (stepId) {
+        case 'projectName':
+          return !!setup.projectName.trim();
+        case 'purpose':
+          return !!setup.purpose;
+        case 'educationLevel':
+          return !!setup.testLevel;
+        case 'uploadSyllabus':
+          return (setup.uploadedFiles || []).length > 0;
+        case 'courseContentUpload':
+          return isCourseContentAnalysisComplete;
+        case 'testUpload':
+          return isTestAnalysisComplete;
+        case 'learningPreferences':
+          const hasLearningStyle = Array.isArray(setup.learningStyle) 
+            ? setup.learningStyle.length > 0 
+            : !!setup.learningStyle;
+          const hasStudyPreference = Array.isArray(setup.studyPreference) 
+            ? setup.studyPreference.length > 0 
+            : !!setup.studyPreference;
+          return hasLearningStyle && hasStudyPreference;
+        case 'timeframe':
+          return !!setup.timeframe;
+        case 'goal':
+          return !!setup.goal;
+        case 'studyFrequency':
+          return !!setup.studyFrequency;
+        case 'collaboration':
+          return !!setup.collaboration;
+        default:
+          return false;
+      }
+    })();
+    
+    console.log(`🔍 Step completion check - Step: ${stepId}, Complete: ${result}, isCourseContentAnalysisComplete: ${isCourseContentAnalysisComplete}, isTestAnalysisComplete: ${isTestAnalysisComplete}`);
+    return result;
   };
 
   const handleExtractionComplete = (projectId: string) => {
@@ -477,8 +485,22 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
       console.log(`Syllabus uploaded for project ${newProjectId}. Moving to extraction results.`);
     }
     
-    console.log('About to call handleNext() to move to extraction results step');
-    handleNext();
+    // Use setTimeout to ensure state has been updated before navigating
+    setTimeout(() => {
+      // Find the extraction results step index and navigate directly to it
+      const extractionResultsIndex = SETUP_STEPS.findIndex(step => step.id === 'extractionResults');
+      console.log(`Found extraction results step at index: ${extractionResultsIndex}`);
+      console.log(`Current step before navigation: ${currentStep} (${currentStepData?.id})`);
+      console.log(`ExtractedData available: ${!!transformed}`);
+      
+      if (extractionResultsIndex !== -1) {
+        console.log(`Navigating directly to extraction results step (index ${extractionResultsIndex})`);
+        setCurrentStep(extractionResultsIndex);
+      } else {
+        console.log('Extraction results step not found, using handleNext()');
+        handleNext();
+      }
+    }, 0);
   };
 
   const handleExtractionResultsConfirm = async () => {
@@ -526,6 +548,11 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     
     console.log('Extraction results confirmed. Moving to learning preferences.');
     handleNext();
+  };
+
+  const handleExtractionResultsSave = (updatedData: ExtractedData) => {
+    console.log('Saving extraction results:', updatedData);
+    setExtractedData(updatedData);
   };
 
   // Helper function to map extracted test types to assessment type
@@ -600,14 +627,14 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   const handleTestUploadComplete = (extractedTests: any[], fileNames: string[]) => {
     // Handle test files upload completion
     console.log(`Test files uploaded:`, extractedTests);
-    handleNext();
+    // Don't auto-advance - let user click Next button manually
   };
 
   const handleCourseContentUploadComplete = (backendData: any, fileNames: string[]) => {
     setContentData(backendData);
     setContentFileNames(fileNames);
-    console.log('Course content uploaded successfully. Skipping review step.');
-    handleNext(); // Skip review step and move directly to next step
+    console.log('Course content uploaded successfully.');
+    // Don't auto-advance - let user click Next button manually
   };
 
   const renderStepContent = () => {
@@ -644,7 +671,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
         return (
           <SyllabusUploadStep
             onUploadComplete={handleSyllabusUploadComplete}
-            onSkip={handleNext}
+            onSkip={handleSkip}
           />
         );
       case 'extractionResults':
@@ -663,25 +690,27 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             extractedData={extractedData}
             fileName={syllabusFileName}
             onConfirm={handleExtractionResultsConfirm}
+            onSave={handleExtractionResultsSave}
             onEdit={() => {
-              // Optional: Add edit functionality later
-              console.log('Edit functionality not implemented yet');
+              // Go back to the upload step to re-upload or modify
+              console.log('Going back to upload step for editing');
+              setExtractedData(null);
+              setSyllabusFileName('');
+              // Use handleBack to go to previous step (upload step)
+              handleBack();
             }}
-            isTestMode={projectId === 'test-mode'}
           />
         );
       case 'learningPreferences':
         return (
           <LearningPreferencesStep
-            courseType={setup.courseType}
             learningStyle={setup.learningStyle}
-            assessmentType={setup.assessmentType}
             studyPreference={setup.studyPreference}
             learningDifficulties={setup.learningDifficulties}
-            onCourseTypeChange={(value) => setSetup(prev => ({ ...prev, courseType: value }))}
-            onLearningStyleChange={(value) => setSetup(prev => ({ ...prev, learningStyle: value }))}
-            onAssessmentTypeChange={(value) => setSetup(prev => ({ ...prev, assessmentType: value }))}
-            onStudyPreferenceChange={(value) => setSetup(prev => ({ ...prev, studyPreference: value }))}
+            courseType={extractedData?.courseType || contentData?.courseType}
+            assessmentTypes={extractedData?.assessmentTypes || contentData?.assessmentTypes}
+            onLearningStyleChange={(value) => handleOptionSelect('learningStyle', value)}
+            onStudyPreferenceChange={(value) => handleOptionSelect('studyPreference', value)}
             onLearningDifficultiesChange={(value) => handleOptionSelect('learningDifficulties', value)}
           />
         );
@@ -691,6 +720,8 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             onUploadComplete={handleTestUploadComplete}
             onNext={handleNext}
             onBack={handleBack}
+            onAnalysisComplete={() => setIsTestAnalysisComplete(true)}
+            extractedDates={extractedData?.dates || []}
           />
         );
       case 'timeframe':
@@ -730,6 +761,10 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             onUploadComplete={handleCourseContentUploadComplete}
             onNext={handleNext}
             onBack={handleBack}
+            onAnalysisComplete={() => {
+              console.log('🎯 CourseContentUploadStep onAnalysisComplete called - setting isCourseContentAnalysisComplete to true');
+              setIsCourseContentAnalysisComplete(true);
+            }}
           />
         );
       default:
@@ -738,7 +773,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   };
 
   if (showSummary) {
-    return <ProjectSummary setup={setup} onBack={() => setShowSummary(false)} />;
+    return <ProjectSummaryColorful setup={setup} onBack={() => setShowSummary(false)} />;
   }
 
   return (
@@ -790,7 +825,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
                 {isFirstStep ? 'Back to Selection' : 'Previous'}
               </Button>
               <div className="flex gap-2">
-                {currentStepData.id !== 'educationLevel' && currentStepData.id !== 'projectName' && (
+                {['uploadSyllabus', 'courseContentUpload', 'testUpload'].includes(currentStepData.id) && !isStepComplete() && (
                   <Button 
                     variant="outline" 
                     onClick={handleSkip}

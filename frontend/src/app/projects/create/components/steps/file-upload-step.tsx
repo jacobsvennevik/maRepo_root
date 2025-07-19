@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FileUpload } from '@/components/ui/file-upload';
 import { createProject, uploadFileWithProgress, APIError, ProjectData } from '../../services/api';
+import { isTestMode } from '../../services/mock-data';
 
 interface SyllabusUploadStepProps {
   onUploadComplete: (projectId: string) => void;
@@ -22,10 +23,9 @@ export function SyllabusUploadStep({ onUploadComplete }: SyllabusUploadStepProps
    * and immediately invokes `onUploadComplete` – no manual file-selection or
    * network requests required.
    */
-  const TEST_MODE = process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_TEST_MODE === 'true';
 
   useEffect(() => {
-    if (!TEST_MODE) return;
+    if (!isTestMode()) return;
 
     (async () => {
       try {

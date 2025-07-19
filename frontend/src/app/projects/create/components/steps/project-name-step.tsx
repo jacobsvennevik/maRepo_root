@@ -20,6 +20,7 @@ export function ProjectNameStep({ projectName, onProjectNameChange }: ProjectNam
           value={projectName}
           onChange={(e) => onProjectNameChange(e.target.value)}
           className="text-base"
+          autoComplete="off"
         />
       </div>
       <div className="text-xs sm:text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">

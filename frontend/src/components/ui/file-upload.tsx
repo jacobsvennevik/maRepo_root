@@ -44,9 +44,40 @@ export function FileUpload({
 }: FileUploadProps) {
   const [isDragActive, setIsDragActive] = useState(false)
   const [validationError, setValidationError] = useState<string | null>(null)
+  const [fileHashes, setFileHashes] = useState<Map<string, string>>(new Map())
+
+  // Function to compute a hash of file content
+  const computeFileHash = async (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result;
+        if (content) {
+          // Simple hash function for demo - in production you might want to use a proper hash function
+          const hash = btoa(String(file.size) + String(file.lastModified) + file.name);
+          resolve(hash);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  // Check if a file is a duplicate based on content
+  const isDuplicate = async (newFile: File): Promise<boolean> => {
+    const newHash = await computeFileHash(newFile);
+    
+    // Check if we already have a file with this hash
+    for (const [existingHash] of fileHashes) {
+      if (existingHash === newHash) {
+        return true;
+      }
+    }
+    
+    return false;
+  };
 
   const onDrop = useCallback(
-    (acceptedFiles: File[], rejectedFiles: any[]) => {
+    async (acceptedFiles: File[], rejectedFiles: any[]) => {
       // Handle rejected files
       if (rejectedFiles.length > 0) {
         const errors = rejectedFiles.map(rejection => {
@@ -69,12 +100,62 @@ export function FileUpload({
 
       // Clear any previous errors if the upload is successful
       setValidationError(null)
-      const validFiles = acceptedFiles.filter(file => file.size <= maxSize)
-      const newFiles = [...files, ...validFiles].slice(0, maxFiles)
-      onUpload(newFiles)
+
+      // Filter out duplicates and oversized files
+      const newValidFiles: File[] = [];
+      const duplicates: string[] = [];
+
+      for (const file of acceptedFiles) {
+        if (file.size > maxSize) continue;
+        
+        const isDup = await isDuplicate(file);
+        if (isDup) {
+          duplicates.push(file.name);
+          continue;
+        }
+
+        const hash = await computeFileHash(file);
+        setFileHashes(prev => new Map(prev).set(hash, file.name));
+        newValidFiles.push(file);
+      }
+
+      // Show warning for duplicates if any were found
+      if (duplicates.length > 0) {
+        setValidationError(
+          `Skipped duplicate file${duplicates.length > 1 ? 's' : ''}: ${duplicates.join(', ')}`
+        );
+        // If we have some valid files along with duplicates, wait a bit so user can read the message
+        if (newValidFiles.length > 0) {
+          setTimeout(() => setValidationError(null), 3000);
+        }
+      }
+
+      // Update files list with new unique files
+      const updatedFiles = [...files, ...newValidFiles].slice(0, maxFiles);
+      onUpload(updatedFiles);
     },
-    [files, maxFiles, maxSize, onUpload]
-  )
+    [files, maxFiles, maxSize, onUpload, fileHashes]
+  );
+
+  // Clear file hashes when files are removed
+  const handleRemove = (index: number) => {
+    if (onRemove) {
+      const removedFile = files[index];
+      onRemove(index);
+      
+      // Remove the hash for the removed file
+      setFileHashes(prev => {
+        const newHashes = new Map(prev);
+        for (const [hash, fileName] of newHashes) {
+          if (fileName === removedFile.name) {
+            newHashes.delete(hash);
+            break;
+          }
+        }
+        return newHashes;
+      });
+    }
+  };
 
   const { getRootProps, getInputProps, isDragReject } = useDropzone({
     onDrop,
@@ -169,7 +250,7 @@ export function FileUpload({
             const status = getUploadStatus(file.name, uploadProgress)
             return (
               <div
-                key={file.name}
+                key={`${file.name}-${file.lastModified}-${file.size}`}
                 className={cn(
                   "flex items-center justify-between bg-slate-50 rounded-lg p-3",
                   status === 'error' && "bg-red-50",
@@ -208,7 +289,7 @@ export function FileUpload({
                   {onRemove && (
                     <button
                       type="button"
-                      onClick={() => onRemove(index)}
+                      onClick={() => handleRemove(index)}
                       className="text-slate-400 hover:text-slate-600"
                       aria-label={`Remove file ${file.name}`}
                     >

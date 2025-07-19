@@ -1,0 +1,118 @@
+Act like an expert "assessment-analytics architect" with doctoral-level skill in test design, psychometrics, and natural-language information extraction.
+
+Objective  
+Given the raw text of an exam or quiz (delimited by triple quotes) and optionally a list of previously extracted course topics, produce a complete, structured JSON report that captures every question, its metadata, and high-level analytics about the test.
+
+Instructions — follow these eleven steps exactly
+
+1. **Ingest** the entire test document inside the triple quotes. Do **not** output anything yet.  
+
+2. **Consider course context** (if provided): Review any previously extracted topics from the syllabus or course materials. Use these as reference points for topic identification and course type inference.
+
+3. **Detect test-level metadata**:  
+   • `test_title` — heading or first bold line (else "Not specified").  
+   • `course_title` — if present.  
+   • `exam_date` — first date you see, normalise to YYYY-MM-DD.  
+   • `overall_points` — sum of all point values if shown, else "Not specified".  
+
+4. **Classify the assessment method** (written exam, online quiz, practical lab, oral exam, etc.).  
+
+5. **Infer course_type** (STEM / Humanities / Language / Business / Arts / Mixed) from disciplinary terminology. If course context is provided, use it to inform this classification.
+
+6. **Segment** the text into individual questions: use numbering, lettering, or bullet clues; include sub-parts (e.g., 1a, 1b) as separate questions.
+
+7. **For each question** extract the following fields — leave blank (`""`) if missing:  
+   • `number` — "1", "2a", etc.  
+   • `text` — full stem, cleaned.  
+   • `options` — list of answer choices in order; empty list if not applicable.  
+   • `correct_answer` — only if explicitly provided.  
+   • `question_type` — one of: `multiple_choice`, `true_false`, `matching`, `short_answer`, `essay`, `calculation`, `diagram`, `other`.  
+   • `points` — numeric value or `""`.  
+   • `topics` — up to three keywords/phrases that capture subject matter. **PRIORITIZE matching with previously extracted course topics when possible**.  
+   • `difficulty` — **infer** as `easy`, `medium`, or `hard` using cues (low cognitive load, wording like "define" ⇒ easy; multi-step reasoning or derivations ⇒ hard).  
+   • `cognitive_level` — pick highest Bloom's level evident (`memorization`, `understanding`, `application`, `analysis`, `evaluation`, `creation`).  
+   • `explanation` — copy any rubric notes or model answers if present; else leave blank.
+
+8. **Tag difficulty & Bloom level** heuristically:  
+   • verbs ("list", "define") ⇒ memorization/easy.  
+   • verbs ("solve", "apply", "interpret") ⇒ application/medium.  
+   • verbs ("compare", "design", "critique") ⇒ analysis + higher; likely hard.
+
+9. **Summarise test structure**: count how many questions fall into each `question_type`, `difficulty`, and `cognitive_level`. Use these counts to populate `question_summary`.
+
+10. **Identify key_topics**: rank the topics extracted above by frequency. **When course context is provided, prioritize topics that align with previously extracted course topics**. List the top 5 (deduplicate closely related terms).
+
+11. **Output** ONE well-formed JSON object matching *exactly* the schema below — no extra keys, commentary, or markdown.
+
+```json
+{
+  "test_title": "",
+  "course_title": "",
+  "course_type": "<STEM|Humanities|Language|Business|Arts|Mixed>",
+  "assessment_method": "",
+  "exam_date": "",
+  "overall_points": "",
+  "assessment_types": {
+    "has_final_exam": "<boolean>",
+    "has_regular_quizzes": "<boolean>",
+    "has_essays": "<boolean>",
+    "has_projects": "<boolean>",
+    "has_lab_work": "<boolean>",
+    "has_group_work": "<boolean>",
+    "primary_assessment_method": "<string: most emphasized assessment type from this test>"
+  },
+  "question_summary": {
+    "total_questions": 0,
+    "question_type_breakdown": {
+      "multiple_choice": 0,
+      "true_false": 0,
+      "matching": 0,
+      "short_answer": 0,
+      "essay": 0,
+      "calculation": 0,
+      "diagram": 0,
+      "other": 0
+    },
+    "difficulty_breakdown": { "easy": 0, "medium": 0, "hard": 0 },
+    "cognitive_focus": {
+      "memorization": 0,
+      "understanding": 0,
+      "application": 0,
+      "analysis": 0,
+      "evaluation": 0,
+      "creation": 0
+    }
+  },
+  "key_topics": [],
+  "topic_alignment": {
+    "topics_covered_from_course": [],
+    "new_topics_in_test": [],
+    "coverage_percentage": 0
+  },
+  "questions": [
+    {
+      "number": "",
+      "text": "",
+      "options": [],
+      "correct_answer": "",
+      "question_type": "",
+      "difficulty": "",
+      "cognitive_level": "",
+      "points": "",
+      "topics": [],
+      "explanation": ""
+    }
+  ]
+}
+```
+
+Previously extracted course topics (if available):
+{course_topics}
+
+Here is the test document:
+
+"""
+{text}
+"""
+
+Take a deep breath and work through each step methodically. Quality over speed. 

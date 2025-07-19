@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useCallback } from 'react';
@@ -16,6 +17,7 @@ import {
   clearProgress
 } from '../../utils/upload-utils';
 import { TestModeBanner, ErrorMessage, AnalyzeButton } from '../shared/upload-ui';
+import { Button } from '@/components/ui/button';
 
 interface ProcessedTest {
   id: number;
@@ -28,49 +30,148 @@ interface ProcessedTest {
 const MOCK_PROCESSED_TESTS: ProcessedTest[] = [
   {
     id: 456,
-    original_text: "Midterm Exam - Computer Science 101\n\nQuestion 1: Explain the difference between arrays and linked lists (10 points)\nQuestion 2: Write a Python function to reverse a string (15 points)\nQuestion 3: What is the time complexity of binary search? (5 points)",
+    original_text: "Language Technology Quiz - Natural Language Interaction\n\nSection A: Prolog Fundamentals\nA1a) Classify \"knows(pedro, Maria)\" as atom, variable, complex term, or not a term.\nA1b) Classify \"Blond(maria)\" as atom, variable, complex term, or not a term.\n...",
     metadata: {
-      test_type: "Midterm Exam",
-      course: "Computer Science 101",
-      total_points: 30,
-      duration: "90 minutes",
-      question_types: [
-        { type: "Short Answer", count: 2, points: 25 },
-        { type: "Multiple Choice", count: 1, points: 5 }
-      ],
-      topics_covered: [
-        "Data Structures",
-        "Algorithms", 
-        "Python Programming",
-        "Time Complexity"
-      ],
-      difficulty_level: "Intermediate",
-      estimated_study_time: "4-6 hours",
-      key_concepts: [
-        "Arrays vs Linked Lists",
-        "String Manipulation",
-        "Binary Search Algorithm",
-        "Time Complexity Analysis"
+      test_title: "Quizes Lang Tech",
+      course_title: "Natural Language Interaction",
+      course_type: "STEM",
+      assessment_method: "written exam",
+      exam_date: "",
+      overall_points: "",
+      assessment_types: {
+        has_final_exam: false,
+        has_regular_quizzes: true,
+        has_essays: true,
+        has_projects: false,
+        has_lab_work: false,
+        has_group_work: false,
+        primary_assessment_method: "Regular quizzes and short essays"
+      },
+      question_summary: {
+        total_questions: 27,
+        question_type_breakdown: {
+          multiple_choice: 0,
+          true_false: 0,
+          matching: 0,
+          short_answer: 14,
+          essay: 13,
+          calculation: 0,
+          diagram: 0,
+          other: 0
+        },
+        difficulty_breakdown: { easy: 6, medium: 17, hard: 4 },
+        cognitive_focus: {
+          memorization: 0,
+          understanding: 9,
+          application: 9,
+          analysis: 6,
+          evaluation: 0,
+          creation: 3
+        }
+      },
+      key_topics: ["Prolog", "Unification", "Recursive predicates", "Neural networks", "Machine learning"],
+      topic_alignment: {
+        topics_covered_from_course: ["Knowledge representation based on inference", "Syntactic analysis and parsing", "Neural networks, deep learning and Transformers", "Vector representation of knowledge and distributional semantics"],
+        new_topics_in_test: ["Prolog", "Unification", "Recursive predicates"],
+        coverage_percentage: 75
+      },
+      questions: [
+        {
+          number: "A1a",
+          text: "Classify \"knows(pedro, Maria)\" as atom, variable, complex term, or not a term.",
+          options: [],
+          correct_answer: "",
+          question_type: "short_answer",
+          difficulty: "medium",
+          cognitive_level: "understanding",
+          points: "",
+          topics: ["Prolog syntax", "Atoms", "Terms"],
+          explanation: ""
+        },
+        {
+          number: "A2a",
+          text: "Represent the assertion \"Pedro loves Ana.\" in Prolog.",
+          options: [],
+          correct_answer: "",
+          question_type: "short_answer",
+          difficulty: "medium",
+          cognitive_level: "application",
+          points: "",
+          topics: ["Prolog", "Facts", "Representation"],
+          explanation: ""
+        },
+        {
+          number: "B3",
+          text: "Write a recursive predicate travelBetween/2 that determines whether it is possible to travel by train between two towns using directTrain facts.",
+          options: [],
+          correct_answer: "",
+          question_type: "essay",
+          difficulty: "hard",
+          cognitive_level: "creation",
+          points: "",
+          topics: ["Prolog", "Recursion", "Graphs"],
+          explanation: ""
+        },
+        {
+          number: "C3",
+          text: "What is the difference between supervised and unsupervised machine learning?",
+          options: [],
+          correct_answer: "",
+          question_type: "essay",
+          difficulty: "easy",
+          cognitive_level: "analysis",
+          points: "",
+          topics: ["Machine learning", "Supervised learning", "Unsupervised learning"],
+          explanation: ""
+        },
+        {
+          number: "D1",
+          text: "Describe the purpose of each step in the neural network training algorithm: forward pass, loss estimation, and backward pass.",
+          options: [],
+          correct_answer: "",
+          question_type: "essay",
+          difficulty: "medium",
+          cognitive_level: "understanding",
+          points: "",
+          topics: ["Neural networks", "Training", "Backpropagation"],
+          explanation: ""
+        }
       ]
     },
     status: 'completed'
   }
 ];
 
-interface TestUploadStepProps {
-  onUploadComplete: (extractedTests: ProcessedTest[], fileNames: string[]) => void;
-  onNext?: () => void;
-  onBack?: () => void;
+interface ProcessedDate {
+  id: string;
+  date: string;
+  description: string;
+  type: string;
 }
 
-export function TestUploadStep({ onUploadComplete, onNext, onBack }: TestUploadStepProps) {
+interface TestUploadStepProps {
+  onUploadComplete: (extractedTests: ProcessedTest[], fileNames: string[]) => void;
+  onAnalysisComplete: () => void;
+  onNext?: () => void;
+  onBack?: () => void;
+  extractedDates?: ProcessedDate[]; // Exam dates from syllabus extraction
+}
+
+export function TestUploadStep({ onUploadComplete, onAnalysisComplete, onNext, onBack, extractedDates }: TestUploadStepProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [storedResults, setStoredResults] = useState<{ data: ProcessedTest[], fileNames: string[] } | null>(null);
   const router = useRouter();
 
-
+  // Call onUploadComplete immediately when analysis completes for the guided setup
+  React.useEffect(() => {
+    if (showSuccess && storedResults) {
+      onUploadComplete(storedResults.data, storedResults.fileNames);
+    }
+  }, [showSuccess, storedResults, onUploadComplete]);
 
   const handleUpload = useCallback(async (newFiles: File[]) => {
     setFiles(prev => [...prev, ...newFiles]);
@@ -101,6 +202,8 @@ export function TestUploadStep({ onUploadComplete, onNext, onBack }: TestUploadS
 
     setError(null);
     setIsAnalyzing(true);
+    setShowSuccess(false);
+    setStoredResults(null);
 
     try {
       // TEST MODE: Skip API calls and use mock data
@@ -129,7 +232,12 @@ export function TestUploadStep({ onUploadComplete, onNext, onBack }: TestUploadS
         }));
 
         setIsAnalyzing(false);
-        onUploadComplete(mockTests, files.map(f => f.name));
+        setShowSuccess(true);
+        setStoredResults({
+          data: mockTests,
+          fileNames: files.map(f => f.name)
+        });
+        onAnalysisComplete();
         return;
       }
 
@@ -270,13 +378,20 @@ export function TestUploadStep({ onUploadComplete, onNext, onBack }: TestUploadS
       // Show errors if any occurred
       if (errors.length > 0) {
         setError(`${errors.length} file(s) failed to process: ${errors[0]}`);
+        return;
       }
       
-      onUploadComplete(processedTests, files.map(f => f.name));
+      setShowSuccess(true);
+      setStoredResults({
+        data: processedTests,
+        fileNames: files.map(f => f.name)
+      });
 
     } catch (error) {
       console.error("Test analysis failed:", error);
       setIsAnalyzing(false);
+      setShowSuccess(false);
+      setStoredResults(null);
       
       if (error instanceof APIError) {
         if (error.statusCode === 401) {
@@ -289,15 +404,19 @@ export function TestUploadStep({ onUploadComplete, onNext, onBack }: TestUploadS
         setError(error instanceof Error ? error.message : "An unexpected error occurred. Please try again.");
       }
     }
-  }, [files, onUploadComplete, router]);
+    onAnalysisComplete();
+  }, [files, router, onAnalysisComplete]);
 
-  const handleRemove = useCallback((fileToRemove: File) => {
-    setFiles(prev => prev.filter(file => file.name !== fileToRemove.name));
+  const handleRemove = useCallback((index: number) => {
+    const fileToRemove = files[index];
+    setFiles(prev => prev.filter((_, i) => i !== index));
     setError(null);
     
     // Clear progress for the removed file using shared utility
-    clearProgress(setUploadProgress, fileToRemove.name);
-  }, []);
+    if (fileToRemove) {
+      clearProgress(setUploadProgress, fileToRemove.name);
+    }
+  }, [files]);
 
   return (
     <div className="space-y-6" data-testid="test-upload-step">
@@ -320,7 +439,7 @@ export function TestUploadStep({ onUploadComplete, onNext, onBack }: TestUploadS
       />
       
       {/* Analyze Button */}
-      {files.length > 0 && (
+      {files.length > 0 && !showSuccess && (
         <AnalyzeButton
           onClick={handleAnalyze}
           isAnalyzing={isAnalyzing}
@@ -331,6 +450,49 @@ export function TestUploadStep({ onUploadComplete, onNext, onBack }: TestUploadS
         >
           📊 Analyze {files.length} Test {files.length === 1 ? 'File' : 'Files'}
         </AnalyzeButton>
+      )}
+      
+      {showSuccess && (
+        <div className="flex items-center justify-center p-4 mb-4 text-sm rounded-lg bg-green-50 text-green-800" role="alert">
+          <svg className="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+          </svg>
+          <span className="font-medium">Tests analyzed successfully! Click "Next" to continue.</span>
+        </div>
+      )}
+
+      {/* Display extracted exam dates from syllabus */}
+      {extractedDates && extractedDates.length > 0 && (
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h3 className="text-sm font-medium text-blue-900 mb-3 flex items-center">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Exam dates from your syllabus
+          </h3>
+          <p className="text-xs text-blue-700 mb-3">
+            These dates were automatically extracted from your syllabus. Use them to plan your test preparation:
+          </p>
+          <div className="space-y-2">
+            {extractedDates.filter(date => date.type === 'exam' || date.description.toLowerCase().includes('exam') || date.description.toLowerCase().includes('test')).map((date) => (
+              <div key={date.id} className="flex items-center justify-between p-2 bg-white border border-blue-100 rounded">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs font-medium text-blue-900">
+                    {new Date(date.date).toLocaleDateString('en-US', { 
+                      weekday: 'short', 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}
+                  </span>
+                  <span className="text-xs text-blue-700">{date.description}</span>
+                </div>
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                  {date.type}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
       
       {isAnalyzing && (

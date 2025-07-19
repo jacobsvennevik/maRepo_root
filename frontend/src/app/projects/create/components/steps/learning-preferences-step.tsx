@@ -3,7 +3,6 @@
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -13,34 +12,28 @@ import {
   Eye, 
   MessageSquare, 
   Hand,
-  Target,
-  FileText,
-  PenTool,
   Lightbulb,
   Sparkles
 } from "lucide-react";
 
 interface LearningPreferencesStepProps {
-  courseType: string | string[];
   learningStyle: string | string[];
-  assessmentType: string | string[];
   studyPreference: string | string[];
   learningDifficulties: string;
-  onCourseTypeChange: (value: string | string[]) => void;
+  courseType?: string; // Auto-detected from uploaded content
+  assessmentTypes?: {
+    has_final_exam: boolean;
+    has_regular_quizzes: boolean;
+    has_essays: boolean;
+    has_projects: boolean;
+    has_lab_work: boolean;
+    has_group_work: boolean;
+    primary_assessment_method: string;
+  }; // Auto-detected from uploaded content
   onLearningStyleChange: (value: string | string[]) => void;
-  onAssessmentTypeChange: (value: string | string[]) => void;
   onStudyPreferenceChange: (value: string | string[]) => void;
   onLearningDifficultiesChange: (value: string) => void;
 }
-
-const COURSE_TYPE_OPTIONS = [
-  { value: 'stem', label: 'STEM (Science, Technology, Engineering, Math)', icon: Brain },
-  { value: 'humanities', label: 'Humanities (Literature, History, Philosophy)', icon: BookOpen },
-  { value: 'language', label: 'Language Learning', icon: MessageSquare },
-  { value: 'business', label: 'Business & Economics', icon: Target },
-  { value: 'arts', label: 'Arts & Creative Studies', icon: PenTool },
-  { value: 'mixed', label: 'Mixed / Multiple Subjects', icon: Lightbulb },
-];
 
 const LEARNING_STYLE_OPTIONS = [
   { value: 'visual', label: 'Visual (diagrams, charts, images)', icon: Eye },
@@ -50,13 +43,6 @@ const LEARNING_STYLE_OPTIONS = [
   { value: 'unsure', label: 'Not sure / No preference', icon: Lightbulb },
 ];
 
-const ASSESSMENT_TYPE_OPTIONS = [
-  { value: 'cumulative-final', label: 'Cumulative final exam', icon: FileText },
-  { value: 'regular-quizzes', label: 'Regular quizzes and tests', icon: Target },
-  { value: 'essays-projects', label: 'Essays and projects', icon: PenTool },
-  { value: 'mixed-assessments', label: 'Mix of all types', icon: Brain },
-];
-
 const STUDY_PREFERENCE_OPTIONS = [
   { value: 'alone', label: 'Alone (independent study)', icon: BookOpen },
   { value: 'groups', label: 'In groups (collaborative study)', icon: Users },
@@ -64,39 +50,25 @@ const STUDY_PREFERENCE_OPTIONS = [
 ];
 
 export function LearningPreferencesStep({
-  courseType,
   learningStyle,
-  assessmentType,
   studyPreference,
   learningDifficulties,
-  onCourseTypeChange,
+  courseType,
+  assessmentTypes,
   onLearningStyleChange,
-  onAssessmentTypeChange,
   onStudyPreferenceChange,
   onLearningDifficultiesChange
 }: LearningPreferencesStepProps) {
   // Handle course type as single selection, others as multi-select
-  const selectedCourseType = Array.isArray(courseType) ? courseType[0] || '' : (courseType || '');
   const selectedLearningStyles = Array.isArray(learningStyle) ? learningStyle : (learningStyle ? [learningStyle] : []);
-  const selectedAssessmentTypes = Array.isArray(assessmentType) ? assessmentType : (assessmentType ? [assessmentType] : []);
   const selectedStudyPreferences = Array.isArray(studyPreference) ? studyPreference : (studyPreference ? [studyPreference] : []);
 
-  const handleCourseTypeChange = (value: string) => {
-    onCourseTypeChange(value);
-  };
 
   const handleLearningStyleToggle = (value: string) => {
     const newSelection = selectedLearningStyles.includes(value)
       ? selectedLearningStyles.filter(item => item !== value)
       : [...selectedLearningStyles, value];
     onLearningStyleChange(newSelection);
-  };
-
-  const handleAssessmentTypeToggle = (value: string) => {
-    const newSelection = selectedAssessmentTypes.includes(value)
-      ? selectedAssessmentTypes.filter(item => item !== value)
-      : [...selectedAssessmentTypes, value];
-    onAssessmentTypeChange(newSelection);
   };
 
   const handleStudyPreferenceToggle = (value: string) => {
@@ -110,51 +82,49 @@ export function LearningPreferencesStep({
     onLearningDifficultiesChange(e.target.value);
   };
 
-  // Helper to show auto-population badge
-  const AutoPopulatedBadge = () => (
-    <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
-      <Sparkles className="h-3 w-3 mr-1" />
-      Auto-detected
-    </Badge>
-  );
-
   return (
     <div className="space-y-8">
       <div className="space-y-8">
-        {/* Course Type */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Label className="text-base font-medium text-gray-900">
-              What type of course are you trying to master?
-            </Label>
-            {selectedCourseType && <AutoPopulatedBadge />}
-          </div>
-          <RadioGroup value={selectedCourseType} onValueChange={handleCourseTypeChange}>
-            <div className="space-y-3">
-              {COURSE_TYPE_OPTIONS.map((option) => {
-                const Icon = option.icon;
-                return (
-                  <div key={option.value} className="flex items-center space-x-3">
-                    <RadioGroupItem
-                      value={option.value}
-                      id={`course-${option.value}`}
-                      className="mt-1"
-                    />
-                    <div className="flex items-center space-x-2 flex-1">
-                      <Icon className="h-4 w-4 text-blue-600" />
-                      <Label 
-                        htmlFor={`course-${option.value}`}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                      >
-                        {option.label}
-                      </Label>
-                    </div>
-                  </div>
-                );
-              })}
+        {/* Auto-detected Course Information */}
+        {(courseType || assessmentTypes) && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="h-4 w-4 text-green-600" />
+              <h3 className="text-sm font-medium text-green-900">Auto-detected from your content</h3>
             </div>
-          </RadioGroup>
-        </div>
+            
+            {courseType && (
+              <div className="mb-3">
+                <Label className="text-sm font-medium text-green-800">Course Type:</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-sm text-green-700">{courseType}</span>
+                  <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200 text-xs">
+                    Auto-detected
+                  </Badge>
+                </div>
+              </div>
+            )}
+
+            {assessmentTypes && (
+              <div>
+                <Label className="text-sm font-medium text-green-800">Assessment Methods:</Label>
+                <div className="text-xs text-green-600 space-y-1 mt-1">
+                  {assessmentTypes.has_final_exam && <div>• Final Exam</div>}
+                  {assessmentTypes.has_regular_quizzes && <div>• Regular Quizzes/Tests</div>}
+                  {assessmentTypes.has_essays && <div>• Essays/Papers</div>}
+                  {assessmentTypes.has_projects && <div>• Projects/Presentations</div>}
+                  {assessmentTypes.has_lab_work && <div>• Lab Work/Practicals</div>}
+                  {assessmentTypes.has_group_work && <div>• Group Work</div>}
+                  {assessmentTypes.primary_assessment_method && (
+                    <div className="text-green-700 font-medium mt-2">
+                      Primary: {assessmentTypes.primary_assessment_method}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Learning Style */}
         <div>
@@ -177,41 +147,6 @@ export function LearningPreferencesStep({
                     <Icon className="h-4 w-4 text-purple-600" />
                     <Label 
                       htmlFor={`learning-${option.value}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                    >
-                      {option.label}
-                    </Label>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Assessment Type */}
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Label className="text-base font-medium text-gray-900">
-              Are you preparing for a cumulative final exam, regular quizzes, essays, or projects? (Select all that apply)
-            </Label>
-            {selectedAssessmentTypes.length > 0 && <AutoPopulatedBadge />}
-          </div>
-          <div className="space-y-3">
-            {ASSESSMENT_TYPE_OPTIONS.map((option) => {
-              const Icon = option.icon;
-              const isSelected = selectedAssessmentTypes.includes(option.value);
-              return (
-                <div key={option.value} className="flex items-center space-x-3">
-                  <Checkbox
-                    id={`assessment-${option.value}`}
-                    checked={isSelected}
-                    onCheckedChange={() => handleAssessmentTypeToggle(option.value)}
-                    className="mt-1"
-                  />
-                  <div className="flex items-center space-x-2 flex-1">
-                    <Icon className="h-4 w-4 text-orange-600" />
-                    <Label 
-                      htmlFor={`assessment-${option.value}`}
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                     >
                       {option.label}

@@ -45,12 +45,6 @@ export const SETUP_STEPS: SetupStep[] = [
     icon: CheckCircle
   },
   {
-    id: 'learningPreferences',
-    title: 'Learning preferences',
-    description: 'Tell us about your learning style and preferences to personalize your study experience.',
-    icon: Brain
-  },
-  {
     id: 'courseContentUpload',
     title: 'Upload course content',
     description: 'Upload slides, handouts, and other course materials (max 100 pages).',
@@ -61,6 +55,12 @@ export const SETUP_STEPS: SetupStep[] = [
     title: 'Upload test materials',
     description: 'Upload past exams, practice tests, or study guides to help us understand what to expect.',
     icon: FileText
+  },
+  {
+    id: 'learningPreferences',
+    title: 'Learning preferences',
+    description: 'Tell us about your learning style and preferences to personalize your study experience.',
+    icon: Brain
   },
   {
     id: 'timeframe',

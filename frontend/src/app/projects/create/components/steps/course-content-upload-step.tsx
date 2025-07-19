@@ -1,51 +1,32 @@
 import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { FileUpload } from '@/components/ui/file-upload';
-import { API_BASE_URL, isTestMode, validateFiles } from '../../utils/upload-utils';
+import { API_BASE_URL, validateFiles } from '../../utils/upload-utils';
 import { TestModeBanner, ErrorMessage, AnalyzeButton } from '../shared/upload-ui';
+import { CourseContentMockBanner } from '../shared/mock-mode-banner';
+import { 
+  MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT,
+  simulateProcessingDelay,
+  isTestMode,
+  type ProcessedDocument 
+} from '../../services/mock-data';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/cards/base-card';
 import { FileUploader } from '@/components/ui/common/file-uploader';
 import { APIError, handleAPIError } from '@/lib/errors';
 import axiosInstance from '@/lib/axios';
 
-// Utility type for processed document returned by backend
-interface ProcessedDocument {
-  id: number;
-  original_text: string;
-  metadata: {
-    topics?: string[];
-    extracted_text?: string;
-    source_file?: string;
-    page_count?: number;
-    confidence_score?: number;
-  };
-  status: 'pending' | 'processing' | 'completed' | 'error';
-}
+// Note: ProcessedDocument type is now imported from services/mock-data.ts
 
 interface CourseContentUploadStepProps {
   onUploadComplete: (backendData: ProcessedDocument[], fileNames: string[]) => void;
+  onAnalysisComplete: () => void;
   onNext: () => void;
   onBack: () => void;
+  onSkip?: () => void; // Add onSkip callback
 }
 
-const MOCK_PROCESSED_DOCUMENT: ProcessedDocument = {
-  id: 456,
-  original_text: "Sample course content about machine learning algorithms and neural networks...",
-  metadata: {
-    topics: [
-      "Machine Learning Basics",
-      "Neural Networks",
-      "Deep Learning",
-      "Model Evaluation"
-    ],
-    extracted_text: "This content covers fundamental machine learning concepts...",
-    source_file: "machine_learning_slides.pdf",
-    page_count: 45,
-    confidence_score: 0.92
-  },
-  status: 'completed'
-};
+// Note: Mock data is now centralized in services/mock-data.ts
 
 function getReadableErrorMessage(error: unknown): string {
   if (error instanceof APIError) {
@@ -76,12 +57,27 @@ function getReadableErrorMessage(error: unknown): string {
   return 'An unexpected error occurred. Please try again.';
 }
 
-export function CourseContentUploadStep({ onUploadComplete, onNext, onBack }: CourseContentUploadStepProps) {
+export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, onNext, onBack, onSkip }: CourseContentUploadStepProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [storedResults, setStoredResults] = useState<{ data: ProcessedDocument[], fileNames: string[] } | null>(null);
   const router = useRouter();
+
+  const handleSkip = useCallback(() => {
+    if (onSkip) {
+      onSkip();
+    }
+  }, [onSkip]);
+
+  // Call onUploadComplete immediately when analysis completes for the guided setup
+  React.useEffect(() => {
+    if (showSuccess && storedResults) {
+      onUploadComplete(storedResults.data, storedResults.fileNames);
+    }
+  }, [showSuccess, storedResults, onUploadComplete]);
 
   const handleUpload = useCallback((newFiles: File[]) => {
     // Validate file types and sizes
@@ -115,9 +111,37 @@ export function CourseContentUploadStep({ onUploadComplete, onNext, onBack }: Co
     const firstFile = files[0];
     setIsAnalyzing(true);
     setError(null);
+    setShowSuccess(false);
+    setStoredResults(null);
     let documentId: number | null = null;
 
     try {
+      // TEST MODE: Skip API calls and use mock data
+      if (isTestMode()) {
+        console.log('🧪 TEST MODE: Analyzing', files.length, 'course content files with mock data');
+        
+        // Simulate upload progress for all files
+        for (const file of files) {
+          setUploadProgress(prev => ({ ...prev, [file.name]: 100 }));
+        }
+        
+        // Simulate processing time with realistic delay
+        await simulateProcessingDelay(1500, 3000);
+        
+        const fileName = firstFile.name;
+        console.log('🧪 TEST MODE: Course content extraction completed for:', fileName);
+        console.log('🧪 TEST MODE: Using mock course content data');
+
+        setIsAnalyzing(false);
+        setShowSuccess(true);
+        setStoredResults({
+          data: [MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT],
+          fileNames: [fileName]
+        });
+        onAnalysisComplete();
+        return;
+      }
+
       // Validate file size
       const maxSize = 25 * 1024 * 1024; // 25MB to match UI limit
       if (firstFile.size > maxSize) {
@@ -214,12 +238,19 @@ export function CourseContentUploadStep({ onUploadComplete, onNext, onBack }: Co
       }
 
       console.log('SUCCESS: Using processed data:', processedData);
-      onUploadComplete([processedData], [firstFile.name]);
+      setShowSuccess(true);
+      setStoredResults({
+        data: [processedData],
+        fileNames: [firstFile.name]
+      });
+      onAnalysisComplete();
 
     } catch (error) {
       console.error("Content analysis failed:", error);
       setIsAnalyzing(false);
       setUploadProgress({});
+      setShowSuccess(false);
+      setStoredResults(null);
       
       const errorMessage = getReadableErrorMessage(error);
       
@@ -230,11 +261,11 @@ export function CourseContentUploadStep({ onUploadComplete, onNext, onBack }: Co
         setError(errorMessage);
       }
     }
-  }, [files, onUploadComplete, router]);
+  }, [files, router, onAnalysisComplete]);
 
   return (
     <div className="space-y-6" data-testid="course-content-upload-step">
-      {isTestMode() && <TestModeBanner />}
+      <CourseContentMockBanner />
       <div className="space-y-4">
         <FileUpload
           onUpload={handleUpload}
@@ -248,8 +279,9 @@ export function CourseContentUploadStep({ onUploadComplete, onNext, onBack }: Co
           uploadProgress={uploadProgress}
           error={error}
         />
+        {error && <ErrorMessage message={error} />}
       </div>
-      {files.length > 0 && (
+      {files.length > 0 && !showSuccess && (
         <div className="flex justify-center">
           <AnalyzeButton
             onClick={handleAnalyze}
@@ -257,6 +289,27 @@ export function CourseContentUploadStep({ onUploadComplete, onNext, onBack }: Co
             disabled={isAnalyzing}
             filesCount={files.length}
           />
+        </div>
+      )}
+      
+      {/* Skip Button */}
+      {onSkip && (
+        <div className="flex justify-center pt-4">
+          <button
+            onClick={handleSkip}
+            className="px-6 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 hover:border-gray-400 rounded-lg transition-colors duration-200"
+            data-testid="skip-button"
+          >
+            Skip - I don't have course materials to upload
+          </button>
+        </div>
+      )}
+      {showSuccess && (
+        <div className="flex items-center justify-center p-4 mb-4 text-sm rounded-lg bg-green-50 text-green-800" role="alert">
+          <svg className="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
+          </svg>
+          <span className="font-medium">Course content analyzed successfully! Click "Next" to continue.</span>
         </div>
       )}
     </div>

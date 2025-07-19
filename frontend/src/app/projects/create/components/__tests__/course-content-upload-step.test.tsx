@@ -70,8 +70,16 @@ const localStorageMock = createLocalStorageMock();
 const mockFetch = createMockFetch();
 
 describe('CourseContentUploadStep', () => {
+  const defaultProps = {
+    onUploadComplete: jest.fn(),
+    onAnalysisComplete: jest.fn(),
+    onNext: jest.fn(),
+    onBack: jest.fn()
+  };
+
   beforeEach(() => {
     Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+    jest.clearAllMocks();
   });
 
   afterEach(createAfterEach());
@@ -83,6 +91,9 @@ describe('CourseContentUploadStep', () => {
       render(
         <CourseContentUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={jest.fn()}
+          onNext={jest.fn()}
+          onBack={jest.fn()}
         />
       );
 
@@ -124,6 +135,7 @@ describe('CourseContentUploadStep', () => {
     it('should handle multiple file uploads in test mode', async () => {
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );
@@ -165,6 +177,7 @@ describe('CourseContentUploadStep', () => {
     it('should handle file removal in test mode', async () => {
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );
@@ -213,6 +226,7 @@ describe('CourseContentUploadStep', () => {
 
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );
@@ -261,6 +275,7 @@ describe('CourseContentUploadStep', () => {
 
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );
@@ -293,6 +308,7 @@ describe('CourseContentUploadStep', () => {
 
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );
@@ -319,6 +335,7 @@ describe('CourseContentUploadStep', () => {
     it('should validate file size requirements', async () => {
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );
@@ -335,6 +352,7 @@ describe('CourseContentUploadStep', () => {
     it('should validate file type requirements', async () => {
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );
@@ -351,6 +369,7 @@ describe('CourseContentUploadStep', () => {
     it('should handle mixed valid and invalid files', async () => {
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );
@@ -373,10 +392,70 @@ describe('CourseContentUploadStep', () => {
     });
   });
 
+  describe('Skip Functionality', () => {
+    it('shows skip button when onSkip prop is provided', () => {
+      const mockOnSkip = jest.fn();
+      render(
+        <CourseContentUploadStep
+          {...defaultProps}
+          onSkip={mockOnSkip}
+        />
+      );
+      
+      expect(screen.getByTestId('skip-button')).toBeInTheDocument();
+      expect(screen.getByText('Skip - I don\'t have course materials to upload')).toBeInTheDocument();
+    });
+
+    it('does not show skip button when onSkip prop is not provided', () => {
+      render(
+        <CourseContentUploadStep
+          {...defaultProps}
+        />
+      );
+      
+      expect(screen.queryByTestId('skip-button')).not.toBeInTheDocument();
+    });
+
+    it('calls onSkip when skip button is clicked', () => {
+      const mockOnSkip = jest.fn();
+      render(
+        <CourseContentUploadStep
+          {...defaultProps}
+          onSkip={mockOnSkip}
+        />
+      );
+      
+      const skipButton = screen.getByTestId('skip-button');
+      fireEvent.click(skipButton);
+      
+      expect(mockOnSkip).toHaveBeenCalledTimes(1);
+      expect(defaultProps.onUploadComplete).not.toHaveBeenCalled();
+    });
+
+    it('skipping should not trigger file upload or analysis', () => {
+      const mockOnSkip = jest.fn();
+      render(
+        <CourseContentUploadStep
+          {...defaultProps}
+          onSkip={mockOnSkip}
+        />
+      );
+      
+      const skipButton = screen.getByTestId('skip-button');
+      fireEvent.click(skipButton);
+      
+      // Should not have attempted any analysis
+      expect(defaultProps.onAnalysisComplete).not.toHaveBeenCalled();
+      expect(defaultProps.onUploadComplete).not.toHaveBeenCalled();
+      expect(mockOnSkip).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('Error Handling', () => {
     it('should display error message for invalid file types', async () => {
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );
@@ -393,6 +472,7 @@ describe('CourseContentUploadStep', () => {
     it('should display error message for oversized files', async () => {
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );
@@ -409,6 +489,7 @@ describe('CourseContentUploadStep', () => {
     it('should clear error message when files are removed', async () => {
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );
@@ -448,6 +529,7 @@ describe('CourseContentUploadStep', () => {
 
       render(
         <CourseContentUploadStep
+          {...defaultProps}
           onUploadComplete={mocks.onUploadComplete}
         />
       );

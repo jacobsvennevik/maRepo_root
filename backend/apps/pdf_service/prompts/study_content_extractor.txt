@@ -3,21 +3,36 @@ Act like an expert "course-content learning designer" with PhD-level skill in co
 Objective  
 Transform the raw instructional text inside the triple quotes below into a fully structured, study-ready schema that can drive flashcards, quizzes, summaries, and concept maps.
 
-Instructions — follow these eight steps **exactly**
+Instructions — follow these nine steps **exactly**
 
 1. **Ingest** the entire document surrounded by triple quotes. Do not output anything yet.  
 
 2. **Detect content type** (lecture slides / textbook excerpt / research paper / other) by inspecting headings, formatting cues, and common academic phrases.
 
-3. **Content-type tuning** — before extraction, silently adjust your strategy:  
+3. **Analyze course type and assessment patterns**:
+   • **Course type** → Determine the primary field (STEM / Humanities / Language / Business / Arts / Mixed) based on:
+     - Technical terminology and concepts
+     - Mathematical or scientific notation
+     - Literary or artistic references
+     - Business or economic terms
+     - Language learning elements
+   • **Assessment types** → Identify all assessment methods mentioned or implied:
+     - Cumulative final exams
+     - Regular quizzes/tests
+     - Essays/papers
+     - Projects/presentations
+     - Lab work/practical assessments
+     - Group work/participation
+
+4. **Content-type tuning** — before extraction, silently adjust your strategy:  
    • **Lecture slides** → treat bullet points and slide titles as atomic "chunks"; infer missing verbs for terse bullet lines.  
    • **Textbook chapters/sections** → respect the existing heading hierarchy; expect longer prose with embedded examples.  
    • **Research papers** → map sections to the IMRaD pattern; treat Introduction + Background as one topic, Methods & Results as separate topics; capture key findings as examples; skip bibliographic references.  
    • **Unknown/other** → fall back to generic rules (paragraph boundaries as chunks).  
 
-4. **Segment** the text into logical chunks based on the tuned rules.  
+5. **Segment** the text into logical chunks based on the tuned rules.  
 
-5. **Extract & organise** information for each chunk:  
+6. **Extract & organise** information for each chunk:  
    • Identify the *main topic* (≈ one short noun phrase).  
    • List its *learning objectives* as action-verbs + object (e.g., "Explain back-propagation").  
    • Pull every *key concept* mentioned. For **each** concept record:  
@@ -27,21 +42,31 @@ Instructions — follow these eight steps **exactly**
      – `related_concepts` — other concepts in the same document that connect logically (prerequisite, hierarchical, or causal).  
      – `importance` — one sentence (≤ 25 words) in **your own words** stating *why* the concept matters academically or professionally.  
 
-6. **Generate assessments** for every key concept:  
+7. **Generate assessments** for every key concept:  
    • Write one *recall* question (flashcard-style) whose answer is the definition.  
    • Write one *application* question whose answer requires using or recognising the concept in context.  
    • Provide a **difficulty tag**: `easy`, `medium`, or `hard` (Bloom levels: remember/understand = easy, apply/analyse = medium, evaluate/create = hard).  
 
-7. **Create summaries**:  
+8. **Create summaries**:  
    • For each main topic, craft a micro-summary (≤ 40 words) that stitches its concepts together.  
    • Compose a *global overview* (≤ 120 words) that frames how all topics relate.  
 
-8. **Validate** every field: fill with a value or the exact phrase "Not specified". Never invent factual content; only summarise or paraphrase what is present except where the step explicitly calls for your own wording (importance sentences & questions).  
+9. **Validate** every field: fill with a value or the exact phrase "Not specified". Never invent factual content; only summarise or paraphrase what is present except where the step explicitly calls for your own wording (importance sentences & questions).  
 
 **Output** a single well-formed JSON object in the *exact* schema below — no commentary, blank lines, or extra keys.
 
 ```json
 {
+  "course_type": "<STEM|Humanities|Language|Business|Arts|Mixed>",
+  "assessment_types": {
+    "has_final_exam": "<boolean>",
+    "has_regular_quizzes": "<boolean>",
+    "has_essays": "<boolean>",
+    "has_projects": "<boolean>",
+    "has_lab_work": "<boolean>",
+    "has_group_work": "<boolean>",
+    "primary_assessment_method": "<string: most emphasized assessment type>"
+  },
   "overview": "<global_overview>",
   "topics": [
     {
@@ -65,6 +90,7 @@ Instructions — follow these eight steps **exactly**
     }
   ]
 }
+```
 
 Here is the course document:
 
