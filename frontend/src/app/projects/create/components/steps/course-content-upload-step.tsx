@@ -2,8 +2,9 @@ import React, { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { FileUpload } from '@/components/ui/file-upload';
 import { API_BASE_URL, validateFiles } from '../../utils/upload-utils';
-import { TestModeBanner, ErrorMessage, AnalyzeButton } from '../shared/upload-ui';
+import { TestModeBanner, ErrorMessage } from '../shared/upload-ui';
 import { CourseContentMockBanner } from '../shared/mock-mode-banner';
+import { AnalyzeButton, SuccessMessage, SkipButton, LoadingSpinner } from './shared';
 import { 
   MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT,
   simulateProcessingDelay,
@@ -84,18 +85,25 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
     const validTypes = ['.pdf', '.ppt', '.pptx', '.doc', '.docx'];
     const validation = validateFiles(newFiles, validTypes, 25);
 
+    // Filter out invalid and oversized files
+    const validFiles = newFiles.filter(file => 
+      !validation.invalidFiles.includes(file) && 
+      !validation.oversizedFiles.includes(file)
+    );
+
+    // Set error for invalid files
     if (validation.invalidFiles.length > 0) {
-      setError(`${validation.invalidFiles[0]} is not a supported file type`);
-      return;
-    }
-
-    if (validation.oversizedFiles.length > 0) {
+      setError(`${validation.invalidFiles[0].name} is not a supported file type`);
+    } else if (validation.oversizedFiles.length > 0) {
       setError('File is too large. Maximum size is 25MB per file.');
-      return;
+    } else {
+      setError(null);
     }
 
-    setFiles(prev => [...prev, ...newFiles]);
-    setError(null);
+    // Add only valid files to the list
+    if (validFiles.length > 0) {
+      setFiles(prev => [...prev, ...validFiles]);
+    }
   }, []);
 
   const handleRemove = useCallback((index: number) => {
@@ -138,6 +146,7 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
           data: [MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT],
           fileNames: [fileName]
         });
+        onUploadComplete([MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT], [fileName]);
         onAnalysisComplete();
         return;
       }
@@ -261,7 +270,7 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
         setError(errorMessage);
       }
     }
-  }, [files, router, onAnalysisComplete]);
+  }, [files, router, onAnalysisComplete, onUploadComplete]);
 
   return (
     <div className="space-y-6" data-testid="course-content-upload-step">
@@ -294,23 +303,17 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
       
       {/* Skip Button */}
       {onSkip && (
-        <div className="flex justify-center pt-4">
-          <button
-            onClick={handleSkip}
-            className="px-6 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 hover:border-gray-400 rounded-lg transition-colors duration-200"
-            data-testid="skip-button"
-          >
-            Skip - I don't have course materials to upload
-          </button>
-        </div>
+        <SkipButton onSkip={handleSkip} text="Skip - I don't have course materials to upload" />
       )}
       {showSuccess && (
-        <div className="flex items-center justify-center p-4 mb-4 text-sm rounded-lg bg-green-50 text-green-800" role="alert">
-          <svg className="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-          </svg>
-          <span className="font-medium">Course content analyzed successfully! Click "Next" to continue.</span>
-        </div>
+        <SuccessMessage message="Course content analyzed successfully! Click Next to continue." />
+      )}
+      
+      {isAnalyzing && (
+        <LoadingSpinner
+          message={isTestMode() ? `🧪 Simulating AI analysis of ${files.length} files...` : `AI is analyzing your ${files.length} course materials...`}
+          subMessage={isTestMode() ? 'Using mock data for testing' : 'This may take a few moments'}
+        />
       )}
     </div>
   );

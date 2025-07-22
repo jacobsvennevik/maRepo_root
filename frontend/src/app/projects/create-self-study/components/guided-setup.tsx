@@ -368,15 +368,32 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
 function ProjectSummary({ setup, onBack }: { setup: SelfStudyProjectSetup; onBack: () => void }) {
   const router = useRouter();
 
-  const handleCreateProject = () => {
-    // Here you would typically send the data to your API
-    console.log('Creating self-study project:', setup);
-    
-    // Clear auto-save data
-    localStorage.removeItem('self-study-guided-setup');
-    
-    // Navigate to success page or project dashboard
-    router.push('/projects/success');
+  const handleCreateProject = async () => {
+    try {
+      // Here you would typically send the data to your API
+      console.log('Creating self-study project:', setup);
+      
+      // TODO: Implement actual project creation API call
+      // For now, we'll simulate project creation
+      const mockProject = {
+        id: Math.random().toString(36).substr(2, 9), // Generate random ID
+        name: setup.projectName,
+        project_type: 'self_study',
+        goal_description: setup.learningGoal,
+        study_frequency: setup.studyFrequency,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      
+      // Clear auto-save data
+      localStorage.removeItem('self-study-guided-setup');
+      
+      // Navigate to the new project's overview page
+      router.push(`/projects/${mockProject.id}/overview`);
+    } catch (error) {
+      console.error('Failed to create self-study project:', error);
+      // Handle error (e.g., show a toast notification)
+    }
   };
 
   const getPurposeLabel = (value: string) => {

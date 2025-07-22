@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ChevronLeft, Save, Settings, BookOpen, Users, Calendar, Target, HelpCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -87,6 +88,7 @@ const topicOptions = [
 ];
 
 export function CustomSetup({ onBack }: CustomSetupProps) {
+  const router = useRouter();
   const [config, setConfig] = useState<CustomProjectConfig>({
     title: '',
     description: '',
@@ -149,9 +151,28 @@ export function CustomSetup({ onBack }: CustomSetupProps) {
     }));
   };
 
-  const handleCreateProject = () => {
-    // TODO: Implement project creation logic
-    console.log('Creating custom project with config:', config);
+  const handleCreateProject = async () => {
+    try {
+      // TODO: Implement actual project creation API call
+      console.log('Creating custom project with config:', config);
+      
+      // For now, we'll simulate project creation
+      const mockProject = {
+        id: Math.random().toString(36).substr(2, 9), // Generate random ID
+        name: config.title,
+        project_type: 'self_study',
+        goal_description: config.goal,
+        study_frequency: config.studyFrequency,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      
+      // Navigate to the new project's overview page
+      router.push(`/projects/${mockProject.id}/overview`);
+    } catch (error) {
+      console.error('Failed to create custom project:', error);
+      // Handle error (e.g., show a toast notification)
+    }
   };
 
   const isFormValid = () => {

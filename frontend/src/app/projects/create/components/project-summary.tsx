@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ProjectSetup } from '../types';
-import { uploadFile, createProject, ProjectData } from '../services/api';
+import { uploadFile, createProject, finalizeProject, ProjectData } from '../services/api';
 import { 
   PURPOSE_OPTIONS,
   TEST_LEVEL_OPTIONS,
@@ -58,9 +58,11 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
       // 3. Create project
       const newProject = await createProject(projectData, authToken);
 
-      // 4. Clear autosave and redirect
-      // clearStorage(); // You might need to pass clearStorage down to this component
-      router.push(`/projects/${newProject.id}/success`);
+      // 4. Finalize project (set is_draft to false)
+      await finalizeProject(newProject.id);
+
+      // 5. Navigate to the new project's overview page
+      router.push(`/projects/${newProject.id}/overview`);
 
     } catch (error) {
       console.error("Failed to create project:", error);

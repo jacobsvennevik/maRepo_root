@@ -15,8 +15,10 @@ import {
   updateProgress,
   clearProgress
 } from '../../utils/upload-utils';
-import { TestModeBanner, ErrorMessage, AnalyzeButton } from '../shared/upload-ui';
+import { TestModeBanner, ErrorMessage } from '../shared/upload-ui';
 import { SyllabusMockBanner } from '../shared/mock-mode-banner';
+import { AnalyzeButton, SuccessMessage, LoadingSpinner } from './shared';
+import { Button } from '@/components/ui/button';
 import { 
   MOCK_SYLLABUS_PROCESSED_DOCUMENT,
   MOCK_SYLLABUS_EXTRACTION,
@@ -302,6 +304,9 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
          fileName: firstFile.name
        });
        
+       // Call onUploadComplete with the results
+       onUploadComplete(newProject.id, processedData, firstFile.name);
+       
        // Use processed data (either real or timeout fallback)
        console.log('🎉 SUCCESS: Using processed data:', processedData);
 
@@ -358,54 +363,26 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
         error={error || undefined}
       />
       
-      {/* Analyze Button */}
+      {/* Analyze and Skip Buttons */}
       {files.length > 0 && !isAnalyzing && !showSuccess && (
-        <div className="flex justify-center">
-          <button
+        <div className="flex justify-center gap-4">
+          <AnalyzeButton
             onClick={handleAnalyze}
-            className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium rounded-lg shadow-sm transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            data-testid="analyze-button"
-          >
-            🔍 Analyze {files.length} {files.length === 1 ? 'File' : 'Files'}
-          </button>
+            isAnalyzing={isAnalyzing}
+            disabled={isAnalyzing}
+            filesCount={files.length}
+          />
         </div>
       )}
-      
       {showSuccess && (
-        <div className="flex items-center justify-center p-4 mb-4 text-sm rounded-lg bg-green-50 text-green-800" role="alert">
-          <svg className="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-          </svg>
-          <span className="font-medium">Syllabus analyzed successfully! Click "Next" to continue.</span>
-        </div>
+        <SuccessMessage message="Syllabus analyzed successfully! Click Next to continue." />
       )}
-      
-      {/* Skip Button */}
-      {onSkip && (
-        <div className="flex justify-center pt-4">
-          <button
-            onClick={handleSkip}
-            className="px-6 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 hover:border-gray-400 rounded-lg transition-colors duration-200"
-            data-testid="skip-button"
-          >
-            Skip - I don't have a syllabus to upload
-          </button>
-        </div>
-      )}
-      
       {isAnalyzing && (
-        <div className="text-center p-4 bg-blue-50 rounded-lg">
-          <div className="flex items-center justify-center space-x-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            <span className="text-sm text-blue-600">
-              {isTestMode() ? `🧪 Simulating AI analysis of ${files.length} files...` : `AI is analyzing your ${files.length} course materials...`}
-            </span>
-          </div>
-          <p className="text-xs text-gray-500 mt-2">
-            {isTestMode() ? 'Using mock data for testing' : 'This may take a few moments'}
-          </p>
-        </div>
+        <LoadingSpinner
+          message={isTestMode() ? `🧪 Simulating AI analysis of ${files.length} files...` : `AI is analyzing your ${files.length} course materials...`}
+          subMessage={isTestMode() ? 'Using mock data for testing' : 'This may take a few moments'}
+        />
       )}
     </div>
   );
-} 
+}

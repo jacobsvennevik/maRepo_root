@@ -65,7 +65,7 @@ jest.mock('@/components/ui/file-upload', () => ({
         {files.map((file: File, index: number) => (
           <div key={file.name} data-testid={`file-item-${file.name}`}>
             <span data-testid={`filename-${file.name}`}>{file.name}</span>
-            <button data-testid={`remove-${file.name}`} onClick={() => onRemove(file)}>Remove</button>
+            <button data-testid={`remove-${file.name}`} onClick={() => onRemove(index)}>Remove</button>
             {uploadProgress[file.name] && (
               <div data-testid={`progress-${file.name}`}>{uploadProgress[file.name]}%</div>
             )}
@@ -98,6 +98,7 @@ describe('TestUploadStep', () => {
         render(
           <TestUploadStep
             onUploadComplete={mocks.onUploadComplete}
+            onAnalysisComplete={mocks.onAnalysisComplete}
             onNext={mocks.onNext}
             onBack={mocks.onBack}
           />
@@ -120,6 +121,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -151,12 +153,12 @@ describe('TestUploadStep', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 id: expect.any(Number),
-                original_text: expect.stringContaining('Midterm Exam - Computer Science 101'),
+                original_text: expect.stringContaining('Language Technology Quiz - Natural Language Interaction'),
                 metadata: expect.objectContaining({
                   source_file: 'midterm_exam.pdf',
                   test_type: 'Midterm Exam',
-                  course: 'Computer Science 101',
-                  difficulty_level: 'Intermediate'
+                  course_title: 'Natural Language Interaction',
+                  test_title: 'Quizes Lang Tech'
                 }),
                 status: 'completed'
               })
@@ -170,6 +172,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -236,6 +239,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -266,6 +270,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -291,6 +296,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -327,6 +333,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -374,6 +381,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -416,6 +424,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -460,6 +469,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -479,6 +489,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -498,6 +509,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -520,6 +532,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -547,6 +560,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -572,6 +586,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -606,6 +621,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -651,6 +667,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -676,7 +693,7 @@ describe('TestUploadStep', () => {
     it('should handle partial success with multiple files', async () => {
       // Mock one successful upload, one failed
       mockFetch
-        // First file - success
+        // First file - success sequence
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({ id: 123, status: 'pending' })
@@ -690,11 +707,11 @@ describe('TestUploadStep', () => {
           json: async () => ({
             id: 123,
             status: 'completed',
-            original_text: 'Success content',
-            processed_data: { test_type: 'Quiz' }
+            original_text: 'Test content processed',
+            processed_data: { test_type: 'Exam', topics_covered: [] }
           })
         })
-        // Second file - fail
+        // Second file - fail upload immediately
         .mockResolvedValueOnce({
           ok: false,
           status: 400,
@@ -705,6 +722,7 @@ describe('TestUploadStep', () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
         />
@@ -724,23 +742,27 @@ describe('TestUploadStep', () => {
         fireEvent.click(analyzeButton);
       });
 
-      // Wait for partial completion
+      // Wait for error message - the component should show error for failed files
+      await waitFor(() => {
+        expect(screen.getByText(/1 file\(s\) failed to process/)).toBeInTheDocument();
+      });
+
+      // onUploadComplete should be called with only the successful files
       await waitFor(() => {
         expect(mocks.onUploadComplete).toHaveBeenCalledWith(
           expect.arrayContaining([
             expect.objectContaining({
               id: 123,
-              status: 'completed'
-            }),
-            expect.objectContaining({
-              status: 'error',
+              original_text: 'Test content processed',
               metadata: expect.objectContaining({
-                source_file: 'fail.pdf',
-                error: 'Failed to upload fail.pdf: 400 Bad Request'
-              })
+                source_file: 'exam.pdf', // The component uses exam.pdf as the source file name
+                test_type: 'Exam',
+                topics_covered: []
+              }),
+              status: 'completed'
             })
           ]),
-          ['success.pdf', 'fail.pdf']
+          ['exam.pdf'] // Only the successful file
         );
       });
     });

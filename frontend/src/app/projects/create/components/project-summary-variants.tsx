@@ -7,7 +7,8 @@ import {
   GraduationCap, BookOpen, FlaskConical, Presentation, FileCheck,
   User, Trophy, Brain, Heart, Eye, Ear, HandIcon, PenTool,
   Coffee, Moon, Sun, Zap, Smartphone, Monitor, Gamepad2,
-  Star, Rocket, Sparkles, TrendingUp, Award, BookMarked
+  Sparkles, Rocket, Star, TrendingUp, Award, Waves, Activity,
+  CheckCircle, Eye as EyeIcon, BookOpen as BookOpenIcon
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,7 +38,39 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
   const upcomingDates = setup.importantDates.filter(date => new Date(date.date) > new Date()).length;
 
   const handleCreateProject = async () => {
-    // Same implementation as original
+    setIsSubmitting(true);
+    try {
+      // 1. Upload files and get their URLs
+      const courseFileUrls = await Promise.all(
+        setup.courseFiles.map(file => uploadFile(file, 'course-files', authToken))
+      );
+      const testFileUrls = await Promise.all(
+        setup.testFiles.map(file => uploadFile(file, 'test-files', authToken))
+      );
+
+      // 2. Prepare project data
+      const projectData: ProjectData = {
+        name: setup.projectName,
+        project_type: 'school', // This is the school setup
+        course_name: setup.purpose, // Assuming purpose is course name for now
+        goal_description: setup.goal,
+        study_frequency: setup.studyFrequency,
+        important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
+        // Add other fields from the 'setup' object as needed
+      };
+
+      // 3. Create project
+      const newProject = await createProject(projectData, authToken);
+
+      // 4. Navigate to the new project's overview page
+      router.push(`/projects/${newProject.id}/overview`);
+
+    } catch (error) {
+      console.error("Failed to create project:", error);
+      // Handle error (e.g., show a toast notification)
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -504,8 +537,46 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
 // Variant 2: Glass Morphism Style
 export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const authToken = '203e2ee2825aaf19fbd5a9a5c4768c243944058c';
   const totalFiles = (setup.courseFiles || []).length + (setup.testFiles || []).length + (setup.uploadedFiles || []).length;
   const upcomingDates = setup.importantDates.filter(date => new Date(date.date) > new Date()).length;
+
+  const handleCreateProject = async () => {
+    setIsSubmitting(true);
+    try {
+      // 1. Upload files and get their URLs
+      const courseFileUrls = await Promise.all(
+        setup.courseFiles.map(file => uploadFile(file, 'course-files', authToken))
+      );
+      const testFileUrls = await Promise.all(
+        setup.testFiles.map(file => uploadFile(file, 'test-files', authToken))
+      );
+
+      // 2. Prepare project data
+      const projectData: ProjectData = {
+        name: setup.projectName,
+        project_type: 'school', // This is the school setup
+        course_name: setup.purpose, // Assuming purpose is course name for now
+        goal_description: setup.goal,
+        study_frequency: setup.studyFrequency,
+        important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
+        // Add other fields from the 'setup' object as needed
+      };
+
+      // 3. Create project
+      const newProject = await createProject(projectData, authToken);
+
+      // 4. Navigate to the new project's overview page
+      router.push(`/projects/${newProject.id}/overview`);
+
+    } catch (error) {
+      console.error("Failed to create project:", error);
+      // Handle error (e.g., show a toast notification)
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
@@ -678,10 +749,21 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
                 Edit Setup
               </Button>
               <Button 
-                onClick={() => {/* handleCreateProject */}} 
+                onClick={handleCreateProject} 
+                disabled={isSubmitting}
                 className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold px-8 py-3 rounded-xl shadow-lg backdrop-blur-sm border border-white/30"
               >
-                Launch Project
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Creating Project...
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Launch Project
+                  </span>
+                )}
               </Button>
             </div>
           </div>
@@ -694,12 +776,50 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
 // Variant 3: Gamified Style
 export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const authToken = '203e2ee2825aaf19fbd5a9a5c4768c243944058c';
   const totalFiles = (setup.courseFiles || []).length + (setup.testFiles || []).length + (setup.uploadedFiles || []).length;
   const upcomingDates = setup.importantDates.filter(date => new Date(date.date) > new Date()).length;
 
   // Calculate "completion" percentage for progress bars
   const setupCompletion = 85; // This could be calculated based on filled fields
   const readinessLevel = Math.min(100, (totalFiles * 10) + (upcomingDates * 5) + 30);
+
+  const handleCreateProject = async () => {
+    setIsSubmitting(true);
+    try {
+      // 1. Upload files and get their URLs
+      const courseFileUrls = await Promise.all(
+        setup.courseFiles.map(file => uploadFile(file, 'course-files', authToken))
+      );
+      const testFileUrls = await Promise.all(
+        setup.testFiles.map(file => uploadFile(file, 'test-files', authToken))
+      );
+
+      // 2. Prepare project data
+      const projectData: ProjectData = {
+        name: setup.projectName,
+        project_type: 'school', // This is the school setup
+        course_name: setup.purpose, // Assuming purpose is course name for now
+        goal_description: setup.goal,
+        study_frequency: setup.studyFrequency,
+        important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
+        // Add other fields from the 'setup' object as needed
+      };
+
+      // 3. Create project
+      const newProject = await createProject(projectData, authToken);
+
+      // 4. Navigate to the new project's overview page
+      router.push(`/projects/${newProject.id}/overview`);
+
+    } catch (error) {
+      console.error("Failed to create project:", error);
+      // Handle error (e.g., show a toast notification)
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -918,7 +1038,7 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
                   🔧 Modify Build
                 </Button>
                 <Button 
-                  onClick={() => {/* handleCreateProject */}} 
+                  onClick={handleCreateProject} 
                   disabled={isSubmitting}
                   className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
                 >

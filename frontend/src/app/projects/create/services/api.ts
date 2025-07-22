@@ -202,6 +202,41 @@ export async function uploadFile(file: File, uploadType: string): Promise<any> {
   }
 }
 
+export const getProjects = async () => {
+  if (TEST_MODE) {
+    // Return mock projects if in test mode
+    const { mockProjects } = await import('../../data/mock-projects');
+    return mockProjects;
+  }
+  try {
+    const response = await axiosInstance.get('/api/projects/');
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new APIError(
+        error.response.status,
+        error.response.data.detail || error.response.data.message || 'Failed to fetch projects'
+      );
+    }
+    throw new Error('Failed to fetch projects');
+  }
+};
+
+export const finalizeProject = async (projectId: string) => {
+  try {
+    const response = await axiosInstance.patch(`/api/projects/${projectId}/`, { is_draft: false });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new APIError(
+        error.response.status,
+        error.response.data.detail || error.response.data.message || 'Failed to finalize project'
+      );
+    }
+    throw new Error('Failed to finalize project');
+  }
+};
+
 export class APIError extends Error {
   constructor(public statusCode: number, message: string) {
     super(message);

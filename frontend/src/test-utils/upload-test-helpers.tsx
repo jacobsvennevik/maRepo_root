@@ -138,6 +138,7 @@ export const createUploadTestSetup = (options: {
   // Create mocks
   const mocks = {
     onUploadComplete: jest.fn(),
+    onAnalysisComplete: jest.fn(),
     onNext: jest.fn(),
     onBack: jest.fn(),
     originalEnv: process.env

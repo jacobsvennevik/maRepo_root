@@ -1,6 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { HelpCircle } from "lucide-react";
+import { HelpText } from "./shared";
 
 interface ProjectNameStepProps {
   projectName: string;
@@ -23,10 +23,9 @@ export function ProjectNameStep({ projectName, onProjectNameChange }: ProjectNam
           autoComplete="off"
         />
       </div>
-      <div className="text-xs sm:text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
-        <HelpCircle className="inline h-4 w-4 mr-1" />
+      <HelpText>
         Choose a descriptive name that will help you identify this project later.
-      </div>
+      </HelpText>
     </div>
   );
 } 

@@ -10,4 +10,7 @@ export { TestUploadStep } from './test-upload-step';
 export { TimelineStep } from './timeline-step';
 export { GoalStep } from './goal-step';
 export { StudyFrequencyStep } from './study-frequency-step';
-export { CollaborationStep } from './collaboration-step'; 
+export { CollaborationStep } from './collaboration-step';
+
+// Shared components and utilities
+export * from './shared'; 

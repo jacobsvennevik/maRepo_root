@@ -2,23 +2,39 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { CourseContentUploadStep } from '../course-content-upload-step';
 import * as uploadUtils from '../../../utils/upload-utils';
+import * as mockData from '../../../services/mock-data';
 
 // Mock the upload utils
 jest.mock('../../../utils/upload-utils', () => ({
-  isTestMode: jest.fn(() => true),
   validateFiles: jest.fn(() => ({ invalidFiles: [], oversizedFiles: [] })),
   API_BASE_URL: 'http://test-api'
 }));
 
+// Mock the mock data service
+jest.mock('../../../services/mock-data', () => ({
+  isTestMode: jest.fn(() => true),
+  simulateProcessingDelay: jest.fn(() => Promise.resolve()),
+  MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT: {
+    id: 456,
+    original_text: "Comprehensive NLP course materials covering vector representations, CNNs, RNNs, attention mechanisms, transformers, and modern language modeling approaches.",
+    metadata: {
+      course_type: "STEM",
+      overview: "The materials progress from classical distributional semantics toward modern transformer‑based language models. Each topic builds conceptually: vector embeddings and simple aggregation give way to CNNs, RNNs and attention; training and optimisation principles underpin language‑modelling objectives, which culminate in large‑scale pre‑training, transfer learning and contemporary transformer families."
+    },
+    status: 'completed'
+  }
+}));
+
 describe('CourseContentUploadStep', () => {
   const mockOnUploadComplete = jest.fn();
+  const mockOnAnalysisComplete = jest.fn();
   
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders upload interface correctly', () => {
-    render(<CourseContentUploadStep onUploadComplete={mockOnUploadComplete} />);
+    render(<CourseContentUploadStep onUploadComplete={mockOnUploadComplete} onAnalysisComplete={mockOnAnalysisComplete} />);
     
     expect(screen.getByText(/Upload your course materials/)).toBeInTheDocument();
     expect(screen.getByText(/Upload slides, handouts, or excerpts/)).toBeInTheDocument();
@@ -26,11 +42,11 @@ describe('CourseContentUploadStep', () => {
   });
 
   it('shows test mode banner when in test mode', () => {
-    (uploadUtils.isTestMode as jest.Mock).mockReturnValue(true);
-    render(<CourseContentUploadStep onUploadComplete={mockOnUploadComplete} />);
+    (mockData.isTestMode as jest.Mock).mockReturnValue(true);
+    render(<CourseContentUploadStep onUploadComplete={mockOnUploadComplete} onAnalysisComplete={mockOnAnalysisComplete} />);
     
-    expect(screen.getByTestId('test-mode-banner')).toBeInTheDocument();
-    expect(screen.getByText(/Test Mode Active/)).toBeInTheDocument();
+    expect(screen.getByText(/Mock Mode Active/)).toBeInTheDocument();
+    expect(screen.getByText(/Using mock course content analysis/)).toBeInTheDocument();
   });
 
   it('validates file types on upload', async () => {
@@ -40,7 +56,7 @@ describe('CourseContentUploadStep', () => {
     });
 
     const { getByTestId } = render(
-      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} />
+      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} onAnalysisComplete={mockOnAnalysisComplete} />
     );
 
     const file = new File(['test content'], 'test.jpg', { type: 'image/jpeg' });
@@ -59,7 +75,7 @@ describe('CourseContentUploadStep', () => {
     });
 
     const { getByTestId } = render(
-      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} />
+      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} onAnalysisComplete={mockOnAnalysisComplete} />
     );
 
     const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
@@ -78,7 +94,7 @@ describe('CourseContentUploadStep', () => {
     });
 
     const { getByTestId } = render(
-      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} />
+      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} onAnalysisComplete={mockOnAnalysisComplete} />
     );
 
     const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
@@ -87,14 +103,14 @@ describe('CourseContentUploadStep', () => {
 
     const analyzeButton = await screen.findByTestId('analyze-button', { timeout: 10000 });
     expect(analyzeButton).toBeInTheDocument();
-    expect(analyzeButton).toHaveTextContent('Analyze 1 file');
+    expect(analyzeButton).toHaveTextContent('🔍 Analyze 1 File');
   }, 15000);
 
   it('processes files and calls onUploadComplete in test mode', async () => {
-    (uploadUtils.isTestMode as jest.Mock).mockReturnValue(true);
+    (mockData.isTestMode as jest.Mock).mockReturnValue(true);
     
     const { getByTestId } = render(
-      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} />
+      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} onAnalysisComplete={mockOnAnalysisComplete} />
     );
 
     const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
@@ -113,9 +129,13 @@ describe('CourseContentUploadStep', () => {
       expect(mockOnUploadComplete).toHaveBeenCalledWith(
         expect.arrayContaining([
           expect.objectContaining({
+            id: 456,
+            original_text: expect.stringContaining('Comprehensive NLP course materials'),
             metadata: expect.objectContaining({
-              source_file: 'test.pdf'
-            })
+              course_type: 'STEM',
+              overview: expect.stringContaining('materials progress from classical distributional semantics')
+            }),
+            status: 'completed'
           })
         ]),
         ['test.pdf']
@@ -124,10 +144,10 @@ describe('CourseContentUploadStep', () => {
   });
 
   it('shows loading state during analysis', async () => {
-    (uploadUtils.isTestMode as jest.Mock).mockReturnValue(true);
+    (mockData.isTestMode as jest.Mock).mockReturnValue(true);
     
     const { getByTestId } = render(
-      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} />
+      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} onAnalysisComplete={mockOnAnalysisComplete} />
     );
 
     const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
@@ -143,13 +163,13 @@ describe('CourseContentUploadStep', () => {
     fireEvent.click(analyzeButton);
 
     await waitFor(() => {
-      expect(screen.getByRole('progressbar')).toBeInTheDocument();
+      expect(screen.getByText(/🧪 Simulating AI analysis of 1 files/)).toBeInTheDocument();
     });
   });
 
   it('allows file removal', async () => {
     const { getByTestId } = render(
-      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} />
+      <CourseContentUploadStep onUploadComplete={mockOnUploadComplete} onAnalysisComplete={mockOnAnalysisComplete} />
     );
 
     const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });

@@ -33,7 +33,7 @@ export const SETUP_STEPS: SetupStep[] = [
     icon: GraduationCap
   },
   {
-    id: 'uploadFiles',
+    id: 'uploadSyllabus',
     title: 'Upload your syllabus',
     description: 'Upload your course syllabus to automatically extract course details and setup your project.',
     icon: Upload

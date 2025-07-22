@@ -31,12 +31,12 @@ describe('useStepNavigation', () => {
     
     expect(result.current.currentStep.id).toBe('uploadFiles');
     
-    // Navigate to next step - should skip extractionResults and go to learningPreferences
+    // Navigate to next step - should skip extractionResults and go to courseContentUpload
     act(() => {
       result.current.handleNext();
     });
     
-    expect(result.current.currentStep.id).toBe('learningPreferences');
+    expect(result.current.currentStep.id).toBe('courseContentUpload');
   });
 
   it('shows extraction results step when extracted data is available', () => {
@@ -68,7 +68,7 @@ describe('useStepNavigation', () => {
     );
     
     // Navigate to courseContentUpload (skipping extractionResults)
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
       act(() => {
         result.current.handleNext();
       });
@@ -76,12 +76,12 @@ describe('useStepNavigation', () => {
     
     expect(result.current.currentStep.id).toBe('courseContentUpload');
     
-    // Navigate back - should skip extractionResults and go to learningPreferences
+    // Navigate back - should skip extractionResults and go to uploadFiles
     act(() => {
       result.current.handleBack();
     });
     
-    expect(result.current.currentStep.id).toBe('learningPreferences');
+    expect(result.current.currentStep.id).toBe('uploadFiles');
   });
 
   it('calculates correct progress when steps are skipped', () => {
@@ -250,7 +250,7 @@ describe('useStepNavigation', () => {
       result.current.handleNext();
     });
     
-    expect(result.current.currentStep.id).toBe('learningPreferences');
+    expect(result.current.currentStep.id).toBe('courseContentUpload');
   });
 
   it('has all expected steps in correct order', () => {
@@ -260,9 +260,9 @@ describe('useStepNavigation', () => {
       'educationLevel',
       'uploadFiles',
       'extractionResults',
-      'learningPreferences',
       'courseContentUpload',
       'testUpload',
+      'learningPreferences',
       'timeframe',
       'goal',
       'studyFrequency',

@@ -72,6 +72,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   const [contentFileNames, setContentFileNames] = useState<string[]>([]);
   const [isCourseContentAnalysisComplete, setIsCourseContentAnalysisComplete] = useState(false);
   const [isTestAnalysisComplete, setIsTestAnalysisComplete] = useState(false);
+  const [isSyllabusAnalysisComplete, setIsSyllabusAnalysisComplete] = useState(false);
 
   const {
     setup,
@@ -167,6 +168,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     // Skip both syllabus upload and extraction results steps
     setExtractedData(null); // Clear any existing extracted data
     setSyllabusFileName(''); // Clear any existing filename
+    setIsSyllabusAnalysisComplete(false);
     handleNext(); // Move to next step (will skip extraction results since data is null)
   };
 
@@ -223,7 +225,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
         case 'educationLevel':
           return !!setup.testLevel;
         case 'uploadSyllabus':
-          return (setup.uploadedFiles || []).length > 0;
+          return isSyllabusAnalysisComplete;
         case 'courseContentUpload':
           return isCourseContentAnalysisComplete;
         case 'testUpload':
@@ -478,6 +480,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     console.log('Transformed data:', transformed);
     setExtractedData(transformed);
     setSyllabusFileName(fileName || backendData.file || 'syllabus.pdf');
+    setIsSyllabusAnalysisComplete(true);
     
     if (newProjectId === 'test-mode') {
       console.log(`🧪 TEST MODE: Syllabus analyzed. Moving to extraction results to review.`);
@@ -667,7 +670,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             options={TEST_LEVEL_OPTIONS}
           />
         );
-      case 'uploadFiles':
+      case 'uploadSyllabus':
         return (
           <SyllabusUploadStep
             onUploadComplete={handleSyllabusUploadComplete}

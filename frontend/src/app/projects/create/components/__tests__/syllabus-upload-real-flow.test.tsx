@@ -126,13 +126,14 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
 
       await simulateFileUpload(fileInput, testFile);
 
-      // Wait for file to be displayed
+      // Wait for file to be displayed and analyze button to appear
       await waitFor(() => {
         expect(screen.getByText('syllabus.pdf')).toBeInTheDocument();
+        expect(screen.getByTestId('analyze-button')).toBeInTheDocument();
       });
 
       // Find and click the analyze button
-      const analyzeButton = screen.getByRole('button', { name: /analyze/i });
+      const analyzeButton = screen.getByTestId('analyze-button');
       
       await act(async () => {
         fireEvent.click(analyzeButton);
@@ -178,7 +179,12 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
 
       await simulateFileUpload(fileInput, testFile);
 
-      const analyzeButton = screen.getByRole('button', { name: /analyze/i });
+      // Wait for analyze button to appear
+      await waitFor(() => {
+        expect(screen.getByTestId('analyze-button')).toBeInTheDocument();
+      });
+
+      const analyzeButton = screen.getByTestId('analyze-button');
       
       await act(async () => {
         fireEvent.click(analyzeButton);
@@ -242,7 +248,12 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
 
       await simulateFileUpload(fileInput, testFile);
 
-      const analyzeButton = screen.getByRole('button', { name: /analyze/i });
+      // Wait for analyze button to appear
+      await waitFor(() => {
+        expect(screen.getByTestId('analyze-button')).toBeInTheDocument();
+      });
+
+      const analyzeButton = screen.getByTestId('analyze-button');
       
       await act(async () => {
         fireEvent.click(analyzeButton);
@@ -358,14 +369,19 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
       );
 
       // Should show test mode indicator
-      expect(screen.getByText(/Test Mode Active/i)).toBeInTheDocument();
+      expect(screen.getByText(/Mock Mode Active/i)).toBeInTheDocument();
 
       const testFile = createTestFile('syllabus.pdf', 'test pdf content');
       const fileInput = screen.getByTestId('file-input');
       
       await simulateFileUpload(fileInput, testFile);
 
-      const analyzeButton = screen.getByRole('button', { name: /analyze/i });
+      // Wait for analyze button to appear
+      await waitFor(() => {
+        expect(screen.getByTestId('analyze-button')).toBeInTheDocument();
+      });
+
+      const analyzeButton = screen.getByTestId('analyze-button');
       
       await act(async () => {
         fireEvent.click(analyzeButton);
@@ -378,7 +394,7 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
           expect.objectContaining({
             status: 'completed',
             metadata: expect.objectContaining({
-              course_name: expect.any(String)
+              course_title: expect.any(String)
             })
           }),
           'syllabus.pdf'
