@@ -2,7 +2,7 @@
 
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { ProjectCard } from "./components/project-card";
-import { AddProjectCard } from "./components/add-project-card";
+import { CreateProjectCard, ProjectPlaceholderCard } from "./components/add-project-card";
 import { getProjects } from "./create/services/api";
 import { useEffect, useState } from "react";
 import { ProjectType } from "./types";
@@ -24,6 +24,28 @@ export default function Projects() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Always 4 cards per row for now
+  const width = 1200;
+
+  const filteredProjects = selectedType === 'all'
+    ? (projects || [])
+    : (projects || []).filter(project => project.type === selectedType);
+
+  // Determine number of placeholders based on screen size
+  const getPlaceholderCount = () => {
+    if (width >= 1280) return 4;
+    if (width >= 1024) return 3;
+    if (width >= 768) return 2;
+    return 1;
+  };
+
+  const placeholderCount = Math.max(0, getPlaceholderCount() - filteredProjects.length - 1);
+
+  // Demo: handle create project (local only)
+  const handleCreateProject = (newProject: any) => {
+    setProjects([...projects, newProject]);
+  };
 
   useEffect(() => {
     async function fetchProjects() {
@@ -52,10 +74,6 @@ export default function Projects() {
     }
     fetchProjects();
   }, []);
-
-  const filteredProjects = selectedType === 'all'
-    ? projects
-    : projects.filter(project => project.type === selectedType);
 
   return (
     <div className="flex flex-col min-h-screen relative">
@@ -100,13 +118,13 @@ export default function Projects() {
             ) : error ? (
               <div className="text-center py-8 text-red-500">{error}</div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <AddProjectCard />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
+                <CreateProjectCard onCreateProject={handleCreateProject} />
                 {filteredProjects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    {...project}
-                  />
+                  <ProjectCard key={project.id} {...project} />
+                ))}
+                {Array.from({ length: placeholderCount }).map((_, index) => (
+                  <ProjectPlaceholderCard key={`placeholder-${index}`} />
                 ))}
               </div>
             )}
