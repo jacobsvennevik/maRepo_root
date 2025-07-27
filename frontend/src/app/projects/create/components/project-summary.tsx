@@ -61,7 +61,15 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
       // 4. Finalize project (set is_draft to false)
       await finalizeProject(newProject.id);
 
-      // 5. Navigate to the new project's overview page
+      // 5. Clean up localStorage after successful project creation
+      try {
+        localStorage.removeItem('project-setup-guided-setup');
+        console.log('🧹 Cleaned up localStorage after successful project creation');
+      } catch (error) {
+        console.warn('Failed to cleanup localStorage:', error);
+      }
+
+      // 6. Navigate to the new project's overview page
       router.push(`/projects/${newProject.id}/overview`);
 
     } catch (error) {

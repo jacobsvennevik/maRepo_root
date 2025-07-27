@@ -167,6 +167,15 @@ export function CustomSetup({ onBack }: CustomSetupProps) {
         updated_at: new Date().toISOString(),
       };
       
+      // Clean up any localStorage data that might exist
+      try {
+        localStorage.removeItem('project-setup-guided-setup');
+        localStorage.removeItem('self-study-guided-setup');
+        console.log('🧹 Cleaned up localStorage after successful custom self-study project creation');
+      } catch (error) {
+        console.warn('Failed to cleanup localStorage:', error);
+      }
+      
       // Navigate to the new project's overview page
       router.push(`/projects/${mockProject.id}/overview`);
     } catch (error) {

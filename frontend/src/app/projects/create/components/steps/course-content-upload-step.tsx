@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FileUpload } from '@/components/ui/file-upload';
 import { API_BASE_URL, validateFiles } from '../../utils/upload-utils';
 import { TestModeBanner, ErrorMessage } from '../shared/upload-ui';
 import { CourseContentMockBanner } from '../shared/mock-mode-banner';
-import { AnalyzeButton, SuccessMessage, SkipButton, LoadingSpinner } from './shared';
+import { SuccessMessage, SkipButton, LoadingSpinner } from './shared';
 import { 
   MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT,
   simulateProcessingDelay,
@@ -25,6 +25,9 @@ interface CourseContentUploadStepProps {
   onNext: () => void;
   onBack: () => void;
   onSkip?: () => void; // Add onSkip callback
+  savedFiles?: File[]; // Saved files from previous navigation
+  savedAnalysisData?: ProcessedDocument[]; // Saved analysis results
+  savedFileNames?: string[]; // Saved file names
 }
 
 // Note: Mock data is now centralized in services/mock-data.ts
@@ -58,13 +61,57 @@ function getReadableErrorMessage(error: unknown): string {
   return 'An unexpected error occurred. Please try again.';
 }
 
-export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, onNext, onBack, onSkip }: CourseContentUploadStepProps) {
-  const [files, setFiles] = useState<File[]>([]);
+// Background Analysis Banner Component
+function BackgroundAnalysisBanner({ isAnalyzing, filesCount }: { isAnalyzing: boolean; filesCount: number }) {
+  if (!isAnalyzing) return null;
+
+  return (
+    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+      <div className="flex items-center space-x-3">
+        <div className="flex-shrink-0">
+          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+        <div className="flex-1">
+          <h3 className="text-sm font-medium text-blue-900">
+            Analyzing Course Content
+          </h3>
+          <p className="text-sm text-blue-700 mt-1">
+            {isTestMode() 
+              ? `🧪 Simulating AI analysis of ${filesCount} file${filesCount !== 1 ? 's' : ''}...` 
+              : `AI is analyzing your ${filesCount} course material${filesCount !== 1 ? 's' : ''} in the background...`
+            }
+          </p>
+          <p className="text-xs text-blue-600 mt-1">
+            {isTestMode() ? 'Using mock data for testing' : 'You can continue setting up your project while this runs'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function CourseContentUploadStep({ 
+  onUploadComplete, 
+  onAnalysisComplete, 
+  onNext, 
+  onBack, 
+  onSkip,
+  savedFiles = [],
+  savedAnalysisData,
+  savedFileNames = []
+}: CourseContentUploadStepProps) {
+  const [files, setFiles] = useState<File[]>(savedFiles);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [storedResults, setStoredResults] = useState<{ data: ProcessedDocument[], fileNames: string[] } | null>(null);
+  const [showSuccess, setShowSuccess] = useState(!!savedAnalysisData);
+  const [storedResults, setStoredResults] = useState<{ data: ProcessedDocument[], fileNames: string[] } | null>(
+    savedAnalysisData ? { data: savedAnalysisData, fileNames: savedFileNames } : null
+  );
+  const [hasAnalyzedCurrentFiles, setHasAnalyzedCurrentFiles] = useState(!!savedAnalysisData);
   const router = useRouter();
 
   const handleSkip = useCallback(() => {
@@ -79,6 +126,21 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
       onUploadComplete(storedResults.data, storedResults.fileNames);
     }
   }, [showSuccess, storedResults, onUploadComplete]);
+
+  // Handle saved data on mount
+  useEffect(() => {
+    if (savedAnalysisData && savedFileNames.length > 0) {
+      console.log('📁 Restoring saved course content data:', savedFileNames);
+      onUploadComplete(savedAnalysisData, savedFileNames);
+    }
+  }, [savedAnalysisData, savedFileNames, onUploadComplete]);
+
+  // Auto-start analysis when files are added
+  useEffect(() => {
+    if (files.length > 0 && !isAnalyzing && !showSuccess && !hasAnalyzedCurrentFiles) {
+      handleAnalyze();
+    }
+  }, [files.length, hasAnalyzedCurrentFiles]);
 
   const handleUpload = useCallback((newFiles: File[]) => {
     // Validate file types and sizes
@@ -103,6 +165,7 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
     // Add only valid files to the list
     if (validFiles.length > 0) {
       setFiles(prev => [...prev, ...validFiles]);
+      setHasAnalyzedCurrentFiles(false); // Reset analysis flag when new files are added
     }
   }, []);
 
@@ -112,7 +175,6 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
 
   const handleAnalyze = useCallback(async () => {
     if (!files.length) {
-      setError('Please select a file to analyze');
       return;
     }
 
@@ -146,6 +208,7 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
           data: [MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT],
           fileNames: [fileName]
         });
+        setHasAnalyzedCurrentFiles(true); // Mark as analyzed
         onUploadComplete([MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT], [fileName]);
         onAnalysisComplete();
         return;
@@ -252,6 +315,7 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
         data: [processedData],
         fileNames: [firstFile.name]
       });
+      setHasAnalyzedCurrentFiles(true); // Mark as analyzed
       onAnalysisComplete();
 
     } catch (error) {
@@ -260,6 +324,7 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
       setUploadProgress({});
       setShowSuccess(false);
       setStoredResults(null);
+      setHasAnalyzedCurrentFiles(false); // Reset flag on error so user can retry
       
       const errorMessage = getReadableErrorMessage(error);
       
@@ -275,6 +340,10 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
   return (
     <div className="space-y-6" data-testid="course-content-upload-step">
       <CourseContentMockBanner />
+      
+      {/* Background Analysis Banner */}
+      <BackgroundAnalysisBanner isAnalyzing={isAnalyzing} filesCount={files.length} />
+      
       <div className="space-y-4">
         <FileUpload
           onUpload={handleUpload}
@@ -283,23 +352,13 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
           maxFiles={10}
           maxSize={25 * 1024 * 1024}
           title="Upload your course materials"
-          description="Upload slides, handouts, or excerpts (max ~100 pages). Full textbooks are not allowed."
+          description="Upload slides, handouts, or excerpts (max ~100 pages). Full textbooks are not allowed. Analysis will start automatically."
           files={files}
           uploadProgress={uploadProgress}
           error={error}
         />
         {error && <ErrorMessage message={error} />}
       </div>
-      {files.length > 0 && !showSuccess && (
-        <div className="flex justify-center">
-          <AnalyzeButton
-            onClick={handleAnalyze}
-            isAnalyzing={isAnalyzing}
-            disabled={isAnalyzing}
-            filesCount={files.length}
-          />
-        </div>
-      )}
       
       {/* Skip Button */}
       {onSkip && (
@@ -307,13 +366,6 @@ export function CourseContentUploadStep({ onUploadComplete, onAnalysisComplete, 
       )}
       {showSuccess && (
         <SuccessMessage message="Course content analyzed successfully! Click Next to continue." />
-      )}
-      
-      {isAnalyzing && (
-        <LoadingSpinner
-          message={isTestMode() ? `🧪 Simulating AI analysis of ${files.length} files...` : `AI is analyzing your ${files.length} course materials...`}
-          subMessage={isTestMode() ? 'Using mock data for testing' : 'This may take a few moments'}
-        />
       )}
     </div>
   );

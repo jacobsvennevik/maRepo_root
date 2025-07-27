@@ -15,7 +15,6 @@ import {
   Award,
   Sparkles,
   Edit3,
-  ArrowRight,
   Save,
   X
 } from "lucide-react";
@@ -129,10 +128,11 @@ export interface ExtractedData {
 interface ExtractionResultsStepProps {
   extractedData?: ExtractedData; // Make optional since we can use mock data
   fileName: string;
-  onConfirm: (updatedData?: ExtractedData) => void;
+  onConfirm: () => void; // Changed to match parent component usage
   onSave?: (updatedData: ExtractedData) => void; // Add new prop for saving
   onEdit?: () => void;
   mockDataType?: 'syllabus' | 'course_content'; // Specify which mock data to use
+  showNavigation?: boolean; // Whether to show the navigation buttons (default: true)
 }
 
 export function ExtractionResultsStep({ 
@@ -141,7 +141,8 @@ export function ExtractionResultsStep({
   onConfirm,
   onSave,
   onEdit,
-  mockDataType = 'syllabus'
+  mockDataType = 'syllabus',
+  showNavigation = true
 }: ExtractionResultsStepProps) {
   const [showAllTopics, setShowAllTopics] = useState(false);
   const [showAllDates, setShowAllDates] = useState(false);
@@ -278,7 +279,7 @@ export function ExtractionResultsStep({
         onSave(editedData);
       } else {
         // If onSave is not provided, call onConfirm (used for saving and navigating)
-        onConfirm(editedData);
+        onConfirm();
       }
 
       setIsEditing(false);
@@ -293,10 +294,11 @@ export function ExtractionResultsStep({
     setEditedData(null);
   };
 
-  const handleConfirmClick = () => {
-    // Call onConfirm with the current displayed data
-    onConfirm(displayedData!);
-  };
+  // handleConfirmClick is no longer needed since we use parent's Next button
+  // const handleConfirmClick = () => {
+  //   // Call onConfirm with the current displayed data
+  //   onConfirm(displayedData!);
+  // };
 
   const handleTopicEdit = (id: string, newLabel: string) => {
     if (!editedData) return;
@@ -813,33 +815,33 @@ export function ExtractionResultsStep({
         )}
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex justify-between">
-        {isEditing ? (
-          <>
-            <Button variant="outline" onClick={handleCancelEdit}>Cancel</Button>
-            <Button onClick={handleSaveClick}>Save Changes</Button>
-          </>
-        ) : (
-          <>
-            <Button variant="outline" onClick={handleEditClick}>Edit Extracted Text</Button>
-            <Button onClick={handleConfirmClick}>
-              Looks Good - Continue
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </>
-        )}
-      </div>
+      {/* Action Buttons - Only show if showNavigation is true */}
+      {showNavigation && (
+        <>
+          <div className="flex justify-between">
+            {isEditing ? (
+              <>
+                <Button variant="outline" onClick={handleCancelEdit}>Cancel</Button>
+                <Button onClick={handleSaveClick}>Save Changes</Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" onClick={handleEditClick}>Edit Extracted Text</Button>
+              </>
+            )}
+          </div>
 
-      {/* Footer Note */}
-      <div className="text-center">
-        <p className="text-xs text-gray-500">
-          {isEditing 
-            ? "Edit the extracted information to ensure accuracy. Click Save Changes when done."
-            : "Review the extracted information above. You can edit details or proceed to set up your study schedule."
-          }
-        </p>
-      </div>
+          {/* Footer Note */}
+          <div className="text-center">
+            <p className="text-xs text-gray-500">
+              {isEditing 
+                ? "Edit the extracted information to ensure accuracy. Click Save Changes when done."
+                : "Review the extracted information above. You can edit details or proceed to set up your study schedule."
+              }
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 } 

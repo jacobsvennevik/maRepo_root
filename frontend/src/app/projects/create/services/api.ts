@@ -237,6 +237,21 @@ export const finalizeProject = async (projectId: string) => {
   }
 };
 
+export const cleanupAbandonedDrafts = async (hours: number = 24) => {
+  try {
+    const response = await axiosInstance.post('/api/projects/cleanup_drafts/', { hours });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new APIError(
+        error.response.status,
+        error.response.data.error || error.response.data.message || 'Failed to cleanup abandoned drafts'
+      );
+    }
+    throw new Error('Failed to cleanup abandoned drafts');
+  }
+};
+
 export class APIError extends Error {
   constructor(public statusCode: number, message: string) {
     super(message);

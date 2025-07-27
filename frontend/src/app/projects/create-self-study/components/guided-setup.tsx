@@ -78,6 +78,48 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     }
   }, [loadFromStorage]);
 
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      // Clear localStorage when component unmounts to prevent accumulation
+      clearStorage();
+      console.log('🧹 Cleaned up self-study-guided-setup localStorage on unmount');
+    };
+  }, [clearStorage]);
+
+  // Cleanup function for resetting all state
+  const cleanupState = useCallback(() => {
+    setSetup({
+      projectName: '',
+      purpose: 'self-study',
+      focusAreas: [],
+      customFocusArea: '',
+      learningMaterials: [],
+      timeframe: '',
+      studyFrequency: '',
+      learningGoal: '',
+      subGoals: [],
+      collaboration: '',
+      collaborators: '',
+      customDescription: ''
+    });
+    setHasUnsavedChanges(false);
+    clearStorage();
+    console.log('🧹 Cleaned up all self-study guided-setup state');
+  }, [clearStorage]);
+
+  // Enhanced handleBack with cleanup
+  const handleBackWithCleanup = useCallback(() => {
+    if (currentStep === 0) {
+      // If we're at the first step, cleanup and go back
+      cleanupState();
+      onBack();
+    } else {
+      // Otherwise just go back to previous step
+      handleBack();
+    }
+  }, [currentStep, handleBack, onBack, cleanupState]);
+
   const currentStepData = SETUP_STEPS[currentStep];
 
   const handleNext = () => {
@@ -292,7 +334,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleBack}
+              onClick={handleBackWithCleanup}
               className="text-gray-600 hover:text-gray-900"
             >
               <ChevronLeft className="h-4 w-4 mr-2" />
@@ -336,7 +378,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
         <div className="flex justify-between">
           <Button
             variant="outline"
-            onClick={handleBack}
+            onClick={handleBackWithCleanup}
             className="flex items-center space-x-2"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -387,6 +429,7 @@ function ProjectSummary({ setup, onBack }: { setup: SelfStudyProjectSetup; onBac
       
       // Clear auto-save data
       localStorage.removeItem('self-study-guided-setup');
+      console.log('🧹 Cleaned up localStorage after successful self-study project creation');
       
       // Navigate to the new project's overview page
       router.push(`/projects/${mockProject.id}/overview`);

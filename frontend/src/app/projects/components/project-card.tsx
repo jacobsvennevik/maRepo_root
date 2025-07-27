@@ -34,27 +34,27 @@ export function ProjectCard({
   return (
     <Link
       href={`/projects/${id}/overview`}
-      className="group block p-6 bg-gradient-to-br from-emerald-50 to-blue-100 rounded-lg shadow hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+      className="group block h-full w-full p-6 bg-gradient-to-br from-emerald-50 to-blue-100 rounded-xl shadow hover:shadow-lg transition-all duration-200 hover:scale-[1.02] flex flex-col"
     >
       <div className="flex items-start justify-between mb-4">
-        <div className={`p-2 rounded-lg ${colorClasses}`}>
-          <Icon className="w-6 h-6" />
+        <div className={`p-2.5 rounded-lg ${colorClasses}`}>
+          <Icon className="w-7 h-7" />
         </div>
-        <span className="text-xs font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-600">
+        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
           {displayType}
         </span>
       </div>
 
-      <h2 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+      <h2 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors flex-1">
         {title}
       </h2>
-      <p className="text-gray-600 mb-4 line-clamp-2">{description}</p>
+      <p className="text-gray-600 mb-4 line-clamp-3 text-sm leading-relaxed flex-1">{description}</p>
       
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+      <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
         <div className="flex items-center space-x-4">
-          <div className="flex items-center text-sm text-gray-500">
+          <div className="flex items-center text-xs text-gray-500">
             <svg
-              className="w-4 h-4 mr-1"
+              className="w-4 h-4 mr-1.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -70,8 +70,8 @@ export function ProjectCard({
             {lastUpdated}
           </div>
           {collaborators > 0 && (
-            <div className="flex items-center text-sm text-gray-500">
-              <Users className="w-4 h-4 mr-1" />
+            <div className="flex items-center text-xs text-gray-500">
+              <Users className="w-4 h-4 mr-1.5" />
               {collaborators}
             </div>
           )}
@@ -84,7 +84,7 @@ export function ProjectCard({
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <span className="ml-2 text-sm text-gray-600">{progress}%</span>
+            <span className="ml-2 text-xs text-gray-600 font-medium">{progress}%</span>
           </div>
         )}
       </div>

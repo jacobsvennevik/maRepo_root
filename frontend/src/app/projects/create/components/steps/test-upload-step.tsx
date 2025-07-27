@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FileUpload } from '@/components/ui/file-upload';
 import { APIError } from '../../services/api';
@@ -16,7 +16,7 @@ import {
   updateProgress,
   clearProgress
 } from '../../utils/upload-utils';
-import { TestModeBanner, ErrorMessage, AnalyzeButton } from '../shared/upload-ui';
+import { TestModeBanner, ErrorMessage } from '../shared/upload-ui';
 import { Button } from '@/components/ui/button';
 
 interface ProcessedTest {
@@ -155,15 +155,62 @@ interface TestUploadStepProps {
   onNext?: () => void;
   onBack?: () => void;
   extractedDates?: ProcessedDate[]; // Exam dates from syllabus extraction
+  savedFiles?: File[]; // Saved files from previous navigation
+  savedAnalysisData?: ProcessedTest[]; // Saved analysis results
+  savedFileNames?: string[]; // Saved file names
 }
 
-export function TestUploadStep({ onUploadComplete, onAnalysisComplete, onNext, onBack, extractedDates }: TestUploadStepProps) {
-  const [files, setFiles] = useState<File[]>([]);
+// Background Analysis Banner Component
+function BackgroundAnalysisBanner({ isAnalyzing, filesCount }: { isAnalyzing: boolean; filesCount: number }) {
+  if (!isAnalyzing) return null;
+
+  return (
+    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+      <div className="flex items-center space-x-3">
+        <div className="flex-shrink-0">
+          <svg className="animate-spin h-5 w-5 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+        <div className="flex-1">
+          <h3 className="text-sm font-medium text-purple-900">
+            Analyzing Test Materials
+          </h3>
+          <p className="text-sm text-purple-700 mt-1">
+            {isTestMode() 
+              ? `🧪 Simulating AI analysis of ${filesCount} test file${filesCount !== 1 ? 's' : ''}...` 
+              : `AI is analyzing your ${filesCount} test material${filesCount !== 1 ? 's' : ''} in the background...`
+            }
+          </p>
+          <p className="text-xs text-purple-600 mt-1">
+            {isTestMode() ? 'Using mock data for testing' : 'You can continue setting up your project while this runs'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function TestUploadStep({ 
+  onUploadComplete, 
+  onAnalysisComplete, 
+  onNext, 
+  onBack, 
+  extractedDates,
+  savedFiles = [],
+  savedAnalysisData,
+  savedFileNames = []
+}: TestUploadStepProps) {
+  const [files, setFiles] = useState<File[]>(savedFiles);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [storedResults, setStoredResults] = useState<{ data: ProcessedTest[], fileNames: string[] } | null>(null);
+  const [showSuccess, setShowSuccess] = useState(!!savedAnalysisData);
+  const [storedResults, setStoredResults] = useState<{ data: ProcessedTest[], fileNames: string[] } | null>(
+    savedAnalysisData ? { data: savedAnalysisData, fileNames: savedFileNames } : null
+  );
+  const [hasAnalyzedCurrentFiles, setHasAnalyzedCurrentFiles] = useState(!!savedAnalysisData);
   const router = useRouter();
 
   // Call onUploadComplete immediately when analysis completes for the guided setup
@@ -173,9 +220,25 @@ export function TestUploadStep({ onUploadComplete, onAnalysisComplete, onNext, o
     }
   }, [showSuccess, storedResults, onUploadComplete]);
 
+  // Handle saved data on mount
+  useEffect(() => {
+    if (savedAnalysisData && savedFileNames.length > 0) {
+      console.log('📁 Restoring saved test data:', savedFileNames);
+      onUploadComplete(savedAnalysisData, savedFileNames);
+    }
+  }, [savedAnalysisData, savedFileNames, onUploadComplete]);
+
+  // Auto-start analysis when files are added
+  useEffect(() => {
+    if (files.length > 0 && !isAnalyzing && !showSuccess && !hasAnalyzedCurrentFiles) {
+      handleAnalyze();
+    }
+  }, [files.length, hasAnalyzedCurrentFiles]);
+
   const handleUpload = useCallback(async (newFiles: File[]) => {
     setFiles(prev => [...prev, ...newFiles]);
     setError(null);
+    setHasAnalyzedCurrentFiles(false); // Reset analysis flag when new files are added
     
     // Validate file types and sizes using shared utility
     const validTypes = ['.pdf', '.jpg', '.jpeg', '.png'];
@@ -196,7 +259,6 @@ export function TestUploadStep({ onUploadComplete, onAnalysisComplete, onNext, o
 
   const handleAnalyze = useCallback(async () => {
     if (files.length === 0) {
-      setError("Please upload at least one test file before analyzing.");
       return;
     }
 
@@ -237,6 +299,7 @@ export function TestUploadStep({ onUploadComplete, onAnalysisComplete, onNext, o
           data: mockTests,
           fileNames: files.map(f => f.name)
         });
+        setHasAnalyzedCurrentFiles(true); // Mark as analyzed
         onAnalysisComplete();
         return;
       }
@@ -251,7 +314,7 @@ export function TestUploadStep({ onUploadComplete, onAnalysisComplete, onNext, o
           const formData = new FormData();
           formData.append('file', file);
           formData.append('file_type', file.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image');
-          formData.append('upload_type', 'test_materials');
+          formData.append('upload_type', 'test_files');
 
           console.log('Uploading test file to PDF service:', file.name);
           
@@ -386,12 +449,14 @@ export function TestUploadStep({ onUploadComplete, onAnalysisComplete, onNext, o
         data: processedTests,
         fileNames: files.map(f => f.name)
       });
+      setHasAnalyzedCurrentFiles(true); // Mark as analyzed
 
     } catch (error) {
       console.error("Test analysis failed:", error);
       setIsAnalyzing(false);
       setShowSuccess(false);
       setStoredResults(null);
+      setHasAnalyzedCurrentFiles(false); // Reset flag on error so user can retry
       
       if (error instanceof APIError) {
         if (error.statusCode === 401) {
@@ -422,6 +487,9 @@ export function TestUploadStep({ onUploadComplete, onAnalysisComplete, onNext, o
     <div className="space-y-6" data-testid="test-upload-step">
       {isTestMode() && <TestModeBanner />}
       
+      {/* Background Analysis Banner */}
+      <BackgroundAnalysisBanner isAnalyzing={isAnalyzing} filesCount={files.length} />
+      
       {error && !isAnalyzing && <ErrorMessage message={error} />}
       
       <FileUpload
@@ -432,25 +500,11 @@ export function TestUploadStep({ onUploadComplete, onAnalysisComplete, onNext, o
         maxSize={15 * 1024 * 1024} // 15MB
         required={false}
         title="Upload previous tests and exams"
-        description="Upload past exams, quizzes, tests, and practice materials. We'll analyze them to understand question types, difficulty levels, and study patterns. PDF files and images are supported."
+        description="Upload past exams, quizzes, tests, and practice materials. We'll analyze them to understand question types, difficulty levels, and study patterns. PDF files and images are supported. Analysis will start automatically."
         buttonText="Browse for test files"
         files={files}
         uploadProgress={uploadProgress}
       />
-      
-      {/* Analyze Button */}
-      {files.length > 0 && !showSuccess && (
-        <AnalyzeButton
-          onClick={handleAnalyze}
-          isAnalyzing={isAnalyzing}
-          disabled={false}
-          filesCount={files.length}
-          testId="analyze-tests-button"
-          className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-medium rounded-lg shadow-sm transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-        >
-          📊 Analyze {files.length} Test {files.length === 1 ? 'File' : 'Files'}
-        </AnalyzeButton>
-      )}
       
       {showSuccess && (
         <div className="flex items-center justify-center p-4 mb-4 text-sm rounded-lg bg-green-50 text-green-800" role="alert">
@@ -492,14 +546,6 @@ export function TestUploadStep({ onUploadComplete, onAnalysisComplete, onNext, o
               </div>
             ))}
           </div>
-        </div>
-      )}
-      
-      {isAnalyzing && (
-        <div className="text-center p-4 bg-purple-50 rounded-lg">
-          <p className="text-xs text-gray-500">
-            {isTestMode() ? 'Using mock data for testing' : 'Identifying question types, difficulty levels, and key topics'}
-          </p>
         </div>
       )}
     </div>

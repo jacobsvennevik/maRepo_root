@@ -1,3 +1,5 @@
+import { registerUpload } from './cleanup-utils';
+
 // Shared upload utilities for project creation steps
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -38,47 +40,75 @@ export const getAuthHeaders = (): HeadersInit => {
 // Shared file upload function
 export const uploadFileToService = async (
   file: File, 
-  uploadType: 'course_files' | 'test_materials' | 'general',
+  uploadType: 'course_files' | 'test_files' | 'learning_materials',
   onProgress?: (progress: number) => void
 ): Promise<{ id: number; filename: string; status: string }> => {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('file_type', file.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image');
-  formData.append('upload_type', uploadType);
+  const controller = new AbortController();
+  
+  // Register the upload for cleanup
+  registerUpload(controller);
+  
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_type', uploadType);
 
-  const uploadResponse = await fetch(`${API_BASE_URL}/api/pdf_service/documents/`, {
-    method: 'POST',
-    body: formData,
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('authToken') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUwMzE4MDc5LCJpYXQiOjE3NTAzMTQ0NzksImp0aSI6IjU1MmVjNDQ4ZTllNjRmNjM5OTBlNTgyNzk3NzBjNjg2IiwidXNlcl9pZCI6MX0.O8k3yL_dUEMvkBaqxViq-syDXTZNqDfjKtWZEMlxJ14'}`,
-    },
-  });
+    const response = await fetch(`${API_BASE_URL}/api/documents/upload/`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: formData,
+      signal: controller.signal
+    });
 
-  if (!uploadResponse.ok) {
-    const errorText = await uploadResponse.text();
-    throw new Error(`Failed to upload ${file.name}: ${uploadResponse.status} ${uploadResponse.statusText}`);
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    return {
+      id: result.id,
+      filename: file.name,
+      status: result.status
+    };
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.log('Upload aborted:', file.name);
+      throw new Error('Upload was cancelled');
+    }
+    throw error;
   }
-
-  const document = await uploadResponse.json();
-  if (onProgress) onProgress(50);
-  return document;
 };
 
 // Shared document processing function
 export const startDocumentProcessing = async (
   documentId: number,
-  processingType: 'general' | 'test_analysis' = 'general'
+  onProgress?: (progress: number) => void
 ): Promise<void> => {
-  const processResponse = await fetch(`${API_BASE_URL}/api/pdf_service/documents/${documentId}/process/`, {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify({
-      processing_type: processingType
-    })
-  });
+  const controller = new AbortController();
+  
+  // Register the processing for cleanup
+  registerUpload(controller);
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/documents/${documentId}/process/`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      signal: controller.signal
+    });
 
-  if (!processResponse.ok) {
-    throw new Error(`Failed to start processing: ${processResponse.status}`);
+    if (!response.ok) {
+      throw new Error(`Processing failed: ${response.status} ${response.statusText}`);
+    }
+
+    if (onProgress) {
+      onProgress(100);
+    }
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.log('Document processing aborted:', documentId);
+      throw new Error('Processing was cancelled');
+    }
+    throw error;
   }
 };
 

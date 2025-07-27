@@ -25,27 +25,27 @@ export default function Projects() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Always 4 cards per row for now
-  const width = 1200;
-
   const filteredProjects = selectedType === 'all'
     ? (projects || [])
     : (projects || []).filter(project => project.type === selectedType);
 
-  // Determine number of placeholders based on screen size
+  // Calculate cards needed for exactly 2 rows
   const getPlaceholderCount = () => {
-    if (width >= 1280) return 4;
-    if (width >= 1024) return 3;
-    if (width >= 768) return 2;
-    return 1;
+    // Determine cards per row based on screen size
+    let cardsPerRow = 3; // Default for medium screens
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth >= 1536) cardsPerRow = 5; // 2xl
+      else if (window.innerWidth >= 1280) cardsPerRow = 4; // xl
+      else if (window.innerWidth >= 1024) cardsPerRow = 3; // lg
+      else if (window.innerWidth >= 768) cardsPerRow = 2; // md
+      else cardsPerRow = 1; // mobile
+    }
+    
+    const totalCardsNeeded = cardsPerRow * 2; // Exactly 2 rows
+    return Math.max(0, totalCardsNeeded - filteredProjects.length - 1);
   };
 
-  const placeholderCount = Math.max(0, getPlaceholderCount() - filteredProjects.length - 1);
-
-  // Demo: handle create project (local only)
-  const handleCreateProject = (newProject: any) => {
-    setProjects([...projects, newProject]);
-  };
+  const placeholderCount = getPlaceholderCount();
 
   useEffect(() => {
     async function fetchProjects() {
@@ -76,19 +76,19 @@ export default function Projects() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen relative">
+    <div className="flex flex-col h-screen relative">
       <WhiteBackground />
       <DashboardHeader />
-      <main className="flex-1 p-8">
-        <div className="flex flex-col space-y-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
+      <main className="flex-1 p-8 flex flex-col">
+        <div className="flex flex-col h-full">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-slate-900">Projects</h1>
           </div>
           {/* Project Type Filter */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3 mb-8">
             <button
               onClick={() => setSelectedType('all')}
-              className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors
+              className={`px-4 py-2 text-sm font-medium rounded-full transition-colors
                 ${selectedType === 'all' 
                   ? 'bg-emerald-600 text-white shadow' 
                   : 'bg-gray-100 text-gray-600 hover:bg-emerald-100 hover:text-emerald-800'
@@ -100,7 +100,7 @@ export default function Projects() {
               <button
                 key={type}
                 onClick={() => setSelectedType(type)}
-                className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors
+                className={`px-4 py-2 text-sm font-medium rounded-full transition-colors
                   ${selectedType === type 
                     ? 'bg-emerald-600 text-white shadow' 
                     : 'bg-gray-100 text-gray-600 hover:bg-emerald-100 hover:text-emerald-800'
@@ -112,14 +112,14 @@ export default function Projects() {
               </button>
             ))}
           </div>
-          <div className="max-w-[1400px] mx-auto">
+          <div className="flex-1 max-w-[1400px] mx-auto w-full">
             {loading ? (
-              <div className="text-center py-8 text-gray-500">Loading projects...</div>
+              <div className="text-center py-12 text-gray-500 text-lg">Loading projects...</div>
             ) : error ? (
-              <div className="text-center py-8 text-red-500">{error}</div>
+              <div className="text-center py-12 text-red-500 text-lg">{error}</div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
-                <CreateProjectCard onCreateProject={handleCreateProject} />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 h-full" style={{ gridTemplateRows: 'repeat(2, 1fr)' }}>
+                <CreateProjectCard />
                 {filteredProjects.map((project) => (
                   <ProjectCard key={project.id} {...project} />
                 ))}

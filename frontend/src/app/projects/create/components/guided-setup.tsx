@@ -113,7 +113,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
 
   const {
     currentStep,
-    handleNext,
+    handleNext: originalHandleNext,
     handleBack,
     setCurrentStep,
     getCurrentStepIndex,
@@ -123,6 +123,17 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     isLastStep,
     isFirstStep,
   } = useStepNavigation(setup, onBack, setShowSummary, extractedData);
+
+  // Custom handleNext that handles extraction results step specially
+  const handleNext = async () => {
+    if (currentStepData.id === 'extractionResults') {
+      // For extraction results step, call the confirm handler first
+      await handleExtractionResultsConfirm();
+    } else {
+      // For all other steps, use the original handleNext
+      originalHandleNext();
+    }
+  };
 
   const [isDragOver, setIsDragOver] = useState(false);
   const [isCourseDragOver, setIsCourseDragOver] = useState(false);
@@ -157,6 +168,61 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
       setHasUnsavedChanges(true);
     }
   }, [loadFromStorage, setSetup, setHasUnsavedChanges]);
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      // Clear localStorage when component unmounts to prevent accumulation
+      clearStorage();
+      console.log('🧹 Cleaned up guided-setup localStorage on unmount');
+    };
+  }, [clearStorage]);
+
+  // Cleanup function for resetting all state
+  const cleanupState = useCallback(() => {
+    setSetup({
+      projectName: '',
+      purpose: 'good-grades',
+      testLevel: '',
+      evaluationTypes: [],
+      testFiles: [],
+      importantDates: [],
+      courseFiles: [],
+      uploadedFiles: [],
+      timeframe: '',
+      goal: '',
+      studyFrequency: '',
+      collaboration: '',
+      courseType: '',
+      learningStyle: '',
+      assessmentType: '',
+      studyPreference: '',
+      learningDifficulties: ''
+    });
+    setProjectId(null);
+    setExtractedData(null);
+    setSyllabusFileName('');
+    setContentData(null);
+    setContentFileNames([]);
+    setIsCourseContentAnalysisComplete(false);
+    setIsTestAnalysisComplete(false);
+    setIsSyllabusAnalysisComplete(false);
+    setHasUnsavedChanges(false);
+    clearStorage();
+    console.log('🧹 Cleaned up all guided-setup state');
+  }, [clearStorage, setSetup, setHasUnsavedChanges]);
+
+  // Enhanced handleBack with cleanup
+  const handleBackWithCleanup = useCallback(() => {
+    if (isFirstStep) {
+      // If we're at the first step, cleanup and go back
+      cleanupState();
+      onBack();
+    } else {
+      // Otherwise just go back to previous step
+      handleBack();
+    }
+  }, [isFirstStep, handleBack, onBack, cleanupState]);
 
   const handleAddDate = () => {
     if (addDateToSetup(newDate)) {
@@ -226,6 +292,8 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
           return !!setup.testLevel;
         case 'uploadSyllabus':
           return isSyllabusAnalysisComplete;
+        case 'extractionResults':
+          return !!extractedData;
         case 'courseContentUpload':
           return isCourseContentAnalysisComplete;
         case 'testUpload':
@@ -482,6 +550,15 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     setSyllabusFileName(fileName || backendData.file || 'syllabus.pdf');
     setIsSyllabusAnalysisComplete(true);
     
+    // Add the uploaded file to the frontend state for the project summary
+    if (fileName) {
+      // Create a mock File object for the uploaded file with a realistic size
+      const mockContent = new ArrayBuffer(1024 * 1024); // 1MB mock content
+      const uploadedFile = new File([mockContent], fileName, { type: 'application/pdf' });
+      handleCourseFileUpload([uploadedFile]);
+      console.log('✅ Added syllabus file to frontend state:', fileName);
+    }
+    
     if (newProjectId === 'test-mode') {
       console.log(`🧪 TEST MODE: Syllabus analyzed. Moving to extraction results to review.`);
     } else {
@@ -547,10 +624,23 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
         handleOptionSelect('courseType', courseType);
         console.log('✅ Auto-populated courseType:', courseType);
       }
+      
+      // Add extracted dates to the important dates list
+      if (extractedData.dates && extractedData.dates.length > 0) {
+        console.log('📅 Adding extracted dates to important dates:', extractedData.dates);
+        extractedData.dates.forEach(date => {
+          addDateToSetup({
+            date: date.date,
+            description: date.description,
+            type: date.type || 'exam'
+          });
+        });
+        console.log('✅ Added extracted dates to frontend state');
+      }
     }
     
     console.log('Extraction results confirmed. Moving to learning preferences.');
-    handleNext();
+    originalHandleNext();
   };
 
   const handleExtractionResultsSave = (updatedData: ExtractedData) => {
@@ -630,6 +720,17 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   const handleTestUploadComplete = (extractedTests: any[], fileNames: string[]) => {
     // Handle test files upload completion
     console.log(`Test files uploaded:`, extractedTests);
+    
+    // Add the uploaded test files to the frontend state for the project summary
+    if (fileNames && fileNames.length > 0) {
+      const uploadedFiles = fileNames.map(fileName => {
+        const mockContent = new ArrayBuffer(1024 * 1024); // 1MB mock content
+        return new File([mockContent], fileName, { type: 'application/pdf' });
+      });
+      handleTestFileUpload(uploadedFiles);
+      console.log('✅ Added test files to frontend state:', fileNames);
+    }
+    
     // Don't auto-advance - let user click Next button manually
   };
 
@@ -637,6 +738,17 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
     setContentData(backendData);
     setContentFileNames(fileNames);
     console.log('Course content uploaded successfully.');
+    
+    // Add the uploaded course content files to the frontend state for the project summary
+    if (fileNames && fileNames.length > 0) {
+      const uploadedFiles = fileNames.map(fileName => {
+        const mockContent = new ArrayBuffer(1024 * 1024); // 1MB mock content
+        return new File([mockContent], fileName, { type: 'application/pdf' });
+      });
+      handleCourseFileUpload(uploadedFiles);
+      console.log('✅ Added course content files to frontend state:', fileNames);
+    }
+    
     // Don't auto-advance - let user click Next button manually
   };
 
@@ -702,6 +814,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
               // Use handleBack to go to previous step (upload step)
               handleBack();
             }}
+            showNavigation={false}
           />
         );
       case 'learningPreferences':
@@ -725,6 +838,9 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             onBack={handleBack}
             onAnalysisComplete={() => setIsTestAnalysisComplete(true)}
             extractedDates={extractedData?.dates || []}
+            savedFiles={setup.testFiles || []}
+            savedAnalysisData={undefined} // Test analysis data is not stored separately
+            savedFileNames={[]}
           />
         );
       case 'timeframe':
@@ -768,6 +884,9 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
               console.log('🎯 CourseContentUploadStep onAnalysisComplete called - setting isCourseContentAnalysisComplete to true');
               setIsCourseContentAnalysisComplete(true);
             }}
+            savedFiles={setup.courseFiles || []}
+            savedAnalysisData={contentData}
+            savedFileNames={contentFileNames}
           />
         );
       default:
@@ -776,6 +895,13 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   };
 
   if (showSummary) {
+    console.log('📊 Project Summary State:', {
+      courseFiles: setup.courseFiles?.length || 0,
+      testFiles: setup.testFiles?.length || 0,
+      uploadedFiles: setup.uploadedFiles?.length || 0,
+      importantDates: setup.importantDates?.length || 0,
+      totalFiles: (setup.courseFiles?.length || 0) + (setup.testFiles?.length || 0) + (setup.uploadedFiles?.length || 0)
+    });
     return <ProjectSummaryColorful setup={setup} onBack={() => setShowSummary(false)} />;
   }
 
@@ -784,7 +910,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
       <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
-          <Button variant="ghost" onClick={handleBack} className="flex items-center">
+          <Button variant="ghost" onClick={handleBackWithCleanup} className="flex items-center">
             <ChevronLeft size={16} className="mr-1" />
             Back
           </Button>
@@ -824,7 +950,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
             
             {/* Navigation */}
             <div className="flex justify-between pt-4 sm:pt-6">
-              <Button variant="outline" onClick={handleBack} className="text-sm">
+              <Button variant="outline" onClick={handleBackWithCleanup} className="text-sm">
                 {isFirstStep ? 'Back to Selection' : 'Previous'}
               </Button>
               <div className="flex gap-2">

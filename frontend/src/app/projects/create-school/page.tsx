@@ -7,13 +7,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { GuidedSetup } from '../create/components/guided-setup';
 import { CustomSetup } from '../create/components/custom-setup';
+import { performComprehensiveCleanup } from '../create/utils/cleanup-utils';
 
 type SetupMode = 'selection' | 'guided' | 'custom';
 
 export default function CreateSchoolProject() {
   const [setupMode, setSetupMode] = useState<SetupMode>('selection');
 
-  const handleModeSelect = (mode: 'guided' | 'custom') => {
+  const handleModeSelect = async (mode: 'guided' | 'custom') => {
+    // Perform cleanup before starting new project
+    try {
+      await performComprehensiveCleanup();
+    } catch (error) {
+      console.warn('Cleanup failed, continuing with project creation:', error);
+    }
+    
     setSetupMode(mode);
   };
 

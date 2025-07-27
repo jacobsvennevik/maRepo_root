@@ -78,6 +78,14 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
        return;
      }
 
+     // Check file size and warn about large files
+     const firstFile = files[0];
+     const fileSizeMB = firstFile.size / 1024 / 1024;
+     if (fileSizeMB > 10) {
+       console.warn(`⚠️ Large file detected: ${firstFile.name} (${fileSizeMB.toFixed(2)} MB)`);
+       console.warn('   Large files may take longer to process or timeout');
+     }
+
      setError(null);
      setIsAnalyzing(true);
 
@@ -114,7 +122,6 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
 
        // Real API calls for production
        // Upload and process the first file only
-       const firstFile = files[0];
        let processedData = null;
        let documentId = null;
 
@@ -150,6 +157,7 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
        setUploadProgress(prev => ({ ...prev, [firstFile.name]: 100 }));
          
        // Step 2: Start processing
+       console.log('🚀 Starting PDF processing...');
        const processResponse = await fetch(`${API_BASE_URL}/api/pdf_service/documents/${documentId}/process/`, {
            method: 'POST',
            headers: {
@@ -160,16 +168,33 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
 
          if (!processResponse.ok) {
            const errorText = await processResponse.text();
-         console.error('Failed to start processing:', errorText);
-         throw new Error(`Failed to start processing: ${processResponse.status} ${processResponse.statusText}`);
-       }
+           console.error('❌ Failed to start processing:', {
+             status: processResponse.status,
+             statusText: processResponse.statusText,
+             error: errorText
+           });
+           throw new Error(`Failed to start processing: ${processResponse.status} ${processResponse.statusText} - ${errorText}`);
+         }
        
        const processData = await processResponse.json();
-       console.log('Processing started successfully:', processData);
+       console.log('✅ Processing started successfully:', processData);
+       
+       // Verify we got a task ID
+       if (!processData.task_id) {
+         console.error('❌ No task ID returned from processing request:', processData);
+         throw new Error('Processing request did not return a task ID. Backend processing service may be unavailable.');
+       }
+       
+       console.log('📋 Task details:', {
+         taskId: processData.task_id,
+         documentId: processData.document_id,
+         status: processData.status
+       });
 
        // Step 3: Poll for completion
+       const maxAttempts = 180; // 3 minutes timeout for real processing
        console.log('Starting to poll for processing completion...');
-       const maxAttempts = 10; // Reduced timeout for tests
+       console.log(`📊 Polling configuration: ${maxAttempts} attempts, 1 second intervals (${maxAttempts/60} minutes total)`);
        let attempts = 0;
 
        while (attempts < maxAttempts && !processedData) {
@@ -186,7 +211,12 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
 
              if (statusResponse.ok) {
                const statusData = await statusResponse.json();
-               console.log(`Polling attempt ${attempts + 1}:`, statusData);
+               console.log(`Polling attempt ${attempts + 1}:`, {
+                 id: statusData.id,
+                 status: statusData.status,
+                 document_type: statusData.document_type,
+                 has_processed_data: !!(statusData.processed_data && Object.keys(statusData.processed_data).length > 0)
+               });
                
                if (statusData.status === 'completed') {
                  console.log('🎉 Document processing completed!');
@@ -255,6 +285,10 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
            
            attempts++;
            if (attempts < maxAttempts) {
+             // Log progress every 30 seconds
+             if (attempts % 30 === 0) {
+               console.log(`⏳ Still polling... (${attempts}/${maxAttempts} attempts, ${Math.round(attempts/maxAttempts*100)}% of timeout)`);
+             }
              await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before next poll
            }
          } catch (pollError) {
@@ -266,18 +300,22 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
          }
        }
 
-       // Handle timeout - if we didn't get processed data, use mock data and still call the callback
+       // Handle timeout - throw error instead of using fallback data
        if (!processedData) {
-         console.log('⏰ Processing timed out, using mock data for callback');
-         processedData = {
-           id: documentId || 123,
-           original_text: 'Course: Advanced Physics',
-           metadata: {
-             course_name: 'Advanced Physics',
-             topics: ['mechanics', 'thermodynamics']
-           },
-           status: 'completed' as const
-         };
+         console.error('⏰ Processing timed out after 3 minutes');
+         console.error('📊 Processing details:');
+         console.error(`   - Document ID: ${documentId}`);
+         console.error(`   - File: ${firstFile.name} (${(firstFile.size / 1024 / 1024).toFixed(2)} MB)`);
+         console.error(`   - Polling attempts: ${attempts}/${maxAttempts}`);
+         console.error('🔍 Possible causes:');
+         console.error('   - Large or complex PDF file (>10MB)');
+         console.error('   - Backend processing queue is busy');
+         console.error('   - Network connectivity issues');
+         console.error('   - AI service temporarily unavailable');
+         console.error('   - Celery worker not running');
+         console.error('   - Redis connection issues');
+         
+         throw new Error(`PDF processing timed out after 3 minutes. The file "${firstFile.name}" may be too large or complex, or the backend processing service is busy. Please try again later or contact support if the issue persists.`);
        }
 
        // Create project with extracted course name
@@ -316,15 +354,35 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
        setShowSuccess(false);
        setStoredResults(null);
        
+       // Enhanced error handling with specific messages
        if (error instanceof APIError) {
          if (error.statusCode === 401) {
            setError("Your session has expired. Please log in again.");
            router.push('/login');
+         } else if (error.statusCode === 413) {
+           setError("File too large. Please upload a smaller PDF file (max 10MB).");
+         } else if (error.statusCode === 503) {
+           setError("Processing service is temporarily unavailable. Please try again in a few minutes.");
          } else {
-           setError(error.message);
+           setError(`Processing failed: ${error.message}`);
+         }
+       } else if (error instanceof Error) {
+         const errorMessage = error.message;
+         
+         // Handle specific timeout errors
+         if (errorMessage.includes('timed out')) {
+           setError(`Processing timeout: ${errorMessage}. Please try again with a smaller file or contact support.`);
+         } else if (errorMessage.includes('Failed to upload')) {
+           setError(`Upload failed: ${errorMessage}. Please check your internet connection and try again.`);
+         } else if (errorMessage.includes('Failed to start processing')) {
+           setError(`Processing service error: ${errorMessage}. Please try again later.`);
+         } else if (errorMessage.includes('Document processing failed')) {
+           setError(`PDF processing failed: ${errorMessage}. The file may be corrupted or in an unsupported format.`);
+         } else {
+           setError(`Analysis failed: ${errorMessage}. Please try again or contact support.`);
          }
        } else {
-                  setError(error instanceof Error ? error.message : "An unexpected error occurred. Please try again.");
+         setError("An unexpected error occurred during analysis. Please try again.");
        }
      }
    }, [files, onUploadComplete, router]);
