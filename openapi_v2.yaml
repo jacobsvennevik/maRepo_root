@@ -1,0 +1,2734 @@
+openapi: 3.0.2
+info:
+  title: ''
+  version: ''
+paths:
+  /api/users/:
+    get:
+      operationId: listCustomUsers
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomUser'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createCustomUser
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUser'
+          description: ''
+      tags:
+      - api
+  /api/users/{id}/:
+    get:
+      operationId: retrieveCustomUser
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUser'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateCustomUser
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUser'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateCustomUser
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomUser'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUser'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyCustomUser
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/flashcard-sets/:
+    get:
+      operationId: listFlashcardSets
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createFlashcardSet
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - api
+  /api/flashcard-sets/export-all-anki/:
+    get:
+      operationId: exportAllToAnkiFlashcardSet
+      description: 'Export all user''s flashcard sets to a single Anki package.
+
+
+        Query parameters:
+
+        - include_source: boolean (default: true)
+
+        - card_type: ''basic'' or ''cloze'' (default: ''basic'')'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - api
+  /api/flashcard-sets/{id}/:
+    get:
+      operationId: retrieveFlashcardSet
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateFlashcardSet
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateFlashcardSet
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyFlashcardSet
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/flashcard-sets/{id}/export-anki/:
+    get:
+      operationId: exportToAnkiFlashcardSet
+      description: 'Export a specific flashcard set to Anki format.
+
+
+        Query parameters:
+
+        - include_source: boolean (default: true)
+
+        - card_type: ''basic'' or ''cloze'' (default: ''basic'')'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - api
+  /api/flashcard-sets/{id}/review-stats/:
+    get:
+      operationId: getReviewStatsFlashcardSet
+      description: Get detailed review statistics for a flashcard set.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - api
+  /api/flashcards/:
+    get:
+      operationId: listFlashcards
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createFlashcard
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - api
+  /api/flashcards/{id}/:
+    get:
+      operationId: retrieveFlashcard
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateFlashcard
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateFlashcard
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyFlashcard
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/flashcards/{id}/retention/:
+    get:
+      operationId: getRetentionFlashcard
+      description: Get current retention probability for a card.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - api
+  /api/mind-maps/:
+    get:
+      operationId: listMindMaps
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MindMap'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createMindMap
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MindMap'
+          description: ''
+      tags:
+      - api
+  /api/mind-maps/{id}/:
+    get:
+      operationId: retrieveMindMap
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this mind map.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MindMap'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateMindMap
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this mind map.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MindMap'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateMindMap
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this mind map.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MindMap'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyMindMap
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this mind map.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/projects/:
+    get:
+      operationId: listProjects
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createProject
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - api
+  /api/projects/cleanup_metrics/:
+    get:
+      operationId: cleanupMetricsProject
+      description: Get cleanup metrics for monitoring
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - api
+  /api/projects/{id}/:
+    get:
+      operationId: retrieveProject
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A UUID string identifying this project.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateProject
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A UUID string identifying this project.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateProject
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A UUID string identifying this project.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyProject
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A UUID string identifying this project.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/pdf_service/documents/:
+    get:
+      operationId: listDocuments
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createDocument
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Document'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Document'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+      tags:
+      - api
+  /api/pdf_service/documents/{id}/:
+    get:
+      operationId: retrieveDocument
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this document.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateDocument
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this document.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Document'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Document'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateDocument
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this document.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Document'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Document'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyDocument
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this document.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/pdf_service/documents/{id}/processed_data/:
+    get:
+      operationId: processedDataDocument
+      description: Get the AI-extracted processed data for a document.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this document.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+      tags:
+      - api
+  /generation/flashcards/{flashcard_set_id}/export-anki/:
+    get:
+      operationId: listexport_flashcard_set_to_ankis
+      description: Export a specific flashcard set to Anki format (.apkg file).
+      parameters:
+      - name: flashcard_set_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+          description: ''
+      tags:
+      - generation
+  /generation/flashcards/export-all-anki/:
+    get:
+      operationId: listexport_user_flashcards_to_ankis
+      description: Export all flashcard sets for the authenticated user to a single
+        Anki deck.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+          description: ''
+      tags:
+      - generation
+  /generation/api/flashcard-sets/:
+    get:
+      operationId: listFlashcardSets
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - generation
+    post:
+      operationId: createFlashcardSet
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - generation
+  /generation/api/flashcard-sets/export-all-anki/:
+    get:
+      operationId: exportAllToAnkiFlashcardSet
+      description: 'Export all user''s flashcard sets to a single Anki package.
+
+
+        Query parameters:
+
+        - include_source: boolean (default: true)
+
+        - card_type: ''basic'' or ''cloze'' (default: ''basic'')'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - generation
+  /generation/api/flashcard-sets/{id}/:
+    get:
+      operationId: retrieveFlashcardSet
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - generation
+    put:
+      operationId: updateFlashcardSet
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - generation
+    patch:
+      operationId: partialUpdateFlashcardSet
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - generation
+    delete:
+      operationId: destroyFlashcardSet
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - generation
+  /generation/api/flashcard-sets/{id}/export-anki/:
+    get:
+      operationId: exportToAnkiFlashcardSet
+      description: 'Export a specific flashcard set to Anki format.
+
+
+        Query parameters:
+
+        - include_source: boolean (default: true)
+
+        - card_type: ''basic'' or ''cloze'' (default: ''basic'')'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - generation
+  /generation/api/flashcard-sets/{id}/review-stats/:
+    get:
+      operationId: getReviewStatsFlashcardSet
+      description: Get detailed review statistics for a flashcard set.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard set.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - generation
+  /generation/api/flashcards/:
+    get:
+      operationId: listFlashcards
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - generation
+    post:
+      operationId: createFlashcard
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - generation
+  /generation/api/flashcards/{id}/:
+    get:
+      operationId: retrieveFlashcard
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - generation
+    put:
+      operationId: updateFlashcard
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - generation
+    patch:
+      operationId: partialUpdateFlashcard
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - generation
+    delete:
+      operationId: destroyFlashcard
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - generation
+  /generation/api/flashcards/{id}/retention/:
+    get:
+      operationId: getRetentionFlashcard
+      description: Get current retention probability for a card.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - generation
+  /generation/api/mindmaps/:
+    get:
+      operationId: listMindMaps
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MindMap'
+          description: ''
+      tags:
+      - generation
+    post:
+      operationId: createMindMap
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MindMap'
+          description: ''
+      tags:
+      - generation
+  /generation/api/mindmaps/{id}/:
+    get:
+      operationId: retrieveMindMap
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this mind map.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MindMap'
+          description: ''
+      tags:
+      - generation
+    put:
+      operationId: updateMindMap
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this mind map.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MindMap'
+          description: ''
+      tags:
+      - generation
+    patch:
+      operationId: partialUpdateMindMap
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this mind map.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MindMap'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MindMap'
+          description: ''
+      tags:
+      - generation
+    delete:
+      operationId: destroyMindMap
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this mind map.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - generation
+  /generation/api/review/due-cards/:
+    get:
+      operationId: listDueCards
+      description: 'Get cards due for review.
+
+
+        Query parameters:
+
+        - limit: Maximum number of cards (default: 20)
+
+        - algorithm: Filter by algorithm (sm2, leitner)
+
+        - learning_state: Filter by learning state'
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+          description: ''
+      tags:
+      - generation
+  /generation/api/review/dashboard/:
+    get:
+      operationId: listReviewDashboards
+      description: Get dashboard data for the authenticated user.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+          description: ''
+      tags:
+      - generation
+  /generation/api/review/upcoming/:
+    get:
+      operationId: listUpcomingReviews
+      description: Get upcoming reviews for the next N days.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+          description: ''
+      tags:
+      - generation
+  /generation/api/review/analytics/:
+    get:
+      operationId: listLearningAnalytics
+      description: Get learning analytics for a specified timeframe.
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+          description: ''
+      tags:
+      - generation
+  /projects/:
+    get:
+      operationId: listProjects
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - projects
+    post:
+      operationId: createProject
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - projects
+  /projects/cleanup_metrics/:
+    get:
+      operationId: cleanupMetricsProject
+      description: Get cleanup metrics for monitoring
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - projects
+  /projects/{id}/:
+    get:
+      operationId: retrieveProject
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A UUID string identifying this project.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - projects
+    put:
+      operationId: updateProject
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A UUID string identifying this project.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - projects
+    patch:
+      operationId: partialUpdateProject
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A UUID string identifying this project.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - projects
+    delete:
+      operationId: destroyProject
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A UUID string identifying this project.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - projects
+  /study_materials/study_materials/:
+    get:
+      operationId: listStudyMaterials
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudyMaterial'
+          description: ''
+      tags:
+      - study-materials
+    post:
+      operationId: createStudyMaterial
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyMaterial'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudyMaterial'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudyMaterial'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyMaterial'
+          description: ''
+      tags:
+      - study-materials
+  /study_materials/study_materials/{id}/:
+    get:
+      operationId: retrieveStudyMaterial
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this study material.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyMaterial'
+          description: ''
+      tags:
+      - study-materials
+    put:
+      operationId: updateStudyMaterial
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this study material.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyMaterial'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudyMaterial'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudyMaterial'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyMaterial'
+          description: ''
+      tags:
+      - study-materials
+    patch:
+      operationId: partialUpdateStudyMaterial
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this study material.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyMaterial'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudyMaterial'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudyMaterial'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyMaterial'
+          description: ''
+      tags:
+      - study-materials
+    delete:
+      operationId: destroyStudyMaterial
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this study material.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - study-materials
+  /api/token/:
+    post:
+      operationId: createEmailTokenObtainPair
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailTokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmailTokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailTokenObtainPair'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailTokenObtainPair'
+          description: ''
+      tags:
+      - api
+  /api/token/refresh/:
+    post:
+      operationId: createTokenRefresh
+      description: 'Takes a refresh type JSON web token and returns an access type
+        JSON web
+
+        token if the refresh token is valid.'
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+      tags:
+      - api
+  /api/flashcard-sets/export-multiple-anki/:
+    post:
+      operationId: exportMultipleToAnkiFlashcardSet
+      description: "Export multiple selected flashcard sets to Anki format.\n\nRequest\
+        \ body:\n{\n    \"flashcard_set_ids\": [1, 2, 3],\n    \"include_source\"\
+        : true,\n    \"card_type\": \"basic\"\n}"
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - api
+  /api/flashcards/{id}/reset/:
+    post:
+      operationId: resetCardFlashcard
+      description: Reset a card to new state (useful for relearning).
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - api
+  /api/flashcards/{id}/review/:
+    post:
+      operationId: reviewCardFlashcard
+      description: "Review a single flashcard and update its schedule.\n\nRequest\
+        \ body:\n{\n    \"quality\": 3,  // 0-5 quality rating\n    \"response_time_seconds\"\
+        : 15.5  // optional\n}"
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - api
+  /api/projects/cleanup_drafts/:
+    post:
+      operationId: cleanupDraftsProject
+      description: Clean up abandoned draft projects for the current user.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - api
+  /api/projects/{id}/upload_file/:
+    post:
+      operationId: uploadFileProject
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A UUID string identifying this project.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - api
+  /api/pdf_service/documents/{id}/process/:
+    post:
+      operationId: processDocument
+      description: Triggers the PDF processing and classification Celery task.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this document.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Document'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Document'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+      tags:
+      - api
+  /generation/flashcards/generate/:
+    post:
+      operationId: creategenerate_flashcards_view
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - generation
+  /generation/mindmap/generate/:
+    post:
+      operationId: creategenerate_mindmap_view
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - generation
+  /generation/flashcards/export-multiple-anki/:
+    post:
+      operationId: createexport_multiple_flashcard_sets_to_anki
+      description: Export multiple flashcard sets to a single Anki deck.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - generation
+  /generation/api/flashcard-sets/export-multiple-anki/:
+    post:
+      operationId: exportMultipleToAnkiFlashcardSet
+      description: "Export multiple selected flashcard sets to Anki format.\n\nRequest\
+        \ body:\n{\n    \"flashcard_set_ids\": [1, 2, 3],\n    \"include_source\"\
+        : true,\n    \"card_type\": \"basic\"\n}"
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FlashcardSet'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlashcardSet'
+          description: ''
+      tags:
+      - generation
+  /generation/api/flashcards/{id}/reset/:
+    post:
+      operationId: resetCardFlashcard
+      description: Reset a card to new state (useful for relearning).
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - generation
+  /generation/api/flashcards/{id}/review/:
+    post:
+      operationId: reviewCardFlashcard
+      description: "Review a single flashcard and update its schedule.\n\nRequest\
+        \ body:\n{\n    \"quality\": 3,  // 0-5 quality rating\n    \"response_time_seconds\"\
+        : 15.5  // optional\n}"
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this flashcard.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Flashcard'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flashcard'
+          description: ''
+      tags:
+      - generation
+  /generation/api/review/session/:
+    post:
+      operationId: createReviewSession
+      description: Start a new review session.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - generation
+  /generation/api/review/study-plan/:
+    post:
+      operationId: createStudyPlan
+      description: Get study plan based on available time.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - generation
+  /generation/api/review/optimize/:
+    post:
+      operationId: createScheduleOptimization
+      description: Get recommendations for optimizing review schedule.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - generation
+  /projects/cleanup_drafts/:
+    post:
+      operationId: cleanupDraftsProject
+      description: Clean up abandoned draft projects for the current user.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - projects
+  /projects/{id}/upload_file/:
+    post:
+      operationId: uploadFileProject
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A UUID string identifying this project.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Project'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+      tags:
+      - projects
+  /pdf_service/upload/course-files/:
+    post:
+      operationId: createupload_course_files
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - pdf-service
+  /pdf_service/upload/test-files/:
+    post:
+      operationId: createupload_test_files
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - pdf-service
+  /pdf_service/upload/learning-materials/:
+    post:
+      operationId: createupload_learning_materials
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema: {}
+          multipart/form-data:
+            schema: {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: ''
+      tags:
+      - pdf-service
+components:
+  schemas:
+    CustomUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        subscription_status:
+          enum:
+          - free
+          - premium
+          type: string
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    FlashcardSet:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        document:
+          type: integer
+          nullable: true
+        owner:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        flashcards:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                readOnly: true
+              question:
+                type: string
+              answer:
+                type: string
+              updated_at:
+                type: string
+                format: date-time
+                readOnly: true
+              flashcard_set:
+                type: integer
+            required:
+            - question
+            - answer
+            - flashcard_set
+          readOnly: true
+        total_cards:
+          type: string
+          readOnly: true
+        due_cards:
+          type: string
+          readOnly: true
+        learning_cards:
+          type: string
+          readOnly: true
+        review_cards:
+          type: string
+          readOnly: true
+        new_cards:
+          type: string
+          readOnly: true
+        average_accuracy:
+          type: string
+          readOnly: true
+      required:
+      - owner
+    Flashcard:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        question:
+          type: string
+        answer:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        flashcard_set:
+          type: integer
+      required:
+      - question
+      - answer
+      - flashcard_set
+    MindMap:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        content:
+          type: string
+        owner:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - title
+      - owner
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        project_type:
+          enum:
+          - self_study
+          - school
+          type: string
+        owner:
+          type: object
+          properties:
+            id:
+              type: integer
+              readOnly: true
+            email:
+              type: string
+              format: email
+              maxLength: 254
+            first_name:
+              type: string
+              maxLength: 150
+            last_name:
+              type: string
+              maxLength: 150
+          required:
+          - email
+          readOnly: true
+        course_name:
+          type: string
+          nullable: true
+        course_code:
+          type: string
+          nullable: true
+        teacher_name:
+          type: string
+          nullable: true
+        goal_description:
+          type: string
+          nullable: true
+        study_frequency:
+          type: string
+          nullable: true
+        syllabus:
+          type: object
+          nullable: true
+        school_data:
+          type: object
+          properties:
+            course_name:
+              type: string
+              maxLength: 255
+            course_code:
+              type: string
+              maxLength: 50
+            teacher_name:
+              type: string
+              maxLength: 255
+          required:
+          - course_name
+          - course_code
+          - teacher_name
+        self_study_data:
+          type: object
+          properties:
+            goal_description:
+              type: string
+            study_frequency:
+              type: string
+              maxLength: 50
+          required:
+          - goal_description
+          - study_frequency
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        is_draft:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - name
+      - project_type
+    Document:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        file_type:
+          enum:
+          - pdf
+          - ppt
+          - audio
+          type: string
+        upload_date:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          enum:
+          - pending
+          - processing
+          - completed
+          - error
+          type: string
+        original_text:
+          type: string
+          nullable: true
+        metadata:
+          type: object
+          nullable: true
+        file:
+          type: string
+          format: binary
+        user:
+          type: string
+          readOnly: true
+        upload_type:
+          enum:
+          - course_files
+          - test_files
+          - learning_materials
+          type: string
+        processed_data:
+          type: string
+          readOnly: true
+      required:
+      - file_type
+      - file
+    StudyMaterial:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        material_type:
+          enum:
+          - note
+          - test
+          - mind_map
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        project:
+          type: string
+          nullable: true
+        document:
+          type: integer
+        owner:
+          type: integer
+      required:
+      - title
+      - material_type
+      - document
+      - owner
+    EmailTokenObtainPair:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    TokenRefresh:
+      type: object
+      properties:
+        refresh:
+          type: string
+        access:
+          type: string
+          readOnly: true
+      required:
+      - refresh
