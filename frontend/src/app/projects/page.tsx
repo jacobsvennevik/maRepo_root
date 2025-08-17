@@ -1,12 +1,14 @@
 'use client';
 
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { ProjectCard } from "./components/project-card";
+import { ProjectCard, ProjectCardV2 } from "./components/project-card";
 import { CreateProjectCard, ProjectPlaceholderCard } from "./components/add-project-card";
 import { getProjects } from "./create/services/api";
+import { fetchProjects } from "./api";
 import { useEffect, useState } from "react";
-import { ProjectType } from "./types";
+import { ProjectType, ProjectV2 } from "./types";
 import { WhiteBackground } from '@/components/common/backgrounds/white-background';
+import { isStiModeEnabled } from "./utils";
 
 const projectTypes: ProjectType[] = [
   'biology',
@@ -22,12 +24,14 @@ const projectTypes: ProjectType[] = [
 export default function Projects() {
   const [selectedType, setSelectedType] = useState<ProjectType | 'all'>('all');
   const [projects, setProjects] = useState<any[]>([]);
+  const [projectsV2, setProjectsV2] = useState<ProjectV2[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const stiMode = isStiModeEnabled();
 
   const filteredProjects = selectedType === 'all'
-    ? (projects || [])
-    : (projects || []).filter(project => project.type === selectedType);
+    ? (stiMode ? (projectsV2 || []) : (projects || []))
+    : (stiMode ? (projectsV2 || []) : (projects || [])).filter(project => project.type === selectedType);
 
   // Calculate cards needed for exactly 2 rows
   const getPlaceholderCount = () => {
@@ -48,32 +52,39 @@ export default function Projects() {
   const placeholderCount = getPlaceholderCount();
 
   useEffect(() => {
-    async function fetchProjects() {
+    async function loadProjects() {
       setLoading(true);
       setError(null);
       try {
-        const data = await getProjects();
-        // Map backend projects to frontend Project type
-        const mapped = data
-          .filter((p: any) => !p.is_draft) // Only show non-draft projects
-          .map((p: any) => ({
-            id: p.id,
-            title: p.name || p.course_name || p.goal_description || 'Untitled',
-            description: p.goal_description || p.course_name || '',
-            lastUpdated: p.updated_at ? new Date(p.updated_at).toLocaleDateString() : '',
-            type: p.project_type === 'school' ? 'biology' : 'computer-science', // TODO: Map to real type if available
-            progress: 0, // Optionally calculate progress
-            collaborators: 1, // Optionally set collaborators
-          }));
-        setProjects(mapped);
+        if (stiMode) {
+          // Use new STI API
+          const data = await fetchProjects();
+          setProjectsV2(data);
+        } else {
+          // Use legacy API
+          const data = await getProjects();
+          // Map backend projects to frontend Project type
+          const mapped = data
+            .filter((p: any) => !p.is_draft) // Only show non-draft projects
+            .map((p: any) => ({
+              id: p.id,
+              title: p.name || p.course_name || p.goal_description || 'Untitled',
+              description: p.goal_description || p.course_name || '',
+              lastUpdated: p.updated_at ? new Date(p.updated_at).toLocaleDateString() : '',
+              type: p.project_type === 'school' ? 'biology' : 'computer-science', // TODO: Map to real type if available
+              progress: 0, // Optionally calculate progress
+              collaborators: 1, // Optionally set collaborators
+            }));
+          setProjects(mapped);
+        }
       } catch (err: any) {
         setError(err.message || 'Failed to load projects');
       } finally {
         setLoading(false);
       }
     }
-    fetchProjects();
-  }, []);
+    loadProjects();
+  }, [stiMode]);
 
   return (
     <div className="flex flex-col h-screen relative">
@@ -121,7 +132,11 @@ export default function Projects() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 h-full" style={{ gridTemplateRows: 'repeat(2, 1fr)' }}>
                 <CreateProjectCard />
                 {filteredProjects.map((project) => (
-                  <ProjectCard key={project.id} {...project} />
+                  stiMode ? (
+                    <ProjectCardV2 key={project.id} project={project} />
+                  ) : (
+                    <ProjectCard key={project.id} {...project} />
+                  )
                 ))}
                 {Array.from({ length: placeholderCount }).map((_, index) => (
                   <ProjectPlaceholderCard key={`placeholder-${index}`} />

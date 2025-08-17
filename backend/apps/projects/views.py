@@ -15,8 +15,19 @@ logger = logging.getLogger(__name__)
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        """
+        Return the appropriate serializer based on the ENABLE_STI setting.
+        """
+        from decouple import config
+        enable_sti = config('ENABLE_STI', default=False, cast=bool)
+        
+        if enable_sti:
+            return ProjectSerializer  # Our hybrid serializer that handles both modes
+        else:
+            return ProjectSerializer  # Same serializer, but will behave differently based on ENABLE_STI
 
     def get_queryset(self):
         return self.request.user.projects.all()
@@ -24,12 +35,16 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """
         Assign the current user as the owner of the project.
+        The serializer handles both legacy and nested STI data automatically.
         """
         logger.info(f"User {self.request.user.id} started creating a project.")
         serializer.save(owner=self.request.user)
         logger.info(f"User {self.request.user.id} successfully created project {serializer.instance.id}.")
 
     def perform_update(self, serializer):
+        """
+        Update the project. The serializer handles both legacy and nested STI data automatically.
+        """
         logger.info(f"User {self.request.user.id} started updating project {serializer.instance.id}.")
         serializer.save()
         logger.info(f"User {self.request.user.id} successfully updated project {serializer.instance.id}.")
@@ -169,5 +184,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
         # Trigger the processing
         process_uploaded_file(uploaded_file.id)
 
-        # We can return the file info, or the updated project
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # Return the fresh project instance serialized with the correct class
+        # so the FE sees nested data immediately if ENABLE_STI=true
+        project.refresh_from_db()
+        project_serializer = self.get_serializer_class()(project, context={'request': request})
+        return Response(project_serializer.data, status=status.HTTP_201_CREATED)

@@ -1,0 +1,239 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "STI Rollout Monitoring",
+    "tags": ["sti", "rollout", "monitoring"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "STI Progress Tracker",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sti_backfill_processed_total / sti_backfill_total * 100",
+            "legendFormat": "Completion %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 50},
+                {"color": "green", "value": 100}
+              ]
+            },
+            "unit": "percent"
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "API Performance Monitor",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[5m])",
+            "legendFormat": "Requests/sec"
+          },
+          {
+            "expr": "rate(http_requests_total{status=~\"5..\"}[5m])",
+            "legendFormat": "5xx Errors/sec"
+          }
+        ],
+        "yAxes": [
+          {"label": "Requests/sec", "min": 0},
+          {"label": "Error Rate", "min": 0}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Database Health Checker",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "pg_stat_database_active_connections",
+            "legendFormat": "Active Connections"
+          },
+          {
+            "expr": "rate(pg_stat_database_tup_fetched[5m])",
+            "legendFormat": "Tuples Fetched/sec"
+          }
+        ],
+        "yAxes": [
+          {"label": "Connections", "min": 0},
+          {"label": "Tuples/sec", "min": 0}
+        ],
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "System Resource Monitor",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+            "legendFormat": "CPU Usage %"
+          },
+          {
+            "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+            "legendFormat": "Memory Usage %"
+          }
+        ],
+        "yAxes": [
+          {"label": "Usage %", "min": 0, "max": 100}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "Error Rate Tracker",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(sti_backfill_errors_total[5m])",
+            "legendFormat": "Backfill Errors/sec"
+          },
+          {
+            "expr": "sti_backfill_retry_attempts_total",
+            "legendFormat": "Total Retry Attempts"
+          }
+        ],
+        "yAxes": [
+          {"label": "Errors/sec", "min": 0},
+          {"label": "Retry Count", "min": 0}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Data Integrity Validator",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sti_data_integrity_score",
+            "legendFormat": "Integrity Score"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 95},
+                {"color": "green", "value": 100}
+              ]
+            },
+            "unit": "percent"
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 16}
+      },
+      {
+        "id": 7,
+        "title": "Feature Flag Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sti_feature_flag_enabled",
+            "legendFormat": "STI Flag Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Disabled"}}, "type": "value"},
+              {"options": {"1": {"text": "Enabled"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Rollback Readiness",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sti_rollback_capability",
+            "legendFormat": "Rollback Ready"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            },
+            "mappings": [
+              {"options": {"0": {"text": "Not Ready"}}, "type": "value"},
+              {"options": {"1": {"text": "Ready"}}, "type": "value"}
+            ]
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 16}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "10s",
+    "schemaVersion": 27,
+    "version": 1,
+    "links": [],
+    "annotations": {
+      "list": [
+        {
+          "name": "STI Rollout Events",
+          "datasource": "Prometheus",
+          "expr": "sti_rollout_event",
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "enable": true
+        }
+      ]
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "environment",
+          "type": "custom",
+          "query": "staging,production",
+          "current": {
+            "selected": true,
+            "text": "staging",
+            "value": "staging"
+          },
+          "options": [
+            {"selected": true, "text": "staging", "value": "staging"},
+            {"selected": false, "text": "production", "value": "production"}
+          ]
+        }
+      ]
+    }
+  }
+} 

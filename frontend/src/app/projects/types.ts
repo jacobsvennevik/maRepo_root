@@ -10,6 +10,7 @@ import { TestTubes } from 'lucide-react';
 
 export type ProjectType = 'biology' | 'chemistry' | 'physics' | 'math' | 'history' | 'computer-science' | 'geography' | 'literature';
 
+// Legacy project interface (current structure)
 export interface Project {
   id: string;
   title: string;
@@ -19,6 +20,40 @@ export interface Project {
   progress?: number;
   collaborators?: number;
 }
+
+// STI-specific interfaces
+export interface SchoolMeta {
+  course_name: string;
+  course_code: string;
+  teacher_name: string;
+}
+
+export interface SelfStudyMeta {
+  goal_description: string;
+  study_frequency: string;
+}
+
+// Backend API response interface
+export interface ProjectApiResponse {
+  id: string;
+  name: string;
+  project_type: 'school' | 'self_study';
+  course_name?: string;
+  course_code?: string;
+  teacher_name?: string;
+  goal_description?: string;
+  study_frequency?: string;
+  school_data?: SchoolMeta;
+  self_study_data?: SelfStudyMeta;
+  is_draft: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// Enhanced project interface with STI support
+export type ProjectV2 =
+  | ({ kind: "school"; school_meta: SchoolMeta } & Omit<Project, 'title'>)
+  | ({ kind: "self_study"; self_study_meta: SelfStudyMeta } & Omit<Project, 'title'>);
 
 export const projectIcons: Record<string, LucideIcon> = {
   'biology': Dna,

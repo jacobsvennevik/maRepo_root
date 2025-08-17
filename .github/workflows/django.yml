@@ -25,6 +25,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install schemathesis
     - name: Run Tests
       run: |
         python manage.py test
+    - name: API Contract Testing (Legacy Mode)
+      run: |
+        ENABLE_STI=false schemathesis run --checks all openapi_v2.yaml
+    - name: API Contract Testing (STI Mode)
+      run: |
+        ENABLE_STI=true schemathesis run --checks all openapi_v2.yaml

@@ -4,67 +4,14 @@ from django.utils import timezone
 from .models import FlashcardSet, Flashcard, GeneratedContent
 
 class FlashcardSerializer(serializers.ModelSerializer):
-    """Enhanced flashcard serializer with spaced repetition fields."""
-    
-    # Computed fields
-    accuracy_rate = serializers.ReadOnlyField()
-    is_due = serializers.ReadOnlyField()
-    days_until_due = serializers.ReadOnlyField()
+    """Flashcard serializer with only model fields for schema generation."""
     
     class Meta:
         model = Flashcard
-        fields = [
-            # Core fields
-            'id',
-            'flashcard_set',
-            'question',
-            'answer',
-            'updated_at',
-            
-            # Spaced repetition fields
-            'algorithm',
-            'interval',
-            'repetitions',
-            'memory_strength',
-            'next_review',
-            'last_reviewed',
-            'ease_factor',
-            'leitner_box',
-            'learning_state',
-            'total_reviews',
-            'correct_reviews',
-            
-            # Computed fields
-            'accuracy_rate',
-            'is_due',
-            'days_until_due'
-        ]
-        read_only_fields = [
-            'id',
-            'updated_at',
-            'accuracy_rate',
-            'is_due',
-            'days_until_due'
-        ]
+        fields = '__all__'
+        read_only_fields = ['id', 'updated_at']
     
-    def validate_algorithm(self, value):
-        """Validate algorithm choice."""
-        valid_algorithms = ['leitner', 'sm2']
-        if value not in valid_algorithms:
-            raise serializers.ValidationError(f"Algorithm must be one of: {valid_algorithms}")
-        return value
-    
-    def validate_ease_factor(self, value):
-        """Validate ease factor for SM-2 algorithm."""
-        if value < 1.3:
-            raise serializers.ValidationError("Ease factor must be at least 1.3")
-        return value
-    
-    def validate_leitner_box(self, value):
-        """Validate Leitner box number."""
-        if not 1 <= value <= 5:
-            raise serializers.ValidationError("Leitner box must be between 1 and 5")
-        return value
+
 
 
 class FlashcardReviewSerializer(serializers.Serializer):
