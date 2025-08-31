@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { CheckCircle, ArrowRight, Home, FolderOpen } from 'lucide-react';
+import Link from "next/link";
+import { CheckCircle, ArrowRight, Home, FolderOpen } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -25,7 +25,8 @@ export default function ProjectSuccess() {
             Project Created Successfully!
           </h1>
           <p className="text-base sm:text-lg text-slate-600">
-            Your learning project has been set up and is ready to go. You can now start your learning journey!
+            Your learning project has been set up and is ready to go. You can
+            now start your learning journey!
           </p>
         </div>
 
@@ -40,8 +41,12 @@ export default function ProjectSuccess() {
                 <span className="text-sm font-medium text-blue-600">1</span>
               </div>
               <div>
-                <h3 className="font-medium text-slate-900">Review Your Project</h3>
-                <p className="text-sm text-slate-600">Check your project dashboard and review the setup details.</p>
+                <h3 className="font-medium text-slate-900">
+                  Review Your Project
+                </h3>
+                <p className="text-sm text-slate-600">
+                  Check your project dashboard and review the setup details.
+                </p>
               </div>
             </div>
             <div className="flex items-start space-x-3">
@@ -50,7 +55,9 @@ export default function ProjectSuccess() {
               </div>
               <div>
                 <h3 className="font-medium text-slate-900">Start Learning</h3>
-                <p className="text-sm text-slate-600">Begin with your first study session and track your progress.</p>
+                <p className="text-sm text-slate-600">
+                  Begin with your first study session and track your progress.
+                </p>
               </div>
             </div>
             <div className="flex items-start space-x-3">
@@ -58,8 +65,12 @@ export default function ProjectSuccess() {
                 <span className="text-sm font-medium text-blue-600">3</span>
               </div>
               <div>
-                <h3 className="font-medium text-slate-900">Invite Collaborators</h3>
-                <p className="text-sm text-slate-600">Share your project with study partners or mentors.</p>
+                <h3 className="font-medium text-slate-900">
+                  Invite Collaborators
+                </h3>
+                <p className="text-sm text-slate-600">
+                  Share your project with study partners or mentors.
+                </p>
               </div>
             </div>
           </CardContent>
@@ -67,7 +78,10 @@ export default function ProjectSuccess() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button asChild className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
+          <Button
+            asChild
+            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+          >
             <Link href="/projects" className="flex items-center space-x-2">
               <FolderOpen className="h-4 w-4" />
               <span>View My Projects</span>
@@ -85,10 +99,11 @@ export default function ProjectSuccess() {
         {/* Additional Info */}
         <div className="mt-8 text-center">
           <p className="text-xs sm:text-sm text-slate-500">
-            Need help getting started? Check out our getting started guide or contact support.
+            Need help getting started? Check out our getting started guide or
+            contact support.
           </p>
         </div>
       </div>
     </div>
   );
-} 
+}

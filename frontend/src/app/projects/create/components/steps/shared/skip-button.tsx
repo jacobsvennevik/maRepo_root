@@ -1,25 +1,28 @@
-import React from 'react';
+import React from "react";
+import { Button } from "@/components/ui/button";
 
 interface SkipButtonProps {
   onSkip: () => void;
   text?: string;
   className?: string;
+  disabled?: boolean;
 }
 
-export function SkipButton({ 
-  onSkip, 
-  text = "Skip - I don't have materials to upload",
-  className = "px-6 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 hover:border-gray-400 rounded-lg transition-colors duration-200"
+export function SkipButton({
+  onSkip,
+  text = "Skip",
+  className = "",
+  disabled = false,
 }: SkipButtonProps) {
   return (
-    <div className="flex justify-center pt-4">
-      <button
-        onClick={onSkip}
-        className={className}
-        data-testid="skip-button"
-      >
-        {text}
-      </button>
-    </div>
+    <Button
+      variant="outline"
+      onClick={onSkip}
+      disabled={disabled}
+      className={`text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 hover:text-red-700 ${className}`}
+      data-testid="skip-button"
+    >
+      {text}
+    </Button>
   );
-} 
+}

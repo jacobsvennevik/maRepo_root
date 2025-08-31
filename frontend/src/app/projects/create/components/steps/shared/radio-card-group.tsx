@@ -16,24 +16,40 @@ interface RadioCardGroupProps {
   className?: string;
 }
 
-export function RadioCardGroup({ 
-  value, 
-  onValueChange, 
-  options, 
+export function RadioCardGroup({
+  value,
+  onValueChange,
+  options,
   name,
-  className = "grid grid-cols-1 md:grid-cols-2 gap-4"
+  className = "grid grid-cols-1 md:grid-cols-2 gap-4",
 }: RadioCardGroupProps) {
   return (
-    <RadioGroup value={value} onValueChange={onValueChange} className={className}>
+    <RadioGroup
+      value={value}
+      onValueChange={onValueChange}
+      className={className}
+    >
       {options.map((option) => (
-        <Label key={option.value} htmlFor={`${name}-${option.value}`} className="cursor-pointer">
-          <Card className={`transition-all ${value === option.value ? 'border-blue-500 shadow-lg' : 'hover:shadow-md'}`}>
+        <Label
+          key={option.value}
+          htmlFor={`${name}-${option.value}`}
+          className="cursor-pointer"
+        >
+          <Card
+            className={`transition-all ${value === option.value ? "border-blue-500 shadow-lg" : "hover:shadow-md"}`}
+          >
             <CardContent className="p-4 flex items-center">
-              <RadioGroupItem value={option.value} id={`${name}-${option.value}`} className="mr-4" />
+              <RadioGroupItem
+                value={option.value}
+                id={`${name}-${option.value}`}
+                className="mr-4"
+              />
               <div className="flex flex-col">
                 <span className="font-semibold">{option.label}</span>
                 {option.description && (
-                  <span className="text-sm text-gray-500">{option.description}</span>
+                  <span className="text-sm text-gray-500">
+                    {option.description}
+                  </span>
                 )}
               </div>
             </CardContent>
@@ -42,4 +58,4 @@ export function RadioCardGroup({
       ))}
     </RadioGroup>
   );
-} 
+}

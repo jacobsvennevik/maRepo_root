@@ -1,4 +1,4 @@
-import { BlogPost } from "@/components/ui/cards/blog-card"
+import { BlogPost } from "@/components/ui/cards/blog-card";
 
 // Sample blog posts data
 export const blogPosts: BlogPost[] = [
@@ -50,20 +50,33 @@ export const blogPosts: BlogPost[] = [
     author: "Michael Torres",
     readTime: "10 min read",
   },
-]
+];
 
 // Featured blog post data
 export const featuredBlogPost = {
   title: "The Future of AI-Powered Learning: Trends and Predictions",
-  description: "Join our panel of education experts and AI researchers as they discuss emerging trends in educational technology and predict how artificial intelligence will transform learning experiences over the next decade.",
+  description:
+    "Join our panel of education experts and AI researchers as they discuss emerging trends in educational technology and predict how artificial intelligence will transform learning experiences over the next decade.",
   date: "April 15, 2023",
   duration: "60 min webinar",
   presenter: "Dr. Maya Patel",
-  imageUrl: "/images/placeholders/webinar.svg"
-}
+  imageUrl: "/images/placeholders/webinar.svg",
+};
 
 // Category filter options
-export const categories = ["All Categories", "Learning Science", "AI Education", "Case Study", "Tutorial"]
+export const categories = [
+  "All Categories",
+  "Learning Science",
+  "AI Education",
+  "Case Study",
+  "Tutorial",
+];
 
 // Content type filter options
-export const contentTypes = ["All Types", "Articles", "Videos", "Tutorials", "Case Studies"] 
+export const contentTypes = [
+  "All Types",
+  "Articles",
+  "Videos",
+  "Tutorials",
+  "Case Studies",
+];

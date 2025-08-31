@@ -15,7 +15,7 @@ export interface SelfStudyProjectSetup {
 
 export interface LearningMaterial {
   id: string;
-  type: 'file' | 'link';
+  type: "file" | "link";
   name: string;
   url?: string;
   file?: File;
@@ -59,4 +59,4 @@ export interface CollaborationOption {
   value: string;
   label: string;
   description: string;
-} 
+}

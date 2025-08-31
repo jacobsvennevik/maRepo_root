@@ -1,23 +1,31 @@
-import { Badge } from "@/components/ui/badge"
-import { useState } from "react"
-import { ChevronDown, ChevronUp, Clock, MapPin, FileText, Book, Video } from "lucide-react"
-import type { ReactNode } from "react"
+import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  MapPin,
+  FileText,
+  Book,
+  Video,
+} from "lucide-react";
+import type { ReactNode } from "react";
 
 interface StudyMaterialCardProps {
-  title: string
-  type: string
-  progress?: number
-  lastReviewed?: string
-  tags?: string[]
-  status: "In Progress" | "Completed" | "Not Started"
-  icon?: ReactNode
-  description?: string
-  studyTime?: string
-  category?: string
-  timeAgo?: string
-  id: string
-  isExpanded?: boolean
-  hideExpansionButton?: boolean
+  title: string;
+  type: string;
+  progress?: number;
+  lastReviewed?: string;
+  tags?: string[];
+  status: "In Progress" | "Completed" | "Not Started";
+  icon?: ReactNode;
+  description?: string;
+  studyTime?: string;
+  category?: string;
+  timeAgo?: string;
+  id: string;
+  isExpanded?: boolean;
+  hideExpansionButton?: boolean;
 }
 
 export function StudyMaterialCard({
@@ -32,38 +40,52 @@ export function StudyMaterialCard({
   isExpanded = false,
   hideExpansionButton = false,
 }: StudyMaterialCardProps) {
-  const [expanded, setExpanded] = useState(isExpanded)
-  
+  const [expanded, setExpanded] = useState(isExpanded);
+
   // Determine icon and background color based on type
   const getIconAndColor = () => {
     switch (type.toLowerCase()) {
       case "pdf":
-        return { icon: <FileText className="h-6 w-6 text-white" />, bgColor: "bg-ocean-500" }
+        return {
+          icon: <FileText className="h-6 w-6 text-white" />,
+          bgColor: "bg-ocean-500",
+        };
       case "video":
-        return { icon: <Video className="h-6 w-6 text-white" />, bgColor: "bg-indigo-500" }
+        return {
+          icon: <Video className="h-6 w-6 text-white" />,
+          bgColor: "bg-indigo-500",
+        };
       case "course":
       case "tutorial":
-        return { icon: <Book className="h-6 w-6 text-white" />, bgColor: "bg-emerald-500" }
+        return {
+          icon: <Book className="h-6 w-6 text-white" />,
+          bgColor: "bg-emerald-500",
+        };
       default:
-        return { icon: <FileText className="h-6 w-6 text-white" />, bgColor: "bg-ocean-500" }
+        return {
+          icon: <FileText className="h-6 w-6 text-white" />,
+          bgColor: "bg-ocean-500",
+        };
     }
-  }
-  
-  const { icon, bgColor } = getIconAndColor()
-  
+  };
+
+  const { icon, bgColor } = getIconAndColor();
+
   return (
     <div className="py-4">
       <div className="flex items-start gap-4">
-        <div className={`flex-shrink-0 w-12 h-12 rounded ${bgColor} flex items-center justify-center`}>
+        <div
+          className={`flex-shrink-0 w-12 h-12 rounded ${bgColor} flex items-center justify-center`}
+        >
           {icon}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3">
             <h3 className="text-base font-medium text-slate-800">{title}</h3>
-            <Badge 
+            <Badge
               className={`${
-                status === "Completed" 
-                  ? "bg-slate-800 text-white" 
+                status === "Completed"
+                  ? "bg-slate-800 text-white"
                   : "bg-slate-200 text-slate-700"
               } border-none text-xs px-2 py-0.5 rounded-md`}
             >
@@ -73,7 +95,7 @@ export function StudyMaterialCard({
           <p className="text-sm text-slate-500 mt-0.5">{studyTime}</p>
         </div>
         {!hideExpansionButton && (
-          <button 
+          <button
             className="flex-shrink-0 rounded-full p-2 bg-slate-200 hover:bg-slate-300"
             onClick={() => setExpanded(!expanded)}
           >
@@ -103,9 +125,7 @@ export function StudyMaterialCard({
             </Badge>
           </div>
 
-          <p className="text-sm text-slate-600">
-            {description}
-          </p>
+          <p className="text-sm text-slate-600">{description}</p>
 
           <div className="flex items-center gap-4 text-sm text-slate-500">
             <div className="flex items-center gap-1">
@@ -120,5 +140,5 @@ export function StudyMaterialCard({
         </div>
       )}
     </div>
-  )
+  );
 }

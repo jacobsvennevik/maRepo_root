@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 export function EmeraldOrbBackground() {
   return (
@@ -15,4 +15,4 @@ export function EmeraldOrbBackground() {
       <div className="absolute inset-0 bg-black/5"></div>
     </div>
   );
-} 
+}

@@ -37,14 +37,12 @@ describe('ExtractionResultsStep', () => {
     grading: [
       { category: 'Tests', weight: 100 }
     ]
-  };
 
   const defaultProps = {
     extractedData: mockExtractedData,
     fileName: 'test.pdf',
     onConfirm: jest.fn(),
     onEdit: jest.fn()
-  };
 
   it('renders extracted data correctly', () => {
     render(<ExtractionResultsStep {...defaultProps} />);
@@ -198,7 +196,6 @@ describe('ExtractionResultsStep', () => {
         label: `Topic ${i}`,
         confidence: 90
       }))
-    };
 
     render(<ExtractionResultsStep {...defaultProps} extractedData={manyTopics} />);
 

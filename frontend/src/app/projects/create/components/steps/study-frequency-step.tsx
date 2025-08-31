@@ -1,4 +1,4 @@
-import { SimpleRadioGroup, type SimpleRadioOption } from './shared';
+import { SimpleRadioGroup, type SimpleRadioOption } from "./shared";
 
 interface StudyFrequencyStepProps {
   studyFrequency: string;
@@ -9,7 +9,7 @@ interface StudyFrequencyStepProps {
 export function StudyFrequencyStep({
   studyFrequency,
   onStudyFrequencyChange,
-  frequencyOptions
+  frequencyOptions,
 }: StudyFrequencyStepProps) {
   return (
     <SimpleRadioGroup
@@ -19,4 +19,4 @@ export function StudyFrequencyStep({
       name="frequency"
     />
   );
-} 
+}

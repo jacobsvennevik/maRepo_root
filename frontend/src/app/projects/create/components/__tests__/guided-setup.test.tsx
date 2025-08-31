@@ -1,58 +1,72 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 // Mock all the dependencies first
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
   }),
 }));
 
-jest.mock('next/dynamic', () => () => {
+jest.mock("next/dynamic", () => () => {
   const DynamicComponent = () => <div>Calendar</div>;
   return DynamicComponent;
 });
 
 // Mock all UI components
-jest.mock('@/components/ui/card', () => ({
+jest.mock("@/components/ui/card", () => ({
   Card: ({ children }: any) => <div data-testid="card">{children}</div>,
-  CardContent: ({ children }: any) => <div data-testid="card-content">{children}</div>,
-  CardHeader: ({ children }: any) => <div data-testid="card-header">{children}</div>,
-  CardTitle: ({ children }: any) => <h2 data-testid="card-title">{children}</h2>,
+  CardContent: ({ children }: any) => (
+    <div data-testid="card-content">{children}</div>
+  ),
+  CardHeader: ({ children }: any) => (
+    <div data-testid="card-header">{children}</div>
+  ),
+  CardTitle: ({ children }: any) => (
+    <h2 data-testid="card-title">{children}</h2>
+  ),
 }));
 
-jest.mock('@/components/ui/button', () => ({
-  Button: ({ children, onClick, ...props }: any) => <button onClick={onClick} {...props}>{children}</button>,
+jest.mock("@/components/ui/button", () => ({
+  Button: ({ children, onClick, ...props }: any) => (
+    <button onClick={onClick} {...props}>
+      {children}
+    </button>
+  ),
 }));
 
-jest.mock('@/components/ui/input', () => ({
+jest.mock("@/components/ui/input", () => ({
   Input: (props: any) => <input {...props} />,
 }));
 
-jest.mock('@/components/ui/label', () => ({
+jest.mock("@/components/ui/label", () => ({
   Label: ({ children }: any) => <label>{children}</label>,
 }));
 
-jest.mock('@/components/ui/radio-group', () => ({
+jest.mock("@/components/ui/radio-group", () => ({
   RadioGroup: ({ children }: any) => <div>{children}</div>,
   RadioGroupItem: ({ value }: any) => <input type="radio" value={value} />,
 }));
 
-jest.mock('@/components/ui/progress', () => ({
-  Progress: ({ value }: any) => <div role="progressbar" aria-valuenow={value}>{value}%</div>,
+jest.mock("@/components/ui/progress", () => ({
+  Progress: ({ value }: any) => (
+    <div role="progressbar" aria-valuenow={value}>
+      {value}%
+    </div>
+  ),
 }));
 
-jest.mock('@/components/ui/badge', () => ({
+jest.mock("@/components/ui/badge", () => ({
   Badge: ({ children }: any) => <span>{children}</span>,
 }));
 
-jest.mock('@/components/ui/textarea', () => ({
+jest.mock("@/components/ui/textarea", () => ({
   Textarea: (props: any) => <textarea {...props} />,
 }));
 
 // Mock icons
-jest.mock('lucide-react', () => ({
+jest.mock("lucide-react", () => ({
   ChevronLeft: () => <span>←</span>,
   ChevronRight: () => <span>→</span>,
   HelpCircle: () => <span>?</span>,
@@ -77,28 +91,28 @@ jest.mock('lucide-react', () => ({
 }));
 
 // Mock hooks
-jest.mock('../../hooks/useAutoSave', () => ({
+jest.mock("../../hooks/useAutoSave", () => ({
   useAutoSave: () => ({
     loadFromStorage: jest.fn().mockReturnValue(null),
     clearStorage: jest.fn(),
   }),
 }));
 
-jest.mock('../../hooks/useProjectSetup', () => ({
+jest.mock("../../hooks/useProjectSetup", () => ({
   useProjectSetup: () => ({
     setup: {
-      projectName: 'Test Project',
-      purpose: 'good-grades',
-      testLevel: 'high-school',
-      evaluationTypes: ['exam', 'quiz'],
+      projectName: "Test Project",
+      purpose: "good-grades",
+      testLevel: "high-school",
+      evaluationTypes: ["exam", "quiz"],
       testFiles: [],
       importantDates: [],
       courseFiles: [],
       uploadedFiles: [],
-      timeframe: '1-month',
-      goal: 'Pass the exam',
-      studyFrequency: 'daily',
-      collaboration: 'solo'
+      timeframe: "1-month",
+      goal: "Pass the exam",
+      studyFrequency: "daily",
+      collaboration: "solo",
     },
     setSetup: jest.fn(),
     hasUnsavedChanges: false,
@@ -120,7 +134,7 @@ jest.mock('../../hooks/useProjectSetup', () => ({
   }),
 }));
 
-jest.mock('../../hooks/useStepNavigation', () => ({
+jest.mock("../../hooks/useStepNavigation", () => ({
   useStepNavigation: () => ({
     currentStep: 0,
     handleNext: jest.fn(),
@@ -129,10 +143,10 @@ jest.mock('../../hooks/useStepNavigation', () => ({
     getTotalSteps: () => 12,
     progress: 10,
     currentStepData: {
-      id: 'projectName',
-      title: 'Project Name',
-      description: 'Enter your project name',
-      icon: () => <span>📝</span>
+      id: "projectName",
+      title: "Project Name",
+      description: "Enter your project name",
+      icon: () => <span>📝</span>,
     },
     isLastStep: false,
     isFirstStep: true,
@@ -140,28 +154,30 @@ jest.mock('../../hooks/useStepNavigation', () => ({
 }));
 
 // Mock step components
-jest.mock('../steps', () => ({
+jest.mock("../steps", () => ({
   ProjectNameStep: ({ projectName, onProjectNameChange }: any) => (
     <div data-testid="project-name-step">
       <input
-        value={projectName || ''}
+        value={projectName || ""}
         onChange={(e) => onProjectNameChange(e.target.value)}
       />
     </div>
   ),
   PurposeStep: ({ value, onSelect }: any) => (
     <div data-testid="purpose-step">
-      <button onClick={() => onSelect('test')}>Test Purpose</button>
+      <button onClick={() => onSelect("test")}>Test Purpose</button>
     </div>
   ),
   EducationLevelStep: ({ value, onSelect }: any) => (
     <div data-testid="education-level-step">
-      <button onClick={() => onSelect('high-school')}>High School</button>
+      <button onClick={() => onSelect("high-school")}>High School</button>
     </div>
   ),
   SyllabusUploadStep: ({ onUploadComplete }: any) => (
     <div data-testid="syllabus-upload-step">
-      <button onClick={() => onUploadComplete('test-project', {}, 'test.pdf')}>Upload</button>
+      <button onClick={() => onUploadComplete("test-project", {}, "test.pdf")}>
+        Upload
+      </button>
     </div>
   ),
   ExtractionResultsStep: ({ onConfirm }: any) => (
@@ -171,7 +187,9 @@ jest.mock('../steps', () => ({
   ),
   LearningPreferencesStep: ({ onCourseTypeChange }: any) => (
     <div data-testid="learning-preferences-step">
-      <button onClick={() => onCourseTypeChange('stem')}>Set Learning Preferences</button>
+      <button onClick={() => onCourseTypeChange("stem")}>
+        Set Learning Preferences
+      </button>
     </div>
   ),
   CourseContentUploadStep: ({ onUploadComplete }: any) => (
@@ -187,73 +205,75 @@ jest.mock('../steps', () => ({
   ),
   TimelineStep: ({ onTimeframeChange }: any) => (
     <div data-testid="timeline-step">
-      <button onClick={() => onTimeframeChange('1-month')}>1 Month</button>
+      <button onClick={() => onTimeframeChange("1-month")}>1 Month</button>
     </div>
   ),
   GoalStep: ({ onGoalChange }: any) => (
     <div data-testid="goal-step">
-      <button onClick={() => onGoalChange('Pass')}>Set Goal</button>
+      <button onClick={() => onGoalChange("Pass")}>Set Goal</button>
     </div>
   ),
   StudyFrequencyStep: ({ onStudyFrequencyChange }: any) => (
     <div data-testid="study-frequency-step">
-      <button onClick={() => onStudyFrequencyChange('daily')}>Daily</button>
+      <button onClick={() => onStudyFrequencyChange("daily")}>Daily</button>
     </div>
   ),
   CollaborationStep: ({ onCollaborationChange }: any) => (
     <div data-testid="collaboration-step">
-      <button onClick={() => onCollaborationChange('solo')}>Solo</button>
+      <button onClick={() => onCollaborationChange("solo")}>Solo</button>
     </div>
   ),
 }));
 
 // Mock other dependencies
-jest.mock('../project-summary', () => ({
-  ProjectSummary: () => <div data-testid="project-summary">Project Summary</div>,
+jest.mock("../project-summary", () => ({
+  ProjectSummary: () => (
+    <div data-testid="project-summary">Project Summary</div>
+  ),
 }));
 
-jest.mock('../../services/api', () => ({
-  createProject: jest.fn().mockResolvedValue({ id: 'test-project' }),
-  uploadFile: jest.fn().mockResolvedValue({ id: 'test-file' }),
+jest.mock("../../services/api", () => ({
+  createProject: jest.fn().mockResolvedValue({ id: "test-project" }),
+  uploadFile: jest.fn().mockResolvedValue({ id: "test-file" }),
 }));
 
-jest.mock('../../utils', () => ({
+jest.mock("../../utils", () => ({
   formatFileSize: (size: number) => `${size} bytes`,
   formatDate: (date: string) => new Date(date).toLocaleDateString(),
 }));
 
-jest.mock('../../constants', () => ({
-  SCHOOL_PURPOSE_OPTIONS: [{ value: 'good-grades', label: 'Good Grades' }],
-  TEST_LEVEL_OPTIONS: [{ value: 'high-school', label: 'High School' }],
-  TIMEFRAME_OPTIONS: [{ value: '1-month', label: '1 Month' }],
-  FREQUENCY_OPTIONS: [{ value: 'daily', label: 'Daily' }],
-  COLLABORATION_OPTIONS: [{ value: 'solo', label: 'Solo' }],
+jest.mock("../../constants", () => ({
+  SCHOOL_PURPOSE_OPTIONS: [{ value: "good-grades", label: "Good Grades" }],
+  TEST_LEVEL_OPTIONS: [{ value: "high-school", label: "High School" }],
+  TIMEFRAME_OPTIONS: [{ value: "1-month", label: "1 Month" }],
+  FREQUENCY_OPTIONS: [{ value: "daily", label: "Daily" }],
+  COLLABORATION_OPTIONS: [{ value: "solo", label: "Solo" }],
 }));
 
 // Import the component after all mocks are set up
-import { GuidedSetup } from '../guided-setup';
+import { GuidedSetup } from "../guided-setup";
 
-describe('GuidedSetup', () => {
+describe("GuidedSetup", () => {
   const mockOnBack = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders without crashing', () => {
+  it("renders without crashing", () => {
     render(<GuidedSetup onBack={mockOnBack} />);
-    expect(screen.getByTestId('project-name-step')).toBeInTheDocument();
+    expect(screen.getByTestId("project-name-step")).toBeInTheDocument();
   });
 
-  it('shows progress indicator', () => {
+  it("shows progress indicator", () => {
     render(<GuidedSetup onBack={mockOnBack} />);
-    const progressBar = screen.getByRole('progressbar');
+    const progressBar = screen.getByRole("progressbar");
     expect(progressBar).toBeInTheDocument();
   });
 
-  it('handles navigation', () => {
+  it("handles navigation", () => {
     render(<GuidedSetup onBack={mockOnBack} />);
-    expect(screen.getByText('Back')).toBeInTheDocument();
-    expect(screen.getByText('Next')).toBeInTheDocument();
+    expect(screen.getByText("Back")).toBeInTheDocument();
+    expect(screen.getByText("Next")).toBeInTheDocument();
   });
 });

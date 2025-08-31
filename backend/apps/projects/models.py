@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.contrib.postgres.indexes import GinIndex
 import uuid
 import hashlib
 from decouple import config
@@ -200,6 +201,51 @@ class ImportantDate(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.date}"
+
+
+class ProjectMeta(models.Model):
+    """
+    Flexible metadata storage for projects using JSONB.
+    Allows for schema-less data without polluting the main table.
+    """
+    project = models.ForeignKey(
+        Project, 
+        on_delete=models.CASCADE, 
+        related_name='metadata'
+    )
+    key = models.CharField(max_length=255)
+    value = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('project', 'key')
+        indexes = [
+            models.Index(fields=['project', 'key']),
+            GinIndex(fields=['value'], name='projectmeta_value_gin'),  # GIN index for JSONB queries
+        ]
+
+    def __str__(self):
+        return f"{self.project.name} - {self.key}"
+
+
+class ProjectFlashcardSet(models.Model):
+    """
+    Links projects with flashcard sets to enable project-specific flashcard workflows.
+    This allows users to organize flashcards by project while maintaining the existing
+    flashcard generation system.
+    """
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='flashcard_sets')
+    flashcard_set = models.ForeignKey('generation.FlashcardSet', on_delete=models.CASCADE, related_name='project_links')
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_primary = models.BooleanField(default=False, help_text="Primary flashcard set for this project")
+    
+    class Meta:
+        unique_together = ('project', 'flashcard_set')
+        ordering = ['-is_primary', '-created_at']
+    
+    def __str__(self):
+        return f"{self.project.name} - {self.flashcard_set.title}"
 
 
 # Factory functions that work with hybrid model

@@ -1,4 +1,4 @@
-import { SimpleRadioGroup, type SimpleRadioOption } from './shared';
+import { SimpleRadioGroup, type SimpleRadioOption } from "./shared";
 
 interface TimelineStepProps {
   timeframe: string;
@@ -9,7 +9,7 @@ interface TimelineStepProps {
 export function TimelineStep({
   timeframe,
   onTimeframeChange,
-  timeframeOptions
+  timeframeOptions,
 }: TimelineStepProps) {
   return (
     <SimpleRadioGroup
@@ -19,4 +19,4 @@ export function TimelineStep({
       name="timeline"
     />
   );
-} 
+}

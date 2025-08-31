@@ -20,7 +20,6 @@ import {
   Clock,
   Sparkles
 } from 'lucide-react';
-import PropTypes from 'prop-types';
 
 interface MindMapCardProps {
   mindMap: {
@@ -157,26 +156,3 @@ export function MindMapCard({
     </Card>
   );
 }
-
-MindMapCard.propTypes = {
-  mindMap: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    subject: PropTypes.string.isRequired,
-    nodeCount: PropTypes.number.isRequired,
-    lastEdited: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-    color: PropTypes.string.isRequired,
-    bgColor: PropTypes.string.isRequired,
-    borderColor: PropTypes.string.isRequired,
-    progress: PropTypes.number.isRequired,
-    isAIGenerated: PropTypes.bool.isRequired,
-    description: PropTypes.string,
-  }).isRequired,
-  getSubjectIcon: PropTypes.func.isRequired,
-  getStatusColor: PropTypes.func.isRequired,
-  onOpen: PropTypes.func,
-  onDuplicate: PropTypes.func,
-  onShare: PropTypes.func,
-  onDelete: PropTypes.func,
-}; 

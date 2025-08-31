@@ -132,7 +132,6 @@ export default function ProjectMindMaps() {
       case 'math': return '📐';
       default: return '📚';
     }
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -141,7 +140,6 @@ export default function ProjectMindMaps() {
       case 'archived': return 'bg-gray-100 text-gray-800 border-gray-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
-  };
 
   return (
     <div className="space-y-8">
@@ -492,4 +490,4 @@ export default function ProjectMindMaps() {
       )}
     </div>
   );
-} 
+}

@@ -51,7 +51,6 @@ const MockCourseContentUploadStep = ({ onAnalysisComplete, onUploadComplete }: a
   const handleAnalyze = () => {
     setShowSuccess(true);
     onAnalysisComplete();
-  };
 
   return (
     <div>
@@ -76,7 +75,6 @@ const MockCourseContentUploadStep = ({ onAnalysisComplete, onUploadComplete }: a
       )}
     </div>
   );
-};
 
 const MockTestUploadStep = ({ onAnalysisComplete, onUploadComplete }: any) => {
   const [showSuccess, setShowSuccess] = React.useState(false);
@@ -85,7 +83,6 @@ const MockTestUploadStep = ({ onAnalysisComplete, onUploadComplete }: any) => {
   const handleAnalyze = () => {
     setShowSuccess(true);
     onAnalysisComplete();
-  };
 
   return (
     <div>
@@ -110,12 +107,10 @@ const MockTestUploadStep = ({ onAnalysisComplete, onUploadComplete }: any) => {
       )}
     </div>
   );
-};
 
 // Mock file creation helper
 const createMockFile = (name: string, type: string = 'application/pdf') => {
   return new File(['mock content'], name, { type });
-};
 
 describe('Success Messages in Upload Steps', () => {
   describe('CourseContentUploadStep Mock', () => {
@@ -124,7 +119,6 @@ describe('Success Messages in Upload Steps', () => {
       onAnalysisComplete: jest.fn(),
       onNext: jest.fn(),
       onBack: jest.fn(),
-    };
 
     beforeEach(() => {
       jest.clearAllMocks();
@@ -244,7 +238,6 @@ describe('Success Messages in Upload Steps', () => {
       onAnalysisComplete: jest.fn(),
       onNext: jest.fn(),
       onBack: jest.fn(),
-    };
 
     beforeEach(() => {
       jest.clearAllMocks();
@@ -310,11 +303,9 @@ describe('Success Messages in Upload Steps', () => {
 
       const handleCourseAnalysisComplete = () => {
         isCourseContentComplete = true;
-      };
 
       const handleTestAnalysisComplete = () => {
         isTestComplete = true;
-      };
 
       // Test course content upload
       const { rerender } = render(

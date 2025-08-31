@@ -41,16 +41,22 @@ class DocumentViewSet(viewsets.ModelViewSet):
             document = self.get_object()
             logger.info(f"Starting processing for document {document.id}")
             
+            # Check if test mode is requested
+            test_mode = request.headers.get('X-Test-Mode') == 'true'
+            if test_mode:
+                logger.info(f"🧪 TEST MODE: Processing document {document.id} with mock AI client")
+            
             # Try to queue the task
             try:
-                task = process_document.delay(document.id)
+                task = process_document.delay(document.id, test_mode=test_mode)
                 logger.info(f"Task queued successfully with ID: {task.id}")
                 
                 return Response(
                     {
                         'status': 'processing_started',
                         'task_id': task.id,
-                        'document_id': document.id
+                        'document_id': document.id,
+                        'test_mode': test_mode
                     },
                     status=status.HTTP_202_ACCEPTED
                 )

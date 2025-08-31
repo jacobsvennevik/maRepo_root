@@ -1,6 +1,7 @@
 from ..django_models import Document, ProcessedData
 from ..constants import DocumentType
 from backend.apps.generation.services.api_client import AIClient
+from backend.apps.generation.services.mock_ai_client import MockAIClient
 from .classification_service import DocumentClassifierService
 from ..processors.base import BaseProcessor
 from ..processors.syllabus import SyllabusProcessorService
@@ -8,6 +9,8 @@ from ..processors.exam import ExamProcessorService
 from ..processors.note import NoteProcessorService
 from ..processors.study_content import StudyContentProcessor
 from ..processors.unknown import UnknownProcessorService
+import os
+from django.http import HttpRequest
 
 
 class DocumentDispatcher:
@@ -15,11 +18,22 @@ class DocumentDispatcher:
     Dispatches documents to the correct processor based on classification.
     """
 
-    def __init__(self, document: Document, model_name: str = "gemini-1.5-flash"):
+    def __init__(self, document: Document, model_name: str = "gemini-1.5-flash", request: HttpRequest = None):
         self.document = document
         
-        # Centralized AI client creation
-        client = AIClient(model=model_name)
+        # Check if we're in test mode (environment variable or request header)
+        is_test_mode = (
+            os.environ.get('TEST_MODE', 'false').lower() == 'true' or
+            (request and request.headers.get('X-Test-Mode') == 'true')
+        )
+        
+        # Use mock AI client in test mode, real AI client otherwise
+        if is_test_mode:
+            print("🧪 TEST MODE: Using MockAIClient for AI processing")
+            client = MockAIClient(model="mock-model")
+        else:
+            print("🚀 PRODUCTION MODE: Using real AIClient for AI processing")
+            client = AIClient(model=model_name)
 
         self.classifier = DocumentClassifierService(client=client)
         self.processors = {

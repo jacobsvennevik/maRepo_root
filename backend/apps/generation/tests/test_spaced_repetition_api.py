@@ -27,8 +27,8 @@ class SpacedRepetitionAPIBaseTest(APITestCase):
         """Set up test data."""
         self.user = CustomUserFactory()
         self.client = APIClient()
-        # Note: Commenting out authentication for now since permission_classes are commented out
-        # self.client.force_authenticate(user=self.user)
+        # Enable authentication for tests
+        self.client.force_authenticate(user=self.user)
         
         # Create test flashcard set and cards
         self.flashcard_set = FlashcardSetFactory(owner=self.user)
@@ -36,6 +36,12 @@ class SpacedRepetitionAPIBaseTest(APITestCase):
         
         # Create cards with different states
         for i in range(5):
+            # Make first 2 cards due now, rest due in the future
+            if i < 2:
+                next_review = timezone.now() - timedelta(hours=1)  # Due now (overdue)
+            else:
+                next_review = timezone.now() + timedelta(days=i+1)  # Due in future
+            
             card = FlashcardFactory(
                 flashcard_set=self.flashcard_set,
                 algorithm='sm2',
@@ -43,7 +49,7 @@ class SpacedRepetitionAPIBaseTest(APITestCase):
                 total_reviews=i,
                 correct_reviews=max(0, i-1),
                 interval=float(i + 1),
-                next_review=timezone.now() + timedelta(days=i-2)  # Some overdue, some future
+                next_review=next_review,
             )
             self.flashcards.append(card)
 
@@ -54,7 +60,7 @@ class TestFlashcardViewSetSpacedRepetition(SpacedRepetitionAPIBaseTest):
     def test_review_card_success(self):
         """Test successful card review."""
         card = self.flashcards[0]
-        url = f'/generation/api/flashcards/{card.id}/review/'
+        url = f'/api/flashcards/{card.id}/review/'
         
         data = {
             'quality': ReviewQuality.PERFECT,
@@ -63,9 +69,15 @@ class TestFlashcardViewSetSpacedRepetition(SpacedRepetitionAPIBaseTest):
         
         response = self.client.post(url, data, format='json')
         
+        # Debug: Print response data if there's an error
+        if response.status_code != status.HTTP_200_OK:
+            print(f"Response status: {response.status_code}")
+            print(f"Response data: {response.data}")
+        
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('card', response.data)
-        self.assertIn('message', response.data)
+        self.assertIn('data', response.data)
+        self.assertIn('card', response.data['data'])
+        self.assertIn('message', response.data['data'])
         
         # Check that card was updated
         card.refresh_from_db()
@@ -75,7 +87,7 @@ class TestFlashcardViewSetSpacedRepetition(SpacedRepetitionAPIBaseTest):
     def test_review_card_invalid_quality(self):
         """Test card review with invalid quality score."""
         card = self.flashcards[0]
-        url = f'/generation/api/flashcards/{card.id}/review/'
+        url = f'/api/flashcards/{card.id}/review/'
         
         data = {'quality': 6}  # Invalid quality (should be 0-5)
         
@@ -91,8 +103,9 @@ class TestFlashcardViewSetSpacedRepetition(SpacedRepetitionAPIBaseTest):
         response = self.client.post(url)
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('card', response.data)
-        self.assertIn('message', response.data)
+        self.assertIn('data', response.data)
+        self.assertIn('card', response.data['data'])
+        self.assertIn('message', response.data['data'])
         
         # Check that card was reset
         card.refresh_from_db()
@@ -221,17 +234,11 @@ class TestReviewSessionAPI(SpacedRepetitionAPIBaseTest):
         self.assertIn('message', response.data)
         self.assertIsNotNone(response.data['next_card'])
     
-    @patch('backend.apps.generation.services.scheduler.ReviewSession')
-    def test_start_review_session_no_cards(self, mock_session_class):
+    def test_start_review_session_no_cards(self):
         """Test starting a review session when no cards are available."""
-        mock_session = Mock()
-        mock_session.get_next_card.return_value = None
-        mock_session.session_stats = {
-            'total_cards': 0,
-            'correct_cards': 0,
-            'session_start': timezone.now()
-        }
-        mock_session_class.return_value = mock_session
+        # Create a new user with no flashcards to ensure no cards are available
+        user_without_cards = CustomUserFactory()
+        self.client.force_authenticate(user=user_without_cards)
         
         url = '/generation/api/review/session/'
         data = {'session_limit': 10}
@@ -241,6 +248,9 @@ class TestReviewSessionAPI(SpacedRepetitionAPIBaseTest):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNone(response.data['next_card'])
         self.assertIn('No cards due', response.data['message'])
+        
+        # Restore original user authentication
+        self.client.force_authenticate(user=self.user)
     
     def test_start_review_session_invalid_limit(self):
         """Test starting session with invalid session limit."""
@@ -255,7 +265,7 @@ class TestReviewSessionAPI(SpacedRepetitionAPIBaseTest):
 class TestReviewDashboardAPI(SpacedRepetitionAPIBaseTest):
     """Test ReviewDashboardAPIView."""
     
-    @patch('backend.apps.generation.services.scheduler.ReviewScheduleManager.get_review_dashboard')
+    @patch('backend.apps.generation.services.ReviewScheduleManager.get_review_dashboard')
     def test_get_dashboard(self, mock_get_dashboard):
         """Test getting review dashboard data."""
         mock_dashboard_data = {
@@ -295,7 +305,7 @@ class TestReviewDashboardAPI(SpacedRepetitionAPIBaseTest):
 class TestUpcomingReviewsAPI(SpacedRepetitionAPIBaseTest):
     """Test UpcomingReviewsAPIView."""
     
-    @patch('backend.apps.generation.services.scheduler.ReviewScheduleManager.get_upcoming_reviews')
+    @patch('backend.apps.generation.services.ReviewScheduleManager.get_upcoming_reviews')
     def test_get_upcoming_reviews_default(self, mock_get_upcoming):
         """Test getting upcoming reviews with default parameters."""
         mock_schedule = [
@@ -340,7 +350,7 @@ class TestUpcomingReviewsAPI(SpacedRepetitionAPIBaseTest):
 class TestStudyPlanAPI(SpacedRepetitionAPIBaseTest):
     """Test StudyPlanAPIView."""
     
-    @patch('backend.apps.generation.services.scheduler.ReviewScheduleManager.suggest_study_plan')
+    @patch('backend.apps.generation.services.ReviewScheduleManager.suggest_study_plan')
     def test_get_study_plan(self, mock_suggest_plan):
         """Test getting personalized study plan."""
         mock_plan = {
@@ -383,7 +393,7 @@ class TestStudyPlanAPI(SpacedRepetitionAPIBaseTest):
 class TestLearningAnalyticsAPI(SpacedRepetitionAPIBaseTest):
     """Test LearningAnalyticsAPIView."""
     
-    @patch('backend.apps.generation.services.scheduler.ReviewScheduleManager.get_learning_analytics')
+    @patch('backend.apps.generation.services.ReviewScheduleManager.get_learning_analytics')
     def test_get_learning_analytics(self, mock_get_analytics):
         """Test getting learning analytics."""
         mock_analytics = {
@@ -431,7 +441,7 @@ class TestLearningAnalyticsAPI(SpacedRepetitionAPIBaseTest):
 class TestScheduleOptimizationAPI(SpacedRepetitionAPIBaseTest):
     """Test ScheduleOptimizationAPIView."""
     
-    @patch('backend.apps.generation.services.scheduler.ReviewScheduleManager.optimize_daily_schedule')
+    @patch('backend.apps.generation.services.ReviewScheduleManager.optimize_daily_schedule')
     def test_get_schedule_optimization(self, mock_optimize):
         """Test getting schedule optimization recommendations."""
         mock_optimization = {

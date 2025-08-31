@@ -138,7 +138,6 @@ describe('PDF Processing Integration', () => {
           ]
         },
         status: 'completed'
-      };
 
       // This mimics the transformation logic that should exist
       const frontendData = {
@@ -147,7 +146,6 @@ describe('PDF Processing Integration', () => {
         assignments: backendData.metadata.assignments,
         originalText: backendData.original_text,
         status: backendData.status
-      };
 
       expect(frontendData.courseName).toBe('Advanced Physics');
       expect(frontendData.topics).toEqual(['mechanics', 'thermodynamics']);
@@ -172,7 +170,6 @@ describe('PDF Processing Integration', () => {
         id: 123,
         status: 'error',
         error_message: 'Failed to extract text from PDF'
-      };
 
       expect(processingErrorData.status).toBe('error');
       expect(processingErrorData.error_message).toBeTruthy();
@@ -184,7 +181,6 @@ describe('PDF Processing Integration', () => {
       const props = {
         onUploadComplete: jest.fn(),
         onNext: jest.fn()
-      };
 
       expect(typeof props.onUploadComplete).toBe('function');
       expect(typeof props.onNext).toBe('function');
@@ -197,7 +193,6 @@ describe('PDF Processing Integration', () => {
         original_text: 'Content',
         metadata: { course_name: 'Test Course' },
         status: 'completed'
-      };
       const mockFileName = 'syllabus.pdf';
 
       const onUploadComplete = jest.fn();

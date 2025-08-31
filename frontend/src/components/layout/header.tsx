@@ -1,47 +1,56 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Droplets } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Navbar } from "./navbar"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Droplets } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Navbar } from "./navbar";
 
 export function Header() {
-  const [scrolled, setScrolled] = useState(false)
-  const pathname = usePathname()
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   // Track scroll position
   useEffect(() => {
     const handleScroll = () => {
-      const offset = window.scrollY
+      const offset = window.scrollY;
       if (offset > 80) {
-        setScrolled(true)
+        setScrolled(true);
       } else {
-        setScrolled(false)
+        setScrolled(false);
       }
-    }
+    };
 
     // Initial check on mount
-    handleScroll()
-    
-    window.addEventListener("scroll", handleScroll)
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener("scroll", handleScroll)
-    }
-  }, [])
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   // Don't show header on auth pages
-  if (pathname?.startsWith("/(auth)") || pathname?.startsWith("/login") || pathname?.startsWith("/signup")) {
-    return null
+  if (
+    pathname?.startsWith("/(auth)") ||
+    pathname?.startsWith("/login") ||
+    pathname?.startsWith("/signup")
+  ) {
+    return null;
   }
 
   return (
     <div className="fixed top-0 left-0 right-0 z-[9999]">
-      <header className={`transition-all duration-300 ${scrolled ? "bg-white shadow-md py-3" : "bg-transparent py-4"}`}>
+      <header
+        className={`transition-all duration-300 ${scrolled ? "bg-white shadow-md py-3" : "bg-transparent py-4"}`}
+      >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-xl font-medium text-ocean-deep flex items-center">
+            <Link
+              href="/"
+              className="text-xl font-medium text-ocean-deep flex items-center"
+            >
               <Droplets className="mr-2 text-aqua" />
               <span>OceanLearn</span>
             </Link>
@@ -66,5 +75,5 @@ export function Header() {
         </div>
       </header>
     </div>
-  )
-} 
+  );
+}

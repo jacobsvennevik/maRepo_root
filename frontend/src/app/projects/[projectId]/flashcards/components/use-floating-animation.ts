@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export function useFloatingAnimation() {
   const [waveOffset, setWaveOffset] = useState(0);
@@ -8,11 +8,11 @@ export function useFloatingAnimation() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setWaveOffset(prev => prev + 1);
+      setWaveOffset((prev) => prev + 1);
     }, 50);
 
     return () => clearInterval(interval);
   }, []);
 
   return { waveOffset, floatingCards };
-} 
+}

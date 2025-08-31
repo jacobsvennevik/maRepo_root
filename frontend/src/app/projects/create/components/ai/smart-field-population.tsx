@@ -159,7 +159,6 @@ export function SmartFieldPopulation({
           : s
       )
     );
-  };
 
   const handleApplyAll = () => {
     suggestions.forEach(suggestion => {
@@ -169,7 +168,6 @@ export function SmartFieldPopulation({
     });
     setAppliedSuggestions(suggestions.map(s => s.id));
     onDismiss();
-  };
 
   if (suggestions.length === 0) return null;
 
@@ -249,4 +247,5 @@ export function SmartFieldPopulation({
       </CardContent>
     </Card>
   );
-} 
+} }
+}

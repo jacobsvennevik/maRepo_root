@@ -2601,6 +2601,39 @@ components:
           required:
           - goal_description
           - study_frequency
+        meta:
+          type: object
+          description: Flexible metadata storage for projects (only available when ENABLE_STI=true)
+          additionalProperties: true
+          properties:
+            ai_generated_tags:
+              type: array
+              items:
+                type: string
+              description: AI-generated tags for the project
+            content_summary:
+              type: string
+              description: AI-generated content summary
+            difficulty_level:
+              type: string
+              enum: [beginner, intermediate, advanced]
+              description: AI-assessed difficulty level
+            ai_model_used:
+              type: string
+              description: AI model used for metadata generation
+            ai_prompt_version:
+              type: string
+              description: Version of the prompt used
+          example:
+            ai_generated_tags: ["machine-learning", "python", "neural-networks"]
+            content_summary: "Advanced course covering deep learning fundamentals"
+            difficulty_level: "advanced"
+            ai_model_used: "gpt-4"
+            ai_prompt_version: "1.0"
+            custom_field: "custom_value"
+            settings:
+              theme: "dark"
+              notifications: true
         start_date:
           type: string
           format: date
@@ -2672,6 +2705,28 @@ components:
       required:
       - file_type
       - file
+    ProjectMeta:
+      type: object
+      properties:
+        key:
+          type: string
+          maxLength: 255
+          description: Metadata key
+        value:
+          type: object
+          description: Metadata value (flexible JSON)
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - key
+      - value
     StudyMaterial:
       type: object
       properties:

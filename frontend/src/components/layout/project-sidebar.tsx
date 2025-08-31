@@ -1,9 +1,19 @@
-"use client"
+"use client";
 
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Book, FileText, Brain, ClipboardList, StickyNote, File, BarChart2 } from 'lucide-react';
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { useState } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Book,
+  FileText,
+  Brain,
+  ClipboardList,
+  StickyNote,
+  File,
+  BarChart2,
+} from "lucide-react";
 
 interface ProjectSidebarProps {
   projectId?: string;
@@ -11,24 +21,29 @@ interface ProjectSidebarProps {
 }
 
 const sidebarItems = [
-  { name: 'Overview', href: 'overview', icon: Book },
-  { name: 'Flashcards', href: 'flashcards', icon: FileText },
-  { name: 'Mind Maps', href: 'mindmaps', icon: Brain },
-  { name: 'Tests', href: 'tests', icon: ClipboardList },
-  { name: 'Notes', href: 'notes', icon: StickyNote },
-  { name: 'Files', href: 'files', icon: File },
-  { name: 'Analytics', href: 'analytics', icon: BarChart2 },
+  { name: "Overview", href: "overview", icon: Book },
+  { name: "Flashcards", href: "flashcards", icon: FileText },
+  { name: "Mind Maps", href: "mindmaps", icon: Brain },
+  { name: "Tests", href: "tests", icon: ClipboardList },
+  { name: "Notes", href: "notes", icon: StickyNote },
+  { name: "Files", href: "files", icon: File },
+  { name: "Analytics", href: "analytics", icon: BarChart2 },
 ];
 
-export function ProjectSidebar({ projectId, projectName }: ProjectSidebarProps) {
+export function ProjectSidebar({
+  projectId,
+  projectName,
+}: ProjectSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
 
-  const currentTool = pathname.split('/').pop() || 'overview';
+  const currentTool = pathname.split("/").pop() || "overview";
   const isProjectView = projectId && projectName;
 
   return (
-    <div className={`flex flex-col h-screen bg-white border-r border-gray-200 transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
+    <div
+      className={`flex flex-col h-screen bg-white border-r border-gray-200 transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"}`}
+    >
       {/* Collapse Toggle */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
@@ -40,7 +55,9 @@ export function ProjectSidebar({ projectId, projectName }: ProjectSidebarProps) 
       {/* Breadcrumbs */}
       {!isCollapsed && isProjectView && (
         <div className="px-4 py-2 text-sm text-gray-600">
-          <Link href="/projects" className="hover:text-blue-600">Projects</Link>
+          <Link href="/projects" className="hover:text-blue-600">
+            Projects
+          </Link>
           <span className="mx-2">/</span>
           <span className="font-medium">{projectName}</span>
         </div>
@@ -51,18 +68,18 @@ export function ProjectSidebar({ projectId, projectName }: ProjectSidebarProps) 
         {sidebarItems.map((item) => {
           const isActive = currentTool === item.href;
           const Icon = item.icon;
-          const href = isProjectView 
+          const href = isProjectView
             ? `/projects/${projectId}/${item.href}`
             : `/projects/${item.href}`;
-          
+
           return (
             <Link
               key={item.href}
               href={href}
               className={`flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                 isActive
-                  ? 'bg-blue-50 text-blue-600'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
               <Icon size={20} className="mr-3" />
@@ -86,4 +103,4 @@ export function ProjectSidebar({ projectId, projectName }: ProjectSidebarProps) 
       )}
     </div>
   );
-} 
+}

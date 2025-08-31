@@ -1,15 +1,20 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { SectionHeader } from "@/components/ui/common/section-header"
-import { FilterDropdown } from "@/components/ui/common/filter-dropdown"
-import { BlogCard, BlogPost } from "@/components/ui/cards/blog-card"
-import { FeaturedBlogCard } from "@/components/ui/cards/featured-blog-card"
-import { useBlogFilters } from "@/hooks/useBlogFilters"
-import { blogPosts, featuredBlogPost, categories, contentTypes } from "@/data/blog-posts"
+import { Button } from "@/components/ui/button";
+import { SectionHeader } from "@/components/ui/common/section-header";
+import { FilterDropdown } from "@/components/ui/common/filter-dropdown";
+import { BlogCard, BlogPost } from "@/components/ui/cards/blog-card";
+import { FeaturedBlogCard } from "@/components/ui/cards/featured-blog-card";
+import { useBlogFilters } from "@/hooks/useBlogFilters";
+import {
+  blogPosts,
+  featuredBlogPost,
+  categories,
+  contentTypes,
+} from "@/data/blog-posts";
 
 export function BlogResourcesSection() {
-  const { 
+  const {
     selectedCategory,
     selectedType,
     showCategoryDropdown,
@@ -17,11 +22,11 @@ export function BlogResourcesSection() {
     toggleCategoryDropdown,
     toggleTypeDropdown,
     selectCategory,
-    selectType
+    selectType,
   } = useBlogFilters({
     categories,
-    contentTypes
-  })
+    contentTypes,
+  });
 
   return (
     <section id="resources" className="relative py-20 overflow-hidden">
@@ -50,7 +55,9 @@ export function BlogResourcesSection() {
 
         {/* Filters */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
-          <h3 className="text-xl font-medium text-slate-900">Latest Resources</h3>
+          <h3 className="text-xl font-medium text-slate-900">
+            Latest Resources
+          </h3>
 
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Category filter */}
@@ -77,7 +84,7 @@ export function BlogResourcesSection() {
 
         {/* Featured post */}
         <div className="mb-16">
-          <FeaturedBlogCard 
+          <FeaturedBlogCard
             title={featuredBlogPost.title}
             description={featuredBlogPost.description}
             date={featuredBlogPost.date}
@@ -96,11 +103,9 @@ export function BlogResourcesSection() {
 
         {/* View all button */}
         <div className="mt-12 text-center">
-          <Button variant="ocean-outline">
-            View All Resources
-          </Button>
+          <Button variant="ocean-outline">View All Resources</Button>
         </div>
       </div>
     </section>
-  )
-} 
+  );
+}

@@ -1,4 +1,4 @@
-export { formatFileSize } from './file-helpers';
+export { formatFileSize } from "./file-helpers";
 
 /**
  * Formats a date string into a human-readable date.
@@ -9,9 +9,14 @@ export { formatFileSize } from './file-helpers';
  */
 export const formatDate = (
   dateString: string,
-  options: Intl.DateTimeFormatOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }
+  options: Intl.DateTimeFormatOptions = {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  },
 ): string => {
-  if (!dateString || dateString === 'TBD' || dateString === 'Not specified') {
+  if (!dateString || dateString === "TBD" || dateString === "Not specified") {
     return dateString;
   }
   try {
@@ -19,8 +24,8 @@ export const formatDate = (
     if (isNaN(date.getTime())) {
       return dateString;
     }
-    return date.toLocaleDateString('en-US', options);
+    return date.toLocaleDateString("en-US", options);
   } catch {
     return dateString;
   }
-}; 
+};

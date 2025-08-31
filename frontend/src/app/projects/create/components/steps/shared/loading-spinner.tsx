@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface LoadingSpinnerProps {
   message?: string;
@@ -6,10 +6,10 @@ interface LoadingSpinnerProps {
   className?: string;
 }
 
-export function LoadingSpinner({ 
+export function LoadingSpinner({
   message = "AI is analyzing your materials...",
   subMessage = "This may take a few moments",
-  className = "text-center p-4 bg-blue-50 rounded-lg"
+  className = "text-center p-4 bg-blue-50 rounded-lg",
 }: LoadingSpinnerProps) {
   return (
     <div className={className}>
@@ -20,4 +20,4 @@ export function LoadingSpinner({
       <p className="text-xs text-gray-500 mt-2">{subMessage}</p>
     </div>
   );
-} 
+}

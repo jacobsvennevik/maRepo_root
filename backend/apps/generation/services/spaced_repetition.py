@@ -146,7 +146,7 @@ class LeitnerAlgorithm(SpacedRepetitionAlgorithms):
         )
         
         # Calculate next review date
-        next_review = timezone.now() + timedelta(days=interval)
+        next_review = (timezone.now() + timedelta(days=interval))  # Removed .date()
         
         return {
             'leitner_box': new_box,
@@ -218,7 +218,7 @@ class SM2Algorithm(SpacedRepetitionAlgorithms):
         )
         
         # Calculate next review date
-        next_review = timezone.now() + timedelta(days=new_interval)
+        next_review = (timezone.now() + timedelta(days=new_interval))  # Removed .date()
         
         return {
             'ease_factor': new_ease_factor,

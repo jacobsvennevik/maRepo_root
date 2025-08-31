@@ -1,6 +1,11 @@
-"use client"
+"use client";
 
-import { StudyMaterialsList, WelcomeCard, GoalTracker, AddStudyMaterialCard } from "./components";
+import {
+  StudyMaterialsList,
+  WelcomeCard,
+  GoalTracker,
+  AddStudyMaterialCard,
+} from "./components";
 
 export function DashboardOverview() {
   return (
@@ -15,13 +20,13 @@ export function DashboardOverview() {
         {/* Right Column - Welcome Card and Goal Tracker */}
         <div className="lg:col-span-5 space-y-6">
           <WelcomeCard userName="Jacob Horn Svennevik" />
-          <GoalTracker 
-            progress={115} 
+          <GoalTracker
+            progress={115}
             completedDays={["M", "T", "W", "Th", "F"]}
             targetDays={["M", "T", "W", "Th", "F", "Sa", "Su"]}
           />
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

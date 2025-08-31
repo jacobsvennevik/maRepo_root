@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from "react";
 
 interface UseAutoSaveOptions<T> {
   data: T;
@@ -7,23 +7,28 @@ interface UseAutoSaveOptions<T> {
   debounceMs?: number;
 }
 
-export function useAutoSave<T>({ 
-  data, 
-  key, 
-  enabled = true, 
-  debounceMs = 1000 
+export function useAutoSave<T>({
+  data,
+  key,
+  enabled = true,
+  debounceMs = 1000,
 }: UseAutoSaveOptions<T>) {
-  
-  const saveToStorage = useCallback((dataToSave: T) => {
-    try {
-      localStorage.setItem(`project-setup-${key}`, JSON.stringify({
-        data: dataToSave,
-        timestamp: Date.now()
-      }));
-    } catch (error) {
-      console.warn('Failed to save to localStorage:', error);
-    }
-  }, [key]);
+  const saveToStorage = useCallback(
+    (dataToSave: T) => {
+      try {
+        localStorage.setItem(
+          `project-setup-${key}`,
+          JSON.stringify({
+            data: dataToSave,
+            timestamp: Date.now(),
+          }),
+        );
+      } catch (error) {
+        console.warn("Failed to save to localStorage:", error);
+      }
+    },
+    [key],
+  );
 
   const loadFromStorage = useCallback((): T | null => {
     try {
@@ -36,7 +41,7 @@ export function useAutoSave<T>({
         }
       }
     } catch (error) {
-      console.warn('Failed to load from localStorage:', error);
+      console.warn("Failed to load from localStorage:", error);
     }
     return null;
   }, [key]);
@@ -45,7 +50,7 @@ export function useAutoSave<T>({
     try {
       localStorage.removeItem(`project-setup-${key}`);
     } catch (error) {
-      console.warn('Failed to clear localStorage:', error);
+      console.warn("Failed to clear localStorage:", error);
     }
   }, [key]);
 
@@ -63,6 +68,6 @@ export function useAutoSave<T>({
   return {
     saveToStorage,
     loadFromStorage,
-    clearStorage
+    clearStorage,
   };
-} 
+}

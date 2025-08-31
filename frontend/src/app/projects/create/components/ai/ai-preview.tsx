@@ -153,7 +153,6 @@ export function AIPreview({
         ? prev.filter(id => id !== topicId)
         : [...prev, topicId]
     );
-  };
 
   const handleDateToggle = (dateId: string) => {
     setSelectedDates(prev => 
@@ -161,7 +160,6 @@ export function AIPreview({
         ? prev.filter(id => id !== dateId)
         : [...prev, dateId]
     );
-  };
 
   const handleTestTypeToggle = (typeId: string) => {
     setSelectedTestTypes(prev => 
@@ -169,7 +167,6 @@ export function AIPreview({
         ? prev.filter(id => id !== typeId)
         : [...prev, typeId]
     );
-  };
 
   const handleRecommendationToggle = (recId: string) => {
     setSelectedRecommendations(prev => 
@@ -177,7 +174,6 @@ export function AIPreview({
         ? prev.filter(id => id !== recId)
         : [...prev, recId]
     );
-  };
 
   const handleApplyAll = () => {
     // Apply selected topics
@@ -201,7 +197,6 @@ export function AIPreview({
     onApplyRecommendations(recommendationsToApply);
 
     onDismiss();
-  };
 
   const handleOneClickSetup = () => {
     // Auto-select all high-confidence items
@@ -219,7 +214,6 @@ export function AIPreview({
     setTimeout(() => {
       handleApplyAll();
     }, 500);
-  };
 
   const totalDetections = detectedTopics.length + detectedDates.length + detectedTestTypes.length;
   const totalSelected = selectedTopics.length + selectedDates.length + selectedTestTypes.length + selectedRecommendations.length;
@@ -420,4 +414,9 @@ export function AIPreview({
       </CardContent>
     </Card>
   );
-} 
+} }
+}
+}
+}
+}
+}

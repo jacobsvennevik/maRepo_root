@@ -250,7 +250,6 @@ describe('CourseContentUploadStep', () => {
           snippet: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod...'
         },
         status: 'completed'
-      };
 
       uploadFileWithProgress.mockImplementation(async (file: File, onProgress: (progress: number) => void) => {
         onProgress(0);

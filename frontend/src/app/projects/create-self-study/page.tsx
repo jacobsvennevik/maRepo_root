@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { ChevronLeft, Wand2, Settings, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { GuidedSetup } from './components/guided-setup';
-import { CustomSetup } from './components/custom-setup';
+import GuidedSetup from '../create/guided-setup';
+import { CustomSetup } from '../create/components/custom-setup';
 import { performComprehensiveCleanup } from '../create/utils/cleanup-utils';
 
 type SetupMode = 'selection' | 'guided' | 'custom';

@@ -1,23 +1,29 @@
 // Set environment variables before any imports to ensure they're available when the component is loaded
-process.env.NODE_ENV = 'development';
-process.env.NEXT_PUBLIC_TEST_MODE = 'true';
+process.env.NODE_ENV = "development";
+process.env.NEXT_PUBLIC_TEST_MODE = "true";
 
-import * as React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { SyllabusUploadStep } from '../steps/syllabus-upload-step';
+import * as React from "react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { SyllabusUploadStep } from "../steps/syllabus-upload-step";
 import {
   createLocalStorageMock,
   createMockProjectSetup,
   createTestFile,
   createMockFetch,
   setupTestCleanup,
-  simulateFileUpload
-} from '../../../../../test-utils/test-helpers';
+  simulateFileUpload,
+} from "../../../../../test-utils/test-helpers";
 import {
   createAPIServiceMock,
-  createUploadTestSetup
-} from '../../../../../test-utils/upload-test-helpers';
+  createUploadTestSetup,
+} from "../../../../../test-utils/upload-test-helpers";
 
 // Setup test environment using shared utilities
 const { mocks, createBeforeEach, createAfterEach } = createUploadTestSetup();
@@ -25,34 +31,34 @@ const localStorageMock = createLocalStorageMock();
 const mockFetch = createMockFetch();
 
 // Mock the API module using shared utilities
-jest.mock('../../services/api', () => ({
+jest.mock("../../services/api", () => ({
   createProject: jest.fn().mockResolvedValue({
-    id: 'project-123',
-    name: 'Advanced Physics',
-    project_type: 'school'
+    id: "project-123",
+    name: "Advanced Physics",
+    project_type: "school",
   }),
   uploadFileWithProgress: jest.fn(),
   APIError: jest.fn().mockImplementation((message: string, status: number) => {
     const error = new Error(message) as Error & { statusCode: number };
     error.statusCode = status;
     return error;
-  })
+  }),
 }));
 
-describe('SyllabusUploadStep - Real Issue Reproduction', () => {
+describe("SyllabusUploadStep - Real Issue Reproduction", () => {
   const mockOnUploadComplete = jest.fn();
   const mockOnBack = jest.fn();
 
   setupTestCleanup([mockFetch, mockOnUploadComplete, mockOnBack]);
 
-  describe('Production Flow - User Reported Issue', () => {
+  describe("Production Flow - User Reported Issue", () => {
     beforeEach(() => {
       // Reset to production mode for these tests
-      process.env.NODE_ENV = 'production';
-      process.env.NEXT_PUBLIC_TEST_MODE = 'false';
+      process.env.NODE_ENV = "production";
+      process.env.NEXT_PUBLIC_TEST_MODE = "false";
     });
 
-    it('should handle successful PDF upload and processing flow correctly', async () => {
+    it("should handle successful PDF upload and processing flow correctly", async () => {
       // Mock the complete API flow that should happen
       let pollCount = 0;
       mockFetch
@@ -60,22 +66,24 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
         .mockImplementationOnce(() =>
           Promise.resolve({
             ok: true,
-            json: () => Promise.resolve({
-              id: 123,
-              filename: 'syllabus.pdf',
-              status: 'pending'
-            }),
-          })
+            json: () =>
+              Promise.resolve({
+                id: 123,
+                filename: "syllabus.pdf",
+                status: "pending",
+              }),
+          }),
         )
         // 2. Start processing - should succeed
         .mockImplementationOnce(() =>
           Promise.resolve({
             ok: true,
-            json: () => Promise.resolve({
-              message: 'Processing started',
-              document_id: 123
-            }),
-          })
+            json: () =>
+              Promise.resolve({
+                message: "Processing started",
+                document_id: 123,
+              }),
+          }),
         )
         // 3. Polling requests - return processing status, then completed
         .mockImplementation(() => {
@@ -83,58 +91,60 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
           if (pollCount <= 3) {
             return Promise.resolve({
               ok: true,
-              json: () => Promise.resolve({
-                id: 123,
-                status: 'processing',
-                original_text: '',
-                metadata: {}
-              }),
+              json: () =>
+                Promise.resolve({
+                  id: 123,
+                  status: "processing",
+                  original_text: "",
+                  metadata: {},
+                }),
             });
           } else {
             return Promise.resolve({
               ok: true,
-              json: () => Promise.resolve({
-                id: 123,
-                status: 'completed',
-                original_text: 'Course: Advanced Physics',
-                processed_data: {
-                  course_name: 'Advanced Physics',
-                  topics: ['mechanics', 'thermodynamics']
-                },
-                metadata: {
-                  course_name: 'Advanced Physics',
-                  topics: ['mechanics', 'thermodynamics']
-                }
-              }),
+              json: () =>
+                Promise.resolve({
+                  id: 123,
+                  status: "completed",
+                  original_text: "Course: Advanced Physics",
+                  processed_data: {
+                    course_name: "Advanced Physics",
+                    topics: ["mechanics", "thermodynamics"],
+                  },
+                  metadata: {
+                    course_name: "Advanced Physics",
+                    topics: ["mechanics", "thermodynamics"],
+                  },
+                }),
             });
           }
         });
 
-      const setup = createMockProjectSetup({ projectName: 'Advanced Physics' });
+      const setup = createMockProjectSetup({ projectName: "Advanced Physics" });
 
       render(
         <SyllabusUploadStep
           setup={setup}
           onUploadComplete={mockOnUploadComplete}
           onBack={mockOnBack}
-        />
+        />,
       );
 
       // Find the file input and upload the file
-      const fileInput = screen.getByTestId('file-input');
-      const testFile = createTestFile('syllabus.pdf', 'test pdf content');
+      const fileInput = screen.getByTestId("file-input");
+      const testFile = createTestFile("syllabus.pdf", "test pdf content");
 
       await simulateFileUpload(fileInput, testFile);
 
       // Wait for file to be displayed and analyze button to appear
       await waitFor(() => {
-        expect(screen.getByText('syllabus.pdf')).toBeInTheDocument();
-        expect(screen.getByTestId('analyze-button')).toBeInTheDocument();
+        expect(screen.getByText("syllabus.pdf")).toBeInTheDocument();
+        expect(screen.getByTestId("analyze-button")).toBeInTheDocument();
       });
 
       // Find and click the analyze button
-      const analyzeButton = screen.getByTestId('analyze-button');
-      
+      const analyzeButton = screen.getByTestId("analyze-button");
+
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
@@ -143,49 +153,49 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
       await waitFor(
         () => {
           expect(mockOnUploadComplete).toHaveBeenCalledWith(
-            'project-123',
+            "project-123",
             expect.objectContaining({
               id: 123,
-              status: 'completed',
-              original_text: 'Course: Advanced Physics',
+              status: "completed",
+              original_text: "Course: Advanced Physics",
               metadata: expect.objectContaining({
-                course_name: 'Advanced Physics',
-                topics: ['mechanics', 'thermodynamics']
-              })
+                course_name: "Advanced Physics",
+                topics: ["mechanics", "thermodynamics"],
+              }),
             }),
-            'syllabus.pdf'
+            "syllabus.pdf",
           );
         },
-        { timeout: 15000 }
+        { timeout: 15000 },
       );
     });
 
-    it('should handle API failure gracefully and show error message', async () => {
+    it("should handle API failure gracefully and show error message", async () => {
       // Mock upload failure
-      mockFetch.mockRejectedValueOnce(new Error('Upload failed'));
+      mockFetch.mockRejectedValueOnce(new Error("Upload failed"));
 
-      const setup = createMockProjectSetup({ projectName: 'Advanced Physics' });
+      const setup = createMockProjectSetup({ projectName: "Advanced Physics" });
 
       render(
         <SyllabusUploadStep
           setup={setup}
           onUploadComplete={mockOnUploadComplete}
           onBack={mockOnBack}
-        />
+        />,
       );
 
-      const fileInput = screen.getByTestId('file-input');
-      const testFile = createTestFile('syllabus.pdf', 'test pdf content');
+      const fileInput = screen.getByTestId("file-input");
+      const testFile = createTestFile("syllabus.pdf", "test pdf content");
 
       await simulateFileUpload(fileInput, testFile);
 
       // Wait for analyze button to appear
       await waitFor(() => {
-        expect(screen.getByTestId('analyze-button')).toBeInTheDocument();
+        expect(screen.getByTestId("analyze-button")).toBeInTheDocument();
       });
 
-      const analyzeButton = screen.getByTestId('analyze-button');
-      
+      const analyzeButton = screen.getByTestId("analyze-button");
+
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
@@ -196,65 +206,68 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
       });
     });
 
-    it('should handle processing timeout correctly', async () => {
+    it("should handle processing timeout correctly", async () => {
       // Mock successful upload and processing start
       let pollCount = 0;
       mockFetch
         .mockImplementationOnce(() =>
           Promise.resolve({
             ok: true,
-            json: () => Promise.resolve({
-              id: 123,
-              filename: 'syllabus.pdf',
-              status: 'pending'
-            }),
-          })
+            json: () =>
+              Promise.resolve({
+                id: 123,
+                filename: "syllabus.pdf",
+                status: "pending",
+              }),
+          }),
         )
         .mockImplementationOnce(() =>
           Promise.resolve({
             ok: true,
-            json: () => Promise.resolve({
-              message: 'Processing started',
-              document_id: 123
-            }),
-          })
+            json: () =>
+              Promise.resolve({
+                message: "Processing started",
+                document_id: 123,
+              }),
+          }),
         )
         // Mock all polling requests to return processing status (simulating timeout)
         .mockImplementation(() => {
           pollCount++;
           return Promise.resolve({
             ok: true,
-            json: () => Promise.resolve({
-              id: 123,
-              status: 'processing',
-              original_text: '',
-              metadata: {}
-            }),
+            json: () =>
+              Promise.resolve({
+                id: 123,
+                status: "processing",
+                original_text: "",
+                metadata: {},
+              }),
           });
         });
 
-      const setup = createMockProjectSetup({ projectName: 'Advanced Physics' });
+      const setup = createMockProjectSetup({ projectName: "Advanced Physics" });
 
       render(
         <SyllabusUploadStep
           setup={setup}
           onUploadComplete={mockOnUploadComplete}
           onBack={mockOnBack}
-        />
+        />,
       );
 
-      const fileInput = screen.getByTestId('file-input');
-      const testFile = createTestFile('syllabus.pdf', 'test pdf content');
+      const fileInput = screen.getByTestId("file-input");
+      const testFile = createTestFile("syllabus.pdf", "test pdf content");
 
       await simulateFileUpload(fileInput, testFile);
 
       // Wait for analyze button to appear
       await waitFor(() => {
-        expect(screen.getByTestId('analyze-button')).toBeInTheDocument();
+        expect(screen.getByTestId("analyze-button")).toBeInTheDocument();
       });
 
-      const analyzeButton = screen.getByTestId('analyze-button');
-      
+      const analyzeButton = screen.getByTestId("analyze-button");
+
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
@@ -263,33 +276,33 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
       await waitFor(
         () => {
           expect(mockOnUploadComplete).toHaveBeenCalledWith(
-            'project-123',
+            "project-123",
             expect.objectContaining({
               id: 123,
-              status: 'completed',
+              status: "completed",
               metadata: expect.objectContaining({
-                course_name: expect.any(String)
-              })
+                course_name: expect.any(String),
+              }),
             }),
-            'syllabus.pdf'
+            "syllabus.pdf",
           );
         },
-        { timeout: 12000 }
+        { timeout: 12000 },
       );
     });
   });
 
-  describe('Skip Functionality', () => {
+  describe("Skip Functionality", () => {
     beforeEach(() => {
       // Test the skip functionality in both test and production modes
-      process.env.NODE_ENV = 'production';
-      process.env.NEXT_PUBLIC_TEST_MODE = 'false';
+      process.env.NODE_ENV = "production";
+      process.env.NEXT_PUBLIC_TEST_MODE = "false";
     });
 
-    it('should call onSkip when skip button is clicked and skip extraction results step', async () => {
+    it("should call onSkip when skip button is clicked and skip extraction results step", async () => {
       const mockOnSkip = jest.fn();
-      
-      const setup = createMockProjectSetup({ projectName: 'Test Project' });
+
+      const setup = createMockProjectSetup({ projectName: "Test Project" });
 
       render(
         <SyllabusUploadStep
@@ -297,13 +310,13 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
           onUploadComplete={mockOnUploadComplete}
           onSkip={mockOnSkip}
           onBack={mockOnBack}
-        />
+        />,
       );
 
       // Should show skip button
-      const skipButton = screen.getByTestId('skip-button');
+      const skipButton = screen.getByTestId("skip-button");
       expect(skipButton).toBeInTheDocument();
-      
+
       // Click skip button
       await act(async () => {
         fireEvent.click(skipButton);
@@ -311,31 +324,31 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
 
       // Should call onSkip
       expect(mockOnSkip).toHaveBeenCalledTimes(1);
-      
+
       // Should not trigger any upload or analysis
       expect(mockOnUploadComplete).not.toHaveBeenCalled();
       expect(mockFetch).not.toHaveBeenCalled();
     });
 
-    it('should not show skip button when onSkip prop is not provided', () => {
-      const setup = createMockProjectSetup({ projectName: 'Test Project' });
+    it("should not show skip button when onSkip prop is not provided", () => {
+      const setup = createMockProjectSetup({ projectName: "Test Project" });
 
       render(
         <SyllabusUploadStep
           setup={setup}
           onUploadComplete={mockOnUploadComplete}
           onBack={mockOnBack}
-        />
+        />,
       );
 
       // Should not show skip button
-      expect(screen.queryByTestId('skip-button')).not.toBeInTheDocument();
+      expect(screen.queryByTestId("skip-button")).not.toBeInTheDocument();
     });
 
-    it('should show skip button text correctly', () => {
+    it("should show skip button text correctly", () => {
       const mockOnSkip = jest.fn();
-      
-      const setup = createMockProjectSetup({ projectName: 'Test Project' });
+
+      const setup = createMockProjectSetup({ projectName: "Test Project" });
 
       render(
         <SyllabusUploadStep
@@ -343,21 +356,23 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
           onUploadComplete={mockOnUploadComplete}
           onSkip={mockOnSkip}
           onBack={mockOnBack}
-        />
+        />,
       );
 
-      expect(screen.getByText('Skip - I don\'t have a syllabus to upload')).toBeInTheDocument();
+      expect(
+        screen.getByText("Skip - I don't have a syllabus to upload"),
+      ).toBeInTheDocument();
     });
   });
 
-  describe('Test Mode Flow', () => {
+  describe("Test Mode Flow", () => {
     beforeEach(() => {
       // Ensure test mode is enabled for these tests
-      process.env.NODE_ENV = 'development';
-      process.env.NEXT_PUBLIC_TEST_MODE = 'true';
+      process.env.NODE_ENV = "development";
+      process.env.NEXT_PUBLIC_TEST_MODE = "true";
     });
 
-    it('should use mock data in test mode and skip API calls', async () => {
+    it("should use mock data in test mode and skip API calls", async () => {
       const setup = createMockProjectSetup();
 
       render(
@@ -365,44 +380,47 @@ describe('SyllabusUploadStep - Real Issue Reproduction', () => {
           setup={setup}
           onUploadComplete={mockOnUploadComplete}
           onBack={mockOnBack}
-        />
+        />,
       );
 
       // Should show test mode indicator
       expect(screen.getByText(/Mock Mode Active/i)).toBeInTheDocument();
 
-      const testFile = createTestFile('syllabus.pdf', 'test pdf content');
-      const fileInput = screen.getByTestId('file-input');
-      
+      const testFile = createTestFile("syllabus.pdf", "test pdf content");
+      const fileInput = screen.getByTestId("file-input");
+
       await simulateFileUpload(fileInput, testFile);
 
       // Wait for analyze button to appear
       await waitFor(() => {
-        expect(screen.getByTestId('analyze-button')).toBeInTheDocument();
+        expect(screen.getByTestId("analyze-button")).toBeInTheDocument();
       });
 
-      const analyzeButton = screen.getByTestId('analyze-button');
-      
+      const analyzeButton = screen.getByTestId("analyze-button");
+
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
 
       // Should use mock data and call the callback quickly
-      await waitFor(() => {
-        expect(mockOnUploadComplete).toHaveBeenCalledWith(
-          'project-123',
-          expect.objectContaining({
-            status: 'completed',
-            metadata: expect.objectContaining({
-              course_title: expect.any(String)
-            })
-          }),
-          'syllabus.pdf'
-        );
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(mockOnUploadComplete).toHaveBeenCalledWith(
+            "project-123",
+            expect.objectContaining({
+              status: "completed",
+              metadata: expect.objectContaining({
+                course_title: expect.any(String),
+              }),
+            }),
+            "syllabus.pdf",
+          );
+        },
+        { timeout: 3000 },
+      );
 
       // Should not make any real API calls
       expect(mockFetch).not.toHaveBeenCalled();
     });
   });
-}); 
+});

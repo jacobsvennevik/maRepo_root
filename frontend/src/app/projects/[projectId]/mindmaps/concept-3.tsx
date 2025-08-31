@@ -163,7 +163,6 @@ export default function ProjectMindMapsConcept3() {
       case 'math': return '📐';
       default: return '📚';
     }
-  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -173,7 +172,6 @@ export default function ProjectMindMapsConcept3() {
       case 'archived': return <Archive className="h-4 w-4 text-gray-600" />;
       default: return <AlertCircle className="h-4 w-4 text-yellow-600" />;
     }
-  };
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -182,7 +180,6 @@ export default function ProjectMindMapsConcept3() {
       case 'template': return <Globe className="h-4 w-4 text-emerald-600" />;
       default: return <FolderOpen className="h-4 w-4 text-gray-600" />;
     }
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -192,7 +189,6 @@ export default function ProjectMindMapsConcept3() {
       case 'archived': return 'bg-gray-100 text-gray-800 border-gray-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
-  };
 
   const stats = {
     total: mindMaps.length,
@@ -635,4 +631,4 @@ export default function ProjectMindMapsConcept3() {
       </Tabs>
     </div>
   );
-} 
+}

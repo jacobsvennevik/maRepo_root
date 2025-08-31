@@ -1,4 +1,4 @@
-import { ProjectWizard } from "@/components/wizard/ProjectWizard"
+import { ProjectWizard } from "@/components/wizard/ProjectWizard";
 
 // Gradient-Rich Interactive Design
 export default function Test3Page() {
@@ -18,14 +18,15 @@ export default function Test3Page() {
             Test 3: Gradient-Rich Design
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            A modern, engaging interface with beautiful gradients and interactive elements.
+            A modern, engaging interface with beautiful gradients and
+            interactive elements.
           </p>
         </div>
-        
+
         <div className="max-w-4xl mx-auto">
           <ProjectWizard variant="gradient" />
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

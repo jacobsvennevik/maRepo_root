@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import { SETUP_STEPS } from '../constants/steps';
-import { ProjectSetup } from '../types';
+import { useState } from "react";
+import { SETUP_STEPS } from "../constants/steps";
+import { ProjectSetup } from "../types";
 
 export const useStepNavigation = (
-  setup: ProjectSetup, 
-  onBack: () => void, 
+  setup: ProjectSetup,
+  onBack: () => void,
   setShowSummary: (show: boolean) => void,
-  extractedData?: any | null // Add extractedData parameter
+  extractedData?: any | null, // Add extractedData parameter
 ) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   const shouldShowStep = (stepId: string) => {
     // Skip extraction results step if no data was extracted
-    if (stepId === 'extractionResults' && !extractedData) {
+    if (stepId === "extractionResults" && !extractedData) {
       return false;
     }
     return true;
@@ -21,12 +21,15 @@ export const useStepNavigation = (
   const handleNext = () => {
     // Find next step that should be shown
     let nextStep = currentStepIndex + 1;
-    
+
     // Skip steps that shouldn't be shown
-    while (nextStep < SETUP_STEPS.length && !shouldShowStep(SETUP_STEPS[nextStep].id)) {
+    while (
+      nextStep < SETUP_STEPS.length &&
+      !shouldShowStep(SETUP_STEPS[nextStep].id)
+    ) {
       nextStep++;
     }
-    
+
     if (nextStep < SETUP_STEPS.length) {
       setCurrentStepIndex(nextStep);
     } else if (currentStepIndex === SETUP_STEPS.length - 1) {
@@ -39,12 +42,12 @@ export const useStepNavigation = (
   const handleBack = () => {
     // Find previous step that should be shown
     let prevStep = currentStepIndex - 1;
-    
+
     // Skip steps that shouldn't be shown
     while (prevStep >= 0 && !shouldShowStep(SETUP_STEPS[prevStep].id)) {
       prevStep--;
     }
-    
+
     if (prevStep >= 0) {
       setCurrentStepIndex(prevStep);
     } else {
@@ -66,12 +69,13 @@ export const useStepNavigation = (
   };
 
   const getTotalSteps = () => {
-    return SETUP_STEPS.filter(step => shouldShowStep(step.id)).length;
+    return SETUP_STEPS.filter((step) => shouldShowStep(step.id)).length;
   };
 
   const totalSteps = getTotalSteps();
   const currentStepNumber = getCurrentStepIndex();
-  const progress = totalSteps > 1 ? ((currentStepNumber - 1) / (totalSteps - 1)) * 100 : 0;
+  const progress =
+    totalSteps > 1 ? ((currentStepNumber - 1) / (totalSteps - 1)) * 100 : 0;
 
   const currentStep = SETUP_STEPS[currentStepIndex]; // Return step object
   const isFirstStep = currentStepIndex === 0;
@@ -92,4 +96,4 @@ export const useStepNavigation = (
     isFirstStep,
     isLastStep,
   };
-}; 
+};

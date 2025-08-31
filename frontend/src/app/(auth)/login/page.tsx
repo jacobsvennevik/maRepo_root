@@ -1,5 +1,5 @@
-import { LoginForm } from "../components/LoginForm"
-import { EmeraldBackground } from "@/components/common/backgrounds/emerald-background"
+import { LoginForm } from "../components/LoginForm";
+import { EmeraldBackground } from "@/components/common/backgrounds/emerald-background";
 
 export default function LoginPage() {
   return (
@@ -14,5 +14,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

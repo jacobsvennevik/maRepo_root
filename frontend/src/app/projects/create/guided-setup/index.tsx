@@ -1,0 +1,298 @@
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useGuidedSetupState } from './hooks/useGuidedSetupState';
+import { useStepNavigation } from './hooks/useStepNavigation';
+import { ProjectSummaryColorful } from '../components/project-summary-variants';
+import { StepIndicator } from './components/StepIndicator';
+import { STEP_CONFIG, COLLABORATION_OPTIONS } from './constants';
+
+import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
+import { KeyboardShortcuts } from './components/KeyboardShortcuts';
+
+// Import step components
+import { ProjectNameStep } from '../components/steps/project-name-step';
+import { PurposeStep } from '../components/steps/purpose-step';
+import { EducationLevelStep } from '../components/steps/education-level-step';
+import { SyllabusUploadStep } from '../components/steps/syllabus-upload-step';
+import { ExtractionResultsStep } from '../components/steps/extraction-results-step';
+import { LearningPreferencesStep } from '../components/steps/learning-preferences-step';
+
+import { GoalStep } from '../components/steps/goal-step';
+
+import { CollaborationStep } from '../components/steps/collaboration-step';
+import { CourseContentUploadStep } from '../components/steps/course-content-upload-step';
+import { TestUploadStep } from '../components/steps/test-upload-step';
+import { SkipButton } from '../components/steps/shared/skip-button';
+
+interface GuidedSetupProps {
+  onBack: () => void;
+}
+
+export default function GuidedSetup({ onBack }: GuidedSetupProps) {
+  const {
+    setup,
+    extractedData,
+    setExtractedData,
+    syllabusFileName,
+    contentData,
+    contentFileNames,
+    isSyllabusAnalysisComplete,
+    isCourseContentAnalysisComplete,
+    isTestAnalysisComplete,
+    hasUnsavedChanges,
+    handleOptionSelect,
+    handleSyllabusUploadComplete,
+    handleCourseContentUploadComplete,
+    handleTestUploadComplete,
+    resetSyllabusUploadState,
+    cleanupState,
+  } = useGuidedSetupState();
+
+  const {
+    currentStepIndex,
+    currentStepData,
+    isFirstStep,
+    isLastStep,
+    showSummary,
+    setShowSummary,
+    progress,
+    getCurrentStepIndex,
+    getTotalSteps,
+    isStepComplete,
+    handleNext,
+    handleBack,
+    handleSkip,
+    handleBackWithCleanup,
+    canSkipCurrentStep,
+  } = useStepNavigation(setup, onBack, extractedData);
+
+  // Keyboard navigation
+  useKeyboardNavigation({
+    onNext: handleNext,
+    onBack: handleBackWithCleanup,
+    onSkip: handleSkip,
+    canGoNext: isStepComplete(),
+    canGoBack: !isFirstStep,
+    canSkip: canSkipCurrentStep() && !isStepComplete(),
+    enabled: !showSummary
+  });
+
+  const renderStepContent = () => {
+    switch (currentStepData.id) {
+      case 'projectName':
+        return (
+          <ProjectNameStep
+            projectName={setup.projectName}
+            onProjectNameChange={(value) => handleOptionSelect('projectName', value)}
+          />
+        );
+      case 'purpose':
+        return (
+          <PurposeStep
+            purpose={setup.purpose}
+            onPurposeChange={(value) => handleOptionSelect('purpose', value)}
+          />
+        );
+      case 'educationLevel':
+        return (
+          <EducationLevelStep
+            testLevel={setup.testLevel}
+            onTestLevelChange={(value) => handleOptionSelect('testLevel', value)}
+          />
+        );
+      case 'uploadSyllabus':
+        return (
+          <SyllabusUploadStep
+            onUploadComplete={handleSyllabusUploadComplete}
+            onNext={handleNext}
+            onBack={handleBack}
+            onSkip={handleSkip}
+            hasUploadCompleted={isSyllabusAnalysisComplete}
+            onResetUploadState={resetSyllabusUploadState}
+            onAnalysisComplete={() => {}} // Will be handled by upload complete
+            savedFiles={setup.uploadedFiles || []}
+            savedAnalysisData={extractedData}
+            savedFileNames={syllabusFileName ? [syllabusFileName] : []}
+          />
+        );
+      case 'extractionResults':
+        if (!extractedData) {
+          return (
+            <div className="text-center py-8">
+              <p className="text-gray-600">No extraction results to review.</p>
+              <Button onClick={handleNext} className="mt-4">
+                Continue
+              </Button>
+            </div>
+          );
+        }
+        return (
+          <ExtractionResultsStep
+            extractedData={extractedData}
+            fileName={syllabusFileName}
+            onConfirm={handleNext}
+            onSave={(updatedData) => {
+              // Update the extracted data with the edited version
+              setExtractedData(updatedData);
+              setHasUnsavedChanges(true);
+            }}
+            onEdit={() => {
+              // Go back to upload step
+              handleBack();
+            }}
+            showNavigation={true}
+          />
+        );
+      case 'learningPreferences':
+        return (
+          <LearningPreferencesStep
+            learningStyle={setup.learningStyle}
+            studyPreference={setup.studyPreference}
+            learningDifficulties={setup.learningDifficulties}
+            courseType={extractedData?.courseType || contentData?.courseType}
+            assessmentTypes={extractedData?.assessmentTypes || contentData?.assessmentTypes}
+            onLearningStyleChange={(value) => handleOptionSelect('learningStyle', value)}
+            onStudyPreferenceChange={(value) => handleOptionSelect('studyPreference', value)}
+            onLearningDifficultiesChange={(value) => handleOptionSelect('learningDifficulties', value)}
+          />
+        );
+
+      case 'goal':
+        return (
+          <GoalStep
+            goal={setup.goal}
+            onGoalChange={(goal) => handleOptionSelect('goal', goal)}
+          />
+        );
+
+      case 'collaboration':
+        return (
+          <CollaborationStep
+            collaboration={setup.collaboration}
+            onCollaborationChange={(collaboration) => handleOptionSelect('collaboration', collaboration)}
+            collaborationOptions={COLLABORATION_OPTIONS}
+          />
+        );
+      case 'courseContentUpload':
+        return (
+          <CourseContentUploadStep
+            onUploadComplete={handleCourseContentUploadComplete}
+            onNext={handleNext}
+            onBack={handleBack}
+            onAnalysisComplete={() => {
+              console.log('🎯 CourseContentUploadStep onAnalysisComplete called');
+            }}
+            savedFiles={setup.courseFiles || []}
+            savedAnalysisData={contentData}
+            savedFileNames={contentFileNames}
+          />
+        );
+      case 'testUpload':
+        return (
+          <TestUploadStep
+            onUploadComplete={handleTestUploadComplete}
+            onNext={handleNext}
+            onBack={handleBack}
+            onSkip={handleSkip}
+            onAnalysisComplete={() => {}} // Will be handled by upload complete
+            extractedDates={extractedData?.dates || []}
+            savedFiles={setup.testFiles || []}
+            savedAnalysisData={undefined}
+            savedFileNames={[]}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  if (showSummary) {
+    return <ProjectSummaryColorful setup={setup} onBack={() => setShowSummary(false)} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
+          <Button variant="ghost" onClick={handleBackWithCleanup} className="flex items-center">
+            <ChevronLeft size={16} className="mr-1" />
+            Back
+          </Button>
+          <div className="flex items-center gap-2 sm:gap-4">
+            {hasUnsavedChanges && (
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-600">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="hidden sm:inline">Auto-saved</span>
+              </div>
+            )}
+            <div className="text-xs sm:text-sm text-gray-600">
+              Step {getCurrentStepIndex()} of {getTotalSteps()}
+            </div>
+            <KeyboardShortcuts />
+          </div>
+        </div>
+
+        {/* Step Indicator */}
+        <StepIndicator 
+          steps={STEP_CONFIG}
+          currentStepIndex={currentStepIndex}
+          completedSteps={[]} // TODO: Track completed steps
+          skippedSteps={!extractedData ? ['extractionResults'] : []}
+        />
+        
+
+
+        {/* Progress Bar */}
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs sm:text-sm font-medium text-gray-700">Progress</span>
+            <span className="text-xs sm:text-sm text-gray-500">{Math.round(progress)}%</span>
+          </div>
+          <Progress value={progress} className="h-2" />
+        </div>
+
+        {/* Step Content */}
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader className="text-center">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <currentStepData.icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+            </div>
+            <CardTitle className="text-xl sm:text-2xl text-slate-900" data-testid="step-title">{currentStepData.title}</CardTitle>
+            <p className="text-sm sm:text-base text-slate-600">{currentStepData.description}</p>
+          </CardHeader>
+          <CardContent className="space-y-4 sm:space-y-6">
+            {renderStepContent()}
+            
+            {/* Navigation */}
+            <div className="flex justify-between pt-4 sm:pt-6">
+              <Button variant="outline" onClick={handleBackWithCleanup} className="text-sm">
+                {isFirstStep ? 'Back to Selection' : 'Previous'}
+              </Button>
+              <div className="flex gap-2">
+                {canSkipCurrentStep() && (
+                  <SkipButton
+                    onSkip={handleSkip}
+                    text={currentStepData.skipText || "Skip"}
+                    disabled={false}
+                  />
+                )}
+                <Button 
+                  onClick={handleNext}
+                  disabled={!isStepComplete()}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-sm"
+                >
+                  {isLastStep ? 'Review & Create' : 'Next'}
+                  <ChevronRight size={16} className="ml-2" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

@@ -17,7 +17,7 @@ import {
 } from '../../utils/upload-utils';
 import { TestModeBanner, ErrorMessage } from '../shared/upload-ui';
 import { SyllabusMockBanner } from '../shared/mock-mode-banner';
-import { AnalyzeButton, SuccessMessage, LoadingSpinner } from './shared';
+import { AnalyzeButton, SuccessMessage, LoadingSpinner, SkipButton } from './shared';
 import { Button } from '@/components/ui/button';
 import { 
   MOCK_SYLLABUS_PROCESSED_DOCUMENT,
@@ -38,9 +38,11 @@ interface SyllabusUploadStepProps {
   onNext?: () => void;
   onBack?: () => void;
   onSkip?: () => void; // Add onSkip callback
+  hasUploadCompleted?: boolean; // Add flag to check if upload is already completed
+  onResetUploadState?: () => void; // Add callback to reset upload state
 }
 
-export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, onSkip }: SyllabusUploadStepProps) {
+export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, onSkip, hasUploadCompleted = false, onResetUploadState }: SyllabusUploadStepProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +50,7 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [storedResults, setStoredResults] = useState<{ projectId: string, extractedData: ProcessedDocument, fileName?: string } | null>(null);
+  const [hasNavigated, setHasNavigated] = useState(false);
   const router = useRouter();
 
   const handleSkip = useCallback(() => {
@@ -56,21 +59,45 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
     }
   }, [onSkip]);
 
+
+
+  // Reset success state when component mounts (when user goes back to this step)
+  React.useEffect(() => {
+    if (showSuccess) {
+      console.log('🔄 Resetting success state on component mount');
+      setShowSuccess(false);
+      setStoredResults(null);
+    }
+  }, []); // Empty dependency array means this runs only on mount
+
   // Call onUploadComplete immediately when analysis completes for the guided setup
   React.useEffect(() => {
-    if (showSuccess && storedResults) {
-      onUploadComplete(storedResults.projectId, storedResults.extractedData, storedResults.fileName);
+    if (showSuccess && storedResults && !hasNavigated) {
+      // Only call onUploadComplete if we haven't already completed an upload in this session
+      if (!hasUploadCompleted) {
+        onUploadComplete(storedResults.projectId, storedResults.extractedData, storedResults.fileName);
+      }
+      
+      // Automatically navigate to the next step after a short delay
+      const timeoutId = setTimeout(() => {
+        if (onNext && !hasNavigated) {
+          setHasNavigated(true);
+          onNext();
+        }
+      }, 1500); // 1.5 second delay to show success message
+      
+      // Cleanup timeout on unmount or dependency change
+      return () => clearTimeout(timeoutId);
     }
-  }, [showSuccess, storedResults, onUploadComplete]);
+  }, [showSuccess, storedResults, onUploadComplete, onNext, hasNavigated, hasUploadCompleted]);
 
 
-  const handleUpload = useCallback(async (newFiles: File[]) => {
-    setFiles(prev => [...prev, ...newFiles]);
+  const handleUpload = useCallback(async (updatedFiles: File[]) => {
+    setFiles(updatedFiles);
     setError(null);
-    
-         // Just add files to the list, don't process yet
-     console.log('Files added:', newFiles.map(f => f.name));
-   }, []);
+    setHasNavigated(false); // Reset navigation flag when files change
+    setShowSuccess(false); // Reset success state when new files are uploaded
+  }, []);
 
    const handleAnalyze = useCallback(async () => {
      if (files.length === 0) {
@@ -88,6 +115,12 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
 
      setError(null);
      setIsAnalyzing(true);
+     setHasNavigated(false); // Reset navigation flag when starting analysis
+     
+     // Reset upload completion state when starting new analysis
+     if (onResetUploadState) {
+       onResetUploadState();
+     }
 
      try {
        // TEST MODE: Skip API calls and use mock data
@@ -117,6 +150,8 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
            extractedData: mockProcessedDoc,
            fileName: fileName
          });
+         
+         // Auto-navigation will be handled by the useEffect hook
          return;
        }
 
@@ -130,6 +165,7 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
        formData.append('file', firstFile);
          formData.append('file_type', 'pdf');
          formData.append('upload_type', 'course_files');
+         formData.append('title', firstFile.name);
 
        console.log('Uploading syllabus to PDF service:', firstFile.name);
          
@@ -256,10 +292,10 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
                      processedData = {
                        id: statusData.id,
                        original_text: statusData.original_text,
-                       metadata: processedDataObj.data,
-                       status: 'completed' as const
-                     };
-                     console.log('✅ Using processed data from endpoint:', processedDataObj.data);
+                                            metadata: processedDataObj.data,
+                     status: 'completed' as const
+                   };
+                   console.log('✅ Using processed data from endpoint:', processedDataObj.data);
                      break;
                    }
                  } catch (processedDataError) {
@@ -273,7 +309,7 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
                      metadata: statusData.metadata || {},
                      status: 'completed' as const
                    };
-                 console.log('⚠️ Using basic document metadata as fallback:', statusData.metadata);
+                   console.log('⚠️ Using basic document metadata as fallback:', statusData.metadata);
                    break;
                } else if (statusData.status === 'error') {
                  console.error('Processing failed:', statusData.error_message || 'Unknown error');
@@ -344,6 +380,8 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
        
        // Call onUploadComplete with the results
        onUploadComplete(newProject.id, processedData, firstFile.name);
+       
+       // Auto-navigation will be handled by the useEffect hook
        
        // Use processed data (either real or timeout fallback)
        console.log('🎉 SUCCESS: Using processed data:', processedData);
@@ -421,9 +459,11 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
         error={error || undefined}
       />
       
+
+      
       {/* Analyze and Skip Buttons */}
       {files.length > 0 && !isAnalyzing && !showSuccess && (
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4" data-testid="analyze-button-container">
           <AnalyzeButton
             onClick={handleAnalyze}
             isAnalyzing={isAnalyzing}
@@ -432,8 +472,16 @@ export function SyllabusUploadStep({ setup, onUploadComplete, onNext, onBack, on
           />
         </div>
       )}
+
       {showSuccess && (
-        <SuccessMessage message="Syllabus analyzed successfully! Click Next to continue." />
+        <div className="space-y-4">
+          <SuccessMessage message="Syllabus analyzed successfully! Redirecting to review results..." />
+          <div className="flex justify-center">
+            <div className="text-sm text-gray-600">
+              Please wait while we prepare your analysis results...
+            </div>
+          </div>
+        </div>
       )}
       {isAnalyzing && (
         <LoadingSpinner

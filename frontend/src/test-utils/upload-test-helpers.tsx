@@ -177,7 +177,7 @@ export const createUploadTestSetup = (options: {
     createBeforeEach,
     createAfterEach
   };
-};
+}
 
 /**
  * Upload progress mock utilities
@@ -250,4 +250,4 @@ export const expectTestModeBanner = (shouldExist: boolean = true) => {
   } else {
     expect(banner).not.toBeInTheDocument();
   }
-}; 
+};

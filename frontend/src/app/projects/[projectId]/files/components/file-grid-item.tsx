@@ -1,20 +1,16 @@
-'use client';
+"use client";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  MoreVertical,
-  Share2,
-  Trash2
-} from 'lucide-react';
-import { type FileItem } from './file-card';
+import { MoreVertical, Share2, Trash2 } from "lucide-react";
+import { type FileItem } from "./file-card";
 
 interface FileGridItemProps {
   file: FileItem;
@@ -24,18 +20,20 @@ interface FileGridItemProps {
   onDelete: (id: string) => void;
 }
 
-export function FileGridItem({ 
-  file, 
-  getFileIcon, 
+export function FileGridItem({
+  file,
+  getFileIcon,
   getFileTypeColor,
   onShare,
-  onDelete
+  onDelete,
 }: FileGridItemProps) {
   return (
     <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer group">
       <CardContent className="p-4 text-center">
         <div className="relative">
-          <div className={`mx-auto w-12 h-12 bg-gradient-to-r ${file.color} rounded-lg flex items-center justify-center mb-3`}>
+          <div
+            className={`mx-auto w-12 h-12 bg-gradient-to-r ${file.color} rounded-lg flex items-center justify-center mb-3`}
+          >
             {getFileIcon(file.type)}
           </div>
           <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -50,7 +48,7 @@ export function FileGridItem({
                   <Share2 className="h-3 w-3 mr-2" />
                   Share
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   className="text-red-600"
                   onClick={() => onDelete(file.id)}
                 >
@@ -70,4 +68,4 @@ export function FileGridItem({
       </CardContent>
     </Card>
   );
-} 
+}

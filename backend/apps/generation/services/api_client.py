@@ -63,6 +63,73 @@ class AIClient(BaseAIClient):
             print(f"Error with GPT API: {e}")
             return ""
 
+    def generate_meta(self, project_content: str, model: str = "gpt-4") -> dict:
+        """
+        Generate smart metadata for a project using AI.
+        
+        Args:
+            project_content: The project content to analyze
+            model: AI model to use (default: gpt-4, fallback: gemini-2.0-flash)
+            
+        Returns:
+            dict: Generated metadata with keys: ai_generated_tags, content_summary, difficulty_level
+        """
+        try:
+            # Try GPT-4 first
+            ai_client = AIClient(model=model)
+        except Exception:
+            # Fallback to Gemini
+            ai_client = AIClient(model="gemini-2.0-flash")
+        
+        prompt = f"""
+        Analyze the following project content and return a JSON object with the following structure:
+        {{
+            "ai_generated_tags": ["tag1", "tag2", "tag3"],
+            "content_summary": "Brief summary of the project content",
+            "difficulty_level": "beginner|intermediate|advanced"
+        }}
+        
+        Project Content:
+        {project_content[:4000]}  # Limit content length
+        
+        Return ONLY the JSON object, no additional text.
+        """
+        
+        messages = [ai_client.format_message("user", prompt)]
+        
+        try:
+            response = ai_client.get_response(messages)
+            
+            # Extract JSON from response
+            import re
+            json_match = re.search(r'\{.*\}', response, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(0)
+                meta_data = json.loads(json_str)
+                
+                # Validate required keys
+                required_keys = ["ai_generated_tags", "content_summary", "difficulty_level"]
+                for key in required_keys:
+                    if key not in meta_data:
+                        meta_data[key] = [] if key == "ai_generated_tags" else "Not specified"
+                
+                return meta_data
+            else:
+                # Fallback response if JSON parsing fails
+                return {
+                    "ai_generated_tags": ["ai-analysis"],
+                    "content_summary": "AI analysis failed to generate summary",
+                    "difficulty_level": "intermediate"
+                }
+                
+        except Exception as e:
+            print(f"Error generating metadata: {e}")
+            return {
+                "ai_generated_tags": ["error"],
+                "content_summary": "Failed to generate metadata",
+                "difficulty_level": "intermediate"
+            }
+
 # Example Usage
 if __name__ == "__main__":
     ai_client = AIClient(model="gemini-2.0-flash")

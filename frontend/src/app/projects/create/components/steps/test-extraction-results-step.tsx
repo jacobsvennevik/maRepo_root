@@ -387,4 +387,4 @@ export function TestExtractionResultsStep({
       </div>
     </div>
   );
-} 
+}

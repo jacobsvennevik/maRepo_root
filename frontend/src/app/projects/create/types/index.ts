@@ -22,6 +22,14 @@ export interface ProjectSetup {
   learningDifficulties: string;
 }
 
+export interface ProjectType {
+  id: string;
+  name: string;
+  description?: string;
+  icon?: string;
+  color?: string;
+}
+
 export interface ImportantDate {
   date: string;
   description: string;
@@ -33,6 +41,8 @@ export interface SetupStep {
   title: string;
   description: string;
   icon: any;
+  canSkip?: boolean;
+  skipText?: string;
 }
 
 export interface PurposeOption {
@@ -87,4 +97,27 @@ export interface DateTypeOption {
   value: string;
   label: string;
   color: string;
-} 
+}
+
+// Add missing exports for self-study component
+export const projectIcons = {
+  book: "📚",
+  flask: "🧪",
+  calculator: "🧮",
+  globe: "🌍",
+  heart: "❤️",
+  star: "⭐",
+  rocket: "🚀",
+  lightbulb: "💡",
+};
+
+export const projectColors = {
+  blue: "bg-blue-500",
+  green: "bg-green-500",
+  purple: "bg-purple-500",
+  orange: "bg-orange-500",
+  pink: "bg-pink-500",
+  indigo: "bg-indigo-500",
+  teal: "bg-teal-500",
+  red: "bg-red-500",
+};

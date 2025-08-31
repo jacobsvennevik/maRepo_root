@@ -5,8 +5,8 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
 
-from ..models import Project, SchoolProject, SelfStudyProject, ENABLE_STI
-from ..serializers import ProjectSerializer
+from ..models import Project, SchoolProject, SelfStudyProject, ProjectMeta, ENABLE_STI
+from ..serializers import ProjectSerializer, ProjectMetaSerializer
 
 User = get_user_model()
 
@@ -252,4 +252,165 @@ class ProjectSerializerTestCase(TestCase):
 
         # Legacy fields should be synced
         self.assertEqual(project.course_name, 'Nested Course')
-        self.assertEqual(project.course_code, 'NEST101') 
+        self.assertEqual(project.course_code, 'NEST101')
+
+
+class ProjectMetaSerializerTestCase(TestCase):
+    """Test the ProjectMetaSerializer functionality."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.project = Project.objects.create(
+            name='Test Project',
+            project_type='school',
+            owner=self.user,
+            is_draft=False
+        )
+
+    def test_project_meta_serializer(self):
+        """Test ProjectMetaSerializer basic functionality."""
+        meta = ProjectMeta.objects.create(
+            project=self.project,
+            key='test_key',
+            value={'nested': 'data', 'number': 42}
+        )
+
+        serializer = ProjectMetaSerializer(meta)
+        data = serializer.data
+
+        self.assertEqual(data['key'], 'test_key')
+        self.assertEqual(data['value'], {'nested': 'data', 'number': 42})
+        self.assertIn('created_at', data)
+        self.assertIn('updated_at', data)
+
+    def test_project_meta_in_project_serializer_legacy_mode(self):
+        """Test that meta field is ignored in legacy mode."""
+        if ENABLE_STI:
+            self.skipTest("This test only runs when STI is disabled")
+
+        # Create metadata
+        ProjectMeta.objects.create(
+            project=self.project,
+            key='test_key',
+            value='test_value'
+        )
+
+        serializer = ProjectSerializer(self.project)
+        data = serializer.data
+
+        # Meta field should be empty in legacy mode
+        self.assertIn('meta', data)
+        self.assertEqual(data['meta'], {})
+
+    def test_project_meta_in_project_serializer_sti_mode(self):
+        """Test that meta field is included in STI mode."""
+        if not ENABLE_STI:
+            self.skipTest("STI mode not enabled")
+
+        # Create metadata
+        ProjectMeta.objects.create(
+            project=self.project,
+            key='test_key',
+            value='test_value'
+        )
+        ProjectMeta.objects.create(
+            project=self.project,
+            key='another_key',
+            value={'nested': 'data'}
+        )
+
+        serializer = ProjectSerializer(self.project)
+        data = serializer.data
+
+        # Meta field should contain the metadata
+        self.assertIn('meta', data)
+        self.assertEqual(data['meta']['test_key'], 'test_value')
+        self.assertEqual(data['meta']['another_key'], {'nested': 'data'})
+
+    def test_create_project_with_meta_sti_mode(self):
+        """Test creating project with meta data in STI mode."""
+        if not ENABLE_STI:
+            self.skipTest("STI mode not enabled")
+
+        data = {
+            'name': 'Project with Meta',
+            'project_type': 'school',
+            'is_draft': False,
+            'meta': {
+                'custom_field': 'custom_value',
+                'settings': {'theme': 'dark', 'notifications': True}
+            }
+        }
+
+        serializer = ProjectSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        project = serializer.save(owner=self.user)
+
+        # Check that metadata was created
+        self.assertEqual(project.metadata.count(), 2)
+        
+        # Check specific metadata
+        custom_meta = project.metadata.get(key='custom_field')
+        self.assertEqual(custom_meta.value, 'custom_value')
+        
+        settings_meta = project.metadata.get(key='settings')
+        self.assertEqual(settings_meta.value, {'theme': 'dark', 'notifications': True})
+
+    def test_update_project_meta_sti_mode(self):
+        """Test updating project meta data in STI mode."""
+        if not ENABLE_STI:
+            self.skipTest("STI mode not enabled")
+
+        # Create initial metadata
+        ProjectMeta.objects.create(
+            project=self.project,
+            key='old_key',
+            value='old_value'
+        )
+
+        data = {
+            'meta': {
+                'new_key': 'new_value',
+                'updated_settings': {'version': '2.0'}
+            }
+        }
+
+        serializer = ProjectSerializer(self.project, data=data, partial=True)
+        self.assertTrue(serializer.is_valid())
+        updated_project = serializer.save()
+
+        # Old metadata should be removed
+        self.assertFalse(updated_project.metadata.filter(key='old_key').exists())
+        
+        # New metadata should be created
+        self.assertEqual(updated_project.metadata.count(), 2)
+        self.assertTrue(updated_project.metadata.filter(key='new_key').exists())
+        self.assertTrue(updated_project.metadata.filter(key='updated_settings').exists())
+
+    def test_meta_field_ignored_in_legacy_mode(self):
+        """Test that meta field is completely ignored in legacy mode."""
+        if ENABLE_STI:
+            self.skipTest("This test only runs when STI is disabled")
+
+        data = {
+            'name': 'Legacy Project',
+            'project_type': 'school',
+            'is_draft': False,
+            'meta': {
+                'should_be_ignored': 'ignored_value'
+            }
+        }
+
+        serializer = ProjectSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        project = serializer.save(owner=self.user)
+
+        # No metadata should be created in legacy mode
+        self.assertEqual(project.metadata.count(), 0)
+        
+        # Meta field should be empty in response
+        response_serializer = ProjectSerializer(project)
+        self.assertEqual(response_serializer.data['meta'], {}) 

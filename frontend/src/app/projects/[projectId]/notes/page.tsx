@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { ChevronRight, Plus, FileText, Clock, Star } from 'lucide-react';
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { ChevronRight, Plus, FileText, Clock, Star } from "lucide-react";
 
 export default function ProjectNotes() {
   const params = useParams();
@@ -12,7 +12,9 @@ export default function ProjectNotes() {
     <div className="space-y-6">
       {/* Breadcrumbs */}
       <div className="flex items-center text-sm text-gray-600">
-        <Link href="/projects" className="hover:text-blue-600">Projects</Link>
+        <Link href="/projects" className="hover:text-blue-600">
+          Projects
+        </Link>
         <ChevronRight size={16} className="mx-2" />
         <span className="font-medium text-gray-900">Notes</span>
       </div>
@@ -50,8 +52,12 @@ export default function ProjectNotes() {
           <div className="p-4 hover:bg-gray-50 transition-colors">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="font-medium text-gray-900">Biology: Cell Structure</h3>
-                <p className="text-sm text-gray-500">8 pages • Last updated 2 days ago</p>
+                <h3 className="font-medium text-gray-900">
+                  Biology: Cell Structure
+                </h3>
+                <p className="text-sm text-gray-500">
+                  8 pages • Last updated 2 days ago
+                </p>
               </div>
               <div className="flex items-center space-x-2">
                 <Star className="w-5 h-5 text-yellow-400" />
@@ -61,8 +67,12 @@ export default function ProjectNotes() {
           <div className="p-4 hover:bg-gray-50 transition-colors">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="font-medium text-gray-900">Chemistry: Periodic Table</h3>
-                <p className="text-sm text-gray-500">12 pages • Last updated 5 days ago</p>
+                <h3 className="font-medium text-gray-900">
+                  Chemistry: Periodic Table
+                </h3>
+                <p className="text-sm text-gray-500">
+                  12 pages • Last updated 5 days ago
+                </p>
               </div>
               <div className="flex items-center space-x-2">
                 <FileText className="w-5 h-5 text-blue-600" />
@@ -72,8 +82,12 @@ export default function ProjectNotes() {
           <div className="p-4 hover:bg-gray-50 transition-colors">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="font-medium text-gray-900">Physics: Mechanics</h3>
-                <p className="text-sm text-gray-500">6 pages • Last updated 1 day ago</p>
+                <h3 className="font-medium text-gray-900">
+                  Physics: Mechanics
+                </h3>
+                <p className="text-sm text-gray-500">
+                  6 pages • Last updated 1 day ago
+                </p>
               </div>
               <div className="flex items-center space-x-2">
                 <Clock className="w-5 h-5 text-gray-400" />
@@ -84,4 +98,4 @@ export default function ProjectNotes() {
       </div>
     </div>
   );
-} 
+}

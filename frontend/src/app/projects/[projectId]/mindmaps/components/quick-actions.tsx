@@ -1,23 +1,22 @@
-'use client';
+"use client";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { 
+import {
   Search,
   Upload,
   Download,
   Sparkles,
   Layers,
-  Network
-} from 'lucide-react';
-import PropTypes from 'prop-types';
+  Network,
+} from "lucide-react";
 
 interface QuickActionsProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  viewMode: 'timeline' | 'grid';
-  onViewModeChange: (mode: 'timeline' | 'grid') => void;
+  viewMode: "timeline" | "grid";
+  onViewModeChange: (mode: "timeline" | "grid") => void;
   onImport?: () => void;
   onExport?: () => void;
   onAISuggestions?: () => void;
@@ -34,14 +33,14 @@ interface QuickActionsProps {
  * @param {function} [props.onExport] - Handler for export action
  * @param {function} [props.onAISuggestions] - Handler for AI suggestions
  */
-export function QuickActions({ 
-  searchTerm, 
-  onSearchChange, 
-  viewMode, 
+export function QuickActions({
+  searchTerm,
+  onSearchChange,
+  viewMode,
   onViewModeChange,
   onImport,
   onExport,
-  onAISuggestions
+  onAISuggestions,
 }: QuickActionsProps) {
   return (
     <div className="flex items-center justify-between">
@@ -70,20 +69,20 @@ export function QuickActions({
           </Button>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-2">
-        <Button 
-          variant={viewMode === 'timeline' ? 'default' : 'outline'} 
+        <Button
+          variant={viewMode === "timeline" ? "default" : "outline"}
           size="sm"
-          onClick={() => onViewModeChange('timeline')}
+          onClick={() => onViewModeChange("timeline")}
         >
           <Layers className="h-4 w-4 mr-2" />
           Timeline
         </Button>
-        <Button 
-          variant={viewMode === 'grid' ? 'default' : 'outline'} 
+        <Button
+          variant={viewMode === "grid" ? "default" : "outline"}
           size="sm"
-          onClick={() => onViewModeChange('grid')}
+          onClick={() => onViewModeChange("grid")}
         >
           <Network className="h-4 w-4 mr-2" />
           Grid
@@ -92,13 +91,3 @@ export function QuickActions({
     </div>
   );
 }
-
-QuickActions.propTypes = {
-  searchTerm: PropTypes.string.isRequired,
-  onSearchChange: PropTypes.func.isRequired,
-  viewMode: PropTypes.oneOf(['timeline', 'grid']).isRequired,
-  onViewModeChange: PropTypes.func.isRequired,
-  onImport: PropTypes.func,
-  onExport: PropTypes.func,
-  onAISuggestions: PropTypes.func,
-}; 

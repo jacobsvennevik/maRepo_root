@@ -1,5 +1,5 @@
-import { Card, CardDescription, CardTitle } from "@/components/ui/card"
-import { BookOpen } from "lucide-react"
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { BookOpen } from "lucide-react";
 
 export function NewProjectHeader() {
   return (
@@ -11,7 +11,8 @@ export function NewProjectHeader() {
               Create New Project
             </CardTitle>
             <CardDescription className="text-base text-emerald-50">
-              Let's set up your project for success. We'll guide you through the process step by step.
+              Let's set up your project for success. We'll guide you through the
+              process step by step.
             </CardDescription>
           </div>
         </div>
@@ -20,7 +21,7 @@ export function NewProjectHeader() {
             {/* Decorative circles */}
             <div className="absolute -inset-3 bg-emerald-100 rounded-full opacity-50 animate-pulse"></div>
             <div className="absolute -inset-6 bg-blue-100 rounded-full opacity-30 animate-pulse delay-300"></div>
-            
+
             {/* Icon container */}
             <div className="relative w-24 h-24 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-200">
               <BookOpen className="h-12 w-12 text-white" />
@@ -29,5 +30,5 @@ export function NewProjectHeader() {
         </div>
       </div>
     </Card>
-  )
-} 
+  );
+}

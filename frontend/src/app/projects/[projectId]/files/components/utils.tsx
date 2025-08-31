@@ -102,7 +102,7 @@ export const generateFileColors = (index: number) => {
     { color: 'from-teal-400 to-cyan-500', bgColor: 'bg-gradient-to-br from-teal-50 to-cyan-50', borderColor: 'border-teal-200' }
   ];
   return colors[index % colors.length];
-};
+}
 
 export const mockFiles: FileItem[] = [
   {

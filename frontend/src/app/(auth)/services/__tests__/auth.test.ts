@@ -1,7 +1,7 @@
-import { AuthService } from '../auth';
+import { AuthService } from "../auth";
 
 // Mock axios completely to avoid interceptor issues
-jest.mock('../../../../lib/axios', () => ({
+jest.mock("../../../../lib/axios", () => ({
   __esModule: true,
   default: {
     post: jest.fn(),
@@ -9,14 +9,14 @@ jest.mock('../../../../lib/axios', () => ({
   setupAxiosInterceptors: jest.fn(),
 }));
 
-import axiosInstance from '../../../../lib/axios';
+import axiosInstance from "../../../../lib/axios";
 
-describe('AuthService', () => {
+describe("AuthService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Mock localStorage
     let store: { [key: string]: string } = {};
-    Object.defineProperty(window, 'localStorage', {
+    Object.defineProperty(window, "localStorage", {
       value: {
         getItem: jest.fn((key) => store[key] || null),
         setItem: jest.fn((key, value) => {
@@ -33,41 +33,47 @@ describe('AuthService', () => {
     });
   });
 
-  describe('login', () => {
-    it('should login successfully and store tokens', async () => {
+  describe("login", () => {
+    it("should login successfully and store tokens", async () => {
       const mockResponse = {
         data: {
-          access: 'mock-access-token',
-          refresh: 'mock-refresh-token',
+          access: "mock-access-token",
+          refresh: "mock-refresh-token",
         },
       };
 
       (axiosInstance.post as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await AuthService.login({
-        email: 'test@example.com',
-        password: 'password123',
+        email: "test@example.com",
+        password: "password123",
       });
 
-      expect(axiosInstance.post).toHaveBeenCalledWith('/api/token/', {
-        email: 'test@example.com',
-        password: 'password123',
+      expect(axiosInstance.post).toHaveBeenCalledWith("/api/token/", {
+        email: "test@example.com",
+        password: "password123",
       });
 
-      expect(localStorage.setItem).toHaveBeenCalledWith('authToken', 'mock-access-token');
-      expect(localStorage.setItem).toHaveBeenCalledWith('refreshToken', 'mock-refresh-token');
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "authToken",
+        "mock-access-token",
+      );
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "refreshToken",
+        "mock-refresh-token",
+      );
 
       expect(result).toEqual({
-        access: 'mock-access-token',
-        refresh: 'mock-refresh-token',
+        access: "mock-access-token",
+        refresh: "mock-refresh-token",
       });
     });
 
-    it('should handle login failure', async () => {
+    it("should handle login failure", async () => {
       const mockError = {
         response: {
           status: 401,
-          data: { detail: 'Invalid credentials' },
+          data: { detail: "Invalid credentials" },
         },
       };
 
@@ -75,35 +81,35 @@ describe('AuthService', () => {
 
       await expect(
         AuthService.login({
-          email: 'test@example.com',
-          password: 'wrongpassword',
-        })
-      ).rejects.toThrow('Invalid credentials');
+          email: "test@example.com",
+          password: "wrongpassword",
+        }),
+      ).rejects.toThrow("Invalid credentials");
 
       expect(localStorage.setItem).not.toHaveBeenCalled();
     });
   });
 
-  describe('logout', () => {
-    it('should clear tokens from localStorage', () => {
+  describe("logout", () => {
+    it("should clear tokens from localStorage", () => {
       AuthService.logout();
 
-      expect(localStorage.removeItem).toHaveBeenCalledWith('authToken');
-      expect(localStorage.removeItem).toHaveBeenCalledWith('refreshToken');
+      expect(localStorage.removeItem).toHaveBeenCalledWith("authToken");
+      expect(localStorage.removeItem).toHaveBeenCalledWith("refreshToken");
     });
   });
 
-  describe('getAuthToken', () => {
-    it('should return token from localStorage', () => {
-      (localStorage.getItem as jest.Mock).mockReturnValue('mock-token');
+  describe("getAuthToken", () => {
+    it("should return token from localStorage", () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue("mock-token");
 
       const token = AuthService.getAuthToken();
 
-      expect(localStorage.getItem).toHaveBeenCalledWith('authToken');
-      expect(token).toBe('mock-token');
+      expect(localStorage.getItem).toHaveBeenCalledWith("authToken");
+      expect(token).toBe("mock-token");
     });
 
-    it('should return null if no token', () => {
+    it("should return null if no token", () => {
       (localStorage.getItem as jest.Mock).mockReturnValue(null);
 
       const token = AuthService.getAuthToken();
@@ -112,27 +118,27 @@ describe('AuthService', () => {
     });
   });
 
-  describe('getRefreshToken', () => {
-    it('should return refresh token from localStorage', () => {
-      (localStorage.getItem as jest.Mock).mockReturnValue('mock-refresh-token');
+  describe("getRefreshToken", () => {
+    it("should return refresh token from localStorage", () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue("mock-refresh-token");
 
       const token = AuthService.getRefreshToken();
 
-      expect(localStorage.getItem).toHaveBeenCalledWith('refreshToken');
-      expect(token).toBe('mock-refresh-token');
+      expect(localStorage.getItem).toHaveBeenCalledWith("refreshToken");
+      expect(token).toBe("mock-refresh-token");
     });
   });
 
-  describe('isAuthenticated', () => {
-    it('should return true if auth token exists', () => {
-      (localStorage.getItem as jest.Mock).mockReturnValue('mock-token');
+  describe("isAuthenticated", () => {
+    it("should return true if auth token exists", () => {
+      (localStorage.getItem as jest.Mock).mockReturnValue("mock-token");
 
       const isAuth = AuthService.isAuthenticated();
 
       expect(isAuth).toBe(true);
     });
 
-    it('should return false if no auth token', () => {
+    it("should return false if no auth token", () => {
       (localStorage.getItem as jest.Mock).mockReturnValue(null);
 
       const isAuth = AuthService.isAuthenticated();
@@ -140,4 +146,4 @@ describe('AuthService', () => {
       expect(isAuth).toBe(false);
     });
   });
-}); 
+});

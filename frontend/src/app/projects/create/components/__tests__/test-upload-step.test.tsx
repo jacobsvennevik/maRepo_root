@@ -1,49 +1,67 @@
-import * as React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { TestUploadStep } from '../steps/test-upload-step';
+import * as React from "react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { TestUploadStep } from "../steps/test-upload-step";
 import {
   createLocalStorageMock,
   createTestFile,
   createMockFetch,
-  simulateFileUpload
-} from '../../../../../test-utils/test-helpers';
+  simulateFileUpload,
+} from "../../../../../test-utils/test-helpers";
 import {
   mockProcessEnv,
   mockWindow,
   createAPIServiceMock,
   createFileUploadMock,
   createNavigationMock,
-  createUploadTestSetup
-} from '../../../../../test-utils/upload-test-helpers';
+  createUploadTestSetup,
+} from "../../../../../test-utils/upload-test-helpers";
 
 // Mock modules using shared utilities
-jest.mock('../../services/api', () => ({
+jest.mock("../../services/api", () => ({
   APIError: jest.fn().mockImplementation((message: string, status: number) => {
     const error = new Error(message) as Error & { statusCode: number };
     error.statusCode = status;
     return error;
-  })
+  }),
 }));
 
-jest.mock('next/navigation', () => ({
+jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
     back: jest.fn(),
     forward: jest.fn(),
     refresh: jest.fn(),
-    replace: jest.fn()
-  })
+    replace: jest.fn(),
+  }),
 }));
 
-jest.mock('@/components/ui/file-upload', () => ({
-  FileUpload: ({ onUpload, onRemove, files, uploadProgress, title, description, accept, error }: any) => (
+jest.mock("@/components/ui/file-upload", () => ({
+  FileUpload: ({
+    onUpload,
+    onRemove,
+    files,
+    uploadProgress,
+    title,
+    description,
+    accept,
+    error,
+  }: any) => (
     <div data-testid="file-upload">
       <h3>{title}</h3>
       <p>{description}</p>
       <div data-testid="accepted-types">{accept}</div>
       {error && (
-        <div data-testid="error-message" className="bg-red-50 border border-red-200 rounded-lg p-3">
+        <div
+          data-testid="error-message"
+          className="bg-red-50 border border-red-200 rounded-lg p-3"
+        >
           <div className="flex items-center space-x-2">
             <span className="text-red-600 text-sm">⚠️</span>
             <span className="text-red-800 text-sm font-medium">{error}</span>
@@ -65,15 +83,22 @@ jest.mock('@/components/ui/file-upload', () => ({
         {files.map((file: File, index: number) => (
           <div key={file.name} data-testid={`file-item-${file.name}`}>
             <span data-testid={`filename-${file.name}`}>{file.name}</span>
-            <button data-testid={`remove-${file.name}`} onClick={() => onRemove(index)}>Remove</button>
+            <button
+              data-testid={`remove-${file.name}`}
+              onClick={() => onRemove(index)}
+            >
+              Remove
+            </button>
             {uploadProgress[file.name] && (
-              <div data-testid={`progress-${file.name}`}>{uploadProgress[file.name]}%</div>
+              <div data-testid={`progress-${file.name}`}>
+                {uploadProgress[file.name]}%
+              </div>
             )}
           </div>
         ))}
       </div>
     </div>
-  )
+  ),
 }));
 
 // Setup test environment using shared utilities
@@ -81,253 +106,286 @@ const { mocks, createBeforeEach, createAfterEach } = createUploadTestSetup();
 const localStorageMock = createLocalStorageMock();
 const mockFetch = createMockFetch();
 
-describe('TestUploadStep', () => {
+describe("TestUploadStep", () => {
   beforeEach(() => {
-    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-    
+    Object.defineProperty(window, "localStorage", { value: localStorageMock });
+
     // Reset fetch mock
     global.fetch = mockFetch;
   });
 
   afterEach(createAfterEach());
 
-  describe('Test Mode', () => {
+  describe("Test Mode", () => {
     beforeEach(createBeforeEach(true));
 
-          it('should render test mode banner and handle mock analysis', async () => {
-        render(
-          <TestUploadStep
-            onUploadComplete={mocks.onUploadComplete}
-            onAnalysisComplete={mocks.onAnalysisComplete}
-            onNext={mocks.onNext}
-            onBack={mocks.onBack}
-          />
-        );
-
-      // Verify test mode banner is shown
-      const banner = screen.getByText(/Test Mode Active/);
-      expect(banner).toBeInTheDocument();
-      expect(screen.getByText(/Using mock data for test analysis/)).toBeInTheDocument();
-
-      // Verify component renders correctly
-      expect(screen.getByText(/Upload previous tests and exams/)).toBeInTheDocument();
-      expect(screen.getByText(/Upload past exams, quizzes, tests, and practice materials/)).toBeInTheDocument();
-      
-      // Check accepted file types
-      expect(screen.getByTestId('accepted-types')).toHaveTextContent('.pdf,.jpg,.jpeg,.png');
-    });
-
-    it('should handle single test file upload and analysis in test mode', async () => {
+    it("should render test mode banner and handle mock analysis", async () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
+      );
+
+      // Verify test mode banner is shown
+      const banner = screen.getByText(/Test Mode Active/);
+      expect(banner).toBeInTheDocument();
+      expect(
+        screen.getByText(/Using mock data for test analysis/),
+      ).toBeInTheDocument();
+
+      // Verify component renders correctly
+      expect(
+        screen.getByText(/Upload previous tests and exams/),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Upload past exams, quizzes, tests, and practice materials/,
+        ),
+      ).toBeInTheDocument();
+
+      // Check accepted file types
+      expect(screen.getByTestId("accepted-types")).toHaveTextContent(
+        ".pdf,.jpg,.jpeg,.png",
+      );
+    });
+
+    it("should handle single test file upload and analysis in test mode", async () => {
+      render(
+        <TestUploadStep
+          onUploadComplete={mocks.onUploadComplete}
+          onAnalysisComplete={mocks.onAnalysisComplete}
+          onNext={mocks.onNext}
+          onBack={mocks.onBack}
+        />,
       );
 
       // Upload test file
-      const fileInput = screen.getByTestId('file-input');
-      const testFile = createTestFile('midterm_exam.pdf', 'test content');
+      const fileInput = screen.getByTestId("file-input");
+      const testFile = createTestFile("midterm_exam.pdf", "test content");
       await simulateFileUpload(fileInput, [testFile]);
 
       // Verify file is listed
-      expect(screen.getByTestId('file-item-midterm_exam.pdf')).toBeInTheDocument();
-      expect(screen.getByTestId('filename-midterm_exam.pdf')).toHaveTextContent('midterm_exam.pdf');
+      expect(
+        screen.getByTestId("file-item-midterm_exam.pdf"),
+      ).toBeInTheDocument();
+      expect(screen.getByTestId("filename-midterm_exam.pdf")).toHaveTextContent(
+        "midterm_exam.pdf",
+      );
 
       // Click analyze button
-      const analyzeButton = screen.getByTestId('analyze-tests-button');
-      expect(analyzeButton).toHaveTextContent('📊 Analyze 1 Test File');
-      
+      const analyzeButton = screen.getByTestId("analyze-tests-button");
+      expect(analyzeButton).toHaveTextContent("📊 Analyze 1 Test File");
+
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
 
       // Verify loading state - button should be disabled during analysis
-      expect(screen.getByTestId('analyze-tests-button')).toBeDisabled();
+      expect(screen.getByTestId("analyze-tests-button")).toBeDisabled();
 
-              // Wait for completion
-        await waitFor(() => {
+      // Wait for completion
+      await waitFor(
+        () => {
           expect(mocks.onUploadComplete).toHaveBeenCalledWith(
             expect.arrayContaining([
               expect.objectContaining({
                 id: expect.any(Number),
-                original_text: expect.stringContaining('Language Technology Quiz - Natural Language Interaction'),
+                original_text: expect.stringContaining(
+                  "Language Technology Quiz - Natural Language Interaction",
+                ),
                 metadata: expect.objectContaining({
-                  source_file: 'midterm_exam.pdf',
-                  test_type: 'Midterm Exam',
-                  course_title: 'Natural Language Interaction',
-                  test_title: 'Quizes Lang Tech'
+                  source_file: "midterm_exam.pdf",
+                  test_type: "Midterm Exam",
+                  course_title: "Natural Language Interaction",
+                  test_title: "Quizes Lang Tech",
                 }),
-                status: 'completed'
-              })
+                status: "completed",
+              }),
             ]),
-            ['midterm_exam.pdf']
+            ["midterm_exam.pdf"],
           );
-        }, { timeout: 5000 });
+        },
+        { timeout: 5000 },
+      );
     });
 
-    it('should handle multiple test files with different types', async () => {
+    it("should handle multiple test files with different types", async () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload multiple test files
-      const fileInput = screen.getByTestId('file-input');
+      const fileInput = screen.getByTestId("file-input");
       const testFiles = [
-        createTestFile('midterm_exam.pdf', 'midterm content'),
-        createTestFile('final_exam.pdf', 'final content'),
-        createTestFile('quiz1.jpg', 'quiz content'),
-        createTestFile('practice_test.png', 'practice content')
+        createTestFile("midterm_exam.pdf", "midterm content"),
+        createTestFile("final_exam.pdf", "final content"),
+        createTestFile("quiz1.jpg", "quiz content"),
+        createTestFile("practice_test.png", "practice content"),
       ];
       await simulateFileUpload(fileInput, testFiles);
 
       // Verify all files are listed
-      testFiles.forEach(file => {
-        expect(screen.getByTestId(`file-item-${file.name}`)).toBeInTheDocument();
+      testFiles.forEach((file) => {
+        expect(
+          screen.getByTestId(`file-item-${file.name}`),
+        ).toBeInTheDocument();
       });
 
       // Click analyze button
-      const analyzeButton = screen.getByTestId('analyze-tests-button');
-      expect(analyzeButton).toHaveTextContent('📊 Analyze 4 Test Files');
-      
+      const analyzeButton = screen.getByTestId("analyze-tests-button");
+      expect(analyzeButton).toHaveTextContent("📊 Analyze 4 Test Files");
+
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
 
       // Wait for completion
-      await waitFor(() => {
-        expect(mocks.onUploadComplete).toHaveBeenCalledWith(
-          expect.arrayContaining([
-            expect.objectContaining({
-              metadata: expect.objectContaining({
-                source_file: 'midterm_exam.pdf',
-                test_type: 'Midterm Exam'
-              })
-            }),
-            expect.objectContaining({
-              metadata: expect.objectContaining({
-                source_file: 'final_exam.pdf',
-                test_type: 'Final Exam'
-              })
-            }),
-            expect.objectContaining({
-              metadata: expect.objectContaining({
-                source_file: 'quiz1.jpg',
-                test_type: 'Quiz'
-              })
-            }),
-            expect.objectContaining({
-              metadata: expect.objectContaining({
-                source_file: 'practice_test.png',
-                test_type: 'Practice Test'
-              })
-            })
-          ]),
-          ['midterm_exam.pdf', 'final_exam.pdf', 'quiz1.jpg', 'practice_test.png']
-        );
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(mocks.onUploadComplete).toHaveBeenCalledWith(
+            expect.arrayContaining([
+              expect.objectContaining({
+                metadata: expect.objectContaining({
+                  source_file: "midterm_exam.pdf",
+                  test_type: "Midterm Exam",
+                }),
+              }),
+              expect.objectContaining({
+                metadata: expect.objectContaining({
+                  source_file: "final_exam.pdf",
+                  test_type: "Final Exam",
+                }),
+              }),
+              expect.objectContaining({
+                metadata: expect.objectContaining({
+                  source_file: "quiz1.jpg",
+                  test_type: "Quiz",
+                }),
+              }),
+              expect.objectContaining({
+                metadata: expect.objectContaining({
+                  source_file: "practice_test.png",
+                  test_type: "Practice Test",
+                }),
+              }),
+            ]),
+            [
+              "midterm_exam.pdf",
+              "final_exam.pdf",
+              "quiz1.jpg",
+              "practice_test.png",
+            ],
+          );
+        },
+        { timeout: 5000 },
+      );
     });
 
-    it('should handle file removal', async () => {
+    it("should handle file removal", async () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload test files
-      const fileInput = screen.getByTestId('file-input');
+      const fileInput = screen.getByTestId("file-input");
       const testFiles = [
-        createTestFile('test1.pdf', 'content1'),
-        createTestFile('test2.pdf', 'content2')
+        createTestFile("test1.pdf", "content1"),
+        createTestFile("test2.pdf", "content2"),
       ];
       await simulateFileUpload(fileInput, testFiles);
 
       // Verify both files are listed
-      expect(screen.getByTestId('file-item-test1.pdf')).toBeInTheDocument();
-      expect(screen.getByTestId('file-item-test2.pdf')).toBeInTheDocument();
+      expect(screen.getByTestId("file-item-test1.pdf")).toBeInTheDocument();
+      expect(screen.getByTestId("file-item-test2.pdf")).toBeInTheDocument();
 
       // Remove first file
-      const removeButton = screen.getByTestId('remove-test1.pdf');
+      const removeButton = screen.getByTestId("remove-test1.pdf");
       fireEvent.click(removeButton);
 
       // Verify first file is removed, second remains
-      expect(screen.queryByTestId('file-item-test1.pdf')).not.toBeInTheDocument();
-      expect(screen.getByTestId('file-item-test2.pdf')).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("file-item-test1.pdf"),
+      ).not.toBeInTheDocument();
+      expect(screen.getByTestId("file-item-test2.pdf")).toBeInTheDocument();
     });
 
-    it('should show error when trying to analyze without files', async () => {
+    it("should show error when trying to analyze without files", async () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Try to analyze without files - button should not be visible
-      expect(screen.queryByTestId('analyze-tests-button')).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("analyze-tests-button"),
+      ).not.toBeInTheDocument();
 
       // Upload a file first
-      const fileInput = screen.getByTestId('file-input');
-      const testFile = createTestFile('test.pdf', 'content');
+      const fileInput = screen.getByTestId("file-input");
+      const testFile = createTestFile("test.pdf", "content");
       await simulateFileUpload(fileInput, [testFile]);
 
       // Now analyze button should be visible
-      expect(screen.getByTestId('analyze-tests-button')).toBeInTheDocument();
+      expect(screen.getByTestId("analyze-tests-button")).toBeInTheDocument();
     });
   });
 
-  describe('Production Mode', () => {
+  describe("Production Mode", () => {
     beforeEach(createBeforeEach(false));
 
-    it('should not show test mode banner in production', () => {
+    it("should not show test mode banner in production", () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Verify test mode banner is NOT shown
       expect(screen.queryByText(/Test Mode Active/)).not.toBeInTheDocument();
     });
 
-    it('should handle successful API upload and processing', async () => {
+    it("should handle successful API upload and processing", async () => {
       // Mock successful API responses
       mockFetch
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ id: 123, status: 'pending' })
+          json: async () => ({ id: 123, status: "pending" }),
         })
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ success: true })
+          json: async () => ({ success: true }),
         })
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({
             id: 123,
-            status: 'completed',
-            original_text: 'Test content processed',
+            status: "completed",
+            original_text: "Test content processed",
             processed_data: {
-              test_type: 'Midterm Exam',
-              topics_covered: ['Mathematics', 'Physics']
-            }
-          })
+              test_type: "Midterm Exam",
+              topics_covered: ["Mathematics", "Physics"],
+            },
+          }),
         });
 
       render(
@@ -336,16 +394,16 @@ describe('TestUploadStep', () => {
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload test file
-      const fileInput = screen.getByTestId('file-input');
-      const testFile = createTestFile('exam.pdf', 'exam content');
+      const fileInput = screen.getByTestId("file-input");
+      const testFile = createTestFile("exam.pdf", "exam content");
       await simulateFileUpload(fileInput, [testFile]);
 
       // Click analyze button
-      const analyzeButton = screen.getByTestId('analyze-tests-button');
+      const analyzeButton = screen.getByTestId("analyze-tests-button");
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
@@ -356,26 +414,26 @@ describe('TestUploadStep', () => {
           expect.arrayContaining([
             expect.objectContaining({
               id: 123,
-              original_text: 'Test content processed',
+              original_text: "Test content processed",
               metadata: expect.objectContaining({
-                test_type: 'Midterm Exam',
-                topics_covered: ['Mathematics', 'Physics']
+                test_type: "Midterm Exam",
+                topics_covered: ["Mathematics", "Physics"],
               }),
-              status: 'completed'
-            })
+              status: "completed",
+            }),
           ]),
-          ['exam.pdf']
+          ["exam.pdf"],
         );
       });
     });
 
-    it('should handle API upload failure', async () => {
+    it("should handle API upload failure", async () => {
       // Mock failed upload
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
-        statusText: 'Bad Request',
-        text: async () => 'Upload failed'
+        statusText: "Bad Request",
+        text: async () => "Upload failed",
       });
 
       render(
@@ -384,41 +442,46 @@ describe('TestUploadStep', () => {
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload test file
-      const fileInput = screen.getByTestId('file-input');
-      const testFile = createTestFile('exam.pdf', 'exam content');
+      const fileInput = screen.getByTestId("file-input");
+      const testFile = createTestFile("exam.pdf", "exam content");
       await simulateFileUpload(fileInput, [testFile]);
 
       // Click analyze button
-      const analyzeButton = screen.getByTestId('analyze-tests-button');
+      const analyzeButton = screen.getByTestId("analyze-tests-button");
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
 
       // Wait for error message
-      await waitFor(() => {
-        expect(screen.getByText(/Failed to upload exam\.pdf/)).toBeInTheDocument();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText(/Failed to upload exam\.pdf/),
+          ).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
     });
 
-    it('should handle processing timeout with fallback', async () => {
+    it("should handle processing timeout with fallback", async () => {
       // Mock upload success but processing timeout
       mockFetch
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ id: 123, status: 'pending' })
+          json: async () => ({ id: 123, status: "pending" }),
         })
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ success: true })
+          json: async () => ({ success: true }),
         })
         // Multiple status checks that never complete
         .mockResolvedValue({
           ok: true,
-          json: async () => ({ id: 123, status: 'processing' })
+          json: async () => ({ id: 123, status: "processing" }),
         });
 
       render(
@@ -427,77 +490,84 @@ describe('TestUploadStep', () => {
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload test file
-      const fileInput = screen.getByTestId('file-input');
-      const testFile = createTestFile('exam.pdf', 'exam content');
+      const fileInput = screen.getByTestId("file-input");
+      const testFile = createTestFile("exam.pdf", "exam content");
       await simulateFileUpload(fileInput, [testFile]);
 
       // Click analyze button
-      const analyzeButton = screen.getByTestId('analyze-tests-button');
+      const analyzeButton = screen.getByTestId("analyze-tests-button");
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
 
       // Wait for fallback completion
-      await waitFor(() => {
-        expect(mocks.onUploadComplete).toHaveBeenCalledWith(
-          expect.arrayContaining([
-            expect.objectContaining({
-              id: 123,
-              metadata: expect.objectContaining({
-                source_file: 'exam.pdf',
-                test_type: 'Exam'
+      await waitFor(
+        () => {
+          expect(mocks.onUploadComplete).toHaveBeenCalledWith(
+            expect.arrayContaining([
+              expect.objectContaining({
+                id: 123,
+                metadata: expect.objectContaining({
+                  source_file: "exam.pdf",
+                  test_type: "Exam",
+                }),
+                status: "completed",
               }),
-              status: 'completed'
-            })
-          ]),
-          ['exam.pdf']
-        );
-      }, { timeout: 10000 });
+            ]),
+            ["exam.pdf"],
+          );
+        },
+        { timeout: 10000 },
+      );
     });
   });
 
-  describe('File Validation', () => {
+  describe("File Validation", () => {
     beforeEach(() => {
       mockProcessEnv(true);
     });
 
-    it('should validate file types and reject invalid files', async () => {
+    it("should validate file types and reject invalid files", async () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload invalid file type
-      const fileInput = screen.getByTestId('file-input');
-      const invalidFile = createTestFile('invalid.txt', 'invalid content');
+      const fileInput = screen.getByTestId("file-input");
+      const invalidFile = createTestFile("invalid.txt", "invalid content");
       await simulateFileUpload(fileInput, [invalidFile]);
 
       // Should show error message
       expect(screen.getByText(/Invalid file type/)).toBeInTheDocument();
-      expect(screen.getByText(/Please upload PDF or image files/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Please upload PDF or image files/),
+      ).toBeInTheDocument();
     });
 
-    it('should validate file size and reject oversized files', async () => {
+    it("should validate file size and reject oversized files", async () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload oversized file (16MB > 15MB limit)
-      const fileInput = screen.getByTestId('file-input');
-      const largeFile = new File(['x'.repeat(16 * 1024 * 1024)], 'large.pdf', { type: 'application/pdf' });
+      const fileInput = screen.getByTestId("file-input");
+      const largeFile = new File(["x".repeat(16 * 1024 * 1024)], "large.pdf", {
+        type: "application/pdf",
+      });
       await simulateFileUpload(fileInput, [largeFile]);
 
       // Should show error message
@@ -505,72 +575,72 @@ describe('TestUploadStep', () => {
       expect(screen.getByText(/Maximum size is 15MB/)).toBeInTheDocument();
     });
 
-    it('should accept valid PDF files', async () => {
+    it("should accept valid PDF files", async () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload valid PDF file
-      const fileInput = screen.getByTestId('file-input');
-      const validFile = createTestFile('valid.pdf', 'valid content');
+      const fileInput = screen.getByTestId("file-input");
+      const validFile = createTestFile("valid.pdf", "valid content");
       await simulateFileUpload(fileInput, [validFile]);
 
       // Should not show error message
       expect(screen.queryByText(/Invalid file type/)).not.toBeInTheDocument();
       expect(screen.queryByText(/File is too large/)).not.toBeInTheDocument();
-      
+
       // File should be listed
-      expect(screen.getByTestId('file-item-valid.pdf')).toBeInTheDocument();
+      expect(screen.getByTestId("file-item-valid.pdf")).toBeInTheDocument();
     });
 
-    it('should accept valid image files', async () => {
+    it("should accept valid image files", async () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload valid image files
-      const fileInput = screen.getByTestId('file-input');
+      const fileInput = screen.getByTestId("file-input");
       const imageFiles = [
-        new File(['jpg content'], 'scan.jpg', { type: 'image/jpeg' }),
-        new File(['jpeg content'], 'scan.jpeg', { type: 'image/jpeg' }),
-        new File(['png content'], 'scan.png', { type: 'image/png' })
+        new File(["jpg content"], "scan.jpg", { type: "image/jpeg" }),
+        new File(["jpeg content"], "scan.jpeg", { type: "image/jpeg" }),
+        new File(["png content"], "scan.png", { type: "image/png" }),
       ];
       await simulateFileUpload(fileInput, imageFiles);
 
       // Should not show error messages
       expect(screen.queryByText(/Invalid file type/)).not.toBeInTheDocument();
-      
+
       // All files should be listed
-      expect(screen.getByTestId('file-item-scan.jpg')).toBeInTheDocument();
-      expect(screen.getByTestId('file-item-scan.jpeg')).toBeInTheDocument();
-      expect(screen.getByTestId('file-item-scan.png')).toBeInTheDocument();
+      expect(screen.getByTestId("file-item-scan.jpg")).toBeInTheDocument();
+      expect(screen.getByTestId("file-item-scan.jpeg")).toBeInTheDocument();
+      expect(screen.getByTestId("file-item-scan.png")).toBeInTheDocument();
     });
 
-    it('should handle mixed valid and invalid files', async () => {
+    it("should handle mixed valid and invalid files", async () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload mixed files
-      const fileInput = screen.getByTestId('file-input');
+      const fileInput = screen.getByTestId("file-input");
       const mixedFiles = [
-        createTestFile('valid.pdf', 'valid content'),
-        createTestFile('invalid.txt', 'invalid content')
+        createTestFile("valid.pdf", "valid content"),
+        createTestFile("invalid.txt", "invalid content"),
       ];
       await simulateFileUpload(fileInput, mixedFiles);
 
@@ -578,30 +648,30 @@ describe('TestUploadStep', () => {
       expect(screen.getByText(/Invalid file type/)).toBeInTheDocument();
 
       // Both files should be listed initially
-      expect(screen.getByTestId('file-item-valid.pdf')).toBeInTheDocument();
-      expect(screen.getByTestId('file-item-invalid.txt')).toBeInTheDocument();
+      expect(screen.getByTestId("file-item-valid.pdf")).toBeInTheDocument();
+      expect(screen.getByTestId("file-item-invalid.txt")).toBeInTheDocument();
     });
 
-    it('should clear errors when invalid files are removed', async () => {
+    it("should clear errors when invalid files are removed", async () => {
       render(
         <TestUploadStep
           onUploadComplete={mocks.onUploadComplete}
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload invalid file
-      const fileInput = screen.getByTestId('file-input');
-      const invalidFile = createTestFile('invalid.txt', 'invalid content');
+      const fileInput = screen.getByTestId("file-input");
+      const invalidFile = createTestFile("invalid.txt", "invalid content");
       await simulateFileUpload(fileInput, [invalidFile]);
 
       // Verify error is shown
       expect(screen.getByText(/Invalid file type/)).toBeInTheDocument();
 
       // Remove invalid file
-      const removeButton = screen.getByTestId('remove-invalid.txt');
+      const removeButton = screen.getByTestId("remove-invalid.txt");
       fireEvent.click(removeButton);
 
       // Error should be cleared
@@ -609,14 +679,14 @@ describe('TestUploadStep', () => {
     });
   });
 
-  describe('Error Handling', () => {
+  describe("Error Handling", () => {
     beforeEach(() => {
       mockProcessEnv(false);
     });
 
-    it('should handle network errors gracefully', async () => {
+    it("should handle network errors gracefully", async () => {
       // Mock network error
-      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+      mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
       render(
         <TestUploadStep
@@ -624,44 +694,51 @@ describe('TestUploadStep', () => {
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload test file
-      const fileInput = screen.getByTestId('file-input');
-      const testFile = createTestFile('test.pdf', 'content');
+      const fileInput = screen.getByTestId("file-input");
+      const testFile = createTestFile("test.pdf", "content");
       await simulateFileUpload(fileInput, [testFile]);
 
       // Click analyze button
-      const analyzeButton = screen.getByTestId('analyze-tests-button');
+      const analyzeButton = screen.getByTestId("analyze-tests-button");
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
 
       // Wait for error message
-      await waitFor(() => {
-        expect(screen.getByText(/Network error|Failed to upload|An unexpected error occurred/)).toBeInTheDocument();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText(
+              /Network error|Failed to upload|An unexpected error occurred/,
+            ),
+          ).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
     });
 
-    it('should handle processing errors', async () => {
+    it("should handle processing errors", async () => {
       // Mock upload success but processing error
       mockFetch
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ id: 123, status: 'pending' })
+          json: async () => ({ id: 123, status: "pending" }),
         })
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ success: true })
+          json: async () => ({ success: true }),
         })
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({
             id: 123,
-            status: 'error',
-            error_message: 'Processing failed'
-          })
+            status: "error",
+            error_message: "Processing failed",
+          }),
         });
 
       render(
@@ -670,53 +747,60 @@ describe('TestUploadStep', () => {
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload test file
-      const fileInput = screen.getByTestId('file-input');
-      const testFile = createTestFile('test.pdf', 'content');
+      const fileInput = screen.getByTestId("file-input");
+      const testFile = createTestFile("test.pdf", "content");
       await simulateFileUpload(fileInput, [testFile]);
 
       // Click analyze button
-      const analyzeButton = screen.getByTestId('analyze-tests-button');
+      const analyzeButton = screen.getByTestId("analyze-tests-button");
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
 
       // Wait for error message
-      await waitFor(() => {
-        expect(screen.getByText(/Processing failed|Test processing failed|Failed to start processing/)).toBeInTheDocument();
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText(
+              /Processing failed|Test processing failed|Failed to start processing/,
+            ),
+          ).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
     });
 
-    it('should handle partial success with multiple files', async () => {
+    it("should handle partial success with multiple files", async () => {
       // Mock one successful upload, one failed
       mockFetch
         // First file - success sequence
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ id: 123, status: 'pending' })
+          json: async () => ({ id: 123, status: "pending" }),
         })
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ success: true })
+          json: async () => ({ success: true }),
         })
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({
             id: 123,
-            status: 'completed',
-            original_text: 'Test content processed',
-            processed_data: { test_type: 'Exam', topics_covered: [] }
-          })
+            status: "completed",
+            original_text: "Test content processed",
+            processed_data: { test_type: "Exam", topics_covered: [] },
+          }),
         })
         // Second file - fail upload immediately
         .mockResolvedValueOnce({
           ok: false,
           status: 400,
-          statusText: 'Bad Request',
-          text: async () => 'Upload failed'
+          statusText: "Bad Request",
+          text: async () => "Upload failed",
         });
 
       render(
@@ -725,26 +809,28 @@ describe('TestUploadStep', () => {
           onAnalysisComplete={mocks.onAnalysisComplete}
           onNext={mocks.onNext}
           onBack={mocks.onBack}
-        />
+        />,
       );
 
       // Upload multiple files
-      const fileInput = screen.getByTestId('file-input');
+      const fileInput = screen.getByTestId("file-input");
       const testFiles = [
-        createTestFile('success.pdf', 'success content'),
-        createTestFile('fail.pdf', 'fail content')
+        createTestFile("success.pdf", "success content"),
+        createTestFile("fail.pdf", "fail content"),
       ];
       await simulateFileUpload(fileInput, testFiles);
 
       // Click analyze button
-      const analyzeButton = screen.getByTestId('analyze-tests-button');
+      const analyzeButton = screen.getByTestId("analyze-tests-button");
       await act(async () => {
         fireEvent.click(analyzeButton);
       });
 
       // Wait for error message - the component should show error for failed files
       await waitFor(() => {
-        expect(screen.getByText(/1 file\(s\) failed to process/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/1 file\(s\) failed to process/),
+        ).toBeInTheDocument();
       });
 
       // onUploadComplete should be called with only the successful files
@@ -753,18 +839,18 @@ describe('TestUploadStep', () => {
           expect.arrayContaining([
             expect.objectContaining({
               id: 123,
-              original_text: 'Test content processed',
+              original_text: "Test content processed",
               metadata: expect.objectContaining({
-                source_file: 'exam.pdf', // The component uses exam.pdf as the source file name
-                test_type: 'Exam',
-                topics_covered: []
+                source_file: "exam.pdf", // The component uses exam.pdf as the source file name
+                test_type: "Exam",
+                topics_covered: [],
               }),
-              status: 'completed'
-            })
+              status: "completed",
+            }),
           ]),
-          ['exam.pdf'] // Only the successful file
+          ["exam.pdf"], // Only the successful file
         );
       });
     });
   });
-}); 
+});

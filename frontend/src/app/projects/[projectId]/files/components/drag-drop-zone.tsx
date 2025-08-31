@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload } from 'lucide-react';
+import { Upload } from "lucide-react";
 
 interface DragDropZoneProps {
   isDragOver: boolean;
@@ -22,19 +22,21 @@ export function DragDropZone({
   onDragLeave,
   onDrop,
   onBrowseClick,
-  className = '',
-  title = 'Drag & drop files here',
-  description = 'Support for PDF, DOCX, PPTX, TXT, PNG, JPG, CSV, MD, ZIP, MP4',
-  supportedFormats = 'PDF, DOCX, PPTX, TXT, PNG, JPG, CSV, MD, ZIP, MP4'
+  className = "",
+  title = "Drag & drop files here",
+  description = "Support for PDF, DOCX, PPTX, TXT, PNG, JPG, CSV, MD, ZIP, MP4",
+  supportedFormats = "PDF, DOCX, PPTX, TXT, PNG, JPG, CSV, MD, ZIP, MP4",
 }: DragDropZoneProps) {
   return (
-    <Card className={`bg-gradient-to-r from-slate-50/80 to-blue-50/60 backdrop-blur-sm border-blue-200/50 ${className}`}>
+    <Card
+      className={`bg-gradient-to-r from-slate-50/80 to-blue-50/60 backdrop-blur-sm border-blue-200/50 ${className}`}
+    >
       <CardContent className="p-12">
         <div
           className={`border-2 border-dashed rounded-lg p-12 text-center transition-all duration-300 ${
-            isDragOver 
-              ? 'border-blue-400 bg-blue-50/50 scale-105' 
-              : 'border-gray-300 hover:border-blue-300 hover:bg-gray-50/50'
+            isDragOver
+              ? "border-blue-400 bg-blue-50/50 scale-105"
+              : "border-gray-300 hover:border-blue-300 hover:bg-gray-50/50"
           }`}
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
@@ -46,13 +48,11 @@ export function DragDropZone({
             </div>
             <div>
               <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                {isDragOver ? 'Drop your files here!' : title}
+                {isDragOver ? "Drop your files here!" : title}
               </h3>
-              <p className="text-slate-600 mb-4">
-                {description}
-              </p>
-              <Button 
-                variant="outline" 
+              <p className="text-slate-600 mb-4">{description}</p>
+              <Button
+                variant="outline"
                 onClick={onBrowseClick}
                 className="border-blue-200 text-blue-600 hover:bg-blue-50"
               >
@@ -64,4 +64,4 @@ export function DragDropZone({
       </CardContent>
     </Card>
   );
-} 
+}

@@ -3,5 +3,5 @@
  * Re-exports all utility functions for easier importing
  */
 
-export * from './fileHelpers'
-export * from './navigationHelpers' 
+export * from "./fileHelpers";
+export * from "./navigationHelpers";

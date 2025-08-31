@@ -1,6 +1,6 @@
-import { ProjectWizard } from "@/components/wizard/ProjectWizard"
-import { NewProjectHeader } from "@/components/project/NewProjectHeader"
-import { GradientBackground } from "@/components/ui/GradientBackground"
+import { ProjectWizard } from "@/components/wizard/ProjectWizard";
+import { NewProjectHeader } from "@/components/project/NewProjectHeader";
+import { GradientBackground } from "@/components/ui/GradientBackground";
 
 export default function NewProjectPage() {
   return (
@@ -11,11 +11,11 @@ export default function NewProjectPage() {
         <div className="mb-8">
           <NewProjectHeader />
         </div>
-        
+
         <div className="max-w-4xl mx-auto">
           <ProjectWizard variant="gradient" />
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

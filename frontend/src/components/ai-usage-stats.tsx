@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
 const data = [
   { name: "Flashcards", value: 28, color: "#0ea5e9" }, // ocean DEFAULT
   { name: "Tests", value: 6, color: "#38bdf8" }, // ocean-400
   { name: "Summaries", value: 14, color: "#7dd3fc" }, // ocean-300
   { name: "Mind Maps", value: 8, color: "#bae6fd" }, // ocean-200
-]
+];
 
 export function AiUsageStats() {
   return (
@@ -28,5 +28,5 @@ export function AiUsageStats() {
         </div>
       ))}
     </div>
-  )
+  );
 }

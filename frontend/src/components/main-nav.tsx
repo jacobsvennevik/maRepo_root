@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export function MainNav() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const routes = [
     {
@@ -28,7 +28,7 @@ export function MainNav() {
       label: "Settings",
       active: pathname === "/dashboard/settings",
     },
-  ]
+  ];
 
   return (
     <nav className="flex items-center space-x-6 lg:space-x-6">
@@ -38,12 +38,14 @@ export function MainNav() {
           href={route.href}
           className={cn(
             "text-sm font-medium transition-colors hover:text-primary",
-            route.active ? "text-black dark:text-white" : "text-muted-foreground"
+            route.active
+              ? "text-black dark:text-white"
+              : "text-muted-foreground",
           )}
         >
           {route.label}
         </Link>
       ))}
     </nav>
-  )
+  );
 }

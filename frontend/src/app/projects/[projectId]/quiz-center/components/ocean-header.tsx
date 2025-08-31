@@ -1,4 +1,4 @@
-import { Target, BookOpen, Sparkles, Flame } from 'lucide-react';
+import { Target, BookOpen, Sparkles, Flame } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface OceanHeaderProps {
@@ -7,7 +7,11 @@ interface OceanHeaderProps {
   averageScore: number;
 }
 
-export function OceanHeader({ totalTests, completedTests, averageScore }: OceanHeaderProps) {
+export function OceanHeader({
+  totalTests,
+  completedTests,
+  averageScore,
+}: OceanHeaderProps) {
   return (
     <Card className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm border-blue-200/30 shadow-xl">
       <CardContent className="p-8">
@@ -18,7 +22,9 @@ export function OceanHeader({ totalTests, completedTests, averageScore }: OceanH
                 <Target className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-slate-900">Quiz Center</h1>
+                <h1 className="text-3xl font-bold text-slate-900">
+                  Quiz Center
+                </h1>
                 <p className="text-slate-600">Navigate your learning journey</p>
               </div>
             </div>
@@ -49,4 +55,4 @@ export function OceanHeader({ totalTests, completedTests, averageScore }: OceanH
       </CardContent>
     </Card>
   );
-} 
+}

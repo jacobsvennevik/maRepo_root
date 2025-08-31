@@ -15,28 +15,40 @@ const Tabs = React.forwardRef<
     value?: string;
     onValueChange?: (value: string) => void;
   }
->(({ className, defaultValue, value, onValueChange, children, ...props }, ref) => {
-  const [selectedTab, setSelectedTab] = React.useState(value || defaultValue || "");
-  
-  React.useEffect(() => {
-    if (value !== undefined) {
-      setSelectedTab(value);
-    }
-  }, [value]);
+>(
+  (
+    { className, defaultValue, value, onValueChange, children, ...props },
+    ref,
+  ) => {
+    const [selectedTab, setSelectedTab] = React.useState(
+      value || defaultValue || "",
+    );
 
-  const handleTabChange = React.useCallback((newValue: string) => {
-    setSelectedTab(newValue);
-    onValueChange?.(newValue);
-  }, [onValueChange]);
+    React.useEffect(() => {
+      if (value !== undefined) {
+        setSelectedTab(value);
+      }
+    }, [value]);
 
-  return (
-    <TabsContext.Provider value={{ selectedTab, setSelectedTab: handleTabChange }}>
-      <div ref={ref} className={cn("w-full", className)} {...props}>
-        {children}
-      </div>
-    </TabsContext.Provider>
-  );
-});
+    const handleTabChange = React.useCallback(
+      (newValue: string) => {
+        setSelectedTab(newValue);
+        onValueChange?.(newValue);
+      },
+      [onValueChange],
+    );
+
+    return (
+      <TabsContext.Provider
+        value={{ selectedTab, setSelectedTab: handleTabChange }}
+      >
+        <div ref={ref} className={cn("w-full", className)} {...props}>
+          {children}
+        </div>
+      </TabsContext.Provider>
+    );
+  },
+);
 Tabs.displayName = "Tabs";
 
 const TabsList = React.forwardRef<
@@ -47,7 +59,7 @@ const TabsList = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500",
-      className
+      className,
     )}
     {...props}
   />
@@ -75,7 +87,7 @@ const TabsTrigger = React.forwardRef<
         isSelected
           ? "bg-white text-gray-900 shadow-sm"
           : "text-gray-600 hover:text-gray-900 hover:bg-gray-50",
-        className
+        className,
       )}
       onClick={() => context.setSelectedTab(value)}
       role="tab"
@@ -110,7 +122,7 @@ const TabsContent = React.forwardRef<
       ref={ref}
       className={cn(
         "mt-2 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2",
-        className
+        className,
       )}
       role="tabpanel"
       aria-labelledby={`tab-${value}`}
@@ -122,4 +134,4 @@ const TabsContent = React.forwardRef<
 });
 TabsContent.displayName = "TabsContent";
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }; 
+export { Tabs, TabsList, TabsTrigger, TabsContent };

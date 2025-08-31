@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, File, Sparkles, Clock } from 'lucide-react';
+import { Upload, File, Sparkles, Clock } from "lucide-react";
 
 interface FileHeaderProps {
   title: string;
@@ -15,11 +15,11 @@ interface FileHeaderProps {
   formatFileSize: (bytes: number) => string;
 }
 
-export function FileHeader({ 
-  title, 
-  description, 
-  stats, 
-  formatFileSize 
+export function FileHeader({
+  title,
+  description,
+  stats,
+  formatFileSize,
 }: FileHeaderProps) {
   return (
     <Card className="bg-gradient-to-r from-blue-50/80 to-purple-50/80 backdrop-blur-sm border-blue-200/50 shadow-xl">
@@ -53,7 +53,9 @@ export function FileHeader({
           <div className="text-right">
             <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-lg">
               <div className="text-white text-center">
-                <div className="text-2xl font-bold">{formatFileSize(stats.totalSize)}</div>
+                <div className="text-2xl font-bold">
+                  {formatFileSize(stats.totalSize)}
+                </div>
                 <div className="text-xs">Storage Used</div>
               </div>
             </div>
@@ -62,4 +64,4 @@ export function FileHeader({
       </CardContent>
     </Card>
   );
-} 
+}

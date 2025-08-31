@@ -1,16 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { ProgressBar } from "./ProgressBar"
-import { WizardStep } from "./WizardStep"
-import { useForm, FormProvider } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { Card, CardContent } from "@/components/ui/card"
-import { ChevronLeft, ChevronRight, CheckCircle2, ArrowRight } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { ProgressBar } from "./ProgressBar";
+import { WizardStep } from "./WizardStep";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+  ArrowRight,
+} from "lucide-react";
 
 // Define the form schema
 const projectSchema = z.object({
@@ -24,9 +29,9 @@ const projectSchema = z.object({
   materialLevel: z.enum(["high_school", "undergraduate", "graduate", "custom"]),
   materialLevelCustom: z.string().optional(),
   testDate: z.date().optional(),
-})
+});
 
-type ProjectFormData = z.infer<typeof projectSchema>
+type ProjectFormData = z.infer<typeof projectSchema>;
 
 const steps = [
   {
@@ -54,18 +59,18 @@ const steps = [
     title: "Timeline",
     description: "When is your test?",
   },
-]
+];
 
-type DesignVariant = "modern" | "minimal" | "gradient"
+type DesignVariant = "modern" | "minimal" | "gradient";
 
 interface ProjectWizardProps {
-  variant?: DesignVariant
+  variant?: DesignVariant;
 }
 
 export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
-  const [currentStep, setCurrentStep] = useState(0)
-  const router = useRouter()
-  
+  const [currentStep, setCurrentStep] = useState(0);
+  const router = useRouter();
+
   const methods = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
     defaultValues: {
@@ -74,32 +79,32 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
       testType: undefined,
       materialLevel: undefined,
     },
-  })
+  });
 
-  const { handleSubmit, trigger } = methods
+  const { handleSubmit, trigger } = methods;
 
   const nextStep = async () => {
-    const isValid = await trigger()
+    const isValid = await trigger();
     if (isValid && currentStep < steps.length - 1) {
-      setCurrentStep((prev) => prev + 1)
+      setCurrentStep((prev) => prev + 1);
     }
-  }
+  };
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep((prev) => prev - 1)
+      setCurrentStep((prev) => prev - 1);
     }
-  }
+  };
 
   const onSubmit = async (data: ProjectFormData) => {
     try {
       // TODO: Handle form submission
-      console.log("Form data:", data)
-      router.push("/dashboard")
+      console.log("Form data:", data);
+      router.push("/dashboard");
     } catch (error) {
-      console.error("Error submitting form:", error)
+      console.error("Error submitting form:", error);
     }
-  }
+  };
 
   const renderModernDesign = () => (
     <FormProvider {...methods}>
@@ -107,11 +112,13 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <ProgressBar currentStep={currentStep} totalSteps={steps.length} />
           <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
-            <span>Step {currentStep + 1} of {steps.length}</span>
+            <span>
+              Step {currentStep + 1} of {steps.length}
+            </span>
             <span className="font-medium">{steps[currentStep].title}</span>
           </div>
         </div>
-        
+
         <Card className="border-0 shadow-lg">
           <CardContent className="p-8">
             <AnimatePresence mode="wait">
@@ -144,10 +151,10 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
             <ChevronLeft className="h-4 w-4" />
             Previous
           </Button>
-          
+
           {currentStep === steps.length - 1 ? (
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               variant="solid-blue"
               className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
             >
@@ -155,8 +162,8 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
               <CheckCircle2 className="h-4 w-4" />
             </Button>
           ) : (
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               variant="solid-blue"
               onClick={nextStep}
               className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
@@ -168,7 +175,7 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
         </div>
       </form>
     </FormProvider>
-  )
+  );
 
   const renderMinimalDesign = () => (
     <FormProvider {...methods}>
@@ -187,7 +194,7 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
             {steps[currentStep].description}
           </p>
         </div>
-        
+
         <div className="mb-12">
           <AnimatePresence mode="wait">
             <motion.div
@@ -217,17 +224,17 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
           >
             ← Previous
           </Button>
-          
+
           {currentStep === steps.length - 1 ? (
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="px-8 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
             >
               Create Project
             </Button>
           ) : (
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               onClick={nextStep}
               className="px-8 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
             >
@@ -237,7 +244,7 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
         </div>
       </form>
     </FormProvider>
-  )
+  );
 
   const renderGradientDesign = () => (
     <FormProvider {...methods}>
@@ -253,13 +260,15 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
               </p>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
-              <span className="text-sm font-medium text-gray-900">Step {currentStep + 1}</span>
+              <span className="text-sm font-medium text-gray-900">
+                Step {currentStep + 1}
+              </span>
               <span className="text-sm text-gray-500">of {steps.length}</span>
             </div>
           </div>
           <ProgressBar currentStep={currentStep} totalSteps={steps.length} />
         </div>
-        
+
         <div className="relative mb-8">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
             <AnimatePresence mode="wait">
@@ -291,10 +300,10 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
           >
             ← Previous
           </Button>
-          
+
           {currentStep === steps.length - 1 ? (
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="group relative px-8 py-3 bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
             >
               <span className="flex items-center gap-2">
@@ -303,8 +312,8 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
               </span>
             </Button>
           ) : (
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               onClick={nextStep}
               className="group relative px-8 py-3 bg-gradient-to-r from-blue-600 to-emerald-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
             >
@@ -317,14 +326,14 @@ export function ProjectWizard({ variant = "modern" }: ProjectWizardProps) {
         </div>
       </form>
     </FormProvider>
-  )
+  );
 
   switch (variant) {
     case "minimal":
-      return renderMinimalDesign()
+      return renderMinimalDesign();
     case "gradient":
-      return renderGradientDesign()
+      return renderGradientDesign();
     default:
-      return renderModernDesign()
+      return renderModernDesign();
   }
-} 
+}

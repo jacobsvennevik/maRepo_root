@@ -78,7 +78,6 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
     } finally {
       setIsSubmitting(false);
     }
-  };
 
   // Helper functions to get labels from constants
   const getPurposeLabel = (value: string) => {
@@ -482,4 +481,4 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
       </div>
     </div>
   );
-} 
+} }

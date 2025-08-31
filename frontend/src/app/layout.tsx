@@ -16,7 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "OceanLearn | AI-Powered Learning Platform",
-  description: "Enhance your learning experience with our AI-powered education platform featuring smart flashcards, concept maps, and adaptive tests.",
+  description:
+    "Enhance your learning experience with our AI-powered education platform featuring smart flashcards, concept maps, and adaptive tests.",
 };
 
 export default function RootLayout({
@@ -27,18 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <Script 
-          src="http://localhost:8097"
-          strategy="beforeInteractive"
-        />
+        <Script src="http://localhost:8097" strategy="beforeInteractive" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <RootLayoutContent>
-          {children}
-        </RootLayoutContent>
+        <RootLayoutContent>{children}</RootLayoutContent>
       </body>
     </html>
   );

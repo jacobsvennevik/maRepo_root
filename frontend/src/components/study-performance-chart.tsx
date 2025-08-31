@@ -1,6 +1,13 @@
-"use client"
+"use client";
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
 
 const data = [
   { day: "S", minutes: 45, retention: 65 },
@@ -10,14 +17,22 @@ const data = [
   { day: "T", minutes: 105, retention: 82 },
   { day: "F", minutes: 60, retention: 75 },
   { day: "S", minutes: 30, retention: 68 },
-]
+];
 
 export function StudyPerformanceChart() {
   return (
     <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-          <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 9 }} />
+        <BarChart
+          data={data}
+          margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
+        >
+          <XAxis
+            dataKey="day"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fontSize: 9 }}
+          />
           <YAxis hide={true} />
           <Tooltip
             contentStyle={{
@@ -29,12 +44,20 @@ export function StudyPerformanceChart() {
               padding: "4px 8px",
             }}
             formatter={(value, name) => {
-              return [`${value} ${name === "minutes" ? "min" : "%"}`, name === "minutes" ? "Study Time" : "Retention"]
+              return [
+                `${value} ${name === "minutes" ? "min" : "%"}`,
+                name === "minutes" ? "Study Time" : "Retention",
+              ];
             }}
           />
-          <Bar dataKey="minutes" fill="rgba(14, 165, 233, 0.8)" radius={[2, 2, 0, 0]} barSize={16} />
+          <Bar
+            dataKey="minutes"
+            fill="rgba(14, 165, 233, 0.8)"
+            radius={[2, 2, 0, 0]}
+            barSize={16}
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

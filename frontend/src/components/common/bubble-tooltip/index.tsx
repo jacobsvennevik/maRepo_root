@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import type React from "react";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface BubbleTooltipProps {
-  content: React.ReactNode
-  children: React.ReactNode
+  content: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export function BubbleTooltip({ content, children }: BubbleTooltipProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const triggerRef = useRef<HTMLDivElement>(null)
-  const tooltipRef = useRef<HTMLDivElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
   // Close tooltip when clicking outside
   useEffect(() => {
@@ -23,15 +23,15 @@ export function BubbleTooltip({ content, children }: BubbleTooltipProps) {
         triggerRef.current &&
         !triggerRef.current.contains(event.target as Node)
       ) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="relative inline-block">
@@ -58,7 +58,12 @@ export function BubbleTooltip({ content, children }: BubbleTooltipProps) {
                 y: { type: "spring", stiffness: 100, damping: 15 },
               },
             }}
-            exit={{ opacity: 0, y: -10, scale: 0.95, transition: { duration: 0.2 } }}
+            exit={{
+              opacity: 0,
+              y: -10,
+              scale: 0.95,
+              transition: { duration: 0.2 },
+            }}
             className="absolute z-50 top-full left-1/2 transform -translate-x-1/2 mt-2 min-w-[140px]"
           >
             <div className="relative">
@@ -81,5 +86,5 @@ export function BubbleTooltip({ content, children }: BubbleTooltipProps) {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

@@ -118,7 +118,6 @@ export function CourseDetailsStep({
     } finally {
       setIsAnalyzing(false);
     }
-  };
 
   // Use shared drag and drop handlers
   const { handleDragOver, handleDragLeave, handleDrop } = createDragHandlers(
@@ -145,7 +144,6 @@ export function CourseDetailsStep({
       case 'group-work': return <Users2 className="h-4 w-4" />;
       default: return <Check className="h-4 w-4" />;
     }
-  };
 
   return (
     <div className="space-y-6">
@@ -458,4 +456,5 @@ export function CourseDetailsStep({
       </Tabs>
     </div>
   );
-} 
+} }
+}

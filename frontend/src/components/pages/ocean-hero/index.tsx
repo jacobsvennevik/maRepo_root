@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { OceanBackground } from "@/components/common/backgrounds"
-import { Footer } from "@/components/layout/footer"
-import { HeroSection } from "@/components/sections/hero-section"
-import { FeaturesSection } from "@/components/sections/features-section"
-import { BlogResourcesSection } from "@/components/sections/blog-resources-section"
-import { PricingSection } from "@/components/sections/pricing-section"
+import { OceanBackground } from "@/components/common/backgrounds";
+import { Footer } from "@/components/layout/footer";
+import { HeroSection } from "@/components/sections/hero-section";
+import { FeaturesSection } from "@/components/sections/features-section";
+import { BlogResourcesSection } from "@/components/sections/blog-resources-section";
+import { PricingSection } from "@/components/sections/pricing-section";
 
 export default function OceanHero() {
   return (
@@ -30,5 +30,5 @@ export default function OceanHero() {
       {/* Footer */}
       <Footer />
     </div>
-  )
+  );
 }

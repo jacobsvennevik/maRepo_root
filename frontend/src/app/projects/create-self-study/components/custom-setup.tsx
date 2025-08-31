@@ -19,7 +19,7 @@ interface CustomSetupProps {
 interface CustomProjectConfig {
   title: string;
   description: string;
-  type: ProjectType;
+  type: string;
   topics: string[];
   difficulty: string;
   timeframe: string;
@@ -441,4 +441,4 @@ export function CustomSetup({ onBack }: CustomSetupProps) {
       </div>
     </div>
   );
-} 
+}

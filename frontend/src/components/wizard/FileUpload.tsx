@@ -1,16 +1,20 @@
-"use client"
+"use client";
 
-import { useCallback, useState } from "react"
-import { useDropzone } from "react-dropzone"
-import { Upload, X } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { formatFileSize, formatAcceptedTypes, extensionToMimeType } from "@/utils/fileHelpers"
+import { useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { Upload, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  formatFileSize,
+  formatAcceptedTypes,
+  extensionToMimeType,
+} from "@/utils/fileHelpers";
 
 interface FileUploadProps {
-  onUpload: (files: File[]) => void
-  accept?: string
-  maxFiles?: number
-  required?: boolean
+  onUpload: (files: File[]) => void;
+  accept?: string;
+  maxFiles?: number;
+  required?: boolean;
 }
 
 export function FileUpload({
@@ -19,33 +23,33 @@ export function FileUpload({
   maxFiles = 5,
   required = false,
 }: FileUploadProps) {
-  const [files, setFiles] = useState<File[]>([])
+  const [files, setFiles] = useState<File[]>([]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const newFiles = [...files, ...acceptedFiles].slice(0, maxFiles)
-      setFiles(newFiles)
-      onUpload(newFiles)
+      const newFiles = [...files, ...acceptedFiles].slice(0, maxFiles);
+      setFiles(newFiles);
+      onUpload(newFiles);
     },
-    [files, maxFiles, onUpload]
-  )
+    [files, maxFiles, onUpload],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: accept.split(",").reduce((acc, type) => {
-      const mimeType = type.trim().startsWith('.') 
+      const mimeType = type.trim().startsWith(".")
         ? extensionToMimeType(type.trim())
         : type.trim();
       return { ...acc, [mimeType]: [] };
     }, {}),
     maxFiles,
-  })
+  });
 
   const removeFile = (index: number) => {
-    const newFiles = files.filter((_, i) => i !== index)
-    setFiles(newFiles)
-    onUpload(newFiles)
-  }
+    const newFiles = files.filter((_, i) => i !== index);
+    setFiles(newFiles);
+    onUpload(newFiles);
+  };
 
   return (
     <div className="space-y-4">
@@ -56,7 +60,7 @@ export function FileUpload({
           isDragActive
             ? "border-aqua bg-aqua/5"
             : "border-slate-200 hover:border-aqua/50",
-          required && files.length === 0 && "border-red-200 bg-red-50"
+          required && files.length === 0 && "border-red-200 bg-red-50",
         )}
       >
         <input {...getInputProps()} />
@@ -105,5 +109,5 @@ export function FileUpload({
         </div>
       )}
     </div>
-  )
-} 
+  );
+}

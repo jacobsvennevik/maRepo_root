@@ -1,8 +1,7 @@
-'use client';
+"use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Eye, BookOpen, CheckCircle, Waves } from 'lucide-react';
-import PropTypes from 'prop-types';
+import { Eye, BookOpen, CheckCircle, Waves } from "lucide-react";
 
 /**
  * Action section component that provides quick access to learning activities.
@@ -19,8 +18,12 @@ export function OceanActionSection() {
               <Eye className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h3 className="text-xl font-semibold text-slate-900 mb-2">Ready to explore deeper waters?</h3>
-          <p className="text-slate-600">Continue your learning adventure or chart a new course</p>
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">
+            Ready to explore deeper waters?
+          </h3>
+          <p className="text-slate-600">
+            Continue your learning adventure or chart a new course
+          </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group">
@@ -28,7 +31,9 @@ export function OceanActionSection() {
               <BookOpen className="h-6 w-6 text-emerald-600" />
             </div>
             <h4 className="font-medium text-slate-900 mb-1">Review Concepts</h4>
-            <p className="text-sm text-slate-600">Continue your learning journey</p>
+            <p className="text-sm text-slate-600">
+              Continue your learning journey
+            </p>
           </div>
           <div className="text-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group">
             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-200">
@@ -49,5 +54,3 @@ export function OceanActionSection() {
     </Card>
   );
 }
-
-// No PropTypes needed for this component as it doesn't accept any props 

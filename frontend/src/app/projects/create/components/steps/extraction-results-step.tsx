@@ -26,55 +26,7 @@ import {
 } from "@/components/ui/tooltip";
 import { isTestMode, MOCK_SYLLABUS_EXTRACTION, convertCourseContentToExtractedData } from '../../services/mock-data';
 
-// Function to convert mock syllabus data to ExtractedData format
-function convertMockDataToExtractedData(): ExtractedData {
-  return {
-    courseName: MOCK_SYLLABUS_EXTRACTION.course_title,
-    instructor: MOCK_SYLLABUS_EXTRACTION.instructor,
-    semester: "Spring 2025",
-    courseType: "STEM", // Auto-detected from content
-    assessmentTypes: {
-      has_final_exam: true,
-      has_regular_quizzes: true,
-      has_essays: false,
-      has_projects: true,
-      has_lab_work: false,
-      has_group_work: false,
-      primary_assessment_method: "Tests and Projects"
-    },
-    topics: MOCK_SYLLABUS_EXTRACTION.topics.map((topic, index) => ({
-      id: `topic-${index}`,
-      label: topic,
-      confidence: Math.floor(Math.random() * 20) + 80 // Random confidence between 80-100
-    })),
-    dates: MOCK_SYLLABUS_EXTRACTION.exam_dates.map((examDate, index) => ({
-      id: `date-${index}`,
-      date: examDate.date,
-      description: examDate.description,
-      type: examDate.description.toLowerCase().includes('test') ? 'exam' : 
-            examDate.description.toLowerCase().includes('exercise') ? 'assignment' : 'other',
-      format: examDate.format || '',
-      weight: examDate.weight || ''
-    })),
-    testTypes: [
-      { id: 'test-1', type: 'Short Exercises', confidence: 95 },
-      { id: 'test-2', type: 'Written Tests', confidence: 90 },
-      { id: 'test-3', type: 'Project Submissions', confidence: 85 }
-    ],
-    grading: [
-      { category: 'Exercises', weight: 30 },
-      { category: 'Tests', weight: 50 },
-      { category: 'Projects', weight: 20 }
-    ],
-    courseDescription: "Advanced study of natural language processing techniques and their applications in artificial intelligence.",
-    learningOutcomes: [
-      "Understand fundamental NLP concepts",
-      "Apply machine learning to language tasks",
-      "Develop practical NLP applications"
-    ]
-  };
-}
-
+// Interface definitions
 interface Topic {
   id: string;
   label: string;
@@ -135,6 +87,55 @@ interface ExtractionResultsStepProps {
   showNavigation?: boolean; // Whether to show the navigation buttons (default: true)
 }
 
+// Function to convert mock syllabus data to ExtractedData format
+function convertMockDataToExtractedData(): ExtractedData {
+  return {
+    courseName: MOCK_SYLLABUS_EXTRACTION.course_title,
+    instructor: MOCK_SYLLABUS_EXTRACTION.instructor,
+    semester: "Spring 2025",
+    courseType: "STEM", // Auto-detected from content
+    assessmentTypes: {
+      has_final_exam: true,
+      has_regular_quizzes: true,
+      has_essays: false,
+      has_projects: true,
+      has_lab_work: false,
+      has_group_work: false,
+      primary_assessment_method: "Tests and Projects"
+    },
+    topics: MOCK_SYLLABUS_EXTRACTION.topics.map((topic, index) => ({
+      id: `topic-${index}-${topic.replace(/\s+/g, '-').toLowerCase()}`,
+      label: topic,
+      confidence: Math.floor(Math.random() * 20) + 80 // Random confidence between 80-100
+    })),
+    dates: MOCK_SYLLABUS_EXTRACTION.exam_dates.map((examDate, index) => ({
+      id: `date-${index}-${examDate.description.replace(/\s+/g, '-').toLowerCase()}`,
+      date: examDate.date,
+      description: examDate.description,
+      type: examDate.description.toLowerCase().includes('test') ? 'exam' : 
+            examDate.description.toLowerCase().includes('exercise') ? 'assignment' : 'other',
+      format: examDate.format || '',
+      weight: examDate.weight || ''
+    })),
+    testTypes: [
+      { id: 'test-1-short-exercises', type: 'Short Exercises', confidence: 95 },
+      { id: 'test-2-written-tests', type: 'Written Tests', confidence: 90 },
+      { id: 'test-3-project-submissions', type: 'Project Submissions', confidence: 85 }
+    ],
+    grading: [
+      { category: 'Exercises', weight: 30 },
+      { category: 'Tests', weight: 50 },
+      { category: 'Projects', weight: 20 }
+    ],
+    courseDescription: "Advanced study of natural language processing techniques and their applications in artificial intelligence.",
+    learningOutcomes: [
+      "Understand fundamental NLP concepts",
+      "Apply machine learning to language tasks",
+      "Develop practical NLP applications"
+    ]
+  };
+}
+
 export function ExtractionResultsStep({ 
   extractedData: providedData, 
   fileName, 
@@ -160,6 +161,7 @@ export function ExtractionResultsStep({
   }, [initialData]);
 
   const handleEditClick = () => {
+    console.log('🖊️ Edit button clicked, entering edit mode');
     setIsEditing(true);
     setEditedData({ ...displayedData! });
     setHasInvalidDateAttempt(false); // Reset flag when starting fresh edit
@@ -213,8 +215,6 @@ export function ExtractionResultsStep({
   const handleDateEdit = (id: string, field: 'date' | 'description' | 'format' | 'weight', value: string) => {
     if (!editedData) return;
 
-
-    
     if (field === 'date') {
       // If the value is empty (browser rejected invalid date), revert to original
       if (!value || value.trim() === '') {
@@ -249,9 +249,8 @@ export function ExtractionResultsStep({
   };
 
   const handleSaveClick = () => {
+    console.log('💾 Save button clicked, saving changes');
     if (editedData) {
-
-      
       // Don't save if user attempted to enter invalid dates
       if (hasInvalidDateAttempt) {
         console.error('Invalid date was attempted, not saving');
@@ -276,9 +275,11 @@ export function ExtractionResultsStep({
       // Call onSave and onConfirm based on whether onSave is provided
       if (onSave) {
         // If onSave is provided, only call onSave (used for saving without navigating)
+        console.log('📝 Calling onSave with edited data:', editedData);
         onSave(editedData);
       } else {
         // If onSave is not provided, call onConfirm (used for saving and navigating)
+        console.log('📝 Calling onConfirm');
         onConfirm();
       }
 
@@ -286,6 +287,7 @@ export function ExtractionResultsStep({
       setEditedData(null);
       // Update the displayed data
       setDisplayedData(editedData);
+      console.log('✅ Edit mode exited, changes saved');
     }
   };
 
@@ -562,6 +564,64 @@ export function ExtractionResultsStep({
         </CardContent>
       </Card>
 
+      {/* Course Description */}
+      {displayedData?.courseDescription && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <FileText className="h-5 w-5 text-indigo-600" />
+              Course Description
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isEditing && editedData ? (
+              <Textarea
+                value={editedData.courseDescription || ''}
+                onChange={(e) => setEditedData({ ...editedData, courseDescription: e.target.value })}
+                placeholder="Enter course description..."
+                className="min-h-[100px]"
+              />
+            ) : (
+              <p className="text-sm text-gray-700">{displayedData.courseDescription}</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Learning Outcomes */}
+      {displayedData?.learningOutcomes && displayedData.learningOutcomes.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              Learning Outcomes ({displayedData.learningOutcomes.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {(isEditing ? editedData?.learningOutcomes : displayedData?.learningOutcomes)?.map((outcome, index) => (
+                <div key={index} className="flex items-start gap-2">
+                  <span className="text-green-600 mt-1">•</span>
+                  {isEditing && editedData ? (
+                    <Input
+                      value={outcome}
+                      onChange={(e) => {
+                        const newOutcomes = [...editedData.learningOutcomes!];
+                        newOutcomes[index] = e.target.value;
+                        setEditedData({ ...editedData, learningOutcomes: newOutcomes });
+                      }}
+                      className="flex-1"
+                    />
+                  ) : (
+                    <span className="text-sm">{outcome}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Main Extraction Results */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Topics */}
@@ -577,8 +637,8 @@ export function ExtractionResultsStep({
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {(isEditing ? editedData?.topics : displayedData?.topics)
                   ?.slice(0, showAllTopics ? undefined : 5)
-                  .map((topic: Topic) => (
-                  <div key={topic.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                  .map((topic: Topic, index: number) => (
+                  <div key={`${topic.id}-${index}`} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                     {isEditing && editedData ? (
                       <Input
                         className="flex-1 mr-2"
@@ -633,10 +693,10 @@ export function ExtractionResultsStep({
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {(isEditing ? editedData?.dates : displayedData?.dates)
                   ?.slice(0, showAllDates ? undefined : 5)
-                  .map((date: Date) => {
+                  .map((date: Date, index: number) => {
                     const missingDescription = !date.description || date.description.trim() === '';
-                    return (
-                      <div key={date.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                                          return (
+                        <div key={`${date.id}-${index}`} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-2">
                           {getTypeIcon(date.type)}
                           <div className="space-y-1">
@@ -756,15 +816,7 @@ export function ExtractionResultsStep({
                       variant="outline" 
                       className={`text-xs ${getConfidenceColor(testType.confidence)}`}
                     >
-                      {isEditing && editedData ? (
-                        <Input
-                          className="w-16 text-xs"
-                          value={editedData.grading.find((g: Grade) => g.category === testType.type)?.weight}
-                          onChange={(e) => handleGradingEdit(displayedData.grading.findIndex((g: Grade) => g.category === testType.type), 'weight', parseInt(e.target.value) || 0)}
-                        />
-                      ) : (
-                        <span>{testType.confidence}%</span>
-                      )}
+                      <span>{testType.confidence}%</span>
                     </Badge>
                   </div>
                 ))}
@@ -800,7 +852,7 @@ export function ExtractionResultsStep({
                       {isEditing && editedData ? (
                         <Input
                           className="w-16 text-xs"
-                          value={editedData.grading.find(g => g.category === grade.category)?.weight}
+                          value={editedData.grading[index]?.weight || 0}
                           onChange={(e) => handleGradingEdit(index, 'weight', parseInt(e.target.value) || 0)}
                         />
                       ) : (
@@ -844,4 +896,4 @@ export function ExtractionResultsStep({
       )}
     </div>
   );
-} 
+}

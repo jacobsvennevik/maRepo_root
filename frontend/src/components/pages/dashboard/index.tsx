@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { DashboardLayout } from "@/components/layout/dashboard-layout"
-import { DashboardHeader } from "@/components/layout/dashboard-header"
-import { DashboardOverview } from "@/components/sections/dashboard/dashboard-overview"
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { DashboardOverview } from "@/components/sections/dashboard/dashboard-overview";
 
 export default function Dashboard() {
   return (
@@ -15,5 +15,5 @@ export default function Dashboard() {
         </main>
       </div>
     </DashboardLayout>
-  )
-} 
+  );
+}

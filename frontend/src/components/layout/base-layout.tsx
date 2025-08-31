@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { ReactNode } from "react"
+import { ReactNode } from "react";
 
 interface BaseLayoutProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 /**
@@ -12,8 +12,6 @@ interface BaseLayoutProps {
  */
 export function BaseLayout({ children }: BaseLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#f8fafc]">
-      {children}
-    </div>
-  )
-} 
+    <div className="flex min-h-screen flex-col bg-[#f8fafc]">{children}</div>
+  );
+}

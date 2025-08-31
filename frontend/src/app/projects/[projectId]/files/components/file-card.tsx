@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
+import {
   MoreVertical,
   Edit3,
   Share2,
@@ -19,22 +19,33 @@ import {
   Trash2,
   Clock,
   Eye,
-  Sparkles
-} from 'lucide-react';
+  Sparkles,
+} from "lucide-react";
 
 export interface FileItem {
   id: string;
   name: string;
-  type: 'pdf' | 'docx' | 'pptx' | 'txt' | 'png' | 'jpg' | 'jpeg' | 'csv' | 'md' | 'zip' | 'mp4';
+  type:
+    | "pdf"
+    | "docx"
+    | "pptx"
+    | "txt"
+    | "png"
+    | "jpg"
+    | "jpeg"
+    | "csv"
+    | "md"
+    | "zip"
+    | "mp4";
   size: number;
   uploadedAt: string;
-  status: 'uploading' | 'completed' | 'error';
+  status: "uploading" | "completed" | "error";
   progress?: number;
   error?: string;
   isAIGenerated?: boolean;
   tags?: string[];
   source?: string;
-  visibility: 'private' | 'shared' | 'public';
+  visibility: "private" | "shared" | "public";
   color: string;
   bgColor: string;
   borderColor: string;
@@ -52,25 +63,27 @@ interface FileCardProps {
   onRename: (id: string) => void;
 }
 
-export function FileCard({ 
-  file, 
-  getFileIcon, 
-  getFileTypeColor, 
+export function FileCard({
+  file,
+  getFileIcon,
+  getFileTypeColor,
   formatFileSize,
   onGenerateFlashcards,
   onGenerateNotes,
   onShare,
   onDelete,
-  onRename
+  onRename,
 }: FileCardProps) {
   return (
-    <Card 
+    <Card
       className={`${file.bgColor} ${file.borderColor} border-2 hover:shadow-xl transition-all duration-500 cursor-pointer group`}
     >
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className={`p-3 rounded-xl bg-gradient-to-r ${file.color} shadow-lg`}>
+            <div
+              className={`p-3 rounded-xl bg-gradient-to-r ${file.color} shadow-lg`}
+            >
               {getFileIcon(file.type)}
             </div>
             <div>
@@ -84,9 +97,9 @@ export function FileCard({
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -110,7 +123,7 @@ export function FileCard({
                 <BookOpen className="h-4 w-4 mr-2" />
                 Generate Notes
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="text-red-600"
                 onClick={() => onDelete(file.id)}
               >
@@ -126,8 +139,8 @@ export function FileCard({
             <span>Size</span>
             <span className="font-medium">{formatFileSize(file.size)}</span>
           </div>
-          
-          {file.status === 'uploading' && file.progress !== undefined && (
+
+          {file.status === "uploading" && file.progress !== undefined && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs text-slate-500">
                 <span>Uploading...</span>
@@ -136,7 +149,7 @@ export function FileCard({
               <Progress value={file.progress} className="h-2" />
             </div>
           )}
-          
+
           <div className="flex items-center justify-between text-xs text-slate-500">
             <div className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
@@ -173,4 +186,4 @@ export function FileCard({
       </CardContent>
     </Card>
   );
-} 
+}

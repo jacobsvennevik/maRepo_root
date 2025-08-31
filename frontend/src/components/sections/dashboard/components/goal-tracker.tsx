@@ -1,6 +1,12 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckIcon } from "lucide-react";
 
@@ -10,12 +16,11 @@ interface GoalTrackerProps {
   progress?: number;
 }
 
-export function GoalTracker({ 
-  completedDays = ["M", "T", "W", "Th", "F"], 
+export function GoalTracker({
+  completedDays = ["M", "T", "W", "Th", "F"],
   targetDays = ["M", "T", "W", "Th", "F", "Sa", "Su"],
-  progress
+  progress,
 }: GoalTrackerProps) {
-  
   const weekdays = [
     { id: "M", label: "M", full: "Monday" },
     { id: "T", label: "T", full: "Tuesday" },
@@ -23,13 +28,14 @@ export function GoalTracker({
     { id: "Th", label: "Th", full: "Thursday" },
     { id: "F", label: "F", full: "Friday" },
     { id: "Sa", label: "Sa", full: "Saturday" },
-    { id: "Su", label: "Su", full: "Sunday" }
+    { id: "Su", label: "Su", full: "Sunday" },
   ];
-  
+
   // Calculate progress percentage either from the progress prop or completed days
-  const progressPercentage = progress || Math.round((completedDays.length / targetDays.length) * 100);
+  const progressPercentage =
+    progress || Math.round((completedDays.length / targetDays.length) * 100);
   const isExceeded = progressPercentage > 100 || completedDays.length >= 5;
-  
+
   return (
     <Card className="bg-white shadow-sm border-0">
       <CardHeader className="pb-0 p-8">
@@ -37,7 +43,7 @@ export function GoalTracker({
           Weekly Goal Progress Tracker
         </CardTitle>
         <CardDescription className="text-base text-slate-700 mt-1">
-          {isExceeded 
+          {isExceeded
             ? "You've exceeded your learning goal this week. Fantastic! Consider raising your goal to continue challenging yourself."
             : "Track your weekly learning progress. Try to complete your daily learning goals."}
         </CardDescription>
@@ -46,21 +52,27 @@ export function GoalTracker({
         <div className="space-y-4">
           <div className="flex justify-between text-sm mb-1">
             <span className="text-slate-600">Weekly Progress</span>
-            <span className="text-[#47B5FF] font-medium">{progressPercentage}%</span>
+            <span className="text-[#47B5FF] font-medium">
+              {progressPercentage}%
+            </span>
           </div>
-          
+
           <div className="flex justify-between gap-2 py-2">
             {weekdays.map((day) => {
               const isCompleted = completedDays.includes(day.id);
               const isTarget = targetDays.includes(day.id);
-              
+
               return (
-                <div 
+                <div
                   key={day.id}
                   className={`flex items-center justify-center w-10 h-10 rounded-full 
-                    ${isCompleted ? 'bg-[#2E8B57] text-white' : 
-                      isTarget ? 'bg-white text-slate-600 border border-slate-200' : 
-                      'bg-white text-slate-300 border border-slate-100'}`}
+                    ${
+                      isCompleted
+                        ? "bg-[#2E8B57] text-white"
+                        : isTarget
+                          ? "bg-white text-slate-600 border border-slate-200"
+                          : "bg-white text-slate-300 border border-slate-100"
+                    }`}
                   title={day.full}
                 >
                   {isCompleted ? (
@@ -72,7 +84,7 @@ export function GoalTracker({
               );
             })}
           </div>
-          
+
           <div className="flex justify-between items-center pt-4">
             <div className="flex items-center">
               {isExceeded ? (
@@ -85,8 +97,8 @@ export function GoalTracker({
                 </div>
               )}
             </div>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="border-[#47B5FF] text-[#47B5FF] hover:bg-[#e0f7ff] hover:text-[#47B5FF]"
             >
               Adjust Goal
@@ -96,4 +108,4 @@ export function GoalTracker({
       </CardContent>
     </Card>
   );
-} 
+}

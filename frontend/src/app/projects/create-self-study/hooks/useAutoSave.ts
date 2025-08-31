@@ -1,5 +1,5 @@
-import { useEffect, useCallback } from 'react';
-import { SelfStudyProjectSetup } from '../types';
+import { useEffect, useCallback } from "react";
+import { SelfStudyProjectSetup } from "../types";
 
 interface UseAutoSaveProps {
   data: SelfStudyProjectSetup;
@@ -8,44 +8,47 @@ interface UseAutoSaveProps {
 }
 
 export function useAutoSave({ data, key, enabled = true }: UseAutoSaveProps) {
-  const saveToStorage = useCallback((dataToSave: SelfStudyProjectSetup) => {
-    if (!enabled) return;
-    
-    try {
-      const serializedData = {
-        ...dataToSave,
-        learningMaterials: dataToSave.learningMaterials.map(material => ({
-          ...material,
-          file: undefined // Don't serialize File objects
-        }))
-      };
-      localStorage.setItem(key, JSON.stringify(serializedData));
-    } catch (error) {
-      console.warn('Failed to save to localStorage:', error);
-    }
-  }, [key, enabled]);
+  const saveToStorage = useCallback(
+    (dataToSave: SelfStudyProjectSetup) => {
+      if (!enabled) return;
+
+      try {
+        const serializedData = {
+          ...dataToSave,
+          learningMaterials: dataToSave.learningMaterials.map((material) => ({
+            ...material,
+            file: undefined, // Don't serialize File objects
+          })),
+        };
+        localStorage.setItem(key, JSON.stringify(serializedData));
+      } catch (error) {
+        console.warn("Failed to save to localStorage:", error);
+      }
+    },
+    [key, enabled],
+  );
 
   const loadFromStorage = useCallback((): SelfStudyProjectSetup | null => {
     if (!enabled) return null;
-    
+
     try {
       const saved = localStorage.getItem(key);
       if (saved) {
         return JSON.parse(saved);
       }
     } catch (error) {
-      console.warn('Failed to load from localStorage:', error);
+      console.warn("Failed to load from localStorage:", error);
     }
     return null;
   }, [key, enabled]);
 
   const clearStorage = useCallback(() => {
     if (!enabled) return;
-    
+
     try {
       localStorage.removeItem(key);
     } catch (error) {
-      console.warn('Failed to clear localStorage:', error);
+      console.warn("Failed to clear localStorage:", error);
     }
   }, [key, enabled]);
 
@@ -59,6 +62,6 @@ export function useAutoSave({ data, key, enabled = true }: UseAutoSaveProps) {
   return {
     saveToStorage,
     loadFromStorage,
-    clearStorage
+    clearStorage,
   };
-} 
+}

@@ -1,7 +1,14 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { CheckCircle, ArrowRight, Sparkles, BookOpen, Users, Target } from 'lucide-react';
+import Link from "next/link";
+import {
+  CheckCircle,
+  ArrowRight,
+  Sparkles,
+  BookOpen,
+  Users,
+  Target,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -25,7 +32,9 @@ export default function ProjectCreatedSuccess() {
             Project Created Successfully!
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Your new learning project has been set up and is ready to go. We've created a personalized learning environment based on your preferences.
+            Your new learning project has been set up and is ready to go. We've
+            created a personalized learning environment based on your
+            preferences.
           </p>
         </div>
 
@@ -40,7 +49,8 @@ export default function ProjectCreatedSuccess() {
             </CardHeader>
             <CardContent>
               <p className="text-slate-600 text-sm">
-                Begin with your first lesson or upload study materials to get started.
+                Begin with your first lesson or upload study materials to get
+                started.
               </p>
             </CardContent>
           </Card>
@@ -103,11 +113,16 @@ export default function ProjectCreatedSuccess() {
         {/* Additional Tips */}
         <div className="mt-12 text-center">
           <div className="bg-white/50 backdrop-blur-sm rounded-lg p-6 max-w-2xl mx-auto">
-            <h3 className="font-semibold text-slate-900 mb-3">Pro Tips for Success</h3>
+            <h3 className="font-semibold text-slate-900 mb-3">
+              Pro Tips for Success
+            </h3>
             <div className="grid md:grid-cols-2 gap-4 text-sm text-slate-600">
               <div className="flex items-start gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                <p>Upload your existing study materials to get personalized AI insights</p>
+                <p>
+                  Upload your existing study materials to get personalized AI
+                  insights
+                </p>
               </div>
               <div className="flex items-start gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
@@ -127,4 +142,4 @@ export default function ProjectCreatedSuccess() {
       </div>
     </div>
   );
-} 
+}

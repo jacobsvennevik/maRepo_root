@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { WhiteBackground } from '@/components/common/backgrounds/white-background';
-import ProjectSidebar from '@/app/components/ProjectSidebar';
+import { WhiteBackground } from "@/components/common/backgrounds/white-background";
+import ProjectSidebar from "@/app/components/ProjectSidebar";
 
 export default function NewProjectLayout({
   children,
@@ -15,17 +15,12 @@ export default function NewProjectLayout({
       <DashboardHeader />
       <div className="flex flex-1">
         <div className="z-10">
-          <ProjectSidebar 
-            projectId="new" 
-            projectName="New Project" 
-          />
+          <ProjectSidebar projectId="new" projectName="New Project" />
         </div>
         <main className="flex-1 overflow-y-auto p-6 z-10">
-          <div className="max-w-[1400px] mx-auto">
-            {children}
-          </div>
+          <div className="max-w-[1400px] mx-auto">{children}</div>
         </main>
       </div>
     </div>
   );
-} 
+}

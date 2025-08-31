@@ -2,7 +2,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Activity, Clock } from 'lucide-react';
-import PropTypes from 'prop-types';
 
 interface FeaturedMindMapProps {
   mindMap: {
@@ -108,14 +107,3 @@ export function FeaturedMindMap({ mindMap, getSubjectIcon, onClick }: FeaturedMi
     </Card>
   );
 }
-
-FeaturedMindMap.propTypes = {
-  mindMap: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    subject: PropTypes.string.isRequired,
-    nodeCount: PropTypes.number.isRequired,
-    lastEdited: PropTypes.string.isRequired,
-  }).isRequired,
-  getSubjectIcon: PropTypes.func.isRequired,
-  onClick: PropTypes.func,
-}; 

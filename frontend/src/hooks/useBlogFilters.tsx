@@ -1,56 +1,56 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 
 interface UseBlogFiltersProps {
-  initialCategory?: string
-  initialType?: string
-  categories: string[]
-  contentTypes: string[]
+  initialCategory?: string;
+  initialType?: string;
+  categories: string[];
+  contentTypes: string[];
 }
 
 export function useBlogFilters({
   initialCategory = "All Categories",
   initialType = "All Types",
   categories,
-  contentTypes
+  contentTypes,
 }: UseBlogFiltersProps) {
-  const [selectedCategory, setSelectedCategory] = useState(initialCategory)
-  const [selectedType, setSelectedType] = useState(initialType)
-  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
-  const [showTypeDropdown, setShowTypeDropdown] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [selectedType, setSelectedType] = useState(initialType);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
 
   // Toggle category dropdown
   const toggleCategoryDropdown = () => {
-    setShowCategoryDropdown(!showCategoryDropdown)
+    setShowCategoryDropdown(!showCategoryDropdown);
     // Close other dropdown if open
-    if (showTypeDropdown) setShowTypeDropdown(false)
-  }
+    if (showTypeDropdown) setShowTypeDropdown(false);
+  };
 
   // Toggle type dropdown
   const toggleTypeDropdown = () => {
-    setShowTypeDropdown(!showTypeDropdown)
+    setShowTypeDropdown(!showTypeDropdown);
     // Close other dropdown if open
-    if (showCategoryDropdown) setShowCategoryDropdown(false)
-  }
+    if (showCategoryDropdown) setShowCategoryDropdown(false);
+  };
 
   // Select category
   const selectCategory = (category: string) => {
-    setSelectedCategory(category)
-    setShowCategoryDropdown(false)
-  }
+    setSelectedCategory(category);
+    setShowCategoryDropdown(false);
+  };
 
   // Select type
   const selectType = (type: string) => {
-    setSelectedType(type)
-    setShowTypeDropdown(false)
-  }
+    setSelectedType(type);
+    setShowTypeDropdown(false);
+  };
 
   // Close all dropdowns
   const closeDropdowns = () => {
-    setShowCategoryDropdown(false)
-    setShowTypeDropdown(false)
-  }
+    setShowCategoryDropdown(false);
+    setShowTypeDropdown(false);
+  };
 
   return {
     selectedCategory,
@@ -63,6 +63,6 @@ export function useBlogFilters({
     selectType,
     closeDropdowns,
     categories,
-    contentTypes
-  }
-} 
+    contentTypes,
+  };
+}

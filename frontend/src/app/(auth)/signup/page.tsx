@@ -11,5 +11,5 @@ export default function SignupPage() {
         <p className="text-center">Signup form placeholder</p>
       </div>
     </>
-  )
-} 
+  );
+}

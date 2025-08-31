@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
+import {
   MoreVertical,
   Edit3,
   Share2,
   Brain,
   BookOpen,
   Trash2,
-  Sparkles
-} from 'lucide-react';
-import { type FileItem } from './file-card';
+  Sparkles,
+} from "lucide-react";
+import { type FileItem } from "./file-card";
 
 interface FileListItemProps {
   file: FileItem;
@@ -32,16 +32,16 @@ interface FileListItemProps {
   onRename: (id: string) => void;
 }
 
-export function FileListItem({ 
-  file, 
-  getFileIcon, 
-  getFileTypeColor, 
+export function FileListItem({
+  file,
+  getFileIcon,
+  getFileTypeColor,
   formatFileSize,
   onGenerateFlashcards,
   onGenerateNotes,
   onShare,
   onDelete,
-  onRename
+  onRename,
 }: FileListItemProps) {
   return (
     <div className="p-4 hover:bg-gray-50 transition-colors">
@@ -72,15 +72,15 @@ export function FileListItem({
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
-          {file.status === 'uploading' && file.progress !== undefined && (
+          {file.status === "uploading" && file.progress !== undefined && (
             <div className="flex items-center gap-2">
               <Progress value={file.progress} className="w-20 h-2" />
               <span className="text-xs text-gray-500">{file.progress}%</span>
             </div>
           )}
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm">
@@ -104,7 +104,7 @@ export function FileListItem({
                 <BookOpen className="h-4 w-4 mr-2" />
                 Generate Notes
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="text-red-600"
                 onClick={() => onDelete(file.id)}
               >
@@ -117,4 +117,4 @@ export function FileListItem({
       </div>
     </div>
   );
-} 
+}

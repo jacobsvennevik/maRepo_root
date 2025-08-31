@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import Link from "next/link"
-import { ArrowRight, Droplets } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Droplets } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function HeroSection() {
   return (
@@ -13,24 +13,21 @@ export function HeroSection() {
           {/* Left Column - Text Content */}
           <div className="max-w-xl">
             <div className="mb-6">
-              <span className="text-[#06b6d4] font-medium text-xl">AI-Powered Learning</span>
+              <span className="text-[#06b6d4] font-medium text-xl">
+                AI-Powered Learning
+              </span>
             </div>
             <h1 className="text-3xl md:text-5xl font-medium text-slate-900 mb-6 leading-tight">
               Transform your study experience
             </h1>
             <p className="text-lg text-slate-700 mb-8">
-              Our intelligent platform adapts to your learning style, helping you master complex topics with
-              personalized study tools and real-time feedback.
+              Our intelligent platform adapts to your learning style, helping
+              you master complex topics with personalized study tools and
+              real-time feedback.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                variant="solid-blue" 
-                size="xl"
-                asChild
-              >
-                <Link href="/login">
-                  Start Learning
-                </Link>
+              <Button variant="solid-blue" size="xl" asChild>
+                <Link href="/login">Start Learning</Link>
               </Button>
               <Button
                 variant="outline-blue"
@@ -56,10 +53,13 @@ export function HeroSection() {
               </div>
             </div>
             <div className="p-8">
-              <h3 className="text-xl font-medium text-slate-900 mb-3">Personalized Learning Paths</h3>
+              <h3 className="text-xl font-medium text-slate-900 mb-3">
+                Personalized Learning Paths
+              </h3>
               <p className="text-slate-700 mb-4">
-                Our AI analyzes your learning patterns and creates custom study plans that adapt to your progress,
-                ensuring you focus on what matters most.
+                Our AI analyzes your learning patterns and creates custom study
+                plans that adapt to your progress, ensuring you focus on what
+                matters most.
               </p>
               <Button
                 variant="link"
@@ -75,5 +75,5 @@ export function HeroSection() {
         </div>
       </div>
     </main>
-  )
-} 
+  );
+}

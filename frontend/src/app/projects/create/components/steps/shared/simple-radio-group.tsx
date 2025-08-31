@@ -4,7 +4,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 export interface SimpleRadioOption {
   value: string;
   label: string;
-  description: string;
+  description?: string;
+  icon?: any;
 }
 
 interface SimpleRadioGroupProps {
@@ -37,10 +38,12 @@ export function SimpleRadioGroup({
             <Label htmlFor={`${name}-${option.value}`} className="text-sm sm:text-base font-medium cursor-pointer">
               {option.label}
             </Label>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1">{option.description}</p>
+            {option.description && (
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">{option.description}</p>
+            )}
           </div>
         </div>
       ))}
     </RadioGroup>
   );
-} 
+}

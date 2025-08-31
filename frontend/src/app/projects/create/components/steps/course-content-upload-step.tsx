@@ -1,372 +1,283 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { FileUpload } from '@/components/ui/file-upload';
-import { API_BASE_URL, validateFiles } from '../../utils/upload-utils';
-import { TestModeBanner, ErrorMessage } from '../shared/upload-ui';
-import { CourseContentMockBanner } from '../shared/mock-mode-banner';
-import { SuccessMessage, SkipButton, LoadingSpinner } from './shared';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { 
   MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT,
   simulateProcessingDelay,
   isTestMode,
   type ProcessedDocument 
 } from '../../services/mock-data';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/cards/base-card';
-import { FileUploader } from '@/components/ui/common/file-uploader';
-import { APIError, handleAPIError } from '@/lib/errors';
-import axiosInstance from '@/lib/axios';
-
-// Note: ProcessedDocument type is now imported from services/mock-data.ts
+import { hybridUploadAndProcess, enhancedMockUpload } from '../../utils/hybrid-test-utils';
+import { TestModeBanner, ErrorMessage } from '../shared/upload-ui';
+import { CourseContentMockBanner } from '../shared/mock-mode-banner';
+import { HybridTestBanner } from '../shared/hybrid-test-banner';
 
 interface CourseContentUploadStepProps {
-  onUploadComplete: (backendData: ProcessedDocument[], fileNames: string[]) => void;
-  onAnalysisComplete: () => void;
-  onNext: () => void;
-  onBack: () => void;
-  onSkip?: () => void; // Add onSkip callback
-  savedFiles?: File[]; // Saved files from previous navigation
-  savedAnalysisData?: ProcessedDocument[]; // Saved analysis results
-  savedFileNames?: string[]; // Saved file names
+  onUploadComplete: (data: ProcessedDocument[], fileNames: string[], files?: File[]) => void;
+  onAnalysisComplete?: (data: ProcessedDocument[]) => void;
 }
 
-// Note: Mock data is now centralized in services/mock-data.ts
-
-function getReadableErrorMessage(error: unknown): string {
-  if (error instanceof APIError) {
-    // If the error is already an APIError, use its message
-    return error.message;
-  }
-  
-  if (error instanceof Error) {
-    // For other Error types, check if it's an axios error with response data
-    const anyError = error as any;
-    if (anyError.response?.data) {
-      if (typeof anyError.response.data === 'string') {
-        return anyError.response.data;
-      }
-      if (anyError.response.data.detail) {
-        return anyError.response.data.detail;
-      }
-      if (anyError.response.data.message) {
-        return anyError.response.data.message;
-      }
-      if (anyError.response.data.error) {
-        return anyError.response.data.error;
-      }
-    }
-    return error.message;
-  }
-  
-  return 'An unexpected error occurred. Please try again.';
-}
-
-// Background Analysis Banner Component
-function BackgroundAnalysisBanner({ isAnalyzing, filesCount }: { isAnalyzing: boolean; filesCount: number }) {
-  if (!isAnalyzing) return null;
-
-  return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-      <div className="flex items-center space-x-3">
-        <div className="flex-shrink-0">
-          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-        </div>
-        <div className="flex-1">
-          <h3 className="text-sm font-medium text-blue-900">
-            Analyzing Course Content
-          </h3>
-          <p className="text-sm text-blue-700 mt-1">
-            {isTestMode() 
-              ? `🧪 Simulating AI analysis of ${filesCount} file${filesCount !== 1 ? 's' : ''}...` 
-              : `AI is analyzing your ${filesCount} course material${filesCount !== 1 ? 's' : ''} in the background...`
-            }
-          </p>
-          <p className="text-xs text-blue-600 mt-1">
-            {isTestMode() ? 'Using mock data for testing' : 'You can continue setting up your project while this runs'}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function CourseContentUploadStep({ 
-  onUploadComplete, 
-  onAnalysisComplete, 
-  onNext, 
-  onBack, 
-  onSkip,
-  savedFiles = [],
-  savedAnalysisData,
-  savedFileNames = []
+export function CourseContentUploadStep({
+  onUploadComplete,
+  onAnalysisComplete
 }: CourseContentUploadStepProps) {
-  const [files, setFiles] = useState<File[]>(savedFiles);
+  const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
-  const [error, setError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(!!savedAnalysisData);
-  const [storedResults, setStoredResults] = useState<{ data: ProcessedDocument[], fileNames: string[] } | null>(
-    savedAnalysisData ? { data: savedAnalysisData, fileNames: savedFileNames } : null
-  );
-  const [hasAnalyzedCurrentFiles, setHasAnalyzedCurrentFiles] = useState(!!savedAnalysisData);
-  const router = useRouter();
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [storedResults, setStoredResults] = useState<{
+    data: ProcessedDocument[];
+    fileNames: string[];
+  } | null>(null);
 
-  const handleSkip = useCallback(() => {
-    if (onSkip) {
-      onSkip();
-    }
-  }, [onSkip]);
-
-  // Call onUploadComplete immediately when analysis completes for the guided setup
-  React.useEffect(() => {
-    if (showSuccess && storedResults) {
-      onUploadComplete(storedResults.data, storedResults.fileNames);
-    }
-  }, [showSuccess, storedResults, onUploadComplete]);
-
-  // Handle saved data on mount
-  useEffect(() => {
-    if (savedAnalysisData && savedFileNames.length > 0) {
-      console.log('📁 Restoring saved course content data:', savedFileNames);
-      onUploadComplete(savedAnalysisData, savedFileNames);
-    }
-  }, [savedAnalysisData, savedFileNames, onUploadComplete]);
-
-  // Auto-start analysis when files are added
-  useEffect(() => {
-    if (files.length > 0 && !isAnalyzing && !showSuccess && !hasAnalyzedCurrentFiles) {
-      handleAnalyze();
-    }
-  }, [files.length, hasAnalyzedCurrentFiles]);
-
-  const handleUpload = useCallback((newFiles: File[]) => {
-    // Validate file types and sizes
-    const validTypes = ['.pdf', '.ppt', '.pptx', '.doc', '.docx'];
-    const validation = validateFiles(newFiles, validTypes, 25);
-
-    // Filter out invalid and oversized files
-    const validFiles = newFiles.filter(file => 
-      !validation.invalidFiles.includes(file) && 
-      !validation.oversizedFiles.includes(file)
-    );
-
-    // Set error for invalid files
-    if (validation.invalidFiles.length > 0) {
-      setError(`${validation.invalidFiles[0].name} is not a supported file type`);
-    } else if (validation.oversizedFiles.length > 0) {
-      setError('File is too large. Maximum size is 25MB per file.');
-    } else {
-      setError(null);
-    }
-
-    // Add only valid files to the list
-    if (validFiles.length > 0) {
-      setFiles(prev => [...prev, ...validFiles]);
-      setHasAnalyzedCurrentFiles(false); // Reset analysis flag when new files are added
-    }
+  const handleFileUpload = useCallback(async (uploadedFiles: File[]) => {
+    setFiles(uploadedFiles);
+    setError(null);
+    setShowSuccess(false);
+    
+    // Auto-analyze files when they're uploaded
+    await handleAnalyze(uploadedFiles);
   }, []);
 
-  const handleRemove = useCallback((index: number) => {
-    setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
-  }, []);
+  const handleAnalyze = useCallback(async (filesToAnalyze: File[] = files) => {
+    if (filesToAnalyze.length === 0) return;
 
-  const handleAnalyze = useCallback(async () => {
-    if (!files.length) {
-      return;
-    }
-
-    const firstFile = files[0];
     setIsAnalyzing(true);
     setError(null);
     setShowSuccess(false);
-    setStoredResults(null);
-    let documentId: number | null = null;
 
     try {
-      // TEST MODE: Skip API calls and use mock data
+      const firstFile = filesToAnalyze[0];
+      console.log('🧪 HYBRID MODE: Processing', filesToAnalyze.length, 'course content files through real backend with mock data');
+
+      // TEST MODE: Use enhanced mock with proper state updates
       if (isTestMode()) {
-        console.log('🧪 TEST MODE: Analyzing', files.length, 'course content files with mock data');
+        console.log('🧪 TEST MODE: Analyzing', filesToAnalyze.length, 'course content files with enhanced mock data');
         
         // Simulate upload progress for all files
-        for (const file of files) {
+        for (const file of filesToAnalyze) {
           setUploadProgress(prev => ({ ...prev, [file.name]: 100 }));
         }
         
-        // Simulate processing time with realistic delay
-        await simulateProcessingDelay(1500, 3000);
-        
+        // Use enhanced mock function that properly updates state
+        const results = await enhancedMockUpload(
+          filesToAnalyze,
+          'course_content',
+          (progress) => {
+            console.log('🧪 ENHANCED MOCK: Progress:', progress);
+          },
+          (uploadedFiles, processedData) => {
+            // 🔧 CRITICAL FIX: Update parent state with files and data
+            console.log('🧪 ENHANCED MOCK: Updating parent state with files:', uploadedFiles.length, 'data:', processedData.length);
+            
+            // Call onUploadComplete with files to update parent state
+            onUploadComplete(
+              processedData.map(result => ({
+                id: result.id,
+                original_text: result.original_text,
+                metadata: result.processed_data || result.metadata,
+                status: result.status
+              })),
+              uploadedFiles.map(f => f.name),
+              uploadedFiles // 🔧 Pass the actual files to update parent state
+            );
+          }
+        );
+
         const fileName = firstFile.name;
         console.log('🧪 TEST MODE: Course content extraction completed for:', fileName);
-        console.log('🧪 TEST MODE: Using mock course content data');
+        console.log('🧪 TEST MODE: Using enhanced mock course content data');
 
         setIsAnalyzing(false);
         setShowSuccess(true);
         setStoredResults({
-          data: [MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT],
-          fileNames: [fileName]
+          data: results.map(result => ({
+            id: result.id,
+            original_text: result.original_text,
+            metadata: result.processed_data || result.metadata,
+            status: result.status
+          })),
+          fileNames: filesToAnalyze.map(f => f.name)
         });
-        setHasAnalyzedCurrentFiles(true); // Mark as analyzed
-        onUploadComplete([MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT], [fileName]);
-        onAnalysisComplete();
+
+        // Call analysis complete callback
+        if (onAnalysisComplete) {
+          onAnalysisComplete(results.map(result => ({
+            id: result.id,
+            original_text: result.original_text,
+            metadata: result.processed_data || result.metadata,
+            status: result.status
+          })));
+        }
+
         return;
       }
 
-      // Validate file size
-      const maxSize = 25 * 1024 * 1024; // 25MB to match UI limit
-      if (firstFile.size > maxSize) {
-        throw new APIError(413, 'File size exceeds 25MB limit');
-      }
-
-      // Step 1: Upload file
-      const formData = new FormData();
-      formData.append('file', firstFile);
-      formData.append('file_type', firstFile.type.toLowerCase().includes('pdf') ? 'pdf' : 'ppt');
-      formData.append('upload_type', 'learning_materials');
-
-      console.log('Uploading file:', {
-        name: firstFile.name,
-        size: firstFile.size,
-        type: firstFile.type,
-        file_type: firstFile.type.toLowerCase().includes('pdf') ? 'pdf' : 'ppt'
-      });
-
-      const uploadResponse = await axiosInstance.post('/api/pdf_service/documents/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      // PRODUCTION MODE: Use real backend processing
+      console.log('🚀 PRODUCTION MODE: Processing course content files through real backend');
+      
+      const results = await hybridUploadAndProcess(
+        filesToAnalyze,
+        'course_content',
+        (progress) => {
+          console.log('🚀 PRODUCTION: Progress:', progress);
         },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setUploadProgress(prev => ({ ...prev, [firstFile.name]: progress }));
-          }
-        },
-      });
-
-      documentId = uploadResponse.data.id;
-      console.log('File uploaded successfully:', uploadResponse.data);
-      setUploadProgress(prev => ({ ...prev, [firstFile.name]: 100 }));
-
-      // Step 2: Start processing
-      const processResponse = await axiosInstance.post(`/api/pdf_service/documents/${documentId}/process/`);
-      console.log('Processing started successfully:', processResponse.data);
-
-      // Step 3: Poll for completion
-      const maxAttempts = 60; // Increased from 30 to 60 attempts
-      const pollInterval = 5000; // Increased from 3000 to 5000ms (5 seconds)
-      let attempts = 0;
-      let processedData = null;
-
-      while (attempts < maxAttempts && !processedData) {
-        try {
-          const statusResponse = await axiosInstance.get(`/api/pdf_service/documents/${documentId}/`);
-          const statusData = statusResponse.data;
-          console.log(`Polling attempt ${attempts + 1}:`, statusData);
-
-          if (statusData.status === 'error') {
-            throw new APIError(500, statusData.error_message || 'Processing failed');
-          }
-
-          if (statusData.status === 'completed') {
-            if (statusData.processed_data) {
-              processedData = {
-                id: statusData.id,
-                original_text: statusData.original_text,
-                metadata: statusData.processed_data,
-                status: 'completed' as const
-              };
-              break;
-            }
-
-            // Try the processed_data endpoint as fallback
-            try {
-              const processedDataResponse = await axiosInstance.get(`/api/pdf_service/documents/${documentId}/processed_data/`);
-              if (processedDataResponse.data) {
-                processedData = {
-                  id: statusData.id,
-                  original_text: statusData.original_text,
-                  metadata: processedDataResponse.data,
-                  status: 'completed' as const
-                };
-                break;
-              }
-            } catch (processedDataError) {
-              console.log('Processed data endpoint failed, continuing polling');
-            }
-          }
-
-          await new Promise(resolve => setTimeout(resolve, pollInterval));
-          attempts++;
-        } catch (pollError) {
-          console.error('Polling error:', pollError);
-          throw new APIError(500, getReadableErrorMessage(pollError));
+        (uploadedFiles, processedData) => {
+          // Update parent state with files and data
+          onUploadComplete(
+            processedData.map(result => ({
+              id: result.id,
+              original_text: result.original_text,
+              metadata: result.processed_data || result.metadata,
+              status: result.status
+            })),
+            uploadedFiles.map(f => f.name),
+            uploadedFiles
+          );
         }
-      }
+      );
 
-      if (!processedData) {
-        throw new APIError(408, `Processing timed out for ${firstFile.name}. The file might be too large or complex to process.`);
-      }
+      const fileName = firstFile.name;
+      console.log('🚀 PRODUCTION MODE: Course content extraction completed for:', fileName);
 
-      console.log('SUCCESS: Using processed data:', processedData);
+      setIsAnalyzing(false);
       setShowSuccess(true);
       setStoredResults({
-        data: [processedData],
-        fileNames: [firstFile.name]
+        data: results.map(result => ({
+          id: result.id,
+          original_text: result.original_text,
+          metadata: result.processed_data || result.metadata,
+          status: result.status
+        })),
+        fileNames: filesToAnalyze.map(f => f.name)
       });
-      setHasAnalyzedCurrentFiles(true); // Mark as analyzed
-      onAnalysisComplete();
 
-    } catch (error) {
-      console.error("Content analysis failed:", error);
-      setIsAnalyzing(false);
-      setUploadProgress({});
-      setShowSuccess(false);
-      setStoredResults(null);
-      setHasAnalyzedCurrentFiles(false); // Reset flag on error so user can retry
-      
-      const errorMessage = getReadableErrorMessage(error);
-      
-      if (error instanceof APIError && error.statusCode === 401) {
-        setError("Your session has expired. Please log in again.");
-        router.push('/login');
-      } else {
-        setError(errorMessage);
+      // Call analysis complete callback
+      if (onAnalysisComplete) {
+        onAnalysisComplete(results.map(result => ({
+          id: result.id,
+          original_text: result.original_text,
+          metadata: result.processed_data || result.metadata,
+          status: result.status
+        })));
       }
+
+    } catch (err) {
+      console.error('Error analyzing course content files:', err);
+      setError(err instanceof Error ? err.message : 'Failed to analyze files');
+      setIsAnalyzing(false);
     }
-  }, [files, router, onAnalysisComplete, onUploadComplete]);
+  }, [files, onUploadComplete, onAnalysisComplete]);
+
+  const handleRemoveFile = useCallback((fileName: string) => {
+    setFiles(prev => prev.filter(file => file.name !== fileName));
+    setUploadProgress(prev => {
+      const newProgress = { ...prev };
+      delete newProgress[fileName];
+      return newProgress;
+    });
+    setShowSuccess(false);
+    setStoredResults(null);
+  }, []);
+
+  // Auto-analyze when files change
+  useEffect(() => {
+    if (files.length > 0 && !isAnalyzing && !showSuccess) {
+      handleAnalyze();
+    }
+  }, [files, isAnalyzing, showSuccess, handleAnalyze]);
+
+  // Call onUploadComplete when stored results are available
+  useEffect(() => {
+    if (storedResults && files.length > 0) {
+      onUploadComplete(
+        storedResults.data,
+        storedResults.fileNames,
+        files // 🔧 Pass the actual files to update parent state
+      );
+    }
+  }, [storedResults, files, onUploadComplete]);
 
   return (
     <div className="space-y-6" data-testid="course-content-upload-step">
-      <CourseContentMockBanner />
-      
-      {/* Background Analysis Banner */}
-      <BackgroundAnalysisBanner isAnalyzing={isAnalyzing} filesCount={files.length} />
-      
-      <div className="space-y-4">
-        <FileUpload
-          onUpload={handleUpload}
-          onRemove={handleRemove}
-          accept=".pdf,.ppt,.pptx,.doc,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          maxFiles={10}
-          maxSize={25 * 1024 * 1024}
-          title="Upload your course materials"
-          description="Upload slides, handouts, or excerpts (max ~100 pages). Full textbooks are not allowed. Analysis will start automatically."
-          files={files}
-          uploadProgress={uploadProgress}
-          error={error}
+      {isTestMode() ? (
+        <HybridTestBanner 
+          title="Course Content Analysis"
+          description="Upload your course materials to see how the real AI processing pipeline works with reliable test data"
         />
-        {error && <ErrorMessage message={error} />}
-      </div>
-      
-      {/* Skip Button */}
-      {onSkip && (
-        <SkipButton onSkip={handleSkip} text="Skip - I don't have course materials to upload" />
+      ) : (
+        <CourseContentMockBanner />
       )}
-      {showSuccess && (
-        <SuccessMessage message="Course content analyzed successfully! Click Next to continue." />
-      )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            📚 Course Content Upload
+            {isTestMode() && <Badge variant="secondary">Test Mode</Badge>}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <FileUpload
+            onUpload={handleFileUpload}
+            accept=".pdf,.doc,.docx,.ppt,.pptx"
+            maxSize={25 * 1024 * 1024} // 25MB
+            multiple={true}
+            disabled={isAnalyzing}
+            data-testid="file-input"
+          />
+
+          {files.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="font-medium">Uploaded Files:</h4>
+              {files.map((file) => (
+                <div key={file.name} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <span className="text-sm">{file.name}</span>
+                  <div className="flex items-center gap-2">
+                    {uploadProgress[file.name] !== undefined && (
+                      <Progress value={uploadProgress[file.name]} className="w-20" />
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleRemoveFile(file.name)}
+                      disabled={isAnalyzing}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {isAnalyzing && (
+            <div className="text-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p className="text-sm text-gray-600">
+                {isTestMode() ? '🧪 Simulating AI analysis...' : '🤖 Analyzing course content...'}
+              </p>
+            </div>
+          )}
+
+          {showSuccess && (
+            <div className="text-center py-4">
+              <div className="text-green-600 text-2xl mb-2">✅</div>
+              <p className="text-sm text-green-600 font-medium">
+                Course content analysis completed successfully!
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                {storedResults?.fileNames.length} file(s) processed
+              </p>
+            </div>
+          )}
+
+          {error && <ErrorMessage message={error} />}
+        </CardContent>
+      </Card>
     </div>
   );
-} 
+}

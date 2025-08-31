@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Video, ChevronRight } from "lucide-react"
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Video, ChevronRight } from "lucide-react";
 
 interface FeaturedBlogCardProps {
-  title: string
-  description: string
-  date: string
-  duration: string
-  presenter: string
-  buttonText?: string
-  buttonUrl?: string
-  imageUrl?: string
+  title: string;
+  description: string;
+  date: string;
+  duration: string;
+  presenter: string;
+  buttonText?: string;
+  buttonUrl?: string;
+  imageUrl?: string;
 }
 
 export function FeaturedBlogCard({
@@ -23,7 +23,7 @@ export function FeaturedBlogCard({
   presenter,
   buttonText = "Watch Webinar",
   buttonUrl = "#",
-  imageUrl = "/images/placeholders/webinar.svg"
+  imageUrl = "/images/placeholders/webinar.svg",
 }: FeaturedBlogCardProps) {
   return (
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all hover:shadow-2xl">
@@ -33,14 +33,14 @@ export function FeaturedBlogCard({
             <div className="bg-ocean-deep/10 p-1.5 rounded-full">
               <Video className="w-4 h-4 text-ocean-deep" />
             </div>
-            <span className="ml-2 text-ocean-deep font-medium text-sm">Featured Webinar</span>
+            <span className="ml-2 text-ocean-deep font-medium text-sm">
+              Featured Webinar
+            </span>
           </div>
           <h3 className="text-2xl lg:text-3xl font-medium text-slate-900 mb-4">
             {title}
           </h3>
-          <p className="text-slate-700 mb-6">
-            {description}
-          </p>
+          <p className="text-slate-700 mb-6">{description}</p>
           <div className="flex items-center text-sm text-slate-500 mb-6">
             <span>{date}</span>
             <span className="mx-2">•</span>
@@ -49,9 +49,9 @@ export function FeaturedBlogCard({
             <span>With {presenter}</span>
           </div>
           <div>
-            <Button 
+            <Button
               variant="solid-blue"
-              onClick={() => window.open(buttonUrl, '_blank')}
+              onClick={() => window.open(buttonUrl, "_blank")}
             >
               {buttonText}
               <ChevronRight className="ml-1 w-4 h-4" />
@@ -96,5 +96,5 @@ export function FeaturedBlogCard({
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

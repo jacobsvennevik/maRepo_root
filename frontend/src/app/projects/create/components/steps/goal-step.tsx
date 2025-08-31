@@ -17,8 +17,9 @@ export function GoalStep({ goal, onGoalChange }: GoalStepProps) {
         className="min-h-[100px] sm:min-h-[120px]"
       />
       <HelpText>
-        Be specific about what you want to achieve. This helps us create a more targeted learning plan.
+        Be specific about what you want to achieve. This helps us create a more
+        targeted learning plan.
       </HelpText>
     </div>
   );
-} 
+}

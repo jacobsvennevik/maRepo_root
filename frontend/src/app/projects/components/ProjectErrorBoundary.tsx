@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -15,7 +15,10 @@ interface ErrorBoundaryProps {
 /**
  * Error boundary component for handling project data errors
  */
-export class ProjectErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ProjectErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -28,8 +31,8 @@ export class ProjectErrorBoundary extends React.Component<ErrorBoundaryProps, Er
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error to monitoring service
-    console.error('Project data error:', error, errorInfo);
-    
+    console.error("Project data error:", error, errorInfo);
+
     // You can also log the error to an error reporting service here
     // Example: Sentry.captureException(error, { extra: errorInfo });
   }
@@ -43,7 +46,12 @@ export class ProjectErrorBoundary extends React.Component<ErrorBoundaryProps, Er
       // You can render any custom fallback UI
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback;
-        return <FallbackComponent error={this.state.error} resetError={this.resetError} />;
+        return (
+          <FallbackComponent
+            error={this.state.error}
+            resetError={this.resetError}
+          />
+        );
       }
 
       return (
@@ -69,11 +77,14 @@ export class ProjectErrorBoundary extends React.Component<ErrorBoundaryProps, Er
               </h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>
-                  There was an error loading the project information. Please try refreshing the page.
+                  There was an error loading the project information. Please try
+                  refreshing the page.
                 </p>
                 {this.state.error && (
                   <details className="mt-2">
-                    <summary className="cursor-pointer text-xs">Error details</summary>
+                    <summary className="cursor-pointer text-xs">
+                      Error details
+                    </summary>
                     <pre className="mt-1 text-xs bg-red-100 p-2 rounded overflow-auto">
                       {this.state.error.message}
                     </pre>
@@ -106,7 +117,7 @@ export function useProjectErrorHandler() {
   const [error, setError] = React.useState<Error | null>(null);
 
   const handleError = React.useCallback((error: Error) => {
-    console.error('Project error:', error);
+    console.error("Project error:", error);
     setError(error);
   }, []);
 
@@ -115,4 +126,4 @@ export function useProjectErrorHandler() {
   }, []);
 
   return { error, handleError, resetError };
-} 
+}

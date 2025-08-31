@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Project, UploadedFile, Extraction, FieldCorrection, ImportantDate, SchoolProject, SelfStudyProject
+from .models import Project, UploadedFile, Extraction, FieldCorrection, ImportantDate, SchoolProject, SelfStudyProject, ProjectMeta
 from django.contrib.auth import get_user_model
 from decouple import config
 
@@ -26,6 +26,15 @@ class SelfStudyProjectSerializer(serializers.ModelSerializer):
         fields = ['goal_description', 'study_frequency']
 
 
+class ProjectMetaSerializer(serializers.ModelSerializer):
+    """Serializer for flexible project metadata."""
+    
+    class Meta:
+        model = ProjectMeta
+        fields = ['key', 'value', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+
+
 class ProjectSerializer(serializers.ModelSerializer):
     """
     Hybrid serializer that supports both old and new data structures.
@@ -44,16 +53,20 @@ class ProjectSerializer(serializers.ModelSerializer):
     teacher_name = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     goal_description = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     study_frequency = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    
+    # Meta field for flexible metadata
+    meta = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
         fields = [
             'id', 'name', 'project_type', 'owner',
-            # Legacy fields (always included)
-            'course_name', 'course_code', 'teacher_name',
-            'goal_description', 'study_frequency', 'syllabus',
-            # STI fields (conditionally included in to_representation)
+            # STI fields (included in to_representation when ENABLE_STI=True)
             'school_data', 'self_study_data',
+            # Legacy fields (for backward compatibility)
+            'course_name', 'course_code', 'teacher_name', 'goal_description', 'study_frequency',
+            # Meta field (always included)
+            'meta',
             # Common fields
             'start_date', 'end_date', 'is_draft', 'created_at', 'updated_at'
         ]
@@ -85,6 +98,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         data_copy = data.copy() if hasattr(data, 'copy') else dict(data)
         school_data = data_copy.pop('school_data', None)
         self_study_data = data_copy.pop('self_study_data', None)
+        meta_data = data_copy.pop('meta', None)
         
         # Call parent method to validate the rest
         validated_data = super().to_internal_value(data_copy)
@@ -94,12 +108,15 @@ class ProjectSerializer(serializers.ModelSerializer):
             validated_data['school_data'] = school_data
         if self_study_data:
             validated_data['self_study_data'] = self_study_data
+        if meta_data is not None:
+            validated_data['meta'] = meta_data
         
         return validated_data
 
     def to_representation(self, instance):
         """
-        Custom representation that adapts based on ENABLE_STI flag.
+        Custom representation that prioritizes STI structure and removes legacy fields.
+        Legacy fields are kept write-only for backward compatibility during transition.
         """
         data = super().to_representation(instance)
         
@@ -107,16 +124,21 @@ class ProjectSerializer(serializers.ModelSerializer):
         enable_sti = config('ENABLE_STI', default=False, cast=bool)
         
         if enable_sti:
-            # When STI is enabled, prioritize new structure but keep legacy fields
+            # When STI is enabled, prioritize new structure and remove legacy fields from response
             if instance.project_type == 'school' and hasattr(instance, 'school_project_data'):
-                # Ensure legacy fields are synced from STI data
-                data['course_name'] = instance.school_project_data.course_name
-                data['course_code'] = instance.school_project_data.course_code
-                data['teacher_name'] = instance.school_project_data.teacher_name
+                # Ensure STI data is properly represented
+                if 'school_data' not in data:
+                    data['school_data'] = SchoolProjectSerializer(instance.school_project_data).data
             elif instance.project_type == 'self_study' and hasattr(instance, 'self_study_project_data'):
-                # Ensure legacy fields are synced from STI data
-                data['goal_description'] = instance.self_study_project_data.goal_description
-                data['study_frequency'] = instance.self_study_project_data.study_frequency
+                # Ensure STI data is properly represented
+                if 'self_study_data' not in data:
+                    data['self_study_data'] = SelfStudyProjectSerializer(instance.self_study_project_data).data
+            
+            # Remove legacy fields from response (they're still write-only for backward compatibility)
+            legacy_fields = ['course_name', 'course_code', 'teacher_name', 'goal_description', 'study_frequency']
+            for field in legacy_fields:
+                if field in data:
+                    data.pop(field)
         else:
             # When STI is disabled, remove new fields to avoid confusion
             if 'school_data' in data:
@@ -126,6 +148,34 @@ class ProjectSerializer(serializers.ModelSerializer):
         
         return data
 
+    def get_meta(self, obj):
+        """Convert metadata to a dictionary format."""
+        # Read ENABLE_STI dynamically
+        enable_sti = config('ENABLE_STI', default=False, cast=bool)
+        
+        if not enable_sti:
+            # In legacy mode, ignore meta
+            return {}
+        
+        # Convert metadata to dictionary format
+        meta_dict = {}
+        for meta_item in obj.metadata.all():
+            meta_dict[meta_item.key] = meta_item.value
+        
+        # Special handling for AI-generated metadata
+        if 'ai_generated_metadata' in meta_dict:
+            ai_meta = meta_dict['ai_generated_metadata']
+            # Flatten AI metadata for easier access
+            meta_dict.update({
+                'ai_generated_tags': ai_meta.get('ai_generated_tags', []),
+                'content_summary': ai_meta.get('content_summary', ''),
+                'difficulty_level': ai_meta.get('difficulty_level', 'intermediate'),
+                'ai_model_used': ai_meta.get('model_used', ''),
+                'ai_prompt_version': ai_meta.get('prompt_version', '')
+            })
+        
+        return meta_dict
+
     def create(self, validated_data):
         """
         Create project with support for both old and new structures.
@@ -134,6 +184,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         # Extract STI-specific data
         school_data = validated_data.pop('school_data', None)
         self_study_data = validated_data.pop('self_study_data', None)
+        meta_data = validated_data.pop('meta', {})
         
         # Create the base project
         project = Project.objects.create(**validated_data)
@@ -163,6 +214,16 @@ class ProjectSerializer(serializers.ModelSerializer):
                         setattr(sti_obj, attr, value)
                     sti_obj.save()
         
+        # Create metadata if provided and STI is enabled
+        enable_sti = config('ENABLE_STI', default=False, cast=bool)
+        if enable_sti and meta_data:
+            for key, value in meta_data.items():
+                ProjectMeta.objects.create(
+                    project=project,
+                    key=key,
+                    value=value
+                )
+        
         return project
 
     def update(self, instance, validated_data):
@@ -173,6 +234,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         # Extract STI-specific data
         school_data = validated_data.pop('school_data', None)
         self_study_data = validated_data.pop('self_study_data', None)
+        meta_data = validated_data.pop('meta', None)
         
         # Update STI structure first if enabled (this will sync to legacy fields)
         enable_sti = config('ENABLE_STI', default=False, cast=bool)
@@ -227,6 +289,18 @@ class ProjectSerializer(serializers.ModelSerializer):
             for attr, value in validated_data.items():
                 setattr(instance, attr, value)
             instance.save()
+        
+        # Update metadata if provided and STI is enabled
+        enable_sti = config('ENABLE_STI', default=False, cast=bool)
+        if enable_sti and meta_data is not None:
+            # Clear existing metadata and create new ones
+            instance.metadata.all().delete()
+            for key, value in meta_data.items():
+                ProjectMeta.objects.create(
+                    project=instance,
+                    key=key,
+                    value=value
+                )
         
         return instance
 

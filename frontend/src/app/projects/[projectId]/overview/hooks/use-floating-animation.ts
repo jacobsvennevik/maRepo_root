@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 /**
  * Custom hook that provides floating animation state for ocean-themed components.
@@ -14,7 +14,7 @@ export function useFloatingAnimation() {
 
   useEffect(() => {
     const waveInterval = setInterval(() => {
-      setWaveOffset(prev => (prev + 1) % 100);
+      setWaveOffset((prev) => (prev + 1) % 100);
     }, 50);
 
     const floatTimeout = setTimeout(() => {
@@ -28,4 +28,4 @@ export function useFloatingAnimation() {
   }, []);
 
   return { waveOffset, floatingCards };
-} 
+}

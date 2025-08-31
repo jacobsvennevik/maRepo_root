@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
-import { ReactNode } from 'react';
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
+import { ReactNode } from "react";
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -13,13 +13,13 @@ interface PageLayoutProps {
   className?: string;
 }
 
-export function PageLayout({ 
-  children, 
-  title, 
-  subtitle, 
-  backHref = "/projects", 
+export function PageLayout({
+  children,
+  title,
+  subtitle,
+  backHref = "/projects",
   backLabel = "Back to Projects",
-  className = ""
+  className = "",
 }: PageLayoutProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -30,10 +30,15 @@ export function PageLayout({
         <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-indigo-200/20 rounded-full blur-xl animate-pulse delay-2000"></div>
       </div>
 
-      <div className={`relative max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 ${className}`}>
+      <div
+        className={`relative max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 ${className}`}
+      >
         {/* Breadcrumbs */}
         <div className="flex items-center text-sm text-gray-600 mb-4 sm:mb-6 lg:mb-8">
-          <Link href={backHref} className="hover:text-blue-600 flex items-center">
+          <Link
+            href={backHref as any}
+            className="hover:text-blue-600 flex items-center"
+          >
             <ChevronLeft size={16} className="mr-1" />
             {backLabel}
           </Link>
@@ -57,10 +62,11 @@ export function PageLayout({
         {/* Additional Info */}
         <div className="mt-8 sm:mt-10 lg:mt-12 text-center">
           <p className="text-xs sm:text-sm text-slate-500">
-            You can always modify your project settings later in the project dashboard.
+            You can always modify your project settings later in the project
+            dashboard.
           </p>
         </div>
       </div>
     </div>
   );
-} 
+}

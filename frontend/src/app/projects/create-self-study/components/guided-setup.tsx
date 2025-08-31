@@ -56,6 +56,14 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
   const [showSummary, setShowSummary] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    } else {
+      onBack();
+    }
+  };
+
   // Auto-save functionality
   const { loadFromStorage, clearStorage } = useAutoSave({
     data: setup,
@@ -127,14 +135,6 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
       setCurrentStep(currentStep + 1);
     } else {
       setShowSummary(true);
-    }
-  };
-
-  const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    } else {
-      onBack();
     }
   };
 
@@ -312,7 +312,6 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
       default:
         return null;
     }
-  };
 
   if (showSummary) {
     return <ProjectSummary setup={setup} onBack={() => setShowSummary(false)} />;
@@ -576,4 +575,4 @@ function ProjectSummary({ setup, onBack }: { setup: SelfStudyProjectSetup; onBac
       </div>
     </div>
   );
-} 
+}}

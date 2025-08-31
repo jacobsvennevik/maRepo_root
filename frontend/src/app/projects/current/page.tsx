@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { ProjectLayout } from "@/components/layout/project-layout";
@@ -10,16 +10,18 @@ export default function CurrentProject() {
       <div className="flex flex-col min-h-screen bg-[#f8fafc]">
         {/* Main navigation header - reused from dashboard */}
         <DashboardHeader />
-        
+
         {/* Project content with sidebar layout */}
         <div className="flex flex-1">
           {/* Left sidebar navigation */}
           <ProjectSidebar projectId="current" projectName="Current Project" />
-          
+
           {/* Main content area */}
           <main className="flex-1 p-6">
-            <h1 className="text-2xl font-bold text-slate-900 mb-6">Current Project</h1>
-            
+            <h1 className="text-2xl font-bold text-slate-900 mb-6">
+              Current Project
+            </h1>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {/* Overview Cards */}
               <div className="p-4 bg-white rounded-lg shadow">
@@ -59,4 +61,4 @@ export default function CurrentProject() {
       </div>
     </ProjectLayout>
   );
-} 
+}

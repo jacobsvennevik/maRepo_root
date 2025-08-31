@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 export default function ActiveProjectOverview() {
   const params = useParams();
@@ -12,13 +12,15 @@ export default function ActiveProjectOverview() {
     <div className="space-y-6">
       {/* Breadcrumbs */}
       <div className="flex items-center text-sm text-gray-600">
-        <Link href="/projects" className="hover:text-blue-600">Projects</Link>
+        <Link href="/projects" className="hover:text-blue-600">
+          Projects
+        </Link>
         <ChevronRight size={16} className="mx-2" />
         <span className="font-medium text-gray-900">Overview</span>
       </div>
 
       <h1 className="text-2xl font-bold text-slate-900">Project Overview</h1>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Overview Cards */}
         <div className="p-4 bg-white rounded-lg shadow">
@@ -55,4 +57,4 @@ export default function ActiveProjectOverview() {
       </div>
     </div>
   );
-} 
+}

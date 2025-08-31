@@ -1,6 +1,12 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MessageSquareText } from "lucide-react";
 
@@ -18,11 +24,12 @@ export function WelcomeCard({ userName }: WelcomeCardProps) {
               Good evening, {userName}
             </CardTitle>
             <CardDescription className="text-base text-emerald-50 mt-2">
-              Need help? Tell me a little about yourself so I can make the best recommendations.
+              Need help? Tell me a little about yourself so I can make the best
+              recommendations.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <Button 
+            <Button
               variant="custom-aqua"
               className="bg-white hover:bg-emerald-50 text-emerald-600 px-6 py-5 mt-4 rounded-lg font-medium shadow-sm flex items-center"
             >
@@ -51,4 +58,4 @@ export function WelcomeCard({ userName }: WelcomeCardProps) {
       </div>
     </Card>
   );
-} 
+}

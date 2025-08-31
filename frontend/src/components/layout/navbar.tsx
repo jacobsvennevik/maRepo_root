@@ -1,53 +1,63 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { BookOpen, ScrollText, FlaskConical } from "lucide-react"
-import { DropdownMenu, DropdownMenuItem } from "@/components/ui/navigation/dropdown-menu"
+import { useState, useRef, useEffect } from "react";
+import { BookOpen, ScrollText, FlaskConical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+} from "@/components/ui/navigation/dropdown-menu";
 
 export function Navbar() {
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setActiveDropdown(null)
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setActiveDropdown(null);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const toggleDropdown = (dropdown: string) => {
-    setActiveDropdown(activeDropdown === dropdown ? null : dropdown)
-  }
+    setActiveDropdown(activeDropdown === dropdown ? null : dropdown);
+  };
 
   // Smooth scroll to section with offset for fixed header
   const scrollToSection = (sectionId: string) => {
-    setActiveDropdown(null)
-    const element = document.getElementById(sectionId)
+    setActiveDropdown(null);
+    const element = document.getElementById(sectionId);
     if (element) {
-      const headerOffset = 80
-      const elementPosition = element.getBoundingClientRect().top
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+      const headerOffset = 80;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - headerOffset;
 
       window.scrollTo({
         top: offsetPosition,
         behavior: "smooth",
-      })
+      });
 
       setTimeout(() => {
-        element.setAttribute("tabindex", "-1")
-        element.focus({ preventScroll: true })
-      }, 1000)
+        element.setAttribute("tabindex", "-1");
+        element.focus({ preventScroll: true });
+      }, 1000);
     }
-  }
+  };
 
   return (
-    <div className="hidden md:flex items-center space-x-8 justify-center flex-1" ref={dropdownRef}>
+    <div
+      className="hidden md:flex items-center space-x-8 justify-center flex-1"
+      ref={dropdownRef}
+    >
       <nav className="flex space-x-8 relative">
         {/* Features Dropdown */}
         <DropdownMenu
@@ -58,19 +68,31 @@ export function Navbar() {
           onMouseLeave={() => setActiveDropdown(null)}
         >
           <DropdownMenuItem
-            icon={<div className="bg-aqua/10 p-2 rounded-full"><BookOpen className="w-5 h-5 text-aqua" /></div>}
+            icon={
+              <div className="bg-aqua/10 p-2 rounded-full">
+                <BookOpen className="w-5 h-5 text-aqua" />
+              </div>
+            }
             title="Smart Flashcards"
             description="AI-generated study materials"
             onClick={() => scrollToSection("flashcards")}
           />
           <DropdownMenuItem
-            icon={<div className="bg-ocean-medium/10 p-2 rounded-full"><ScrollText className="w-5 h-5 text-ocean-medium" /></div>}
+            icon={
+              <div className="bg-ocean-medium/10 p-2 rounded-full">
+                <ScrollText className="w-5 h-5 text-ocean-medium" />
+              </div>
+            }
             title="Concept Maps"
             description="Visualize connections between ideas"
             onClick={() => scrollToSection("concept-maps")}
           />
           <DropdownMenuItem
-            icon={<div className="bg-ocean-deep/10 p-2 rounded-full"><FlaskConical className="w-5 h-5 text-ocean-deep" /></div>}
+            icon={
+              <div className="bg-ocean-deep/10 p-2 rounded-full">
+                <FlaskConical className="w-5 h-5 text-ocean-deep" />
+              </div>
+            }
             title="Adaptive Tests"
             description="Personalized quizzes and assessments"
             onClick={() => scrollToSection("adaptive-tests")}
@@ -127,5 +149,5 @@ export function Navbar() {
         </DropdownMenu>
       </nav>
     </div>
-  )
-} 
+  );
+}

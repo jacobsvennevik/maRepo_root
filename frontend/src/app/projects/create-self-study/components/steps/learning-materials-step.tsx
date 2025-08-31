@@ -64,8 +64,6 @@ export function LearningMaterialsStep({
     }
   };
 
-
-
   const getLinkIcon = (url: string) => {
     if (url.includes('youtube.com') || url.includes('youtu.be')) return Youtube;
     if (url.includes('github.com')) return Github;

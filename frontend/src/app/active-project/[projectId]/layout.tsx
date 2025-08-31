@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
+import { useParams } from "next/navigation";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { ProjectSidebar } from "@/components/layout/project-sidebar";
 
@@ -8,11 +8,11 @@ import { ProjectSidebar } from "@/components/layout/project-sidebar";
 const getProjectName = (projectId: string) => {
   // Temporary mock data - replace with actual data fetching
   const projects: Record<string, string> = {
-    'biology': 'Biology Research',
-    'chemistry': 'Chemistry Lab',
-    'physics': 'Physics Project',
+    biology: "Biology Research",
+    chemistry: "Chemistry Lab",
+    physics: "Physics Project",
   };
-  return projects[projectId] || 'Project';
+  return projects[projectId] || "Project";
 };
 
 export default function ActiveProjectLayout({
@@ -30,11 +30,9 @@ export default function ActiveProjectLayout({
       <div className="flex flex-1">
         <ProjectSidebar projectId={projectId} projectName={projectName} />
         <main className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-[1400px] mx-auto">
-            {children}
-          </div>
+          <div className="max-w-[1400px] mx-auto">{children}</div>
         </main>
       </div>
     </div>
   );
-} 
+}

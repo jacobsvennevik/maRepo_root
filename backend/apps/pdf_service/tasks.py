@@ -20,10 +20,14 @@ logger = logging.getLogger(__name__)
     soft_time_limit=300,  # 5 minutes soft timeout
     time_limit=360,  # 6 minutes hard timeout
 )
-def process_document(self, document_id: int):
+def process_document(self, document_id: int, test_mode: bool = False):
     """
     Celery task to process a document using the DocumentDispatcher.
     Includes timeout handling and retries for reliability.
+    
+    Args:
+        document_id: ID of the document to process
+        test_mode: Whether to use mock AI client for testing
     """
     try:
         document = Document.objects.get(id=document_id)
@@ -40,7 +44,13 @@ def process_document(self, document_id: int):
             document.save(update_fields=['original_text', 'metadata'])
 
         # Step 2: Dispatch the document for classification and processing
-        dispatcher = DocumentDispatcher(document=document)
+        # Create a mock request object with test mode header if needed
+        class MockRequest:
+            def __init__(self, test_mode: bool):
+                self.headers = {'X-Test-Mode': 'true'} if test_mode else {}
+        
+        request = MockRequest(test_mode) if test_mode else None
+        dispatcher = DocumentDispatcher(document=document, request=request)
         dispatcher.dispatch()
 
         # Step 3: Mark as completed

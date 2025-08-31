@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 import { formatFileSize as sharedFormatFileSize } from "@/utils/fileHelpers";
 
 export const formatFileSize = sharedFormatFileSize;
@@ -7,7 +7,7 @@ export const formatFileSize = sharedFormatFileSize;
 export const updateProgress = (fileName: string, progress: number) => {
   return (prev: Record<string, number>) => ({
     ...prev,
-    [fileName]: progress
+    [fileName]: progress,
   });
 };
 
@@ -22,7 +22,7 @@ export const removeProgress = (fileName: string) => {
 // Drag and drop handlers factory
 export const createDragHandlers = (
   onDrop: (files: File[]) => void,
-  setIsDragOver: (isDragOver: boolean) => void
+  setIsDragOver: (isDragOver: boolean) => void,
 ) => {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -48,38 +48,45 @@ export const createDragHandlers = (
 export const useFileRemover = <T extends { name?: string }>(
   files: T[],
   setFiles: (files: T[]) => void,
-  setUploadProgress?: (updater: (prev: Record<string, number>) => Record<string, number>) => void
+  setUploadProgress?: (
+    updater: (prev: Record<string, number>) => Record<string, number>,
+  ) => void,
 ) => {
-  return useCallback((index: number) => {
-    const newFiles = files.filter((_, i) => i !== index);
-    setFiles(newFiles);
-    
-    // Clear progress for the removed file if progress tracking is enabled
-    const removedFile = files[index];
-    if (removedFile && removedFile.name && setUploadProgress) {
-      setUploadProgress(prev => {
-        const newProgress = { ...prev };
-        delete newProgress[removedFile.name!];
-        return newProgress;
-      });
-    }
-  }, [files, setFiles, setUploadProgress]);
+  return useCallback(
+    (index: number) => {
+      const newFiles = files.filter((_, i) => i !== index);
+      setFiles(newFiles);
+
+      // Clear progress for the removed file if progress tracking is enabled
+      const removedFile = files[index];
+      if (removedFile && removedFile.name && setUploadProgress) {
+        setUploadProgress((prev) => {
+          const newProgress = { ...prev };
+          delete newProgress[removedFile.name!];
+          return newProgress;
+        });
+      }
+    },
+    [files, setFiles, setUploadProgress],
+  );
 };
 
 // Legacy factory for compatibility
 export const createFileRemover = <T extends { name?: string }>(
   files: T[],
   setFiles: (files: T[]) => void,
-  setUploadProgress?: (updater: (prev: Record<string, number>) => Record<string, number>) => void
+  setUploadProgress?: (
+    updater: (prev: Record<string, number>) => Record<string, number>,
+  ) => void,
 ) => {
   return (index: number) => {
     const newFiles = files.filter((_, i) => i !== index);
     setFiles(newFiles);
-    
+
     // Clear progress for the removed file if progress tracking is enabled
     const removedFile = files[index];
     if (removedFile && removedFile.name && setUploadProgress) {
-      setUploadProgress(prev => {
+      setUploadProgress((prev) => {
         const newProgress = { ...prev };
         delete newProgress[removedFile.name!];
         return newProgress;
@@ -92,15 +99,18 @@ export const createFileRemover = <T extends { name?: string }>(
 export const useFileSelector = <T>(
   existingFiles: T[],
   onFilesChange: (files: T[]) => void,
-  fileTransformer?: (file: File) => T
+  fileTransformer?: (file: File) => T,
 ) => {
-  return useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    const transformedFiles = fileTransformer 
-      ? selectedFiles.map(fileTransformer)
-      : selectedFiles as unknown as T[];
-    onFilesChange([...existingFiles, ...transformedFiles]);
-  }, [existingFiles, onFilesChange, fileTransformer]);
+  return useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const selectedFiles = Array.from(e.target.files || []);
+      const transformedFiles = fileTransformer
+        ? selectedFiles.map(fileTransformer)
+        : (selectedFiles as unknown as T[]);
+      onFilesChange([...existingFiles, ...transformedFiles]);
+    },
+    [existingFiles, onFilesChange, fileTransformer],
+  );
 };
 
 // Common file upload error handling
@@ -108,13 +118,15 @@ export const handleUploadError = (
   error: unknown,
   fileName: string,
   setError: (error: string | null) => void,
-  setUploadProgress?: (updater: (prev: Record<string, number>) => Record<string, number>) => void
+  setUploadProgress?: (
+    updater: (prev: Record<string, number>) => Record<string, number>,
+  ) => void,
 ) => {
-  console.error('File upload error:', error);
-  
+  console.error("File upload error:", error);
+
   let errorMessage: string;
   if (error instanceof Error) {
-    if ('statusCode' in error && error.statusCode === 401) {
+    if ("statusCode" in error && error.statusCode === 401) {
       errorMessage = "Your session has expired. Please log in again.";
     } else {
       errorMessage = error.message;
@@ -122,14 +134,14 @@ export const handleUploadError = (
   } else {
     errorMessage = `Failed to upload ${fileName}. Please try again.`;
   }
-  
+
   setError(errorMessage);
-  
+
   // Mark upload as failed in progress tracking
   if (setUploadProgress) {
-    setUploadProgress(prev => ({
+    setUploadProgress((prev) => ({
       ...prev,
-      [fileName]: -1
+      [fileName]: -1,
     }));
   }
-}; 
+};

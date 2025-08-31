@@ -42,10 +42,10 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
     try {
       // 1. Upload files and get their URLs
       const courseFileUrls = await Promise.all(
-        setup.courseFiles.map(file => uploadFile(file, 'course-files', authToken))
+        setup.courseFiles.map(file => uploadFile(file, 'course-files'))
       );
       const testFileUrls = await Promise.all(
-        setup.testFiles.map(file => uploadFile(file, 'test-files', authToken))
+        setup.testFiles.map(file => uploadFile(file, 'test-files'))
       );
 
       // 2. Prepare project data
@@ -60,7 +60,7 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
       };
 
       // 3. Create project
-      const newProject = await createProject(projectData, authToken);
+      const newProject = await createProject(projectData);
 
       // 4. Navigate to the new project's overview page
       router.push(`/projects/${newProject.id}/overview`);
@@ -212,7 +212,7 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
                   )}
                 </div>
                 
-                {setup.evaluationTypes.length > 0 && (
+                {setup.evaluationTypes && setup.evaluationTypes.length > 0 && (
                   <div className="mt-6 pt-6 border-t border-gray-200">
                     <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
                       <FlaskConical className="h-4 w-4 mr-2 text-purple-600" />
@@ -335,7 +335,7 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
                 </CardHeader>
                 <CardContent className="pt-4">
                   {/* Course Files */}
-                  {setup.courseFiles.length > 0 && (
+                  {setup.courseFiles && setup.courseFiles.length > 0 && (
                     <div className="mb-4">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-semibold text-gray-900 flex items-center text-sm">
@@ -372,7 +372,7 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
                   )}
 
                   {/* Test Files */}
-                  {setup.testFiles.length > 0 && (
+                  {setup.testFiles && setup.testFiles.length > 0 && (
                     <div className="mb-4">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-semibold text-gray-900 flex items-center text-sm">
@@ -412,7 +412,7 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
             )}
 
             {/* Important Dates - Enhanced */}
-            {setup.importantDates.length > 0 && (
+            {setup.importantDates && setup.importantDates.length > 0 && (
               <Card className="border-0 shadow-lg">
                 <CardHeader className="bg-gradient-to-r from-red-50 to-pink-50">
                   <CardTitle className="flex items-center justify-between">
@@ -565,7 +565,7 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
       };
 
       // 3. Create project
-      const newProject = await createProject(projectData, authToken);
+      const newProject = await createProject(projectData);
 
       // 4. Navigate to the new project's overview page
       router.push(`/projects/${newProject.id}/overview`);
@@ -808,7 +808,7 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
       };
 
       // 3. Create project
-      const newProject = await createProject(projectData, authToken);
+      const newProject = await createProject(projectData);
 
       // 4. Navigate to the new project's overview page
       router.push(`/projects/${newProject.id}/overview`);
@@ -951,7 +951,7 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
             <CardContent className="pt-4">
               <div className="space-y-3">
                 {/* Course Materials */}
-                {setup.courseFiles.length > 0 && (
+                {setup.courseFiles && setup.courseFiles.length > 0 && (
                   <div className="flex items-center justify-between p-3 bg-blue-900/30 border border-blue-500/30 rounded-lg">
                     <div className="flex items-center">
                       <BookOpen className="h-5 w-5 text-blue-400 mr-3" />
@@ -965,7 +965,7 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
                 )}
 
                 {/* Test Materials */}
-                {setup.testFiles.length > 0 && (
+                {setup.testFiles && setup.testFiles.length > 0 && (
                   <div className="flex items-center justify-between p-3 bg-purple-900/30 border border-purple-500/30 rounded-lg">
                     <div className="flex items-center">
                       <FileCheck className="h-5 w-5 text-purple-400 mr-3" />
@@ -1094,4 +1094,4 @@ const customStyles = `
 `;
 
 // Export the styles to be added to your CSS
-export { customStyles }; 
+export { customStyles };

@@ -161,14 +161,21 @@ export function FileUpload({
     onDrop,
     accept: accept.split(",").reduce((acc, type) => {
       // Convert file extensions to MIME types if needed
-      const mimeType = type.trim().startsWith('.') 
-        ? {
-            '.pdf': 'application/pdf',
-            '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            '.txt': 'text/plain'
-          }[type.trim()] || type.trim()
-        : type.trim();
-      return { ...acc, [mimeType]: [] };
+      const trimmedType = type.trim();
+      if (trimmedType.startsWith('.')) {
+        // Handle file extensions
+        const mimeType = {
+          '.pdf': 'application/pdf',
+          '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          '.txt': 'text/plain'
+        }[trimmedType];
+        
+        if (mimeType) {
+          return { ...acc, [mimeType]: [trimmedType] };
+        }
+      }
+      // Handle MIME types directly
+      return { ...acc, [trimmedType]: [] };
     }, {}),
     maxFiles,
     maxSize,
@@ -217,15 +224,11 @@ export function FileUpload({
               variant="outline" 
               onClick={(e) => {
                 e.stopPropagation();
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = accept;
-                input.multiple = maxFiles > 1;
-                input.onchange = (e) => {
-                  const files = Array.from((e.target as HTMLInputElement).files || []);
-                  onDrop(files, []);
-                };
-                input.click();
+                // Use the dropzone's input instead of creating a new one
+                const dropzoneInput = document.querySelector('[data-testid="file-input"]') as HTMLInputElement;
+                if (dropzoneInput) {
+                  dropzoneInput.click();
+                }
               }}
               className="border-blue-200 text-blue-600 hover:bg-blue-50"
             >
@@ -266,7 +269,7 @@ export function FileUpload({
                     status === 'idle' && "text-slate-600"
                   )} />
                   <div>
-                    <p className="text-sm font-medium text-slate-900 truncate max-w-[200px]">
+                    <p className="text-sm font-medium text-slate-900 truncate max-w-[200px]" data-testid={`file-name-${file.name}`}>
                       {file.name}
                     </p>
                     <p className="text-xs text-slate-500">
@@ -292,6 +295,7 @@ export function FileUpload({
                       onClick={() => handleRemove(index)}
                       className="text-slate-400 hover:text-slate-600"
                       aria-label={`Remove file ${file.name}`}
+                      data-testid={`remove-file-${file.name}`}
                     >
                       <X className="h-4 w-4" />
                     </button>

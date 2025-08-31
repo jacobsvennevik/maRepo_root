@@ -9,5 +9,5 @@ export function OceanBackgroundFallback() {
       }}
       aria-hidden="true"
     />
-  )
+  );
 }

@@ -56,6 +56,122 @@ export const MOCK_SYLLABUS_PROCESSED_DOCUMENT: ProcessedDocument = {
   status: 'completed'
 };
 
+// Mock processed test data
+export const MOCK_PROCESSED_TESTS: ProcessedDocument[] = [
+  {
+    id: 456,
+    original_text: "Language Technology Quiz - Natural Language Interaction\n\nSection A: Prolog Fundamentals\nA1a) Classify \"knows(pedro, Maria)\" as atom, variable, complex term, or not a term.\nA1b) Classify \"Blond(maria)\" as atom, variable, complex term, or not a term.\n...",
+    metadata: {
+      test_title: "Quizes Lang Tech",
+      course_title: "Natural Language Interaction",
+      course_type: "STEM",
+      assessment_method: "written exam",
+      exam_date: "",
+      overall_points: "",
+      assessment_types: {
+        has_final_exam: false,
+        has_regular_quizzes: true,
+        has_essays: true,
+        has_projects: false,
+        has_lab_work: false,
+        has_group_work: false,
+        primary_assessment_method: "Regular quizzes and short essays"
+      },
+      question_summary: {
+        total_questions: 27,
+        question_type_breakdown: {
+          multiple_choice: 0,
+          true_false: 0,
+          matching: 0,
+          short_answer: 14,
+          essay: 13,
+          calculation: 0,
+          diagram: 0,
+          other: 0
+        },
+        difficulty_breakdown: { easy: 6, medium: 17, hard: 4 },
+        cognitive_focus: {
+          memorization: 0,
+          understanding: 9,
+          application: 9,
+          analysis: 6,
+          evaluation: 0,
+          creation: 3
+        }
+      },
+      key_topics: ["Prolog", "Unification", "Recursive predicates", "Neural networks", "Machine learning"],
+      topic_alignment: {
+        topics_covered_from_course: ["Knowledge representation based on inference", "Syntactic analysis and parsing", "Neural networks, deep learning and Transformers", "Vector representation of knowledge and distributional semantics"],
+        new_topics_in_test: ["Prolog", "Unification", "Recursive predicates"],
+        coverage_percentage: 75
+      },
+      questions: [
+        {
+          number: "A1a",
+          text: "Classify \"knows(pedro, Maria)\" as atom, variable, complex term, or not a term.",
+          options: [],
+          correct_answer: "",
+          question_type: "short_answer",
+          difficulty: "medium",
+          cognitive_level: "understanding",
+          points: "",
+          topics: ["Prolog syntax", "Atoms", "Terms"],
+          explanation: ""
+        },
+        {
+          number: "A2a",
+          text: "Represent the assertion \"Pedro loves Ana.\" in Prolog.",
+          options: [],
+          correct_answer: "",
+          question_type: "short_answer",
+          difficulty: "medium",
+          cognitive_level: "application",
+          points: "",
+          topics: ["Prolog", "Facts", "Representation"],
+          explanation: ""
+        },
+        {
+          number: "B3",
+          text: "Write a recursive predicate travelBetween/2 that determines whether it is possible to travel by train between two towns using directTrain facts.",
+          options: [],
+          correct_answer: "",
+          question_type: "essay",
+          difficulty: "hard",
+          cognitive_level: "creation",
+          points: "",
+          topics: ["Prolog", "Recursion", "Graphs"],
+          explanation: ""
+        },
+        {
+          number: "C3",
+          text: "What is the difference between supervised and unsupervised machine learning?",
+          options: [],
+          correct_answer: "",
+          question_type: "essay",
+          difficulty: "easy",
+          cognitive_level: "analysis",
+          points: "",
+          topics: ["Machine learning", "Supervised learning", "Unsupervised learning"],
+          explanation: ""
+        },
+        {
+          number: "D1",
+          text: "Describe the purpose of each step in the neural network training algorithm: forward pass, loss estimation, and backward pass.",
+          options: [],
+          correct_answer: "",
+          question_type: "essay",
+          difficulty: "medium",
+          cognitive_level: "understanding",
+          points: "",
+          topics: ["Neural networks", "Training", "Backpropagation"],
+          explanation: ""
+        }
+      ]
+    },
+    status: 'completed'
+  }
+];
+
 // Comprehensive course content extraction data for NLP materials
 export const MOCK_COURSE_CONTENT_EXTRACTION = {
   "course_type": "STEM",

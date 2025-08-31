@@ -1,5 +1,5 @@
-import { VariantProps } from "class-variance-authority"
-import { ButtonHTMLAttributes } from "react"
+import { VariantProps } from "class-variance-authority";
+import { ButtonHTMLAttributes } from "react";
 
 const buttonVariants = {
   variants: {
@@ -22,15 +22,15 @@ const buttonVariants = {
       lg: string,
       xl: string,
       icon: string,
-    }
+    },
   },
   defaultVariants: {
     variant: "default",
-    size: "default"
-  }
-} as const
+    size: "default",
+  },
+} as const;
 
-export type ButtonVariants = typeof buttonVariants
+export type ButtonVariants = typeof buttonVariants;
 
 export interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
@@ -39,8 +39,8 @@ export interface ButtonProps
    * Whether to render the button as a child component
    * @default false
    */
-  asChild?: boolean
+  asChild?: boolean;
 }
 
-export type ButtonVariant = keyof typeof buttonVariants.variants.variant
-export type ButtonSize = keyof typeof buttonVariants.variants.size 
+export type ButtonVariant = keyof typeof buttonVariants.variants.variant;
+export type ButtonSize = keyof typeof buttonVariants.variants.size;

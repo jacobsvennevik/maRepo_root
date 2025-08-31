@@ -1,17 +1,22 @@
-"use client"
+"use client";
 
-import { ReactNode } from "react"
-import { ChevronDown } from "lucide-react"
+import { ReactNode } from "react";
+import { ChevronDown } from "lucide-react";
 
 interface DropdownMenuItemProps {
-  icon?: ReactNode
-  title: string
-  description?: string
-  onClick?: () => void
-  href?: string
+  icon?: ReactNode;
+  title: string;
+  description?: string;
+  onClick?: () => void;
+  href?: string;
 }
 
-export function DropdownMenuItem({ icon, title, description, onClick }: DropdownMenuItemProps) {
+export function DropdownMenuItem({
+  icon,
+  title,
+  description,
+  onClick,
+}: DropdownMenuItemProps) {
   return (
     <button
       onClick={onClick}
@@ -23,16 +28,16 @@ export function DropdownMenuItem({ icon, title, description, onClick }: Dropdown
         {description && <p className="text-sm text-slate-600">{description}</p>}
       </div>
     </button>
-  )
+  );
 }
 
 interface DropdownMenuProps {
-  label: string
-  isOpen: boolean
-  onToggle: () => void
-  onMouseEnter?: () => void
-  onMouseLeave?: () => void
-  children: ReactNode
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  children: ReactNode;
 }
 
 export function DropdownMenu({
@@ -41,7 +46,7 @@ export function DropdownMenu({
   onToggle,
   onMouseEnter,
   onMouseLeave,
-  children
+  children,
 }: DropdownMenuProps) {
   return (
     <div className="relative dropdown-container">
@@ -60,11 +65,9 @@ export function DropdownMenu({
           className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl p-4 dropdown-menu"
           onMouseLeave={onMouseLeave}
         >
-          <div className="grid gap-3">
-            {children}
-          </div>
+          <div className="grid gap-3">{children}</div>
         </div>
       )}
     </div>
-  )
-} 
+  );
+}

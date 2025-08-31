@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "backend.apps.generation",
     "backend.apps.study_materials",
     "backend.apps.projects",
+    "backend.apps.reflection",
     'debug_toolbar',  
     'rest_framework',
     'rest_framework_simplejwt',

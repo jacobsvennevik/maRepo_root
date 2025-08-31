@@ -1,8 +1,7 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
-import { Droplets, Navigation, Sparkles, ArrowRight } from 'lucide-react';
-import PropTypes from 'prop-types';
+import { Droplets, Navigation, Sparkles, ArrowRight } from "lucide-react";
 
 interface OceanHeaderProps {
   title?: string;
@@ -15,9 +14,9 @@ interface OceanHeaderProps {
  * @param {string} [props.title] - The main title text
  * @param {string} [props.subtitle] - The subtitle text
  */
-export function OceanHeader({ 
-  title = "Learning Voyage", 
-  subtitle = "Navigate through your educational journey" 
+export function OceanHeader({
+  title = "Learning Voyage",
+  subtitle = "Navigate through your educational journey",
 }: OceanHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -31,7 +30,10 @@ export function OceanHeader({
         <p className="text-slate-600">{subtitle}</p>
       </div>
       <div className="flex gap-3">
-        <Button variant="outline" className="flex items-center gap-2 border-blue-200 text-blue-700 hover:bg-blue-50">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2 border-blue-200 text-blue-700 hover:bg-blue-50"
+        >
           <Navigation className="h-4 w-4" />
           Set Course
         </Button>
@@ -44,7 +46,3 @@ export function OceanHeader({
     </div>
   );
 }
-
-OceanHeader.propTypes = {
-  title: PropTypes.string,
-} 

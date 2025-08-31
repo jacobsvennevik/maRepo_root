@@ -1,29 +1,29 @@
-"use client"
+"use client";
 
-import { useFormContext } from "react-hook-form"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { FileUpload } from "./FileUpload"
-import { DatePicker } from "./DatePicker"
+import { useFormContext } from "react-hook-form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { FileUpload } from "./FileUpload";
+import { DatePicker } from "./DatePicker";
 
 interface Step {
-  id: string
-  title: string
-  description: string
+  id: string;
+  title: string;
+  description: string;
 }
 
 interface WizardStepProps {
-  step: Step
-  currentStep: number
-  totalSteps: number
+  step: Step;
+  currentStep: number;
+  totalSteps: number;
 }
 
 export function WizardStep({ step, currentStep }: WizardStepProps) {
-  const { register, watch, setValue } = useFormContext()
-  const currentGoal = watch("goal")
-  const hasTest = watch("hasTest")
+  const { register, watch, setValue } = useFormContext();
+  const currentGoal = watch("goal");
+  const hasTest = watch("hasTest");
 
   const renderStepContent = () => {
     switch (step.id) {
@@ -52,7 +52,7 @@ export function WizardStep({ step, currentStep }: WizardStepProps) {
                 <Label htmlFor="other">Other</Label>
               </div>
             </RadioGroup>
-            
+
             {currentGoal === "other" && (
               <Input
                 {...register("goalOther")}
@@ -61,7 +61,7 @@ export function WizardStep({ step, currentStep }: WizardStepProps) {
               />
             )}
           </div>
-        )
+        );
 
       case "test":
         return (
@@ -94,7 +94,7 @@ export function WizardStep({ step, currentStep }: WizardStepProps) {
                   placeholder="What do you know about the test?"
                   className="min-h-[100px]"
                 />
-                
+
                 <div className="space-y-2">
                   <Label>Test Type</Label>
                   <RadioGroup
@@ -102,7 +102,10 @@ export function WizardStep({ step, currentStep }: WizardStepProps) {
                     className="space-y-2"
                   >
                     <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="multiple_choice" id="multiple-choice" />
+                      <RadioGroupItem
+                        value="multiple_choice"
+                        id="multiple-choice"
+                      />
                       <Label htmlFor="multiple-choice">Multiple Choice</Label>
                     </div>
                     <div className="flex items-center space-x-3">
@@ -122,7 +125,7 @@ export function WizardStep({ step, currentStep }: WizardStepProps) {
               </div>
             )}
           </div>
-        )
+        );
 
       case "materials":
         return (
@@ -136,7 +139,7 @@ export function WizardStep({ step, currentStep }: WizardStepProps) {
                   maxFiles={5}
                 />
               </div>
-              
+
               <div>
                 <Label>Current Study Materials</Label>
                 <FileUpload
@@ -148,7 +151,7 @@ export function WizardStep({ step, currentStep }: WizardStepProps) {
               </div>
             </div>
           </div>
-        )
+        );
 
       case "level":
         return (
@@ -183,7 +186,7 @@ export function WizardStep({ step, currentStep }: WizardStepProps) {
               />
             )}
           </div>
-        )
+        );
 
       case "timeline":
         return (
@@ -196,12 +199,12 @@ export function WizardStep({ step, currentStep }: WizardStepProps) {
               />
             </div>
           </div>
-        )
+        );
 
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -209,10 +212,10 @@ export function WizardStep({ step, currentStep }: WizardStepProps) {
         <h2 className="text-2xl font-semibold text-slate-900">{step.title}</h2>
         <p className="text-slate-600">{step.description}</p>
       </div>
-      
+
       <div className="bg-white rounded-lg p-6 shadow-sm border border-slate-200">
         {renderStepContent()}
       </div>
     </div>
-  )
-} 
+  );
+}

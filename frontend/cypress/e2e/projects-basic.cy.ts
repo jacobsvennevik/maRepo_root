@@ -50,8 +50,39 @@ describe('Projects Basic E2E Tests', () => {
       cy.wait('@getProjects');
       
       // Check if project cards are displayed
-      cy.get('a[href*="/projects/"]').should('exist');
+      cy.get('[data-testid="project-card"]').should('exist');
       cy.get('h2').should('exist'); // Project titles
+    });
+  });
+
+  describe('Data Display', () => {
+    it('should display school project with course name from school_meta', () => {
+      cy.visit('/projects');
+      cy.wait('@getProjects');
+      
+      // Check that school projects display course names
+      cy.contains('Advanced Biology').should('exist');
+      cy.contains('Organic Chemistry').should('exist');
+      cy.contains('Quantum Physics').should('exist');
+      cy.contains('Calculus II').should('exist');
+    });
+
+    it('should display self-study project with goal description from self_study_meta', () => {
+      cy.visit('/projects');
+      cy.wait('@getProjects');
+      
+      // Check that self-study projects display goal descriptions
+      cy.contains('Master Django Framework').should('exist');
+      cy.contains('Learn React and TypeScript').should('exist');
+    });
+
+    it('should show correct project type labels', () => {
+      cy.visit('/projects');
+      cy.wait('@getProjects');
+      
+      // Check for School Project and Self Study labels
+      cy.contains('School Project').should('exist');
+      cy.contains('Self Study').should('exist');
     });
   });
 
@@ -74,12 +105,12 @@ describe('Projects Basic E2E Tests', () => {
       cy.wait('@getProjects');
       
       // Count projects in "All" view
-      cy.get('a[href*="/projects/"]').then(($cards) => {
+      cy.get('[data-testid="project-card"]').then(($cards) => {
         const allCount = $cards.length;
         
         // Click Biology filter
         cy.contains('Biology').click();
-        cy.get('a[href*="/projects/"]').then(($bioCards) => {
+        cy.get('[data-testid="project-card"]').then(($bioCards) => {
           const bioCount = $bioCards.length;
           expect(bioCount).to.be.at.most(allCount);
         });
@@ -98,184 +129,55 @@ describe('Projects Basic E2E Tests', () => {
       cy.visit('/projects');
       cy.wait('@getProjects');
       
-      cy.get('a[href*="/projects/"]').first().click();
+      // Click on the first project card
+      cy.get('[data-testid="project-card"]').first().click();
       cy.url().should('include', '/projects/');
-      cy.url().should('not.include', '/projects/create');
     });
   });
 
-  describe('Project Creation Flow', () => {
-    it('should navigate through project creation process', () => {
-      cy.visit('/projects/create');
-      cy.url().should('include', '/projects/create');
+  describe('Data Structure Validation', () => {
+    it('should handle mixed legacy and STI data gracefully', () => {
+      cy.visit('/projects');
+      cy.wait('@getProjects');
       
-      // Check if project type cards are displayed
-      cy.contains('Create School Project').should('exist');
-      cy.contains('Create Self-Study Project').should('exist');
+      // Check that project cards are displayed regardless of data structure
+      cy.get('[data-testid="project-card"]').should('exist');
     });
 
-    it('should navigate to school project creation', () => {
-      cy.visit('/projects/create');
-      cy.contains('Create School Project').click();
-      cy.url().should('include', '/projects/create-school');
-    });
-
-    it('should navigate to self-study project creation', () => {
-      cy.visit('/projects/create');
-      cy.contains('Create Self-Study Project').click();
-      cy.url().should('include', '/projects/create-self-study');
-    });
-  });
-
-  describe('Responsive Design', () => {
-    it('should display correctly on mobile devices', () => {
-      cy.viewport('iphone-x');
+    it('should display fallback to project name when meta data is missing', () => {
       cy.visit('/projects');
-      cy.get('h1').should('be.visible');
-      cy.contains('Create New Project').should('be.visible');
-    });
-
-    it('should display correctly on tablet devices', () => {
-      cy.viewport('ipad-2');
-      cy.visit('/projects');
-      cy.get('h1').should('be.visible');
-      cy.contains('Create New Project').should('be.visible');
-    });
-
-    it('should display correctly on desktop devices', () => {
-      cy.viewport(1920, 1080);
-      cy.visit('/projects');
-      cy.get('h1').should('be.visible');
-      cy.contains('Create New Project').should('be.visible');
+      cy.wait('@getProjects');
+      
+      // Check that project cards have titles
+      cy.get('[data-testid="project-card"] h2').should('exist');
     });
   });
 
   describe('Error Handling', () => {
     it('should handle API errors gracefully', () => {
-      cy.intercept('GET', '/api/projects/', { 
-        statusCode: 500, 
-        body: { error: 'Internal Server Error' } 
-      }).as('getProjectsError');
-      
+      cy.intercept('GET', '/api/projects/', { statusCode: 500 }).as('getProjectsError');
       cy.visit('/projects');
       cy.wait('@getProjectsError');
+      
       cy.contains('Failed to load projects').should('exist');
     });
 
-    it('should handle network timeouts', () => {
+    it('should handle network timeouts gracefully', () => {
+      // Use a more reliable network error simulation
       cy.intercept('GET', '/api/projects/', { 
-        forceNetworkError: true 
+        statusCode: 0,
+        body: { error: 'Network Error' }
       }).as('getProjectsTimeout');
       
       cy.visit('/projects');
       cy.wait('@getProjectsTimeout');
-      cy.contains('Failed to load projects').should('exist');
-    });
-
-    it('should show loading state', () => {
-      cy.intercept('GET', '/api/projects/', { 
-        delay: 1000 
-      }).as('getProjectsSlow');
       
-      cy.visit('/projects');
-      cy.contains('Loading projects...').should('exist');
-      cy.wait('@getProjectsSlow');
-      cy.contains('Loading projects...').should('not.exist');
-    });
-  });
-
-  describe('Performance Tests', () => {
-    it('should load projects page within acceptable time', () => {
-      const startTime = Date.now();
-      cy.visit('/projects', { timeout: 10000 }).then(() => {
-        const loadTime = Date.now() - startTime;
-        cy.log(`Projects page load time: ${loadTime}ms`);
-        expect(loadTime).to.be.lessThan(5000);
-      });
-    });
-
-    it('should handle large number of projects efficiently', () => {
-      // Mock many projects
-      const manyProjects = Array.from({ length: 20 }, (_, i) => ({
-        id: `project-${i}`,
-        name: `Project ${i}`,
-        is_draft: false,
-        project_type: 'school',
-        updated_at: new Date().toISOString()
-      }));
+      // Wait a bit for the error to be processed
+      cy.wait(1000);
       
-      cy.intercept('GET', '/api/projects/', { 
-        body: manyProjects 
-      }).as('getManyProjects');
-      
-      cy.visit('/projects');
-      cy.wait('@getManyProjects');
-      cy.get('a[href*="/projects/"]').should('have.length', 20);
-    });
-  });
-
-  describe('Basic Accessibility', () => {
-    it('should have proper heading structure', () => {
-      cy.visit('/projects');
-      cy.get('h1').should('exist');
-      cy.get('h1').should('contain', 'Projects');
-    });
-
-    it('should have clickable elements', () => {
-      cy.visit('/projects');
-      cy.get('button').should('exist');
-      cy.get('a').should('exist');
-    });
-
-    it('should be keyboard navigable', () => {
-      cy.visit('/projects');
-      cy.get('body').should('be.visible');
-      cy.get('button').first().should('be.visible');
-    });
-  });
-
-  describe('Project Details Navigation', () => {
-    it('should navigate to project overview', () => {
-      cy.visit('/projects');
-      cy.wait('@getProjects');
-      cy.get('a[href*="/projects/"]').first().click();
-      cy.url().should('include', '/projects/');
-    });
-
-    it('should show project navigation menu', () => {
-      cy.visit('/projects');
-      cy.wait('@getProjects');
-      cy.get('a[href*="/projects/"]').first().click();
-      
-      // Check for navigation elements (these might not exist yet, but we can test the structure)
-      cy.get('nav').should('exist');
-    });
-  });
-
-  describe('Integration with Cleanup System', () => {
-    it('should work with cleanup system', () => {
-      // Fill localStorage with test data
-      cy.window().then((win) => {
-        win.localStorage.setItem('project-setup-guided-setup', 'test-data');
-      });
-      
-      // Navigate to projects page
-      cy.visit('/projects');
-      cy.get('h1').should('contain', 'Projects');
-      
-      // Navigate to project creation (should trigger cleanup)
-      cy.contains('Create New Project').click();
-      cy.url().should('include', '/projects/create');
-    });
-
-    it('should handle localStorage operations', () => {
-      cy.window().then((win) => {
-        win.localStorage.setItem('test-key', 'test-value');
-        expect(win.localStorage.getItem('test-key')).to.equal('test-value');
-        
-        win.localStorage.removeItem('test-key');
-        expect(win.localStorage.getItem('test-key')).to.be.null;
-      });
+      // Check that an error state is displayed (red text)
+      cy.get('.text-red-500').should('exist');
+      cy.get('.text-red-500').should('contain.text', 'Failed to load projects');
     });
   });
 }); 

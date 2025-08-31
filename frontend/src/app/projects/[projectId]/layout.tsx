@@ -1,6 +1,6 @@
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import ProjectSidebar from '@/app/components/ProjectSidebar';
-import { WhiteBackground } from '@/components/common/backgrounds/white-background';
+import ProjectSidebar from "@/app/components/ProjectSidebar";
+import { WhiteBackground } from "@/components/common/backgrounds/white-background";
 import { ProjectProvider } from "./_context/project-context";
 
 // This would typically come from your database/API
@@ -11,11 +11,11 @@ const getProjectName = async (projectId: string) => {
   // const project = await res.json();
   // return project.name;
   const projects: Record<string, string> = {
-    'biology': 'Biology',
-    'chemistry': 'Chemistry',
-    'physics': 'Physics',
+    biology: "Biology",
+    chemistry: "Chemistry",
+    physics: "Physics",
   };
-  return projects[projectId] || 'Project';
+  return projects[projectId] || "Project";
 };
 
 export default async function ProjectLayout({
@@ -38,11 +38,9 @@ export default async function ProjectLayout({
           <div className="z-50">
             <ProjectSidebar />
           </div>
-          <main className="flex-1 p-6 z-10 ml-72">
-            {children}
-          </main>
+          <main className="flex-1 p-6 z-10 ml-72">{children}</main>
         </div>
       </div>
     </ProjectProvider>
   );
-} 
+}

@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { ChevronDown } from "lucide-react"
+import { ChevronDown } from "lucide-react";
 
 interface FilterDropdownProps {
-  label: string
-  options: string[]
-  selectedOption: string
-  isOpen: boolean
-  onToggle: () => void
-  onSelect: (option: string) => void
+  label: string;
+  options: string[];
+  selectedOption: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  onSelect: (option: string) => void;
 }
 
 export function FilterDropdown({
@@ -17,7 +17,7 @@ export function FilterDropdown({
   selectedOption,
   isOpen,
   onToggle,
-  onSelect
+  onSelect,
 }: FilterDropdownProps) {
   return (
     <div className="relative">
@@ -39,7 +39,9 @@ export function FilterDropdown({
                 <button
                   onClick={() => onSelect(option)}
                   className={`block w-full text-left px-4 py-2 hover:bg-slate-50 ${
-                    selectedOption === option ? "text-ocean-medium font-medium" : "text-slate-700"
+                    selectedOption === option
+                      ? "text-ocean-medium font-medium"
+                      : "text-slate-700"
                   }`}
                 >
                   {option}
@@ -50,5 +52,5 @@ export function FilterDropdown({
         </div>
       )}
     </div>
-  )
-} 
+  );
+}

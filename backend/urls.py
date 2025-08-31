@@ -9,7 +9,8 @@ from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 from backend.apps.accounts.views_api import CustomUserViewSet, EmailTokenObtainPairView
-from backend.apps.generation.views_api import FlashcardSetViewSet, FlashcardViewSet, MindMapViewSet
+from backend.apps.generation.api_views.flashcard_views import FlashcardSetViewSet, FlashcardViewSet
+from backend.apps.generation.api_views.mindmap_views import MindMapViewSet
 from backend.apps.projects.views import ProjectViewSet
 
 # API router setup
@@ -42,6 +43,7 @@ urlpatterns = [
     path('projects/', include('backend.apps.projects.urls')),
     path('study_materials/', include('backend.apps.study_materials.urls')),
     path('pdf_service/', include('backend.apps.pdf_service.urls')),
+    path('reflection/', include('backend.apps.reflection.urls')),
 ]
 
 # Debug toolbar and static/media files
