@@ -16,22 +16,12 @@ interface ProjectFlashcardStatsProps {
 export function ProjectFlashcardStats({ stats }: ProjectFlashcardStatsProps) {
   return (
     <Card className="bg-gradient-to-r from-blue-50 to-purple-50/80 backdrop-blur-sm border-blue-200/50">
-      <CardContent className="p-8">
-        <div className="flex items-center justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-gradient-to-r from-blue-400 to-purple-600 shadow-lg">
-                <Brain className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-slate-900">
-                  Project Flashcards
-                </h1>
-                <p className="text-slate-600">
-                  Master your knowledge with interactive learning
-                </p>
-              </div>
-            </div>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-left">
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              Your Progress
+            </h3>
             <div className="flex items-center gap-6 text-sm text-slate-600">
               <div className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4 text-blue-600" />
@@ -54,7 +44,7 @@ export function ProjectFlashcardStats({ stats }: ProjectFlashcardStatsProps) {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
           <div className="text-center p-3 bg-white/50 rounded-lg">
             <div className="flex items-center justify-center mb-2">
               <Clock className="h-5 w-5 text-orange-600" />

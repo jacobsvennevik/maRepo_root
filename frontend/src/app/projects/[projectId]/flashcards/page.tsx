@@ -15,8 +15,6 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FloatingCards } from "./components";
-import { useFloatingAnimation } from "./components/use-floating-animation";
 import { useProjectFlashcards } from "./hooks/use-project-flashcards";
 import { ProjectFlashcardStats } from "./components/project-flashcard-stats";
 import { QuickActions } from "./components/quick-actions";
@@ -24,7 +22,6 @@ import { QuickActions } from "./components/quick-actions";
 export default function ProjectFlashcards() {
   const params = useParams();
   const projectId = params.projectId as string;
-  const { waveOffset, floatingCards } = useFloatingAnimation();
 
   const { flashcardSets, stats, isLoading, error } =
     useProjectFlashcards(projectId);
@@ -46,10 +43,10 @@ export default function ProjectFlashcards() {
   }
 
   return (
-    <div className="relative">
-      <div className="relative space-y-8">
+    <div className="relative min-h-screen">
+      <div className="space-y-3">
         {/* Breadcrumbs */}
-        <div className="flex items-center text-sm text-gray-600">
+        <div className="flex items-center text-sm text-gray-600 mt-2">
           <Link href="/projects" className="hover:text-emerald-600">
             Projects
           </Link>
@@ -64,8 +61,20 @@ export default function ProjectFlashcards() {
           <span className="font-medium text-gray-900">Flashcards</span>
         </div>
 
-        {/* Stats Dashboard */}
-        <ProjectFlashcardStats stats={stats} />
+        {/* Page Header */}
+        <div className="text-center py-6">
+          <div className="flex items-center justify-center gap-4 mb-2">
+            <div className="p-3 rounded-xl bg-gradient-to-r from-blue-400 to-purple-600 shadow-lg">
+              <Brain className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-slate-900">
+              Project Flashcards
+            </h1>
+          </div>
+          <p className="text-slate-600 text-lg">
+            Master your knowledge with interactive learning
+          </p>
+        </div>
 
         {/* Quick Actions */}
         <QuickActions projectId={projectId} />
@@ -73,7 +82,7 @@ export default function ProjectFlashcards() {
         {/* Flashcard Sets */}
         <Card className="bg-gradient-to-r from-slate-50 to-blue-50/50 backdrop-blur-sm border-blue-200/50">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-3">
               <div>
                 <h3 className="text-lg font-semibold text-slate-900">
                   Your Flashcard Sets
@@ -102,15 +111,6 @@ export default function ProjectFlashcards() {
                 <p className="text-gray-600 mb-6">
                   Create your first flashcard set to start studying
                 </p>
-                <Button
-                  asChild
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                >
-                  <Link href={`/projects/${projectId}/flashcards/create`}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create First Set
-                  </Link>
-                </Button>
               </div>
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -181,13 +181,10 @@ export default function ProjectFlashcards() {
           </CardContent>
         </Card>
 
-        {/* Floating Cards Animation */}
-        <div className="space-y-8">
-          <FloatingCards
-            waveOffset={waveOffset}
-            floatingCards={floatingCards}
-          />
-        </div>
+        {/* Stats Dashboard - Moved to bottom */}
+        <ProjectFlashcardStats stats={stats} />
+
+        {/* Floating Cards Animation - Removed as no longer needed */}
       </div>
 
       <style jsx>{`

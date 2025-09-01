@@ -26,7 +26,8 @@ const sidebarItems = [
   { name: "Flashcards", href: "flashcards", icon: Brain },
   { name: "Diagnostics", href: "diagnostics", icon: ClipboardList },
   { name: "Tests", href: "tests", icon: StickyNote },
-  { name: "Settings", href: "settings", icon: File },
+  { name: "Files", href: "files", icon: File },
+  { name: "Settings", href: "settings", icon: BarChart2 },
 ];
 
 export default function ProjectSidebar({
@@ -41,7 +42,7 @@ export default function ProjectSidebar({
 
   return (
     <aside
-      className={`mt-8 mx-4 bg-white border border-gray-200 rounded-2xl shadow-lg transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"}`}
+      className={`mt-8 mx-8 bg-white border border-gray-200 rounded-2xl shadow-lg transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"}`}
     >
       <div className="p-4 border-b border-gray-100 rounded-t-2xl">
         <div className="flex items-center justify-between">

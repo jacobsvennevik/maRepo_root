@@ -6,7 +6,6 @@ import hashlib
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 from backend.core_platform.observability.logging import get_logger
-from backend.core_platform.config import settings
 
 logger = get_logger(__name__)
 
@@ -41,20 +40,83 @@ class PromptManager:
                 'variables': ['content'],
             },
             'flashcard_generation': {
-                'version': '1.0',
+                'version': '3.0',
                 'template': """
-                Generate flashcards from the following content:
-                
-                Content: {content}
-                Number of cards: {card_count}
-                Difficulty level: {difficulty}
-                
-                Generate {card_count} flashcards with the following format:
-                - Question: [Clear, specific question]
-                - Answer: [Concise, accurate answer]
-                - Difficulty: [easy/medium/hard]
+Act like an expert educational content designer and cognitive science specialist. You create production-grade flashcards optimized for long-term retention using retrieval practice, spaced repetition, desirable difficulties, elaboration, interleaving, and atomicity. Never show internal reasoning; output only the requested JSON.
+
+OBJECTIVE
+Transform the provided content into flashcards that:
+1) strictly match the JSON schema below,
+2) enforce evidence-based learning principles,
+3) are deterministic and production-safe (limits honored).
+
+INPUT (paste between the fences)
+<<<
+Content: {content}
+Deck Title: {title}
+Difficulty: {difficulty} (medium|hard|expert)
+Content Type: {content_type} (lecture|textbook|notes|paper|slides|mixed)
+Language: {language} (default: English)
+Tags (optional CSV): {tags_csv}
+>>>
+
+IMPORTANT: Do NOT generate deck_metadata, learning_objectives, or themes. These are handled by the system. Focus ONLY on generating high-quality flashcards.
+
+GLOBAL RULES (must follow)
+- Use only the provided Content (no external facts). Paraphrase/normalize terms as needed.
+- Language: write everything in {language}.
+- Atomicity: one assessable idea per card; avoid compound/list-dump prompts.
+- Retrieval: prefer What/How/Why prompts; avoid yes/no; cloze only for dense facts.
+- Interleaving: vary themes and card types; do not cluster similar cards.
+- Length limits (hard): question ≤ 300 chars; answer ≤ 500 chars.
+- Clarity & accessibility: precise wording; define acronyms on first use; avoid hedging unless the source is uncertain.
+- Output: one JSON object; no comments, no markdown, no extra prose; no chain-of-thought.
+
+OUTPUT SCHEMA (return JSON that validates exactly)
+{{
+  "flashcards": [
+    {{
+      "question": "string",
+      "answer": "string",
+      "concept_id": "string",
+      "difficulty": "medium|hard|expert",
+      "bloom_level": "apply|analyze|evaluate|create",
+      "card_type": "definition|application|analysis|synthesis|evaluation|problem_solving|comparison|critique|cloze|scenario",
+      "theme": "string",
+      "related_concepts": ["string"],
+      "hints": ["string"],
+      "examples": ["string"],
+      "common_misconceptions": ["string"],
+      "learning_objective": "string"
+    }}
+  ]
+}}
+
+COGNITIVE & QUALITY RULES
+- Card type % targets (deck-level, after deduped concepts): definition 20–25, application 30–35, analysis 25–30, synthesis 15–20, evaluation 10–15, problem_solving 15–20, comparison 10–15, cloze 5–10, scenario 10–15. If a type isn't supported without breaking atomicity, reduce estimated_cards and rebalance within ranges.
+- Difficulty per card: medium = applied/relational; hard = analysis/synthesis; expert = evaluation/creation/cross-domain.
+
+ID & STRUCTURE
+- concept_id: kebab-case stable slug from the canonical concept phrase (one per concept).
+- theme: ≤3 words; consistent across related cards.
+- related_concepts: up to 5 concept_ids (no self).
+
+WORKFLOW (follow internally; output only final JSON)
+1) Parse INPUT; set defaults if missing (Difficulty=medium, Language=English).
+2) Chunk content into meaning units; list 3–5 candidate concepts per chunk.
+3) Deduplicate to unique concept_ids; decide minimal pairs vs. variants.
+4) Plan card-type counts to meet % targets; ensure breadth before variants.
+5) Map each concept to Bloom levels and card_types; assign themes and related_concepts.
+6) Draft Q/A enforcing atomicity, retrieval prompts, and length limits; add hints/examples/misconceptions when valuable.
+7) Optimize interleaving; validate difficulty gradient and completeness.
+
+VALIDATION
+- Strict JSON; exact keys; no duplicates.
+- Focus ONLY on flashcards array; system handles metadata.
+
+Now return only the JSON object per schema. Take a deep breath and work on this problem step-by-step.
                 """,
-                'variables': ['content', 'card_count', 'difficulty'],
+                'variables': ['content', 'title', 'difficulty', 'content_type', 'language', 'tags_csv'],
             },
             'mindmap_generation': {
                 'version': '1.0',

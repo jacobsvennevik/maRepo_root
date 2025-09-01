@@ -2,241 +2,183 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useCallback, useRef } from 'react';
-import { 
-  ChevronRight, 
-  Search,
-  Filter,
-  Layout,
-  Grid3X3,
-  List,
-  Upload
-} from 'lucide-react';
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { ChevronRight, Upload, Download, RefreshCw } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LayoutSelector, type LayoutOption } from "@/components/ui/layout-selector";
-import {
-  FileCard,
-  FileGridItem,
-  FileListItem,
-  DragDropZone,
-  FileStatsCards,
-  FileHeader,
-  getFileIcon,
-  getFileTypeColor,
-  formatFileSize,
-  type FileItem
-} from './components';
+import axiosInstance from "@/lib/axios";
 
-type LayoutMode = 'cards' | 'list' | 'grid';
+interface ProjectFile {
+  id: string;
+  file: string;
+  uploaded_at: string;
+  content_hash: string;
+  raw_text: string;
+  file_size: number;
+}
+
+interface Project {
+  id: string;
+  name: string;
+  uploaded_files: ProjectFile[];
+}
 
 export default function ProjectFiles() {
   const params = useParams();
   const projectId = params.projectId as string;
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>('cards');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [uploadingFiles, setUploadingFiles] = useState<FileItem[]>([]);
+  const [project, setProject] = useState<Project | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Layout options for the selector
-  const layoutOptions: LayoutOption[] = [
-    {
-      id: 'ocean',
-      name: 'Ocean Layout',
-      color: '#3b82f6',
-      description: 'Floating animations & gradients'
-    },
-    {
-      id: 'workspace',
-      name: 'Workspace Layout',
-      color: '#6b7280',
-      description: 'Clean & professional'
-    },
-    {
-      id: 'dashboard',
-      name: 'Dashboard Layout',
-      color: '#8b5cf6',
-      description: 'Modern dashboard style'
+  // Fetch project files
+  const fetchProject = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axiosInstance.get(`/api/projects/${projectId}/`);
+      setProject(response.data);
+    } catch (err: any) {
+      console.error('Failed to fetch project:', err);
+      setError(err.response?.data?.detail || 'Failed to load project files');
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, [projectId]);
 
-  // Mock data for demonstration
-  const [files] = useState<FileItem[]>([
-    {
-      id: '1',
-      name: 'Biology Notes.pdf',
-      type: 'pdf',
-      size: 2.4 * 1024 * 1024, // 2.4 MB
-      uploadedAt: '2 days ago',
-      status: 'completed',
-      isAIGenerated: true,
-      tags: ['Biology', 'Notes', 'Chapter 1'],
-      source: 'Manual Upload',
-      visibility: 'shared',
-      color: 'from-blue-400 to-blue-600',
-      bgColor: 'bg-blue-50/80 backdrop-blur-sm',
-      borderColor: 'border-blue-200/50'
-    },
-    {
-      id: '2',
-      name: 'Cell Structure.png',
-      type: 'png',
-      size: 1.8 * 1024 * 1024, // 1.8 MB
-      uploadedAt: '5 days ago',
-      status: 'completed',
-      tags: ['Biology', 'Images', 'Cell Biology'],
-      source: 'Manual Upload',
-      visibility: 'private',
-      color: 'from-green-400 to-green-600',
-      bgColor: 'bg-green-50/80 backdrop-blur-sm',
-      borderColor: 'border-green-200/50'
-    },
-    {
-      id: '3',
-      name: 'Chemistry Lab.mp4',
-      type: 'mp4',
-      size: 45.2 * 1024 * 1024, // 45.2 MB
-      uploadedAt: '1 day ago',
-      status: 'completed',
-      tags: ['Chemistry', 'Video', 'Lab'],
-      source: 'Manual Upload',
-      visibility: 'public',
-      color: 'from-purple-400 to-purple-600',
-      bgColor: 'bg-purple-50/80 backdrop-blur-sm',
-      borderColor: 'border-purple-200/50'
-    },
-    {
-      id: '4',
-      name: 'Periodic Table Data.csv',
-      type: 'csv',
-      size: 0.5 * 1024 * 1024, // 0.5 MB
-      uploadedAt: '3 days ago',
-      status: 'completed',
-      isAIGenerated: true,
-      tags: ['Chemistry', 'Data', 'Periodic Table'],
-      source: 'AI Generated',
-      visibility: 'shared',
-      color: 'from-orange-400 to-orange-600',
-      bgColor: 'bg-orange-50/80 backdrop-blur-sm',
-      borderColor: 'border-orange-200/50'
-    }
-  ]);
+  useEffect(() => {
+    fetchProject();
+  }, [fetchProject]);
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
+  // Handle file upload
+  const handleFileUpload = useCallback(async (files: FileList) => {
+    if (!files.length) return;
+    
+    const file = files[0]; // Handle single file for now
+    setUploading(true);
+    setUploadProgress(0);
+    setUploadError(null);
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
 
-  const handleFileUpload = useCallback((files: File[]) => {
-    files.forEach((file, index) => {
-      const fileItem: FileItem = {
-        id: `upload-${Date.now()}-${index}`,
-        name: file.name,
-        type: file.name.split('.').pop() as any,
-        size: file.size,
-        uploadedAt: 'Just now',
-        status: 'uploading',
-        progress: 0,
-        source: 'Manual Upload',
-        visibility: 'private',
-        color: 'from-blue-400 to-blue-600',
-        bgColor: 'bg-blue-50/80 backdrop-blur-sm',
-        borderColor: 'border-blue-200/50'
-      };
-
-      setUploadingFiles(prev => [...prev, fileItem]);
-
-      // Simulate upload progress
-      const interval = setInterval(() => {
-        setUploadingFiles(prev => 
-          prev.map(f => 
-            f.id === fileItem.id 
-              ? { ...f, progress: Math.min((f.progress || 0) + 10, 100) }
-              : f
-          )
-        );
+      // Simulate progress (since we can't get real upload progress from Django)
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 10, 90));
       }, 200);
 
-      // Complete upload after 2 seconds
-      setTimeout(() => {
-        clearInterval(interval);
-        setUploadingFiles(prev => 
-          prev.map(f => 
-            f.id === fileItem.id 
-              ? { ...f, status: 'completed', progress: 100 }
-              : f
-          )
-        );
-      }, 2000);
-    });
-  }, []);
+      const response = await axiosInstance.post(
+        `/api/projects/${projectId}/upload_file/`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              setUploadProgress(progress);
+            }
+          },
+        }
+      );
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    handleFileUpload(droppedFiles);
-  }, [handleFileUpload]);
+      clearInterval(progressInterval);
+      setUploadProgress(100);
 
+      // Refresh the project to get the new file
+      await fetchProject();
+      
+      // Reset form
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (err: any) {
+      console.error('Upload failed:', err);
+      setUploadError(err.response?.data?.detail || 'Upload failed');
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
+    }
+  }, [projectId, fetchProject]);
+
+  // Handle file selection
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    handleFileUpload(selectedFiles);
+    if (e.target.files) {
+      handleFileUpload(e.target.files);
+    }
   }, [handleFileUpload]);
 
-  const handleGenerateFlashcards = (fileId: string) => {
-    console.log('Generating flashcards for file:', fileId);
-    // TODO: Implement AI flashcard generation
+  // Format file size
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const handleGenerateNotes = (fileId: string) => {
-    console.log('Generating notes for file:', fileId);
-    // TODO: Implement AI notes generation
+  // Format date
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+    
+    return date.toLocaleDateString();
   };
 
-  const handleShareFile = (fileId: string) => {
-    console.log('Sharing file:', fileId);
-    // TODO: Implement file sharing
+  // Get file extension and name
+  const getFileInfo = (filePath: string) => {
+    const fileName = filePath.split('/').pop() || 'Unknown file';
+    const extension = fileName.split('.').pop()?.toLowerCase() || '';
+    return { fileName, extension };
   };
 
-  const handleDeleteFile = (fileId: string) => {
-    console.log('Deleting file:', fileId);
-    // TODO: Implement file deletion
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center py-12">
+            <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-600">Loading project files...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const handleRenameFile = (fileId: string) => {
-    console.log('Renaming file:', fileId);
-    // TODO: Implement file renaming
-  };
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center py-12">
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={fetchProject} variant="outline">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const allFiles = [...files, ...uploadingFiles];
-  const filteredFiles = allFiles.filter(file => 
-    file.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const stats = {
-    totalFiles: allFiles.length,
-    totalSize: allFiles.reduce((acc, file) => acc + file.size, 0),
-    aiGenerated: allFiles.filter(f => f.isAIGenerated).length,
-    lastUpload: allFiles.length > 0 ? allFiles[0].uploadedAt : 'Never'
-  };
+  const files = project?.uploaded_files || [];
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      {/* Floating background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-blue-200/20 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-purple-200/20 rounded-full blur-xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-indigo-200/20 rounded-full blur-xl animate-pulse delay-2000"></div>
-      </div>
-
-      <div className="relative space-y-8 p-8">
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Breadcrumbs */}
         <div className="flex items-center text-sm text-gray-600">
           <Link href="/projects" className="hover:text-blue-600">Projects</Link>
@@ -244,200 +186,137 @@ export default function ProjectFiles() {
           <span className="font-medium text-gray-900">Files</span>
         </div>
 
-        {/* File Header */}
-        <FileHeader
-          title="File Manager"
-          description="Upload, organize, and enhance your learning materials"
-          stats={stats}
-          formatFileSize={formatFileSize}
-        />
-
-        {/* File Stats Cards */}
-        <FileStatsCards
-          stats={{
-            totalFiles: stats.totalFiles,
-            totalSize: stats.totalSize,
-            aiGenerated: stats.aiGenerated,
-            lastUpload: stats.lastUpload
-          }}
-          formatFileSize={formatFileSize}
-        />
-
-        {/* Drag & Drop Zone */}
-        <DragDropZone
-          isDragOver={isDragOver}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onBrowseClick={() => fileInputRef.current?.click()}
-        />
-
-        {/* Search and Filters */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 flex-1">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search files..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">Files</h1>
+              <p className="text-gray-600">
+                {project?.name} • {files.length} file{files.length !== 1 ? 's' : ''}
+              </p>
             </div>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              {uploading ? 'Uploading...' : 'Upload File'}
             </Button>
           </div>
-          
-          {/* Layout Switcher */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 mr-2">View:</span>
-            <div className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-md border-2 border-gray-200">
-              <Button
-                variant={layoutMode === 'cards' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setLayoutMode('cards')}
-                className="h-8 w-8 p-0 hover:bg-blue-50"
-                title="Cards View"
-              >
-                <Layout className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={layoutMode === 'grid' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setLayoutMode('grid')}
-                className="h-8 w-8 p-0 hover:bg-blue-50"
-                title="Grid View"
-              >
-                <Grid3X3 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={layoutMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setLayoutMode('list')}
-                className="h-8 w-8 p-0 hover:bg-blue-50"
-                title="List View"
-              >
-                <List className="h-4 w-4" />
-              </Button>
+
+          {/* Upload Progress */}
+          {uploading && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                <span>Uploading...</span>
+                <span>{uploadProgress}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* Upload Error */}
+          {uploadError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-red-700 text-sm">{uploadError}</p>
+            </div>
+          )}
+
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            onChange={handleFileSelect}
+            accept=".pdf,.docx,.pptx,.txt,.png,.jpg,.jpeg,.csv,.md,.zip,.mp4"
+            disabled={uploading}
+          />
         </div>
 
-        {/* Files Display */}
-        {layoutMode === 'cards' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredFiles.map((file) => (
-              <FileCard
-                key={file.id}
-                file={file}
-                getFileIcon={getFileIcon}
-                getFileTypeColor={getFileTypeColor}
-                formatFileSize={formatFileSize}
-                onGenerateFlashcards={handleGenerateFlashcards}
-                onGenerateNotes={handleGenerateNotes}
-                onShare={handleShareFile}
-                onDelete={handleDeleteFile}
-                onRename={handleRenameFile}
-              />
-            ))}
-          </div>
-        )}
-
-        {layoutMode === 'grid' && (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {filteredFiles.map((file) => (
-              <FileGridItem
-                key={file.id}
-                file={file}
-                getFileIcon={getFileIcon}
-                getFileTypeColor={getFileTypeColor}
-                onShare={handleShareFile}
-                onDelete={handleDeleteFile}
-              />
-            ))}
-          </div>
-        )}
-
-        {layoutMode === 'list' && (
+        {/* Files List */}
+        {files.length > 0 ? (
           <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Project Files</CardTitle>
+            </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-gray-200">
-                {filteredFiles.map((file) => (
-                  <FileListItem
-                    key={file.id}
-                    file={file}
-                    getFileIcon={getFileIcon}
-                    getFileTypeColor={getFileTypeColor}
-                    formatFileSize={formatFileSize}
-                    onGenerateFlashcards={handleGenerateFlashcards}
-                    onGenerateNotes={handleGenerateNotes}
-                    onShare={handleShareFile}
-                    onDelete={handleDeleteFile}
-                    onRename={handleRenameFile}
-                  />
-                ))}
+                {files.map((file) => {
+                  const { fileName, extension } = getFileInfo(file.file);
+                  return (
+                    <div key={file.id} className="flex items-center justify-between p-4 hover:bg-gray-50">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <span className="text-xs font-medium text-blue-600 uppercase">
+                            {extension}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{fileName}</p>
+                          <p className="text-sm text-gray-500">
+                            Uploaded {formatDate(file.uploaded_at)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-500">
+                          {formatFileSize(file.file_size)}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.open(file.file, '_blank')}
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Download
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
-        )}
-
-        {/* Empty State */}
-        {filteredFiles.length === 0 && (
-          <div className="text-center py-12">
-            <div className="mx-auto w-24 h-24 bg-gradient-to-r from-blue-400 to-purple-600 rounded-full flex items-center justify-center mb-6">
-              <Upload className="h-12 w-12 text-white" />
-            </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">No files found</h3>
-            <p className="text-slate-600 mb-6">
-              {searchTerm ? 'Try adjusting your search terms' : 'Upload your first file to get started'}
-            </p>
-            {!searchTerm && (
-              <Button 
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+        ) : (
+          /* Empty State */
+          <Card>
+            <CardContent className="text-center py-12">
+              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No files uploaded yet</h3>
+              <p className="text-gray-600 mb-4">
+                Upload your first file to get started with your project.
+              </p>
+              <Button
                 onClick={() => fileInputRef.current?.click()}
+                className="bg-blue-600 hover:bg-blue-700"
               >
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Your First File
               </Button>
-            )}
-          </div>
+            </CardContent>
+          </Card>
         )}
+
+        {/* Refresh Button */}
+        <div className="text-center">
+          <Button
+            variant="outline"
+            onClick={fetchProject}
+            disabled={loading}
+            className="text-gray-600 hover:text-gray-700"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
-
-      {/* Layout Selector */}
-      <LayoutSelector
-        layouts={layoutOptions}
-        currentLayout="ocean"
-        onLayoutChange={(layoutId) => {
-          console.log('Layout changed to:', layoutId);
-          // For now, we only have the ocean layout implemented
-          // You can add the other layouts back if needed
-        }}
-        position="bottom-right"
-      />
-
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        className="hidden"
-        onChange={handleFileSelect}
-        accept=".pdf,.docx,.pptx,.txt,.png,.jpg,.jpeg,.csv,.md,.zip,.mp4"
-      />
-
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
-};
+}

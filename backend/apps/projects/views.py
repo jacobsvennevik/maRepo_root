@@ -237,21 +237,84 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], serializer_class=UploadedFileSerializer)
     def upload_file(self, request, pk=None):
-        project = self.get_object()
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        """
+        Upload file to project with "persist first, process later" approach.
         
-        # The serializer doesn't save the project, so we do it here.
-        uploaded_file = serializer.save(project=project)
-        
-        # Trigger the processing
-        process_uploaded_file(uploaded_file.id)
-
-        # Return the fresh project instance serialized with the correct class
-        # so the FE sees nested data immediately if ENABLE_STI=true
-        project.refresh_from_db()
-        project_serializer = self.get_serializer_class()(project, context={'request': request})
-        return Response(project_serializer.data, status=status.HTTP_201_CREATED)
+        This ensures files are always saved even if processing fails.
+        """
+        try:
+            project = self.get_object()
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            
+            # Always save the file first - this is the "persist first" part
+            uploaded_file = serializer.save(project=project)
+            
+            # Log successful file upload
+            logger.info(f"File uploaded successfully: {uploaded_file.original_name} to project {project.id}")
+            
+            # Return immediate success response with file info
+            response_data = {
+                'message': 'File uploaded successfully',
+                'file_id': str(uploaded_file.id),
+                'filename': uploaded_file.original_name,
+                'status': 'uploaded',
+                'processing_status': uploaded_file.processing_status
+            }
+            
+            # Process the file in the background (this is the "process later" part)
+            try:
+                # Start processing asynchronously
+                import threading
+                processing_thread = threading.Thread(
+                    target=self._process_file_background,
+                    args=(uploaded_file.id,)
+                )
+                processing_thread.daemon = True
+                processing_thread.start()
+                
+                response_data['processing'] = 'started'
+                logger.info(f"Background processing started for file: {uploaded_file.id}")
+                
+            except Exception as e:
+                logger.error(f"Failed to start background processing for file {uploaded_file.id}: {e}")
+                response_data['processing'] = 'failed_to_start'
+                response_data['processing_error'] = str(e)
+            
+            return Response(response_data, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            logger.error(f"File upload failed: {e}")
+            return Response({
+                'error': 'File upload failed',
+                'detail': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def _process_file_background(self, file_id: str):
+        """
+        Background file processing to avoid blocking the upload response.
+        """
+        try:
+            from .services import process_uploaded_file
+            result = process_uploaded_file(file_id)
+            
+            if result and result.get('status') == 'completed':
+                logger.info(f"Background processing completed for file: {file_id}")
+            else:
+                logger.warning(f"Background processing failed for file: {file_id}")
+                
+        except Exception as e:
+            logger.error(f"Background processing error for file {file_id}: {e}")
+            # Update file status to failed
+            try:
+                from .models import UploadedFile
+                uploaded_file = UploadedFile.objects.get(id=file_id)
+                uploaded_file.processing_status = 'failed'
+                uploaded_file.processing_error = f"Background processing error: {str(e)}"
+                uploaded_file.processing_completed_at = timezone.now()
+                uploaded_file.save(update_fields=['processing_status', 'processing_error', 'processing_completed_at'])
+            except Exception as save_error:
+                logger.error(f"Failed to update file status for {file_id}: {save_error}")
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def generate_metadata(self, request, pk=None):

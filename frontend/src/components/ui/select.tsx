@@ -52,22 +52,20 @@ Select.displayName = "Select";
 const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerProps>(
   ({ children, className, disabled, ...props }, ref) => {
     return (
-      <DropdownMenuTrigger asChild>
-        <Button
-          ref={ref}
-          variant="outline"
-          role="combobox"
-          disabled={disabled}
-          className={cn(
-            "w-full justify-between",
-            className
-          )}
-          {...props}
-        >
-          {children}
-          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </DropdownMenuTrigger>
+      <Button
+        ref={ref}
+        variant="outline"
+        role="combobox"
+        disabled={disabled}
+        className={cn(
+          "w-full justify-between",
+          className
+        )}
+        {...props}
+      >
+        {children}
+        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      </Button>
     );
   }
 );
@@ -76,13 +74,13 @@ SelectTrigger.displayName = "SelectTrigger";
 const SelectContent = React.forwardRef<HTMLDivElement, SelectContentProps>(
   ({ children, className, ...props }, ref) => {
     return (
-      <DropdownMenuContent
+      <div
         ref={ref}
-        className={cn("w-full min-w-[8rem]", className)}
+        className={cn("w-full min-w-[8rem] bg-white border border-gray-200 rounded-md shadow-lg p-1", className)}
         {...props}
       >
         {children}
-      </DropdownMenuContent>
+      </div>
     );
   }
 );
@@ -91,17 +89,16 @@ SelectContent.displayName = "SelectContent";
 const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
   ({ value, children, className, disabled, ...props }, ref) => {
     return (
-      <DropdownMenuItem
+      <div
         ref={ref}
         className={cn(
-          "relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+          "relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-gray-100 focus:bg-gray-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
           className
         )}
-        disabled={disabled}
         {...props}
       >
         {children}
-      </DropdownMenuItem>
+      </div>
     );
   }
 );

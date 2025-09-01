@@ -52,7 +52,7 @@ export function useProjectFlashcards(projectId: string) {
 
         // Fetch flashcard sets for the project
         const response = await axiosInstance.get(
-          `/api/generation/projects/${projectId}/flashcard-sets/`,
+          `/generation/api/projects/${projectId}/flashcard-sets/`,
         );
         const sets = response.data;
 
@@ -93,7 +93,13 @@ export function useProjectFlashcards(projectId: string) {
         });
       } catch (err: any) {
         console.error("Failed to fetch project flashcards:", err);
-        setError(err.response?.data?.error || "Failed to load flashcards");
+        
+        // Check if it's a network/connection error
+        if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error') || !err.response) {
+          setError("Cannot connect to server. Please check your connection.");
+        } else {
+          setError(err.response?.data?.error || "Failed to load flashcards");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -107,7 +113,7 @@ export function useProjectFlashcards(projectId: string) {
   const createFlashcardSet = async (title: string) => {
     try {
       const response = await axiosInstance.post(
-        `/api/generation/projects/${projectId}/flashcard-sets/`,
+        `/generation/api/projects/${projectId}/flashcard-sets/`,
         {
           title,
         },
@@ -115,7 +121,7 @@ export function useProjectFlashcards(projectId: string) {
 
       // Refresh the data
       const updatedResponse = await axiosInstance.get(
-        `/api/generation/projects/${projectId}/flashcard-sets/`,
+        `/generation/api/projects/${projectId}/flashcard-sets/`,
       );
       setFlashcardSets(updatedResponse.data);
 
@@ -135,7 +141,7 @@ export function useProjectFlashcards(projectId: string) {
   ) => {
     try {
       const response = await axiosInstance.post(
-        `/api/generation/projects/${projectId}/flashcards/generate/`,
+        `/generation/api/projects/${projectId}/flashcards/generate/`,
         {
           source_type: sourceType,
           num_cards: numCards,
@@ -145,7 +151,7 @@ export function useProjectFlashcards(projectId: string) {
 
       // Refresh the data
       const updatedResponse = await axiosInstance.get(
-        `/api/generation/projects/${projectId}/flashcard-sets/`,
+        `/generation/api/projects/${projectId}/flashcard-sets/`,
       );
       setFlashcardSets(updatedResponse.data);
 
@@ -170,7 +176,7 @@ export function useProjectFlashcards(projectId: string) {
       }
 
       const response = await axiosInstance.get(
-        `/api/generation/projects/${projectId}/flashcards/due/?${params}`,
+        `/generation/api/projects/${projectId}/flashcards/due/?${params}`,
       );
       return response.data;
     } catch (err: any) {
@@ -186,7 +192,7 @@ export function useProjectFlashcards(projectId: string) {
   ) => {
     try {
       const response = await axiosInstance.post(
-        `/api/generation/flashcards/${flashcardId}/review/`,
+        `/generation/api/flashcards/${flashcardId}/review/`,
         {
           quality,
           response_time_seconds: responseTimeSeconds,
@@ -195,7 +201,7 @@ export function useProjectFlashcards(projectId: string) {
 
       // Refresh stats after review
       const updatedResponse = await axiosInstance.get(
-        `/api/generation/projects/${projectId}/flashcard-sets/`,
+        `/generation/api/projects/${projectId}/flashcard-sets/`,
       );
       setFlashcardSets(updatedResponse.data);
 
@@ -221,7 +227,7 @@ export function useProjectFlashcards(projectId: string) {
       }));
 
       const response = await axiosInstance.post(
-        `/api/generation/flashcards/reviews/`,
+        `/generation/api/flashcards/reviews/`,
         {
           reviews: reviewsData,
         },
@@ -229,7 +235,7 @@ export function useProjectFlashcards(projectId: string) {
 
       // Refresh stats after bulk review
       const updatedResponse = await axiosInstance.get(
-        `/api/generation/projects/${projectId}/flashcard-sets/`,
+        `/generation/api/projects/${projectId}/flashcard-sets/`,
       );
       setFlashcardSets(updatedResponse.data);
 

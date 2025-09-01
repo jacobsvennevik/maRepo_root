@@ -38,7 +38,7 @@ export default async function ProjectLayout({
           <div className="z-50">
             <ProjectSidebar />
           </div>
-          <main className="flex-1 flex justify-center p-6 z-10">{children}</main>
+          <main className="flex-1 p-6 pt-4 z-10">{children}</main>
         </div>
       </div>
     </ProjectProvider>

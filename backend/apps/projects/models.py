@@ -133,12 +133,45 @@ class SelfStudyProject(models.Model):
 
 
 class UploadedFile(models.Model):
+    # Processing status choices
+    PROCESSING_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('processing', 'Processing'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('skipped', 'Skipped'),
+    ]
+    
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='uploaded_files')
     file = models.FileField(upload_to='uploads/%Y/%m/%d/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     content_hash = models.CharField(max_length=64, blank=True, editable=False)
     raw_text = models.TextField(blank=True)
+    
+    # New fields for robust file handling
+    original_name = models.CharField(max_length=255, blank=True)  # Original filename
+    content_type = models.CharField(max_length=100, blank=True)   # MIME type
+    file_size = models.BigIntegerField(default=0)                # File size in bytes
+    processing_status = models.CharField(
+        max_length=20, 
+        choices=PROCESSING_STATUS_CHOICES, 
+        default='pending'
+    )
+    processing_error = models.TextField(blank=True)               # Error message if processing fails
+    processing_started_at = models.DateTimeField(null=True, blank=True)
+    processing_completed_at = models.DateTimeField(null=True, blank=True)
+    extracted_text = models.TextField(blank=True)                 # Processed text content
+
+    @property
+    def file_size_property(self):
+        """Get file size in bytes (legacy property)"""
+        try:
+            if self.file and hasattr(self.file, 'size'):
+                return self.file.size
+            return 0
+        except (OSError, ValueError):
+            return 0
 
     def save(self, *args, **kwargs):
         if self.file and not self.content_hash:
@@ -146,6 +179,18 @@ class UploadedFile(models.Model):
             for chunk in self.file.chunks():
                 hasher.update(chunk)
             self.content_hash = hasher.hexdigest()
+        
+        # Set file size if not already set
+        if self.file_size == 0 and self.file:
+            try:
+                self.file_size = self.file.size
+            except (OSError, ValueError):
+                self.file_size = 0
+        
+        # Set original name if not already set
+        if not self.original_name and self.file:
+            self.original_name = self.file.name.split('/')[-1] if '/' in self.file.name else self.file.name
+        
         super().save(*args, **kwargs)
 
     def __str__(self):

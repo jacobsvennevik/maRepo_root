@@ -130,7 +130,7 @@ export default function StudySession() {
 
     try {
       // This would need a reset endpoint
-      // await axiosInstance.post(`/api/generation/flashcards/${currentCard.id}/reset/`);
+      // await axiosInstance.post(`/generation/api/flashcards/${currentCard.id}/reset/`);
       console.log("Reset card functionality would go here");
     } catch (err: any) {
       console.error("Failed to reset card:", err);

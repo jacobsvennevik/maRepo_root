@@ -1,10 +1,101 @@
-from backend.apps.projects.models import UploadedFile, Extraction, ProjectMeta
+import logging
+import mimetypes
+import os
+from typing import Optional, Dict, Any
+from django.utils import timezone
+from django.core.files import File
+from .models import UploadedFile, Extraction
 from backend.apps.generation.services.api_client import AIClient, Task
 from django.conf import settings
-from backend.apps.pdf_service.ingestion import ingest_pdf
-import logging
 
 logger = logging.getLogger(__name__)
+
+def get_file_extension(filename: str) -> str:
+    """Get file extension from filename."""
+    return os.path.splitext(filename)[1].lower()
+
+def get_mime_type(filename: str) -> str:
+    """Get MIME type from filename."""
+    return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+
+def extract_text_from_txt(file_obj: File) -> str:
+    """Extract text from plain text files."""
+    try:
+        with file_obj.open('r', encoding='utf-8') as f:
+            return f.read()
+    except UnicodeDecodeError:
+        try:
+            with file_obj.open('r', encoding='latin-1') as f:
+                return f.read()
+        except Exception as e:
+            logger.warning(f"Failed to read text file: {e}")
+            return ""
+
+def extract_text_from_csv(file_obj: File) -> str:
+    """Extract text from CSV files."""
+    try:
+        with file_obj.open('r', encoding='utf-8') as f:
+            return f.read()
+    except Exception as e:
+        logger.warning(f"Failed to read CSV file: {e}")
+        return ""
+
+def extract_text_from_md(file_obj: File) -> str:
+    """Extract text from Markdown files."""
+    try:
+        with file_obj.open('r', encoding='utf-8') as f:
+            return f.read()
+    except Exception as e:
+        logger.warning(f"Failed to read Markdown file: {e}")
+        return ""
+
+def extract_text_from_pdf(file_obj: File) -> str:
+    """Extract text from PDF files with fallback."""
+    try:
+        from backend.apps.pdf_service.ingestion import ingest_pdf
+        # Create a temporary file if needed
+        if hasattr(file_obj, 'path') and os.path.exists(file_obj.path):
+            chunks = ingest_pdf(file_obj.path)
+            return " ".join([chunk.page_content for chunk in chunks])
+        else:
+            # Handle S3 or other storage backends
+            import tempfile
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+                for chunk in file_obj.chunks():
+                    tmp_file.write(chunk)
+                tmp_file.flush()
+                try:
+                    chunks = ingest_pdf(tmp_file.name)
+                    return " ".join([chunk.page_content for chunk in chunks])
+                finally:
+                    os.unlink(tmp_file.name)
+    except ImportError:
+        logger.warning("PDF processing library not available")
+        return ""
+    except Exception as e:
+        logger.error(f"PDF processing failed: {e}")
+        return ""
+
+def extract_text_from_docx(file_obj: File) -> str:
+    """Extract text from DOCX files with fallback."""
+    try:
+        from docx import Document
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.docx') as tmp_file:
+            for chunk in file_obj.chunks():
+                tmp_file.write(chunk)
+            tmp_file.flush()
+            try:
+                doc = Document(tmp_file.name)
+                return " ".join([paragraph.text for paragraph in doc.paragraphs])
+            finally:
+                os.unlink(tmp_file.name)
+    except ImportError:
+        logger.warning("python-docx library not available")
+        return ""
+    except Exception as e:
+        logger.error(f"DOCX processing failed: {e}")
+        return ""
 
 def call_llm_extractor(text: str) -> dict:
     """
@@ -31,68 +122,131 @@ def call_llm_extractor(text: str) -> dict:
     logger.info("Mock LLM extraction successful.")
     return {"prompt": prompt, "response": mock_response, "metrics": mock_metrics}
 
-def process_uploaded_file(uploaded_file_id: str):
+def process_uploaded_file(uploaded_file_id: str) -> Optional[Dict[str, Any]]:
     """
-    Orchestrates the file processing pipeline.
-    1. Fetches the UploadedFile instance.
-    2. Extracts text from the PDF.
-    3. Calls the LLM to get structured data.
-    4. Saves the extraction results.
-    5. Updates the associated Project.
+    Robust file processing with "persist first, process later" approach.
+    
+    This function:
+    1. Always saves the UploadedFile record first
+    2. Processes content based on file type
+    3. Handles failures gracefully
+    4. Updates processing status and errors
     """
     try:
         uploaded_file = UploadedFile.objects.get(id=uploaded_file_id)
     except UploadedFile.DoesNotExist:
         logger.error(f"UploadedFile with id {uploaded_file_id} not found.")
-        return
+        return None
 
-    # 1. Extract text from PDF
+    # Update processing status
+    uploaded_file.processing_status = 'processing'
+    uploaded_file.processing_started_at = timezone.now()
+    uploaded_file.save(update_fields=['processing_status', 'processing_started_at'])
+
     try:
-        logger.info(f"Starting text extraction for file: {uploaded_file.file.name}")
-        chunks = ingest_pdf(uploaded_file.file.path)
-        raw_text = " ".join([chunk.page_content for chunk in chunks])
-        uploaded_file.raw_text = raw_text
-        uploaded_file.save(update_fields=['raw_text'])
-        logger.info(f"Text extraction successful for file: {uploaded_file.file.name}")
+        # Get file info
+        filename = uploaded_file.original_name or uploaded_file.file.name
+        extension = get_file_extension(filename)
+        mime_type = get_mime_type(filename)
+        
+        # Update content type if not set
+        if not uploaded_file.content_type:
+            uploaded_file.content_type = mime_type
+            uploaded_file.save(update_fields=['content_type'])
+
+        logger.info(f"Processing file: {filename} (type: {mime_type}, extension: {extension})")
+
+        # Extract text based on file type
+        extracted_text = ""
+        
+        if extension in ['.txt', '.text']:
+            extracted_text = extract_text_from_txt(uploaded_file.file)
+        elif extension == '.csv':
+            extracted_text = extract_text_from_csv(uploaded_file.file)
+        elif extension == '.md':
+            extracted_text = extract_text_from_md(uploaded_file.file)
+        elif extension == '.pdf':
+            extracted_text = extract_text_from_pdf(uploaded_file.file)
+        elif extension in ['.docx', '.doc']:
+            extracted_text = extract_text_from_docx(uploaded_file.file)
+        else:
+            logger.info(f"Unsupported file type: {extension}. Skipping text extraction.")
+            uploaded_file.processing_status = 'skipped'
+            uploaded_file.processing_error = f"Unsupported file type: {extension}"
+            uploaded_file.processing_completed_at = timezone.now()
+            uploaded_file.save(update_fields=['processing_status', 'processing_error', 'processing_completed_at'])
+            return None
+
+        # Save extracted text
+        uploaded_file.extracted_text = extracted_text
+        uploaded_file.raw_text = extracted_text  # Keep legacy field for compatibility
+        
+        if extracted_text:
+            # Try to extract structured data if we have content
+            try:
+                llm_result = call_llm_extractor(extracted_text)
+                
+                # Create Extraction record
+                extraction = Extraction.objects.create(
+                    uploaded_file=uploaded_file,
+                    prompt=llm_result['prompt'],
+                    response=llm_result['response'],
+                    tokens_used=llm_result['metrics']['tokens_used'],
+                    latency_ms=llm_result['metrics']['latency_ms'],
+                    confidence_score=llm_result['metrics']['confidence_score'],
+                    is_valid_schema=True,
+                )
+                logger.info(f"Extraction record created: {extraction.id}")
+
+                # Update Project with extracted data
+                project = uploaded_file.project
+                extracted_data = llm_result['response']
+                
+                project.name = extracted_data.get('course_name', project.name)
+                project.course_name = extracted_data.get('course_name', project.course_name)
+                project.course_code = extracted_data.get('course_code', project.course_code)
+                project.teacher_name = extracted_data.get('teacher_name', project.teacher_name)
+                project.start_date = extracted_data.get('start_date', project.start_date)
+                project.end_date = extracted_data.get('end_date', project.end_date)
+                project.syllabus = extracted_data.get('syllabus', project.syllabus)
+                project.is_draft = False
+                project.save()
+                logger.info(f"Project {project.id} updated with extracted data.")
+
+                # Mark as completed
+                uploaded_file.processing_status = 'completed'
+                uploaded_file.processing_completed_at = timezone.now()
+                uploaded_file.save(update_fields=['processing_status', 'processing_completed_at'])
+
+                return {
+                    'extraction': extraction,
+                    'project_updated': True,
+                    'status': 'completed'
+                }
+
+            except Exception as e:
+                logger.error(f"LLM extraction failed for {filename}: {e}")
+                uploaded_file.processing_error = f"LLM extraction failed: {str(e)}"
+                uploaded_file.processing_status = 'failed'
+                uploaded_file.processing_completed_at = timezone.now()
+                uploaded_file.save(update_fields=['processing_error', 'processing_status', 'processing_completed_at'])
+                return None
+
+        else:
+            # No text extracted
+            uploaded_file.processing_status = 'failed'
+            uploaded_file.processing_error = "No text content could be extracted"
+            uploaded_file.processing_completed_at = timezone.now()
+            uploaded_file.save(update_fields=['processing_status', 'processing_error', 'processing_completed_at'])
+            return None
+
     except Exception as e:
-        logger.error(f"Error extracting text from {uploaded_file.file.name}: {e}")
-        return
-
-    # 2. Call LLM for data extraction
-    if not raw_text:
-        logger.warning(f"Raw text is empty for {uploaded_file.file.name}. Skipping LLM extraction.")
-        return
-
-    llm_result = call_llm_extractor(raw_text)
-
-    # 3. Create Extraction record
-    extraction = Extraction.objects.create(
-        uploaded_file=uploaded_file,
-        prompt=llm_result['prompt'],
-        response=llm_result['response'],
-        tokens_used=llm_result['metrics']['tokens_used'],
-        latency_ms=llm_result['metrics']['latency_ms'],
-        confidence_score=llm_result['metrics']['confidence_score'],
-        is_valid_schema=True,  # Placeholder for schema validation
-    )
-    logger.info(f"Extraction record created: {extraction.id}")
-
-    # 4. Update Project with extracted data
-    project = uploaded_file.project
-    extracted_data = llm_result['response']
-    
-    project.name = extracted_data.get('course_name', project.name)
-    project.course_name = extracted_data.get('course_name', project.course_name)
-    project.course_code = extracted_data.get('course_code', project.course_code)
-    project.teacher_name = extracted_data.get('teacher_name', project.teacher_name)
-    project.start_date = extracted_data.get('start_date', project.start_date)
-    project.end_date = extracted_data.get('end_date', project.end_date)
-    project.syllabus = extracted_data.get('syllabus', project.syllabus)
-    project.is_draft = False
-    project.save()
-    logger.info(f"Project {project.id} updated with extracted data.")
-
-    return extraction 
+        logger.error(f"File processing failed for {uploaded_file.original_name}: {e}")
+        uploaded_file.processing_error = f"Processing failed: {str(e)}"
+        uploaded_file.processing_status = 'failed'
+        uploaded_file.processing_completed_at = timezone.now()
+        uploaded_file.save(update_fields=['processing_error', 'processing_status', 'processing_completed_at'])
+        return None
 
 
 def seed_project_artifacts(project, *, request=None, mock_mode: bool = False, mock_bypass_content: bool = False, enable_flashcards: bool = True):
