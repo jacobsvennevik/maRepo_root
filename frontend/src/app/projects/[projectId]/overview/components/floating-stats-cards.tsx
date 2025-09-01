@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { TrendingUp, Star, Eye, Clock } from "lucide-react";
 
 interface StatCard {
@@ -109,11 +107,12 @@ export function FloatingStatsCards({
                   <span className="text-slate-600">Depth</span>
                   <span className="font-medium text-slate-900">75%</span>
                 </div>
-                <Progress
-                  value={75}
-                  className="h-2"
-                  indicatorClassName="bg-gradient-to-r from-blue-500 to-cyan-500"
-                />
+                <div className="w-full bg-slate-200 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: '75%' }}
+                  ></div>
+                </div>
               </div>
             )}
           </CardContent>

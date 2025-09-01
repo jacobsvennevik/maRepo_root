@@ -18,7 +18,7 @@ export default function ProjectOverview() {
 
   return (
     <OceanBackground>
-      <div className="space-y-8 p-8">
+      <div className="w-full max-w-6xl space-y-8">
         <OceanHeader />
 
         <FloatingStatsCards
@@ -44,7 +44,7 @@ export default function ProjectOverview() {
         <OceanActionSection />
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0%,
           100% {

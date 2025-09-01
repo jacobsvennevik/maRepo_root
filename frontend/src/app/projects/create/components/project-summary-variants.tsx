@@ -16,17 +16,13 @@ import { Badge } from "@/components/ui/badge";
 import { ProjectSetup } from '../types';
 import { uploadFile, createProject, ProjectData } from '../services/api';
 import { 
-  PURPOSE_OPTIONS,
+  TIMEFRAME_OPTIONS, 
+  FREQUENCY_OPTIONS, 
   TEST_LEVEL_OPTIONS,
-  GRADE_LEVEL_OPTIONS,
-  TIMEFRAME_OPTIONS,
-  FREQUENCY_OPTIONS,
-  COLLABORATION_OPTIONS,
-  EVALUATION_TYPE_OPTIONS,
-  DATE_TYPE_OPTIONS
-} from '../constants';
-import { SCHOOL_PURPOSE_OPTIONS } from '../constants/options';
+  GRADE_LEVEL_OPTIONS
+} from '../constants/options';
 import { formatFileSize, formatDate } from '../utils/formatters';
+import { validateProjectCreateInput, type ProjectCreateInput } from '../types';
 
 // Variant 1: Colorful Dashboard Style
 export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }) {
@@ -49,11 +45,9 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
       );
 
       // 2. Prepare project data
-      const projectData: ProjectData = {
+      const projectData = validateProjectCreateInput({
         name: setup.projectName,
         project_type: 'school', // This is the school setup
-        course_name: setup.purpose, // Assuming purpose is course name for now
-        goal_description: setup.goal,
         study_frequency: setup.studyFrequency,
         important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
         // Mock mode flags for backend AI mocking
@@ -62,8 +56,7 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
         seed_tests: true,
         seed_content: true,
         seed_flashcards: false,
-        // Add other fields from the 'setup' object as needed
-      };
+      });
 
       // 3. Create project
       const newProject = await createProject(projectData);
@@ -115,7 +108,7 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
                     <div className="flex items-center space-x-2">
                       <Badge className="bg-white/20 text-white border-white/30 hover:bg-white/30">
                         <Star className="h-3 w-3 mr-1" />
-                        {PURPOSE_OPTIONS.find(opt => opt.value === setup.purpose)?.label || setup.purpose}
+                        School Project
                       </Badge>
                     </div>
                   </div>
@@ -128,11 +121,10 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
               </div>
               
               {/* Enhanced Stats Grid */}
-              <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4">
                 {[
                   { icon: Calendar, label: 'Timeline', value: TIMEFRAME_OPTIONS.find(opt => opt.value === setup.timeframe)?.label, color: 'from-blue-400 to-blue-600' },
                   { icon: Clock, label: 'Frequency', value: FREQUENCY_OPTIONS.find(opt => opt.value === setup.studyFrequency)?.label, color: 'from-green-400 to-green-600' },
-                  { icon: Users, label: 'Style', value: COLLABORATION_OPTIONS.find(opt => opt.value === setup.collaboration)?.label, color: 'from-purple-400 to-purple-600' },
                   { icon: Trophy, label: 'Level', value: TEST_LEVEL_OPTIONS.find(opt => opt.value === setup.testLevel)?.label, color: 'from-yellow-400 to-yellow-600' }
                 ].map((stat, index) => (
                   <div key={index} className={`bg-gradient-to-r ${stat.color} rounded-xl p-4 text-center shadow-lg hover:scale-105 transition-transform duration-200`}>
@@ -151,27 +143,6 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
           {/* Left Column - Enhanced Cards */}
           <div className="lg:col-span-8 space-y-6">
             
-            {/* Goal Card - More Prominent */}
-            {setup.goal && (
-              <Card className="border-0 shadow-lg bg-gradient-to-r from-emerald-50 to-teal-50">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center text-emerald-700">
-                    <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mr-3">
-                      <Target className="h-5 w-5 text-white" />
-                    </div>
-                    Your Learning Mission
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-lg text-gray-700 leading-relaxed">{setup.goal}</p>
-                  <div className="mt-4 flex items-center space-x-2">
-                    <TrendingUp className="h-4 w-4 text-emerald-500" />
-                    <span className="text-sm text-emerald-600 font-medium">Progress tracking enabled</span>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
             {/* Academic Details - Enhanced */}
             <Card className="border-0 shadow-lg">
               <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
@@ -218,108 +189,9 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
                   )}
                 </div>
                 
-                {setup.evaluationTypes && setup.evaluationTypes.length > 0 && (
-                  <div className="mt-6 pt-6 border-t border-gray-200">
-                    <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-                      <FlaskConical className="h-4 w-4 mr-2 text-purple-600" />
-                      How You'll Be Evaluated
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {setup.evaluationTypes.map((type, index) => (
-                        <Badge key={type} className={`
-                          ${index % 4 === 0 ? 'bg-pink-100 text-pink-700 border-pink-200' : ''}
-                          ${index % 4 === 1 ? 'bg-purple-100 text-purple-700 border-purple-200' : ''}
-                          ${index % 4 === 2 ? 'bg-blue-100 text-blue-700 border-blue-200' : ''}
-                          ${index % 4 === 3 ? 'bg-green-100 text-green-700 border-green-200' : ''}
-                        `}>
-                          {EVALUATION_TYPE_OPTIONS.find(opt => opt.value === type)?.label}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
 
-            {/* Learning Preferences - More Visual */}
-            {(setup.learningStyle || setup.studyPreference) && (
-              <Card className="border-0 shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-orange-50 to-yellow-50">
-                  <CardTitle className="flex items-center text-orange-700">
-                    <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full flex items-center justify-center mr-3">
-                      <Brain className="h-5 w-5 text-white" />
-                    </div>
-                    Your Learning DNA
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {setup.learningStyle && (
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-                          <Heart className="h-4 w-4 mr-2 text-red-500" />
-                          Learning Style
-                        </h4>
-                        <div className="space-y-2">
-                          {(setup.learningStyle 
-                            ? Array.isArray(setup.learningStyle) 
-                              ? setup.learningStyle 
-                              : setup.learningStyle.split(', ')
-                            : []
-                          ).map((style, index) => (
-                            <div key={style} className="flex items-center space-x-3 p-3 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg">
-                              {style === 'visual' && <Eye className="h-5 w-5 text-blue-500" />}
-                              {style === 'auditory' && <Ear className="h-5 w-5 text-green-500" />}
-                              {style === 'kinesthetic' && <HandIcon className="h-5 w-5 text-purple-500" />}
-                              {style === 'reading-writing' && <PenTool className="h-5 w-5 text-orange-500" />}
-                              <span className="font-medium text-gray-700 capitalize">{style.replace('-', ' ')}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {setup.studyPreference && (
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-                          <Sparkles className="h-4 w-4 mr-2 text-purple-500" />
-                          Study Vibe
-                        </h4>
-                        <div className="space-y-2">
-                          {(setup.studyPreference 
-                            ? Array.isArray(setup.studyPreference) 
-                              ? setup.studyPreference 
-                              : setup.studyPreference.split(', ')
-                            : []
-                          ).map((pref, index) => (
-                            <div key={pref} className="flex items-center space-x-3 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg">
-                              {pref === 'morning' && <Sun className="h-5 w-5 text-yellow-500" />}
-                              {pref === 'evening' && <Moon className="h-5 w-5 text-indigo-500" />}
-                              {pref === 'short-bursts' && <Zap className="h-5 w-5 text-yellow-500" />}
-                              {pref === 'long-sessions' && <Coffee className="h-5 w-5 text-brown-500" />}
-                              {pref === 'mobile' && <Smartphone className="h-5 w-5 text-blue-500" />}
-                              {pref === 'desktop' && <Monitor className="h-5 w-5 text-gray-500" />}
-                              {pref === 'interactive' && <Gamepad2 className="h-5 w-5 text-green-500" />}
-                              <span className="font-medium text-gray-700 capitalize">{pref.replace('-', ' ')}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {setup.learningDifficulties && (
-                    <div className="mt-6 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200">
-                      <h4 className="font-semibold text-amber-800 mb-2 flex items-center">
-                        <Heart className="h-4 w-4 mr-2" />
-                        Special Considerations
-                      </h4>
-                      <p className="text-amber-700 text-sm leading-relaxed">{setup.learningDifficulties}</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           {/* Right Column - Enhanced Sidebar */}
@@ -440,7 +312,6 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
                       .slice(0, 4)
                       .map((dateItem, index) => {
                         const isUpcoming = new Date(dateItem.date) > new Date();
-                        const dateType = DATE_TYPE_OPTIONS.find(opt => opt.value === dateItem.type);
                         return (
                           <div key={index} className={`p-3 rounded-lg border-2 transition-all hover:shadow-md ${
                             isUpcoming 
@@ -453,8 +324,8 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
                               }`} />
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <Badge className={`text-xs ${dateType?.color || 'bg-gray-100 text-gray-700'}`}>
-                                    {dateType?.label || 'Event'}
+                                  <Badge className={`text-xs ${dateItem.type === 'exam' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}`}>
+                                    {dateItem.type === 'exam' ? 'Exam' : 'Event'}
                                   </Badge>
                                   {isUpcoming && (
                                     <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300 text-xs animate-bounce">
@@ -563,8 +434,6 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
       const projectData: ProjectData = {
         name: setup.projectName,
         project_type: 'school', // This is the school setup
-        course_name: setup.purpose, // Assuming purpose is course name for now
-        goal_description: setup.goal,
         study_frequency: setup.studyFrequency,
         important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
         // Mock mode flags for backend AI mocking
@@ -623,7 +492,7 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
                 <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
                   {setup.projectName}
                 </h1>
-                <p className="text-white/80 text-lg">{PURPOSE_OPTIONS.find(opt => opt.value === setup.purpose)?.label}</p>
+                <p className="text-white/80 text-lg">School Project</p>
               </div>
             </div>
             <div className="text-center">
@@ -639,7 +508,6 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
             {[
               { icon: Calendar, label: 'Timeline', value: TIMEFRAME_OPTIONS.find(opt => opt.value === setup.timeframe)?.label },
               { icon: Clock, label: 'Frequency', value: FREQUENCY_OPTIONS.find(opt => opt.value === setup.studyFrequency)?.label },
-              { icon: Users, label: 'Style', value: COLLABORATION_OPTIONS.find(opt => opt.value === setup.collaboration)?.label },
               { icon: Trophy, label: 'Level', value: TEST_LEVEL_OPTIONS.find(opt => opt.value === setup.testLevel)?.label }
             ].map((stat, index) => (
               <div key={index} className="backdrop-blur-sm bg-white/10 border border-white/30 rounded-2xl p-4 text-center text-white hover:bg-white/20 transition-all duration-300">
@@ -655,19 +523,6 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Goal */}
-            {setup.goal && (
-              <div className="backdrop-blur-lg bg-white/10 border border-white/20 rounded-2xl p-6 shadow-xl">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center mr-4">
-                    <Target className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white">Your Mission</h3>
-                </div>
-                <p className="text-white/90 text-lg leading-relaxed">{setup.goal}</p>
-              </div>
-            )}
-
             {/* Academic Details */}
             <div className="backdrop-blur-lg bg-white/10 border border-white/20 rounded-2xl p-6 shadow-xl">
               <div className="flex items-center mb-6">
@@ -812,8 +667,6 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
       const projectData: ProjectData = {
         name: setup.projectName,
         project_type: 'school', // This is the school setup
-        course_name: setup.purpose, // Assuming purpose is course name for now
-        goal_description: setup.goal,
         study_frequency: setup.studyFrequency,
         important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
         // Mock mode flags for backend AI mocking
@@ -877,7 +730,7 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
                 </div>
                 <div className="ml-6">
                   <h1 className="text-3xl font-bold mb-1">{setup.projectName}</h1>
-                  <p className="text-purple-200 mb-2">{PURPOSE_OPTIONS.find(opt => opt.value === setup.purpose)?.label}</p>
+                  <p className="text-purple-200 mb-2">School Project</p>
                   <div className="flex items-center space-x-4">
                     <Badge className="bg-yellow-500/20 text-yellow-300 border-yellow-400/50">
                       <Star className="h-3 w-3 mr-1" />
@@ -905,7 +758,6 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
               {[
                 { icon: Calendar, label: 'Time Mgmt', value: TIMEFRAME_OPTIONS.find(opt => opt.value === setup.timeframe)?.label, level: 3 },
                 { icon: Clock, label: 'Focus', value: FREQUENCY_OPTIONS.find(opt => opt.value === setup.studyFrequency)?.label, level: 4 },
-                { icon: Users, label: 'Teamwork', value: COLLABORATION_OPTIONS.find(opt => opt.value === setup.collaboration)?.label, level: 2 },
                 { icon: Brain, label: 'Knowledge', value: TEST_LEVEL_OPTIONS.find(opt => opt.value === setup.testLevel)?.label, level: 5 }
               ].map((skill, index) => (
                 <div key={index} className="bg-slate-800/50 border border-slate-600 rounded-xl p-4 text-center text-white">
@@ -939,7 +791,7 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
               <CardContent className="pt-6">
                 <div className="text-white">
                   <h4 className="font-bold text-lg mb-3 text-cyan-300">Objective:</h4>
-                  <p className="text-slate-200 leading-relaxed mb-4">{setup.goal || "Master your chosen subject and achieve academic excellence!"}</p>
+                  <p className="text-slate-200 leading-relaxed mb-4">Master your chosen subject and achieve academic excellence!</p>
                   
                   <div className="flex items-center justify-between bg-slate-700/50 rounded-lg p-3">
                     <span className="text-slate-300">Quest Progress</span>

@@ -7,22 +7,16 @@ import { useGuidedSetupState } from './hooks/useGuidedSetupState';
 import { useStepNavigation } from './hooks/useStepNavigation';
 import { ProjectSummaryColorful } from '../components/project-summary-variants';
 import { StepIndicator } from './components/StepIndicator';
-import { STEP_CONFIG, COLLABORATION_OPTIONS } from './constants';
+import { STEP_CONFIG } from './constants';
 
 import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
 import { KeyboardShortcuts } from './components/KeyboardShortcuts';
 
 // Import step components
 import { ProjectNameStep } from '../components/steps/project-name-step';
-import { PurposeStep } from '../components/steps/purpose-step';
 import { EducationLevelStep } from '../components/steps/education-level-step';
 import { SyllabusUploadStep } from '../components/steps/syllabus-upload-step';
 import { ExtractionResultsStep } from '../components/steps/extraction-results-step';
-import { LearningPreferencesStep } from '../components/steps/learning-preferences-step';
-
-import { GoalStep } from '../components/steps/goal-step';
-
-import { CollaborationStep } from '../components/steps/collaboration-step';
 import { CourseContentUploadStep } from '../components/steps/course-content-upload-step';
 import { TestUploadStep } from '../components/steps/test-upload-step';
 import { SkipButton } from '../components/steps/shared/skip-button';
@@ -37,18 +31,13 @@ export default function GuidedSetup({ onBack }: GuidedSetupProps) {
     extractedData,
     setExtractedData,
     syllabusFileName,
-    contentData,
-    contentFileNames,
     isSyllabusAnalysisComplete,
-    isCourseContentAnalysisComplete,
-    isTestAnalysisComplete,
-    hasUnsavedChanges,
+    setHasUnsavedChanges,
     handleOptionSelect,
     handleSyllabusUploadComplete,
     handleCourseContentUploadComplete,
     handleTestUploadComplete,
     resetSyllabusUploadState,
-    cleanupState,
   } = useGuidedSetupState();
 
   const {
@@ -86,21 +75,14 @@ export default function GuidedSetup({ onBack }: GuidedSetupProps) {
         return (
           <ProjectNameStep
             projectName={setup.projectName}
-            onProjectNameChange={(value) => handleOptionSelect('projectName', value)}
-          />
-        );
-      case 'purpose':
-        return (
-          <PurposeStep
-            purpose={setup.purpose}
-            onPurposeChange={(value) => handleOptionSelect('purpose', value)}
+            onProjectNameChange={(value: string) => handleOptionSelect('projectName', value)}
           />
         );
       case 'educationLevel':
         return (
           <EducationLevelStep
             testLevel={setup.testLevel}
-            onTestLevelChange={(value) => handleOptionSelect('testLevel', value)}
+            onTestLevelChange={(value: string) => handleOptionSelect('testLevel', value)}
           />
         );
       case 'uploadSyllabus':
@@ -112,10 +94,6 @@ export default function GuidedSetup({ onBack }: GuidedSetupProps) {
             onSkip={handleSkip}
             hasUploadCompleted={isSyllabusAnalysisComplete}
             onResetUploadState={resetSyllabusUploadState}
-            onAnalysisComplete={() => {}} // Will be handled by upload complete
-            savedFiles={setup.uploadedFiles || []}
-            savedAnalysisData={extractedData}
-            savedFileNames={syllabusFileName ? [syllabusFileName] : []}
           />
         );
       case 'extractionResults':
@@ -134,7 +112,7 @@ export default function GuidedSetup({ onBack }: GuidedSetupProps) {
             extractedData={extractedData}
             fileName={syllabusFileName}
             onConfirm={handleNext}
-            onSave={(updatedData) => {
+            onSave={(updatedData: any) => {
               // Update the extracted data with the edited version
               setExtractedData(updatedData);
               setHasUnsavedChanges(true);
@@ -146,66 +124,27 @@ export default function GuidedSetup({ onBack }: GuidedSetupProps) {
             showNavigation={true}
           />
         );
-      case 'learningPreferences':
-        return (
-          <LearningPreferencesStep
-            learningStyle={setup.learningStyle}
-            studyPreference={setup.studyPreference}
-            learningDifficulties={setup.learningDifficulties}
-            courseType={extractedData?.courseType || contentData?.courseType}
-            assessmentTypes={extractedData?.assessmentTypes || contentData?.assessmentTypes}
-            onLearningStyleChange={(value) => handleOptionSelect('learningStyle', value)}
-            onStudyPreferenceChange={(value) => handleOptionSelect('studyPreference', value)}
-            onLearningDifficultiesChange={(value) => handleOptionSelect('learningDifficulties', value)}
-          />
-        );
-
-      case 'goal':
-        return (
-          <GoalStep
-            goal={setup.goal}
-            onGoalChange={(goal) => handleOptionSelect('goal', goal)}
-          />
-        );
-
-      case 'collaboration':
-        return (
-          <CollaborationStep
-            collaboration={setup.collaboration}
-            onCollaborationChange={(collaboration) => handleOptionSelect('collaboration', collaboration)}
-            collaborationOptions={COLLABORATION_OPTIONS}
-          />
-        );
       case 'courseContentUpload':
         return (
           <CourseContentUploadStep
             onUploadComplete={handleCourseContentUploadComplete}
-            onNext={handleNext}
-            onBack={handleBack}
-            onAnalysisComplete={() => {
-              console.log('🎯 CourseContentUploadStep onAnalysisComplete called');
-            }}
-            savedFiles={setup.courseFiles || []}
-            savedAnalysisData={contentData}
-            savedFileNames={contentFileNames}
           />
         );
       case 'testUpload':
         return (
           <TestUploadStep
             onUploadComplete={handleTestUploadComplete}
-            onNext={handleNext}
-            onBack={handleBack}
-            onSkip={handleSkip}
-            onAnalysisComplete={() => {}} // Will be handled by upload complete
-            extractedDates={extractedData?.dates || []}
-            savedFiles={setup.testFiles || []}
-            savedAnalysisData={undefined}
-            savedFileNames={[]}
           />
         );
       default:
-        return null;
+        return (
+          <div className="text-center py-8">
+            <p className="text-gray-600">Unknown step.</p>
+            <Button onClick={handleNext} className="mt-4">
+              Continue
+            </Button>
+          </div>
+        );
     }
   };
 
@@ -223,12 +162,7 @@ export default function GuidedSetup({ onBack }: GuidedSetupProps) {
             Back
           </Button>
           <div className="flex items-center gap-2 sm:gap-4">
-            {hasUnsavedChanges && (
-              <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-600">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="hidden sm:inline">Auto-saved</span>
-              </div>
-            )}
+            {/* hasUnsavedChanges removed */}
             <div className="text-xs sm:text-sm text-gray-600">
               Step {getCurrentStepIndex()} of {getTotalSteps()}
             </div>

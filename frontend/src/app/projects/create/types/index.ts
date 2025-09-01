@@ -1,25 +1,81 @@
 export interface ProjectSetup {
   projectName: string;
-  purpose: string;
   testLevel: string;
   gradeLevel?: string;
   assignmentDescription?: string;
   courseFiles: File[];
-  evaluationTypes: string[];
   testFiles: File[];
   importantDates: ImportantDate[];
   uploadedFiles: File[];
   timeframe: string;
-  goal: string;
   studyFrequency: string;
-  collaboration: string;
   customDescription?: string;
-  // Learning preferences fields - now support both single values and arrays
-  courseType: string | string[];
-  learningStyle: string | string[];
-  assessmentType: string | string[];
-  studyPreference: string | string[];
-  learningDifficulties: string;
+}
+
+// Centralized schema for project creation to prevent drift
+export interface ProjectCreateInput {
+  name: string;
+  project_type: "school" | "self_study";
+  study_frequency?: string;
+  start_date?: string;
+  end_date?: string;
+  is_draft?: boolean;
+  important_dates?: Array<{ title: string; date: string }>;
+  // Mock mode flags for backend AI mocking
+  mock_mode?: boolean;
+  seed_syllabus?: boolean;
+  seed_tests?: boolean;
+  seed_content?: boolean;
+  seed_flashcards?: boolean;
+}
+
+// Validation function to ensure payload consistency
+export function validateProjectCreateInput(input: any): ProjectCreateInput {
+  const {
+    name,
+    project_type,
+    study_frequency,
+    start_date,
+    end_date,
+    is_draft,
+    important_dates,
+    mock_mode,
+    seed_syllabus,
+    seed_tests,
+    seed_content,
+    seed_flashcards,
+    // Explicitly ignore deprecated fields
+    purpose,
+    goal,
+    collaboration,
+    learningStyle,
+    studyPreference,
+    learningDifficulties,
+    evaluationTypes,
+    courseType,
+    assessmentType,
+    ...rest
+  } = input;
+
+  // Log any unexpected fields for debugging
+  if (Object.keys(rest).length > 0) {
+    console.warn('Unexpected fields in project creation payload:', Object.keys(rest));
+  }
+
+  return {
+    name: name || '',
+    project_type: project_type || 'school',
+    study_frequency,
+    start_date,
+    end_date,
+    is_draft: is_draft ?? true,
+    important_dates,
+    mock_mode: mock_mode ?? false,
+    seed_syllabus: seed_syllabus ?? true,
+    seed_tests: seed_tests ?? true,
+    seed_content: seed_content ?? true,
+    seed_flashcards: seed_flashcards ?? false,
+  };
 }
 
 export interface ProjectType {

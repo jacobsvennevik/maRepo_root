@@ -4,15 +4,9 @@ import { transformBackendData, ExtractedData } from '../utils/transformBackendDa
 
 export interface ProjectSetup {
   projectName: string;
-  purpose: string;
   testLevel: string;
   timeframe: string;
-  goal: string;
   studyFrequency: string;
-  collaboration: string;
-  learningStyle: string[];
-  studyPreference: string[];
-  learningDifficulties: string[];
   uploadedFiles: File[];
   importantDates: Array<{
     id: string;
@@ -23,10 +17,52 @@ export interface ProjectSetup {
   courseFiles: File[];
   testFiles: File[];
   is_draft: boolean;
+  __version?: number; // Add version for migration
+}
+
+// Migration function to handle v1 → v2 upgrades
+function migrateSetup(input: any): ProjectSetup {
+  const version = input?.__version ?? 1;
+  
+  if (version === 2) {
+    return input as ProjectSetup;
+  }
+  
+  // v1 → v2 migration: drop deprecated fields, map what we can, set defaults
+  const { 
+    purpose, 
+    goal, 
+    collaboration, 
+    learningStyle, 
+    studyPreference, 
+    learningDifficulties,
+    evaluationTypes,
+    courseType,
+    assessmentType,
+    ...rest 
+  } = input || {};
+  
+  return {
+    ...rest,
+    __version: 2,
+    // Ensure all required fields have defaults
+    projectName: rest.projectName || '',
+    testLevel: rest.testLevel || '',
+    timeframe: rest.timeframe || '',
+    studyFrequency: rest.studyFrequency || '',
+    uploadedFiles: rest.uploadedFiles || [],
+    importantDates: rest.importantDates || [],
+    courseFiles: rest.courseFiles || [],
+    testFiles: rest.testFiles || [],
+    is_draft: rest.is_draft ?? true,
+  };
 }
 
 export const useGuidedSetupState = (initialSetup: Partial<ProjectSetup> = {}) => {
-  const [setup, setSetup] = useState<ProjectSetup>({ ...DEFAULTS, ...initialSetup });
+  // Migrate any existing setup data
+  const migratedSetup = migrateSetup(initialSetup);
+  
+  const [setup, setSetup] = useState<ProjectSetup>({ ...DEFAULTS, ...migratedSetup });
   const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
   const [syllabusFileName, setSyllabusFileName] = useState<string>('');
   const [contentData, setContentData] = useState<any>(null);
