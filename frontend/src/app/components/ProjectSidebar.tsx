@@ -3,11 +3,31 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useOptionalProject } from "@/app/projects/_context/useOptionalProject";
+import Link from "next/link";
+import {
+  Book,
+  FileText,
+  Brain,
+  ClipboardList,
+  StickyNote,
+  File,
+  BarChart2,
+  ChevronLeft,
+} from "lucide-react";
 
 interface SidebarProps {
   projectId?: string;
   projectName?: string;
 }
+
+const sidebarItems = [
+  { name: "Overview", href: "overview", icon: Book },
+  { name: "Study Materials", href: "materials", icon: FileText },
+  { name: "Flashcards", href: "flashcards", icon: Brain },
+  { name: "Diagnostics", href: "diagnostics", icon: ClipboardList },
+  { name: "Tests", href: "tests", icon: StickyNote },
+  { name: "Settings", href: "settings", icon: File },
+];
 
 export default function ProjectSidebar({
   projectId,
@@ -21,9 +41,9 @@ export default function ProjectSidebar({
 
   return (
     <aside
-      className={`bg-white border-r border-gray-200 transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"}`}
+      className={`mt-8 mx-4 bg-white border border-gray-200 rounded-2xl shadow-lg transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"}`}
     >
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-100 rounded-t-2xl">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <h2 className="text-lg font-semibold text-gray-900 truncate">
@@ -32,7 +52,7 @@ export default function ProjectSidebar({
           )}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+            className="p-1 rounded-lg hover:bg-blue-50 transition-colors"
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {isCollapsed ? (
@@ -68,69 +88,52 @@ export default function ProjectSidebar({
         </div>
       </div>
 
+      {/* Breadcrumbs */}
       {!isCollapsed && (
-        <nav className="p-4 space-y-2">
-          <a
-            href={`/projects/${id}/overview`}
-            className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              pathname === `/projects/${id}/overview`
-                ? "bg-emerald-100 text-emerald-700"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
+        <div className="px-4 py-3 text-sm text-gray-600 border-b border-gray-100">
+          <Link href="/projects" className="hover:text-blue-600 transition-colors">
+            Projects
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="font-medium">{name}</span>
+        </div>
+      )}
+
+      {/* Navigation Items */}
+      <nav className="flex-1 px-3 py-4 space-y-2">
+        {sidebarItems.map((item) => {
+          const isActive = pathname === `/projects/${id}/${item.href}` || 
+                          (pathname === `/projects/${id}` && item.href === "overview");
+          const Icon = item.icon;
+
+          return (
+            <Link
+              key={item.href}
+              href={`/projects/${id}/${item.href}`}
+              className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
+                isActive
+                  ? "bg-blue-100 text-blue-700 shadow-sm"
+                  : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              }`}
+            >
+              <Icon size={20} className="mr-3 flex-shrink-0" />
+              {!isCollapsed && <span>{item.name}</span>}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Back to Projects */}
+      {!isCollapsed && (
+        <div className="p-4 border-t border-gray-100 rounded-b-2xl">
+          <Link
+            href="/projects"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors"
           >
-            Overview
-          </a>
-          <a
-            href={`/projects/${id}/materials`}
-            className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              pathname === `/projects/${id}/materials`
-                ? "bg-emerald-100 text-emerald-700"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            Study Materials
-          </a>
-          <a
-            href={`/projects/${id}/flashcards`}
-            className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              pathname === `/projects/${id}/flashcards`
-                ? "bg-emerald-100 text-emerald-700"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            Flashcards
-          </a>
-          <a
-            href={`/projects/${id}/diagnostics`}
-            className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              pathname.startsWith(`/projects/${id}/diagnostics`)
-                ? "bg-emerald-100 text-emerald-700"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            Diagnostics
-          </a>
-          <a
-            href={`/projects/${id}/tests`}
-            className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              pathname === `/projects/${id}/tests`
-                ? "bg-emerald-100 text-emerald-700"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            Tests
-          </a>
-          <a
-            href={`/projects/${id}/settings`}
-            className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              pathname === `/projects/${id}/settings`
-                ? "bg-emerald-100 text-emerald-700"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            Settings
-          </a>
-        </nav>
+            <ChevronLeft size={16} className="mr-2" />
+            <span>Back to All Projects</span>
+          </Link>
+        </div>
       )}
     </aside>
   );
