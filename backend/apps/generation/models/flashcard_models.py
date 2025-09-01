@@ -12,6 +12,9 @@ class FlashcardSet(models.Model):
     """
     document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name="flashcards", null=True, blank=True)
     title = models.CharField(max_length=255, default="Untitled Flashcard Set")  # Default title
+    description = models.TextField(blank=True, default="")
+    learning_objectives = models.JSONField(default=list, blank=True)
+    themes = models.JSONField(default=list, blank=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -60,6 +63,34 @@ class Flashcard(models.Model):
     
     # Optional Metrics (Phase 2) - Store in JSONB to avoid schema churn
     metrics = models.JSONField(default=dict, blank=True)  # memory_strength, difficulty_rating, tags, etc.
+    
+    # Enhanced fields from migration
+    bloom_level = models.CharField(
+        choices=[('apply', 'Apply'), ('analyze', 'Analyze'), ('evaluate', 'Evaluate'), ('create', 'Create')], 
+        default='apply', 
+        max_length=15
+    )
+    card_type = models.CharField(
+        choices=[
+            ('definition', 'Definition'), ('application', 'Application'), ('analysis', 'Analysis'), 
+            ('synthesis', 'Synthesis'), ('evaluation', 'Evaluation'), ('problem_solving', 'Problem Solving'), 
+            ('comparison', 'Comparison'), ('critique', 'Critique'), ('cloze', 'Cloze'), ('scenario', 'Scenario')
+        ], 
+        default='definition', 
+        max_length=20
+    )
+    common_misconceptions = models.JSONField(blank=True, default=list)
+    concept_id = models.CharField(blank=True, default='', max_length=255)
+    difficulty = models.CharField(
+        choices=[('medium', 'Medium'), ('hard', 'Hard'), ('expert', 'Expert')], 
+        default='medium', 
+        max_length=10
+    )
+    examples = models.JSONField(blank=True, default=list)
+    hints = models.JSONField(blank=True, default=list)
+    learning_objective = models.CharField(blank=True, default='', max_length=500)
+    related_concepts = models.JSONField(blank=True, default=list)
+    theme = models.CharField(blank=True, default='', max_length=100)
     
     class Meta:
         ordering = ['next_review', 'updated_at']
