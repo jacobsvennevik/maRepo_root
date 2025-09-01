@@ -23,6 +23,7 @@ class FlashcardSetFactory(DjangoModelFactory):
 
     owner = factory.SubFactory(CustomUserFactory)
     title = factory.Faker('sentence')
+    description = factory.Faker('paragraph')
     document = factory.SubFactory(DocumentFactory)
 
 from backend.apps.generation.models import FlashcardSet
