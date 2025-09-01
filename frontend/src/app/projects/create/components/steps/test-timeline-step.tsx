@@ -84,6 +84,7 @@ export function TestTimelineStep({
     } finally {
       setIsAnalyzing(false);
     }
+  };
 
   const handleTestDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -113,6 +114,7 @@ export function TestTimelineStep({
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -122,12 +124,15 @@ export function TestTimelineStep({
       month: 'short', 
       day: 'numeric' 
     });
+  };
 
   const getDateTypeLabel = (value: string) => {
     return dateTypeOptions.find(opt => opt.value === value)?.label || value;
+  };
 
   const getDateTypeColor = (value: string) => {
     return dateTypeOptions.find(opt => opt.value === value)?.color || 'bg-gray-100 text-gray-800';
+  };
 
   return (
     <div className="space-y-6">
@@ -351,8 +356,4 @@ export function TestTimelineStep({
       </Tabs>
     </div>
   );
-} }
-}
-}
-}
 }

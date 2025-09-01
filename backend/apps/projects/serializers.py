@@ -6,6 +6,26 @@ from decouple import config
 User = get_user_model()
 
 
+class ProjectCreateInput(serializers.Serializer):
+    """Input serializer for project creation with mock mode flags."""
+    name = serializers.CharField()
+    project_type = serializers.CharField(required=False, default="self_study")
+    course_name = serializers.CharField(required=False, allow_blank=True)
+    goal_description = serializers.CharField(required=False, allow_blank=True)
+    study_frequency = serializers.CharField(required=False, allow_blank=True)
+    start_date = serializers.DateField(required=False)
+    end_date = serializers.DateField(required=False)
+    is_draft = serializers.BooleanField(required=False, default=True)
+
+    # Mock flags (write-only, not model fields)
+    mock_mode = serializers.BooleanField(required=False, default=False)
+    mock_bypass_content = serializers.BooleanField(required=False, default=False)
+    seed_syllabus = serializers.BooleanField(required=False, default=True)
+    seed_tests = serializers.BooleanField(required=False, default=True)
+    seed_content = serializers.BooleanField(required=False, default=True)
+    seed_flashcards = serializers.BooleanField(required=False, default=False)
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

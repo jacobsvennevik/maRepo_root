@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { AuthService } from "@/app/(auth)/services/auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -10,23 +10,16 @@ interface AuthGuardProps {
 }
 
 export function AuthGuard({ children, fallback }: AuthGuardProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    const checkAuth = () => {
-      const authenticated = AuthService.isAuthenticated();
-      setIsAuthenticated(authenticated);
-      
-      if (!authenticated) {
-        router.push("/login");
-      }
-    };
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, isLoading, router]);
 
-    checkAuth();
-  }, [router]);
-
-  if (isAuthenticated === null) {
+  if (isLoading) {
     return fallback || (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
@@ -39,7 +32,7 @@ export function AuthGuard({ children, fallback }: AuthGuardProps) {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Redirecting to login...</p>
+          <p className="text-center text-gray-600">Redirecting to login...</p>
         </div>
       </div>
     );

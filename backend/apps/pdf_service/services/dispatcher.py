@@ -1,7 +1,6 @@
 from ..django_models import Document, ProcessedData
 from ..constants import DocumentType
 from backend.apps.generation.services.api_client import AIClient
-from backend.apps.generation.services.mock_ai_client import MockAIClient
 from .classification_service import DocumentClassifierService
 from ..processors.base import BaseProcessor
 from ..processors.syllabus import SyllabusProcessorService
@@ -27,13 +26,12 @@ class DocumentDispatcher:
             (request and request.headers.get('X-Test-Mode') == 'true')
         )
         
-        # Use mock AI client in test mode, real AI client otherwise
+        # Instantiate a single AIClient; it will route mock vs real internally based on env/header
+        client = AIClient(model=model_name, request=request)
         if is_test_mode:
-            print("🧪 TEST MODE: Using MockAIClient for AI processing")
-            client = MockAIClient(model="mock-model")
+            print("🧪 TEST MODE: AIClient will serve mock outputs")
         else:
-            print("🚀 PRODUCTION MODE: Using real AIClient for AI processing")
-            client = AIClient(model=model_name)
+            print("🚀 PRODUCTION MODE: AIClient will call real provider")
 
         self.classifier = DocumentClassifierService(client=client)
         self.processors = {

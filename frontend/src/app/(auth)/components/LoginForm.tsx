@@ -63,8 +63,8 @@ export function LoginForm({
       });
 
       // Verify tokens were stored
-      const authToken = localStorage.getItem("authToken");
-      const refreshToken = localStorage.getItem("refreshToken");
+      const authToken = localStorage.getItem("access_token");
+      const refreshToken = localStorage.getItem("refresh_token");
 
       if (!authToken || !refreshToken) {
         throw new Error("Login succeeded but tokens were not stored");

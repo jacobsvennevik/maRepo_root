@@ -36,6 +36,7 @@ urlpatterns = [
     # API
     path('api/', include(router.urls)),
     path('api/pdf_service/', include('backend.apps.pdf_service.api_urls')),
+    path('api/', include('backend.apps.pdf_service.urls')),  # Include upload endpoints
     path('api/auth/', include('rest_framework.urls')),
 
     # App URLs

@@ -8,8 +8,8 @@ from datetime import timedelta
 from django.core.cache import cache
 from django.db import transaction
 from .models import Project, UploadedFile
-from .serializers import ProjectSerializer, UploadedFileSerializer
-from .services import process_uploaded_file
+from .serializers import ProjectSerializer, UploadedFileSerializer, ProjectCreateInput
+from .services import process_uploaded_file, seed_project_artifacts
 from .tasks import generate_project_meta
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -50,14 +50,58 @@ class ProjectViewSet(viewsets.ModelViewSet):
         
         return base_queryset
 
+    def create(self, request, *args, **kwargs):
+        """
+        Override create to handle mock mode flags before serializer validation.
+        """
+        # 1) Validate input incl. flags
+        input_ser = ProjectCreateInput(data=request.data)
+        input_ser.is_valid(raise_exception=True)
+        v = input_ser.validated_data
+
+        # Extract flags (defaulting already applied)
+        mock_mode = v.pop("mock_mode")
+        mock_bypass = v.pop("mock_bypass_content")
+        seed_syl = v.pop("seed_syllabus")
+        seed_tests = v.pop("seed_tests")
+        seed_content = v.pop("seed_content")
+        seed_fc = v.pop("seed_flashcards")
+
+        # 2) Create project with only model fields
+        with transaction.atomic():
+            project = Project.objects.create(owner=request.user, **v)
+
+            # 3) Seed (mock only LLM calls)
+            if mock_mode:
+                try:
+                    seed_project_artifacts(
+                        project,
+                        request=request,
+                        mock_mode=True,
+                        mock_bypass_content=mock_bypass,
+                        enable_flashcards=seed_fc,
+                    )
+                except ValueError as e:
+                    # Content required and not provided
+                    logger.warning("Seeding aborted for project %s: %s", project.id, e)
+                except Exception as e:
+                    logger.error("Failed to seed artifacts for project %s: %s", project.id, e)
+
+        # 4) Return standard output shape
+        out = ProjectSerializer(project).data
+        return Response(out, status=status.HTTP_201_CREATED)
+
+
+
     def perform_create(self, serializer):
         """
-        Assign the current user as the owner of the project.
-        The serializer handles both legacy and nested STI data automatically.
+        This method is no longer used since we override create() directly.
+        Kept for compatibility but seeding is now handled in create().
         """
         logger.info(f"User {self.request.user.id} started creating a project.")
         serializer.save(owner=self.request.user)
-        logger.info(f"User {self.request.user.id} successfully created project {serializer.instance.id}.")
+        project = serializer.instance
+        logger.info(f"User {self.request.user.id} successfully created project {project.id}.")
 
     def perform_update(self, serializer):
         """

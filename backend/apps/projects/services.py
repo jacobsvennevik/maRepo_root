@@ -1,4 +1,6 @@
-from backend.apps.projects.models import UploadedFile, Extraction
+from backend.apps.projects.models import UploadedFile, Extraction, ProjectMeta
+from backend.apps.generation.services.api_client import AIClient, Task
+from django.conf import settings
 from backend.apps.pdf_service.ingestion import ingest_pdf
 import logging
 
@@ -91,3 +93,66 @@ def process_uploaded_file(uploaded_file_id: str):
     logger.info(f"Project {project.id} updated with extracted data.")
 
     return extraction 
+
+
+def seed_project_artifacts(project, *, request=None, mock_mode: bool = False, mock_bypass_content: bool = False, enable_flashcards: bool = True):
+    """
+    Seed syllabus/tests/content (and optional flashcards) into ProjectMeta using AIClient.
+    - Uses real pipeline for uploads/raw_text; this only mocks the LLM if mock_mode=True.
+    - If mock_mode and no content is available and mock_bypass_content=False, raises ValueError.
+    """
+    logger.info("Seeding project artifacts: project=%s mock_mode=%s", project.id, mock_mode)
+
+    # Gather content from the latest uploaded file (if any)
+    latest_file = (
+        UploadedFile.objects.filter(project=project)
+        .order_by('-uploaded_at')
+        .first()
+    )
+
+    content = (latest_file.raw_text or "") if latest_file else ""
+
+    if mock_mode and not mock_bypass_content and not content:
+        raise ValueError("Content required in mock mode unless mock_bypass_content=true")
+
+    payload = {
+        "title": project.name,
+        "content": content[:20000],  # defensive truncate
+    }
+
+    client = AIClient(model=getattr(settings, 'DEFAULT_AI_MODEL', 'gemini-1.5-flash'), request=request)
+
+    # Call tasks
+    syllabus_data = client.call(task=Task.SYLLABUS, payload=payload, mock_mode=mock_mode)
+    tests_data = client.call(task=Task.TEST, payload=payload, mock_mode=mock_mode)
+    content_data = client.call(task=Task.CONTENT, payload=payload, mock_mode=mock_mode)
+    flashcards_data = None
+    if enable_flashcards:
+        try:
+            flashcards_data = client.call(task=Task.FLASHCARDS, payload=payload, mock_mode=mock_mode)
+        except Exception as e:
+            logger.warning("Flashcards generation skipped: %s", e)
+
+    # Persist via ProjectMeta
+    ProjectMeta.objects.update_or_create(
+        project=project, key='syllabus', defaults={'value': syllabus_data}
+    )
+    ProjectMeta.objects.update_or_create(
+        project=project, key='tests', defaults={'value': tests_data}
+    )
+    ProjectMeta.objects.update_or_create(
+        project=project, key='content', defaults={'value': content_data}
+    )
+    if flashcards_data is not None:
+        ProjectMeta.objects.update_or_create(
+            project=project, key='flashcards', defaults={'value': flashcards_data}
+        )
+
+    logger.info("Seeded artifacts for project=%s (syllabus/tests/content%s)", project.id, 
+                "+flashcards" if flashcards_data is not None else "")
+    return {
+        'syllabus': syllabus_data,
+        'tests': tests_data,
+        'content': content_data,
+        'flashcards': flashcards_data,
+    }

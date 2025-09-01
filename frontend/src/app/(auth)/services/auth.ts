@@ -1,7 +1,5 @@
 import axiosInstance from "@/lib/axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
 export interface LoginCredentials {
   email: string;
   password: string;
@@ -31,16 +29,19 @@ export class AuthService {
 
       // Store the tokens
       try {
-        localStorage.setItem("authToken", response.data.access);
-        localStorage.setItem("refreshToken", response.data.refresh);
+        localStorage.setItem("access_token", response.data.access);
+        localStorage.setItem("refresh_token", response.data.refresh);
 
         // Verify storage
-        const storedAuthToken = localStorage.getItem("authToken");
-        const storedRefreshToken = localStorage.getItem("refreshToken");
+        const storedAuthToken = localStorage.getItem("access_token");
+        const storedRefreshToken = localStorage.getItem("refresh_token");
 
         if (!storedAuthToken || !storedRefreshToken) {
           throw new Error("Failed to store tokens in localStorage");
         }
+
+        // Dispatch custom event to notify auth state change
+        window.dispatchEvent(new Event('auth-change'));
       } catch (storageError) {
         throw new Error("Failed to store authentication tokens");
       }
@@ -56,18 +57,21 @@ export class AuthService {
 
   static logout(): void {
     try {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
 
       // Verify removal
-      const authToken = localStorage.getItem("authToken");
-      const refreshToken = localStorage.getItem("refreshToken");
+      const authToken = localStorage.getItem("access_token");
+      const refreshToken = localStorage.getItem("refresh_token");
+
+      // Dispatch custom event to notify auth state change
+      window.dispatchEvent(new Event('auth-change'));
     } catch (error) {}
   }
 
   static isAuthenticated(): boolean {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("access_token");
       return !!token;
     } catch (error) {
       return false;
@@ -76,7 +80,7 @@ export class AuthService {
 
   static getRefreshToken(): string | null {
     try {
-      const token = localStorage.getItem("refreshToken");
+      const token = localStorage.getItem("refresh_token");
       return token;
     } catch (error) {
       return null;
@@ -85,7 +89,7 @@ export class AuthService {
 
   static getAuthToken(): string | null {
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("access_token");
       return token;
     } catch (error) {
       return null;
@@ -94,7 +98,7 @@ export class AuthService {
 
   static async refreshToken(): Promise<void> {
     try {
-      const refreshToken = localStorage.getItem("refreshToken");
+      const refreshToken = localStorage.getItem("refresh_token");
       if (!refreshToken) {
         throw new Error("No refresh token available");
       }
@@ -106,10 +110,13 @@ export class AuthService {
         },
       );
 
-      localStorage.setItem("authToken", response.data.access);
+      localStorage.setItem("access_token", response.data.access);
 
       // Verify storage
-      const newToken = localStorage.getItem("authToken");
+      const newToken = localStorage.getItem("access_token");
+
+      // Dispatch custom event to notify auth state change
+      window.dispatchEvent(new Event('auth-change'));
     } catch (error) {
       this.logout();
       throw new Error("Session expired. Please login again.");

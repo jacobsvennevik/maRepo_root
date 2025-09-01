@@ -8,7 +8,7 @@ import {
   User, Trophy, Brain, Heart, Eye, Ear, HandIcon, PenTool,
   Coffee, Moon, Sun, Zap, Smartphone, Monitor, Gamepad2,
   Sparkles, Rocket, Star, TrendingUp, Award, Waves, Activity,
-  CheckCircle, Eye as EyeIcon, BookOpen as BookOpenIcon
+  CheckCircle, Eye as EyeIcon, BookOpen as BookOpenIcon, BookMarked
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,6 +56,12 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
         goal_description: setup.goal,
         study_frequency: setup.studyFrequency,
         important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
+        // Mock mode flags for backend AI mocking
+        mock_mode: true,
+        seed_syllabus: true,
+        seed_tests: true,
+        seed_content: true,
+        seed_flashcards: false,
         // Add other fields from the 'setup' object as needed
       };
 
@@ -561,6 +567,12 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
         goal_description: setup.goal,
         study_frequency: setup.studyFrequency,
         important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
+        // Mock mode flags for backend AI mocking
+        mock_mode: true,
+        seed_syllabus: true,
+        seed_tests: true,
+        seed_content: true,
+        seed_flashcards: false,
         // Add other fields from the 'setup' object as needed
       };
 
@@ -804,6 +816,12 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
         goal_description: setup.goal,
         study_frequency: setup.studyFrequency,
         important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
+        // Mock mode flags for backend AI mocking
+        mock_mode: true,
+        seed_syllabus: true,
+        seed_tests: true,
+        seed_content: true,
+        seed_flashcards: false,
         // Add other fields from the 'setup' object as needed
       };
 
