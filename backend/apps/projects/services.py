@@ -131,6 +131,7 @@ def process_uploaded_file(uploaded_file_id: str) -> Optional[Dict[str, Any]]:
     2. Processes content based on file type
     3. Handles failures gracefully
     4. Updates processing status and errors
+    5. Ensures idempotency (can't be processed twice)
     """
     try:
         uploaded_file = UploadedFile.objects.get(id=uploaded_file_id)
@@ -138,10 +139,24 @@ def process_uploaded_file(uploaded_file_id: str) -> Optional[Dict[str, Any]]:
         logger.error(f"UploadedFile with id {uploaded_file_id} not found.")
         return None
 
-    # Update processing status
-    uploaded_file.processing_status = 'processing'
-    uploaded_file.processing_started_at = timezone.now()
-    uploaded_file.save(update_fields=['processing_status', 'processing_started_at'])
+    # IDEMPOTENCY CHECK: Only process if in pending/failed state
+    # Use atomic update to prevent race conditions
+    from django.db import transaction
+    with transaction.atomic():
+        rows_updated = UploadedFile.objects.filter(
+            id=uploaded_file_id,
+            processing_status__in=['pending', 'failed']
+        ).update(
+            processing_status='processing',
+            processing_started_at=timezone.now()
+        )
+        
+        if rows_updated == 0:
+            logger.info(f"File {uploaded_file_id} already being processed or in terminal state")
+            return None
+        
+        # Refresh the object to get updated status
+        uploaded_file.refresh_from_db()
 
     try:
         # Get file info
@@ -218,6 +233,9 @@ def process_uploaded_file(uploaded_file_id: str) -> Optional[Dict[str, Any]]:
                 uploaded_file.processing_completed_at = timezone.now()
                 uploaded_file.save(update_fields=['processing_status', 'processing_completed_at'])
 
+                # Log structured success
+                logger.info(f"event=upload_processed file_id={uploaded_file_id} project_id={project.id} status=completed content_type={mime_type} duration_ms={(timezone.now() - uploaded_file.processing_started_at).total_seconds() * 1000:.0f}")
+
                 return {
                     'extraction': extraction,
                     'project_updated': True,
@@ -230,6 +248,10 @@ def process_uploaded_file(uploaded_file_id: str) -> Optional[Dict[str, Any]]:
                 uploaded_file.processing_status = 'failed'
                 uploaded_file.processing_completed_at = timezone.now()
                 uploaded_file.save(update_fields=['processing_error', 'processing_status', 'processing_completed_at'])
+                
+                # Log structured failure
+                logger.error(f"event=upload_processed file_id={uploaded_file_id} project_id={uploaded_file.project.id} status=failed content_type={mime_type} duration_ms={(timezone.now() - uploaded_file.processing_started_at).total_seconds() * 1000:.0f} error='{str(e)}'")
+                
                 return None
 
         else:
@@ -238,6 +260,10 @@ def process_uploaded_file(uploaded_file_id: str) -> Optional[Dict[str, Any]]:
             uploaded_file.processing_error = "No text content could be extracted"
             uploaded_file.processing_completed_at = timezone.now()
             uploaded_file.save(update_fields=['processing_status', 'processing_error', 'processing_completed_at'])
+            
+            # Log structured failure
+            logger.error(f"event=upload_processed file_id={uploaded_file_id} project_id={uploaded_file.project.id} status=failed content_type={mime_type} duration_ms={(timezone.now() - uploaded_file.processing_started_at).total_seconds() * 1000:.0f} error='No text content could be extracted'")
+            
             return None
 
     except Exception as e:
@@ -246,6 +272,10 @@ def process_uploaded_file(uploaded_file_id: str) -> Optional[Dict[str, Any]]:
         uploaded_file.processing_status = 'failed'
         uploaded_file.processing_completed_at = timezone.now()
         uploaded_file.save(update_fields=['processing_error', 'processing_status', 'processing_completed_at'])
+        
+        # Log structured failure
+        logger.error(f"event=upload_processed file_id={uploaded_file_id} project_id={uploaded_file.project.id} status=failed content_type={mime_type} duration_ms={(timezone.now() - uploaded_file.processing_started_at).total_seconds() * 1000:.0f} error='{str(e)}'")
+        
         return None
 
 

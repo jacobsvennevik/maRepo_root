@@ -1,4 +1,4 @@
-import { http } from '@/lib/http';
+import { axiosApi } from '@/lib/axios-api';
 import type { 
   Flashcard, 
   FlashcardSet, 
@@ -16,7 +16,8 @@ class FlashcardApiService {
     console.log('→ GET /projects/${projectId}/flashcard-sets/');
 
     try {
-      const data = await http.get<FlashcardSetApiResponse | FlashcardSet[]>(`/projects/${projectId}/flashcard-sets/`);
+      const response = await axiosApi.get<FlashcardSetApiResponse | FlashcardSet[]>(`/projects/${projectId}/flashcard-sets/`);
+      const data = response.data;
       console.log('✅ Payload:', data);
       
       // Handle different response formats
@@ -38,8 +39,11 @@ class FlashcardApiService {
     console.log('→ Payload:', form);
 
     try {
-      const data = await http.post<FlashcardSet>(`/projects/${projectId}/flashcard-sets/`, { title: form.title });
+      // Create flashcard set for the specific project
+      const response = await axiosApi.post<FlashcardSet>(`/projects/${projectId}/flashcard-sets/`, { title: form.title });
+      const data = response.data;
       console.log('✅ Created set:', data);
+      
       return data;
     } catch (err) {
       console.error('❌ Create failure:', err);
@@ -54,7 +58,7 @@ class FlashcardApiService {
     console.log('→ DELETE /flashcard-sets/${setId}/');
 
     try {
-      await http.delete(`/flashcard-sets/${setId}/`);
+      await axiosApi.delete(`/flashcard-sets/${setId}/`);
       console.log('✅ Set deleted successfully');
     } catch (err) {
       console.error('❌ Delete failure:', err);
@@ -70,7 +74,7 @@ class FlashcardApiService {
     console.log('→ GET /flashcards/?flashcard_set=${setId}');
 
     try {
-      const data = await http.get<FlashcardApiResponse | Flashcard[]>(`/flashcards/?flashcard_set=${setId}`);
+      const data = await axiosApi.get<FlashcardApiResponse | Flashcard[]>(`/flashcards/?flashcard_set=${setId}`);
       console.log('✅ Payload:', data);
       
       // Handle different response formats
@@ -97,7 +101,7 @@ class FlashcardApiService {
         flashcard_set: setId
       };
 
-      const data = await http.post<Flashcard>(`/flashcards/`, payload);
+      const data = await axiosApi.post<Flashcard>(`/flashcards/`, payload);
       console.log('✅ Created flashcard:', data);
       return data;
     } catch (err) {
@@ -110,11 +114,11 @@ class FlashcardApiService {
 
   async updateFlashcard(cardId: number, form: Partial<CreateFlashcardForm>): Promise<Flashcard | null> {
     console.group('🔍 Update Flashcard API');
-    console.log('→ PUT /flashcards/${cardId}/');
+    console.log('→ PUT /api/flashcards/${cardId}/');
     console.log('→ Payload:', form);
 
     try {
-      const data = await http.put<Flashcard>(`/flashcards/${cardId}/`, form);
+      const data = await axiosApi.put<Flashcard>(`/flashcards/${cardId}/`, form);
       console.log('✅ Updated flashcard:', data);
       return data;
     } catch (err) {
@@ -127,10 +131,10 @@ class FlashcardApiService {
 
   async deleteFlashcard(cardId: number): Promise<void> {
     console.group('🔍 Delete Flashcard API');
-    console.log('→ DELETE /flashcards/${cardId}/');
+    console.log('→ DELETE /api/flashcards/${cardId}/');
 
     try {
-      await http.delete(`/flashcards/${cardId}/`);
+      await axiosApi.delete(`/flashcards/${cardId}/`);
       console.log('✅ Flashcard deleted successfully');
     } catch (err) {
       console.error('❌ Delete failure:', err);
@@ -143,11 +147,11 @@ class FlashcardApiService {
   // Study Operations
   async markCardReviewed(cardId: number, wasCorrect: boolean): Promise<void> {
     console.group('🔍 Mark Card Reviewed API');
-    console.log('→ POST /flashcards/${cardId}/review/');
+    console.log('→ POST /api/flashcards/${cardId}/review/');
     console.log('→ Was correct:', wasCorrect);
 
     try {
-      await http.post(`/flashcards/${cardId}/review/`, { was_correct: wasCorrect });
+      await axiosApi.post(`/flashcards/${cardId}/review/`, { was_correct: wasCorrect });
       console.log('✅ Card review recorded');
     } catch (err) {
       console.error('❌ Review failure:', err);

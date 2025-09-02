@@ -1,4 +1,4 @@
-import axiosInstance from "@/lib/axios";
+import { axiosAuth } from "@/lib/axios-auth";
 
 export interface LoginCredentials {
   email: string;
@@ -18,7 +18,7 @@ export class AuthService {
         throw new Error("localStorage is not available");
       }
 
-      const response = await axiosInstance.post<AuthResponse>("/api/token/", {
+      const response = await axiosAuth.post<AuthResponse>("/token", {
         email: credentials.email,
         password: credentials.password,
       });
@@ -103,8 +103,8 @@ export class AuthService {
         throw new Error("No refresh token available");
       }
 
-      const response = await axiosInstance.post<AuthResponse>(
-        "/api/token/refresh/",
+      const response = await axiosAuth.post<AuthResponse>(
+        "/token/refresh",
         {
           refresh: refreshToken,
         },

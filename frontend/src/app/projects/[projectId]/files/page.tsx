@@ -16,6 +16,9 @@ interface ProjectFile {
   content_hash: string;
   raw_text: string;
   file_size: number;
+  original_name: string;
+  content_type: string;
+  processing_status: string;
 }
 
 interface Project {
@@ -248,7 +251,7 @@ export default function ProjectFiles() {
             <CardContent className="p-0">
               <div className="divide-y divide-gray-200">
                 {files.map((file) => {
-                  const { fileName, extension } = getFileInfo(file.file);
+                  const { fileName, extension } = getFileInfo(file.original_name || file.file);
                   return (
                     <div key={file.id} className="flex items-center justify-between p-4 hover:bg-gray-50">
                       <div className="flex items-center space-x-3">

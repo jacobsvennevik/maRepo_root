@@ -27,8 +27,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         """
         Return the appropriate serializer based on the ENABLE_STI setting.
+        For detail actions (retrieve, update, partial_update), use ProjectDetailSerializer
+        to include related data like uploaded_files.
         """
         from decouple import config
+        from .serializers import ProjectDetailSerializer
+        
+        # For detail actions, always use ProjectDetailSerializer to include uploaded_files
+        if self.action in ['retrieve', 'update', 'partial_update']:
+            return ProjectDetailSerializer
+        
+        # For list actions, use the base serializer
         enable_sti = config('ENABLE_STI', default=False, cast=bool)
         
         if enable_sti:
@@ -46,7 +55,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         
         if enable_sti:
             # When STI is enabled, prefetch metadata
-            return base_queryset.prefetch_related('metadata')
+            base_queryset = base_queryset.prefetch_related('metadata')
+        
+        # For detail actions, also prefetch uploaded_files to avoid N+1 queries
+        if self.action in ['retrieve', 'update', 'partial_update']:
+            base_queryset = base_queryset.prefetch_related('uploaded_files')
         
         return base_queryset
 
@@ -197,6 +210,26 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 'error': 'An error occurred while cleaning up draft projects'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def cleanup_metrics(self, request):
+        """
+        Get cleanup metrics for monitoring
+        """
+        try:
+            cleaned_count = cache.get('drafts_cleaned_count', 0)
+            active_drafts = cache.get('drafts_active_total', 0)
+            
+            return Response({
+                'drafts_cleaned_count': cleaned_count,
+                'drafts_active_total': active_drafts,
+                'last_updated': timezone.now().isoformat()
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Error getting cleanup metrics: {str(e)}")
+            return Response({
+                'error': 'Failed to retrieve metrics'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     def _update_cleanup_metrics(self, deleted_count: int):
         """
         Update metrics for monitoring cleanup operations
@@ -214,6 +247,222 @@ class ProjectViewSet(viewsets.ModelViewSet):
             logger.info(f"Updated metrics: cleaned={current_count + deleted_count}, active={active_drafts}")
         except Exception as e:
             logger.warn(f"Failed to update cleanup metrics: {e}")
+
+    @action(
+        detail=True, 
+        methods=['get', 'post'], 
+        permission_classes=[permissions.IsAuthenticated],
+        url_path="flashcard-sets",
+        url_name="flashcard-sets"
+    )
+    def flashcard_sets(self, request, pk=None):
+        """
+        RESTful flashcard-sets endpoint for projects.
+        GET: List flashcard sets for the project
+        POST: Create and link a flashcard set to the project (idempotent)
+        """
+        project = self.get_object()
+        
+        # Authorization: only project owner can access
+        if project.owner != request.user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        if request.method == 'GET':
+            return self._list_flashcard_sets(project, request)
+        elif request.method == 'POST':
+            return self._create_flashcard_set(project, request)
+    
+    def _list_flashcard_sets(self, project, request):
+        """List flashcard sets for the project with stats."""
+        try:
+            from backend.apps.projects.models import ProjectFlashcardSet
+            from backend.apps.generation.models import FlashcardSet, Flashcard
+            from django.db import models
+            
+            # Get flashcard sets linked to this project with stats
+            project_flashcard_sets = ProjectFlashcardSet.objects.filter(
+                project=project,
+                flashcard_set__owner=request.user
+            ).select_related('flashcard_set')
+            
+            flashcard_sets = [pfs.flashcard_set for pfs in project_flashcard_sets]
+            
+            # Calculate stats for each flashcard set
+            sets_with_stats = []
+            for flashcard_set in flashcard_sets:
+                cards = Flashcard.objects.filter(flashcard_set=flashcard_set)
+                total_cards = cards.count()
+                due_cards = cards.filter(next_review__lte=timezone.now()).count()
+                learning_cards = cards.filter(learning_state='learning').count()
+                review_cards = cards.filter(learning_state='review').count()
+                new_cards = cards.filter(learning_state='new').count()
+                
+                # Calculate average accuracy
+                total_reviews = cards.aggregate(total=models.Sum('total_reviews'))['total'] or 0
+                correct_reviews = cards.aggregate(total=models.Sum('correct_reviews'))['total'] or 0
+                average_accuracy = (correct_reviews / total_reviews * 100) if total_reviews > 0 else 0
+                
+                sets_with_stats.append({
+                    'id': flashcard_set.id,
+                    'title': flashcard_set.title,
+                    'description': flashcard_set.description,
+                    'created_at': flashcard_set.created_at.isoformat(),
+                    'total_cards': total_cards,
+                    'due_cards': due_cards,
+                    'learning_cards': learning_cards,
+                    'review_cards': review_cards,
+                    'new_cards': new_cards,
+                    'average_accuracy': round(average_accuracy, 1)
+                })
+            
+            return Response({
+                'results': sets_with_stats,
+                'count': len(sets_with_stats),
+                'next': None,
+                'previous': None
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Error listing flashcard sets for project {project.id}: {str(e)}")
+            return Response({
+                'error': 'Failed to retrieve flashcard sets'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def _create_flashcard_set(self, project, request):
+        """Create and link a flashcard set to the project (idempotent)."""
+        try:
+            from backend.apps.generation.models import FlashcardSet, Flashcard
+            from backend.apps.projects.models import ProjectFlashcardSet
+            from django.urls import reverse
+            
+            # Validate input
+            title = request.data.get('title')
+            if not title:
+                return Response({
+                    'error': 'Title is required'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Get flashcards data
+            flashcards_data = request.data.get('flashcards', [])
+            
+            with transaction.atomic():
+                # Create or get the flashcard set (idempotent)
+                flashcard_set, created = FlashcardSet.objects.get_or_create(
+                    title=title,
+                    owner=request.user,
+                    defaults={
+                        'description': request.data.get('description', ''),
+                    }
+                )
+                
+                # Create or get the project link (idempotent)
+                project_link, link_created = ProjectFlashcardSet.objects.get_or_create(
+                    project=project,
+                    flashcard_set=flashcard_set,
+                    defaults={
+                        'is_primary': True
+                    }
+                )
+                
+                # Only create flashcards if this is a new set
+                if created and flashcards_data:
+                    for card_data in flashcards_data:
+                        Flashcard.objects.create(
+                            flashcard_set=flashcard_set,
+                            question=card_data.get('front', ''),
+                            answer=card_data.get('back', ''),
+                            # Set default values for spaced repetition fields
+                            learning_state='new',
+                            next_review=timezone.now(),
+                            algorithm='sm2',
+                            ease_factor=2.5,
+                            interval=1,
+                            repetitions=0
+                        )
+            
+            # Prepare response
+            response_data = {
+                'id': flashcard_set.id,
+                'title': flashcard_set.title,
+                'description': flashcard_set.description,
+                'created_at': flashcard_set.created_at.isoformat(),
+                'linked': True,
+                'created': created,
+                'link_created': link_created
+            }
+            
+            # Set Location header for RESTful compliance
+            headers = {
+                'Location': f'/api/flashcard-sets/{flashcard_set.id}/'
+            }
+            
+            # Return appropriate status code
+            status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+            
+            return Response(response_data, status=status_code, headers=headers)
+            
+        except Exception as e:
+            logger.error(f"Error creating flashcard set for project {project.id}: {str(e)}")
+            return Response({
+                'error': 'Failed to create flashcard set'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
+    def flashcards_due(self, request, pk=None):
+        """
+        Get due flashcards for a specific project.
+        """
+        try:
+            project = self.get_object()
+            
+            # Get query parameters
+            limit = int(request.query_params.get('limit', 20))
+            algorithm = request.query_params.get('algorithm', 'sm2')
+            
+            # Get flashcard sets linked to this project
+            from backend.apps.projects.models import ProjectFlashcardSet
+            from backend.apps.generation.models import Flashcard
+            
+            project_flashcard_sets = ProjectFlashcardSet.objects.filter(
+                project=project,
+                flashcard_set__owner=request.user
+            ).values_list('flashcard_set_id', flat=True)
+            
+            # Get due flashcards
+            due_cards = Flashcard.objects.filter(
+                flashcard_set_id__in=project_flashcard_sets,
+                next_review__lte=timezone.now()
+            ).order_by('next_review')[:limit]
+            
+            # Calculate stats
+            total_cards = Flashcard.objects.filter(
+                flashcard_set_id__in=project_flashcard_sets
+            ).count()
+            
+            due_count = Flashcard.objects.filter(
+                flashcard_set_id__in=project_flashcard_sets,
+                next_review__lte=timezone.now()
+            ).count()
+            
+            learning_count = Flashcard.objects.filter(
+                flashcard_set_id__in=project_flashcard_sets,
+                learning_state='learning'
+            ).count()
+            
+            return Response({
+                'project_id': str(project.id),
+                'total_cards': total_cards,
+                'due_cards': due_count,
+                'learning_cards': learning_count,
+                'session_cards': [],  # TODO: Implement session cards
+                'session_start': timezone.now().isoformat()
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Error getting due flashcards for project {pk}: {str(e)}")
+            return Response({
+                'error': 'Failed to retrieve due flashcards'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def cleanup_metrics(self, request):
@@ -244,22 +493,23 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """
         try:
             project = self.get_object()
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
             
-            # Always save the file first - this is the "persist first" part
-            uploaded_file = serializer.save(project=project)
+            # Create the file instance manually to avoid serializer issues
+            uploaded_file = UploadedFile(
+                project=project,
+                file=request.FILES['file']
+            )
+            uploaded_file.save()
             
             # Log successful file upload
-            logger.info(f"File uploaded successfully: {uploaded_file.original_name} to project {project.id}")
+            logger.info(f"File uploaded successfully: {uploaded_file.file.name} to project {project.id}")
             
             # Return immediate success response with file info
             response_data = {
                 'message': 'File uploaded successfully',
                 'file_id': str(uploaded_file.id),
-                'filename': uploaded_file.original_name,
-                'status': 'uploaded',
-                'processing_status': uploaded_file.processing_status
+                'filename': uploaded_file.file.name.split('/')[-1] if '/' in uploaded_file.file.name else uploaded_file.file.name,
+                'status': 'uploaded'
             }
             
             # Process the file in the background (this is the "process later" part)
@@ -364,6 +614,21 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return Response({
                 'error': 'Failed to start metadata generation'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def retrieve(self, request, *args, **kwargs):
+        """Retrieve a project with debug logging."""
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        
+        # Debug logging
+        logger.info(f"🔍 DEBUG: Project {instance.id} retrieved. Files count: {instance.uploaded_files.count()}")
+        logger.info(f"🔍 DEBUG: Serializer class: {self.get_serializer_class().__name__}")
+        logger.info(f"🔍 DEBUG: Response includes uploaded_files: {'uploaded_files' in data}")
+        if 'uploaded_files' in data:
+            logger.info(f"🔍 DEBUG: uploaded_files length: {len(data['uploaded_files'])}")
+        
+        return Response(data)
 
 @csrf_exempt
 @require_http_methods(["POST"])

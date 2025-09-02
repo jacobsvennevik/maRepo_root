@@ -133,13 +133,13 @@ class SelfStudyProject(models.Model):
 
 
 class UploadedFile(models.Model):
-    # Processing status choices
+    # Processing status choices - ensure these are terminal states
     PROCESSING_STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('processing', 'Processing'),
-        ('completed', 'Completed'),
-        ('failed', 'Failed'),
-        ('skipped', 'Skipped'),
+        ('completed', 'Completed'),  # Terminal state
+        ('failed', 'Failed'),        # Terminal state  
+        ('skipped', 'Skipped'),      # Terminal state
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -149,10 +149,10 @@ class UploadedFile(models.Model):
     content_hash = models.CharField(max_length=64, blank=True, editable=False)
     raw_text = models.TextField(blank=True)
     
-    # New fields for robust file handling
+    # Standardized field names for consistency
     original_name = models.CharField(max_length=255, blank=True)  # Original filename
     content_type = models.CharField(max_length=100, blank=True)   # MIME type
-    file_size = models.BigIntegerField(default=0)                # File size in bytes
+    file_size = models.BigIntegerField(default=0)                # File size in bytes (using existing DB column)
     processing_status = models.CharField(
         max_length=20, 
         choices=PROCESSING_STATUS_CHOICES, 
@@ -164,14 +164,9 @@ class UploadedFile(models.Model):
     extracted_text = models.TextField(blank=True)                 # Processed text content
 
     @property
-    def file_size_property(self):
-        """Get file size in bytes (legacy property)"""
-        try:
-            if self.file and hasattr(self.file, 'size'):
-                return self.file.size
-            return 0
-        except (OSError, ValueError):
-            return 0
+    def size(self):
+        """Get file size in bytes (property for consistent API)"""
+        return self.file_size
 
     def save(self, *args, **kwargs):
         if self.file and not self.content_hash:
@@ -195,6 +190,13 @@ class UploadedFile(models.Model):
 
     def __str__(self):
         return f"File for {self.project.name} uploaded at {self.uploaded_at}"
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['project']),
+            models.Index(fields=['uploaded_at']),
+            models.Index(fields=['processing_status']),
+        ]
 
 
 class Extraction(models.Model):

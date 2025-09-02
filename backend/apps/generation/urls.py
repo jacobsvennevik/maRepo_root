@@ -58,7 +58,7 @@ urlpatterns = [
     # Project-specific flashcard endpoints (Phase 1)
     path('api/projects/<uuid:project_id>/flashcard-sets/', ProjectFlashcardSetViewSet.as_view({'get': 'list', 'post': 'create'}), name='project-flashcard-sets'),
     path('api/projects/<uuid:project_id>/flashcard-sets/<int:pk>/', ProjectFlashcardSetViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='project-flashcard-set-detail'),
-    path('api/projects/<uuid:project_id>/flashcards/generate/', ProjectFlashcardSetViewSet.as_view({'post': 'generate_from_project'}), name='project-generate-flashcards'),
+    path('api/projects/<uuid:project_id>/flashcards/generate', ProjectFlashcardSetViewSet.as_view({'post': 'generate_from_project'}), name='project-generate-flashcards'),
     path('api/projects/<uuid:project_id>/flashcards/due/', ProjectFlashcardViewSet.as_view({'get': 'due_cards'}), name='project-due-cards'),
     
     # Individual flashcard review (global endpoint)

@@ -326,12 +326,18 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class UploadedFileSerializer(serializers.ModelSerializer):
-    file_size = serializers.ReadOnlyField(source='file_size')
+    file_size = serializers.ReadOnlyField(source='size')  # Map to the 'size' field in model
     
     class Meta:
         model = UploadedFile
-        fields = ['id', 'file', 'uploaded_at', 'content_hash', 'raw_text', 'file_size']
-        read_only_fields = ['id', 'uploaded_at', 'content_hash', 'file_size']
+        fields = [
+            'id', 'file', 'uploaded_at', 'content_hash', 'raw_text', 
+            'file_size', 'original_name', 'content_type', 'processing_status'
+        ]
+        read_only_fields = [
+            'id', 'uploaded_at', 'content_hash', 'file_size', 
+            'original_name', 'content_type', 'processing_status'
+        ]
 
 
 class ExtractionSerializer(serializers.ModelSerializer):
