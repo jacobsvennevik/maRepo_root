@@ -1,16 +1,13 @@
 import { ProjectApiResponse, ProjectV2 } from "./types";
 import { mapApiResponseToProjectV2 } from "./utils";
-import axiosInstance from "@/lib/axios";
+import { axiosApi } from "@/lib/axios-api";
 
 /**
  * Generic API client for making HTTP requests using authenticated axios instance
  */
 async function apiRequest<T>(endpoint: string, options: any = {}): Promise<T> {
   try {
-    const response = await axiosInstance({
-      url: endpoint,
-      ...options,
-    });
+    const response = await axiosApi({ url: endpoint, ...options });
 
     return response.data;
   } catch (error: any) {
@@ -26,7 +23,7 @@ async function apiRequest<T>(endpoint: string, options: any = {}): Promise<T> {
 export async function fetchProjects(): Promise<ProjectV2[]> {
   try {
     const apiResponse: ProjectApiResponse[] =
-      await apiRequest<ProjectApiResponse[]>("/api/projects/");
+      await apiRequest<ProjectApiResponse[]>("/projects/");
 
     // Ensure we have a valid response structure
     if (!apiResponse || !Array.isArray(apiResponse)) {
@@ -53,7 +50,7 @@ export async function createProject(
 ): Promise<ProjectV2> {
   try {
     const apiResponse: ProjectApiResponse =
-      await apiRequest<ProjectApiResponse>("/api/projects/", {
+      await apiRequest<ProjectApiResponse>("/projects/", {
         method: "POST",
         data: projectData,
       });
@@ -74,7 +71,7 @@ export async function updateProject(
 ): Promise<ProjectV2> {
   try {
     const apiResponse: ProjectApiResponse =
-      await apiRequest<ProjectApiResponse>(`/api/projects/${projectId}/`, {
+      await apiRequest<ProjectApiResponse>(`/projects/${projectId}/`, {
         method: "PATCH",
         data: projectData,
       });
@@ -91,7 +88,7 @@ export async function updateProject(
  */
 export async function deleteProject(projectId: string): Promise<void> {
   try {
-    await apiRequest(`/api/projects/${projectId}/`, {
+    await apiRequest(`/projects/${projectId}/`, {
       method: "DELETE",
     });
   } catch (error) {
@@ -106,7 +103,7 @@ export async function deleteProject(projectId: string): Promise<void> {
 export async function fetchProject(projectId: string): Promise<ProjectV2> {
   try {
     const apiResponse: ProjectApiResponse =
-      await apiRequest<ProjectApiResponse>(`/api/projects/${projectId}/`);
+      await apiRequest<ProjectApiResponse>(`/projects/${projectId}/`);
 
     return mapApiResponseToProjectV2(apiResponse);
   } catch (error) {

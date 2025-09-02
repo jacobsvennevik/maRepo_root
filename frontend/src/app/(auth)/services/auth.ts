@@ -18,7 +18,8 @@ export class AuthService {
         throw new Error("localStorage is not available");
       }
 
-      const response = await axiosAuth.post<AuthResponse>("/token", {
+      // Post email/password directly (backend maps email→username internally)
+      const response = await axiosAuth.post<AuthResponse>("/token/", {
         email: credentials.email,
         password: credentials.password,
       });
@@ -104,7 +105,7 @@ export class AuthService {
       }
 
       const response = await axiosAuth.post<AuthResponse>(
-        "/token/refresh",
+        "/token/refresh/",
         {
           refresh: refreshToken,
         },

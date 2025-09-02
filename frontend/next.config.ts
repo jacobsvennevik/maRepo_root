@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const API_ORIGIN = process.env.API_ORIGIN || 'http://localhost:8000';
+const GENERATION_ORIGIN = process.env.GENERATION_ORIGIN || API_ORIGIN;
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -10,15 +11,8 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
-      // Auth (no trailing in source; rewrite to trailing in Django)
-      { source: "/backend/token",          destination: `${API_ORIGIN}/api/token/` },
-      { source: "/backend/token/refresh",  destination: `${API_ORIGIN}/api/token/refresh/` },
-
-      // REST API (preserve path; Django expects trailing slash and will 301 if missing)
-      { source: "/backend/api/:path*",     destination: `${API_ORIGIN}/api/:path*` },
-
-      // Generation API if you have it
-      { source: "/generation/api/:path*",  destination: `${API_ORIGIN}/generation/api/:path*` },
+      { source: "/backend/generation/:path*", destination: `${GENERATION_ORIGIN}/:path*` },
+      { source: "/backend/:path*", destination: `${API_ORIGIN}/:path*` },
     ];
   },
   trailingSlash: true,

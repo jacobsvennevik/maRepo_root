@@ -11,7 +11,7 @@ describe('@ai-metadata AI Metadata Generation', () => {
 
   it('should display AI-generated tags on project cards when feature flag is enabled', () => {
     // Mock the API response to include AI metadata
-    cy.intercept('GET', '/api/projects/', {
+    cy.intercept('GET', '/backend/api/projects/', {
       statusCode: 200,
       body: [
         {
@@ -63,7 +63,7 @@ describe('@ai-metadata AI Metadata Generation', () => {
     });
 
     // Mock the API response with AI metadata
-    cy.intercept('GET', '/api/projects/', {
+    cy.intercept('GET', '/backend/api/projects/', {
       statusCode: 200,
       body: [
         {
@@ -105,7 +105,7 @@ describe('@ai-metadata AI Metadata Generation', () => {
 
   it('should handle projects without AI metadata gracefully', () => {
     // Mock the API response without AI metadata
-    cy.intercept('GET', '/api/projects/', {
+    cy.intercept('GET', '/backend/api/projects/', {
       statusCode: 200,
       body: [
         {
@@ -141,7 +141,7 @@ describe('@ai-metadata AI Metadata Generation', () => {
 
   it('should trigger metadata generation via API', () => {
     // Mock the metadata generation endpoint
-    cy.intercept('POST', '/api/projects/*/generate_metadata/', {
+    cy.intercept('POST', '/backend/api/projects/*/generate_metadata/', {
       statusCode: 202,
       body: {
         message: 'Metadata generation started',
@@ -157,7 +157,7 @@ describe('@ai-metadata AI Metadata Generation', () => {
     // Trigger metadata generation (this would be done via a button in the UI)
     cy.window().then((win) => {
       // Simulate API call
-      win.fetch('/api/projects/test-project-1/generate_metadata/', {
+      win.fetch('/backend/api/projects/test-project-1/generate_metadata/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,7 +172,7 @@ describe('@ai-metadata AI Metadata Generation', () => {
 
   it('should handle metadata generation with force parameter', () => {
     // Mock the metadata generation endpoint with force parameter
-    cy.intercept('POST', '/api/projects/*/generate_metadata/?force=true', {
+    cy.intercept('POST', '/backend/api/projects/*/generate_metadata/?force=true', {
       statusCode: 202,
       body: {
         message: 'Metadata generation started',
@@ -187,7 +187,7 @@ describe('@ai-metadata AI Metadata Generation', () => {
 
     // Trigger metadata generation with force parameter
     cy.window().then((win) => {
-      win.fetch('/api/projects/test-project-1/generate_metadata/?force=true', {
+      win.fetch('/backend/api/projects/test-project-1/generate_metadata/?force=true', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

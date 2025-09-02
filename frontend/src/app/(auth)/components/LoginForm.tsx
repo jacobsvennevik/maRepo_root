@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { AuthService } from "../services/auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import axiosInstance from "@/lib/axios";
+import { axiosApi } from "@/lib/axios-api";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -70,9 +70,9 @@ export function LoginForm({
         throw new Error("Login succeeded but tokens were not stored");
       }
 
-      // Test authenticated request
+      // Test authenticated request (through proxy client)
       try {
-        const testResponse = await axiosInstance.get("/api/users/me/");
+        const testResponse = await axiosApi.get("/users/me/");
       } catch (testError) {}
 
       router.push("/dashboard");

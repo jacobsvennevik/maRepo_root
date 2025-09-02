@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { axiosApi } from "@/lib/axios-api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -54,10 +55,9 @@ export default function DiagnosticDashboard({ projectId }: { projectId: string }
   const fetchDiagnosticSessions = async () => {
     try {
       setIsLoading(true);
-      // TODO: Replace with actual API call
-      const response = await fetch(`/api/diagnostic-sessions/?project=${projectId}`);
-      const data = await response.json();
-      setSessions(data.results || []);
+      const response = await axiosApi.get(`/diagnostic-sessions/?project=${projectId}`);
+      const data = response.data;
+      setSessions(data.results || data || []);
     } catch (error) {
       console.error('Failed to fetch diagnostic sessions:', error);
     } finally {
@@ -68,25 +68,18 @@ export default function DiagnosticDashboard({ projectId }: { projectId: string }
   const handleCreateDiagnostic = async () => {
     try {
       setIsLoading(true);
-      // TODO: Replace with actual API call
-      const response = await fetch('/api/diagnostics/generate/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          project_id: projectId,
-          topic: formData.topic,
-          difficulty: formData.difficulty,
-          delivery_mode: formData.delivery_mode,
-          max_questions: formData.max_questions,
-          scheduled_for: formData.scheduled_for,
-          due_at: formData.due_at,
-        }),
+      const response = await axiosApi.post('/diagnostics/generate/', {
+        project_id: projectId,
+        topic: formData.topic,
+        difficulty: formData.difficulty,
+        delivery_mode: formData.delivery_mode,
+        max_questions: formData.max_questions,
+        scheduled_for: formData.scheduled_for,
+        due_at: formData.due_at,
       });
 
-      if (response.ok) {
-        const newSession = await response.json();
+      if (response.status >= 200 && response.status < 300) {
+        const newSession = response.data;
         setSessions(prev => [newSession, ...prev]);
         setIsCreateDialogOpen(false);
         setFormData({
@@ -339,12 +332,7 @@ function DiagnosticSessionCard({
 
   const handleStatusChange = async (newStatus: string) => {
     try {
-      // TODO: Replace with actual API call
-      await fetch(`/api/diagnostic-sessions/${session.id}/`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      await axiosApi.patch(`/diagnostic-sessions/${session.id}/`, { status: newStatus });
       onRefresh();
     } catch (error) {
       console.error('Failed to update status:', error);
@@ -355,10 +343,7 @@ function DiagnosticSessionCard({
     if (!confirm('Are you sure you want to delete this diagnostic session?')) return;
     
     try {
-      // TODO: Replace with actual API call
-      await fetch(`/api/diagnostic-sessions/${session.id}/`, {
-        method: 'DELETE',
-      });
+      await axiosApi.delete(`/diagnostic-sessions/${session.id}/`);
       onRefresh();
     } catch (error) {
       console.error('Failed to delete session:', error);

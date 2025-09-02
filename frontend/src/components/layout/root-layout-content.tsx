@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/header";
 import { usePathname } from "next/navigation";
 
 import { AuthProvider } from "@/contexts/AuthContext";
+import { HttpDevGuard } from "@/components/dev/HttpDevGuard";
 
 export function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -14,6 +15,8 @@ export function RootLayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
       {!isDashboard && !isProject && <Header />}
+
+      {process.env.NODE_ENV === 'development' && <HttpDevGuard />}
 
       {children}
     </AuthProvider>

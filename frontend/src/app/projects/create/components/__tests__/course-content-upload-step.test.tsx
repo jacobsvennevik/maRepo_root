@@ -30,10 +30,19 @@ jest.mock('../../services/api', () => ({
 }));
 
 jest.mock('@/components/ui/file-upload', () => ({
-  FileUpload: ({ onUpload, onRemove, files, uploadProgress, title, description }: any) => (
+  FileUpload: ({ onUpload, onRemove, files = [], uploadProgress = {}, title, description, accept, error }: any) => (
     <div data-testid="file-upload">
       <h3>{title}</h3>
       <p>{description}</p>
+      <div data-testid="accepted-types">{accept}</div>
+      {error && (
+        <div data-testid="error-message" className="bg-red-50 border border-red-200 rounded-lg p-3">
+          <div className="flex items-center space-x-2">
+            <span className="text-red-600 text-sm">⚠️</span>
+            <span className="text-red-800 text-sm font-medium">{error}</span>
+          </div>
+        </div>
+      )}
       <input
         type="file"
         data-testid="file-input"
@@ -45,7 +54,7 @@ jest.mock('@/components/ui/file-upload', () => ({
         multiple
       />
       <div data-testid="file-list">
-        {files.map((file: File, index: number) => (
+        {(files ?? []).map((file: File, index: number) => (
           <div key={file.name} data-testid={`file-item-${file.name}`}>
             <span data-testid={`filename-${file.name}`}>{file.name}</span>
             <button data-testid={`remove-${file.name}`} onClick={() => onRemove(index)}>Remove</button>
@@ -250,6 +259,7 @@ describe('CourseContentUploadStep', () => {
           snippet: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod...'
         },
         status: 'completed'
+      };
 
       uploadFileWithProgress.mockImplementation(async (file: File, onProgress: (progress: number) => void) => {
         onProgress(0);

@@ -1,5 +1,5 @@
 // Hybrid test utilities - Use mock data but process through real backend
-import axiosInstance from '@/lib/axios';
+import { axiosApi } from '@/lib/axios-api';
 import { 
   MOCK_SYLLABUS_PROCESSED_DOCUMENT, 
   MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT,
@@ -20,7 +20,7 @@ export interface MockBackendResponse {
  */
 function setTestModeEnvironment() {
   // Set a custom header to indicate test mode
-  axiosInstance.defaults.headers.common['X-Test-Mode'] = 'true';
+  axiosApi.defaults.headers.common['X-Test-Mode'] = 'true';
   
   // Also try to set environment variable (may not work in browser)
   if (typeof window !== 'undefined') {
@@ -62,7 +62,7 @@ export async function uploadMockDataToBackend(
     formData.append('file_type', 'pdf');
     formData.append('upload_type', uploadType);
 
-    const uploadResponse = await axiosInstance.post('/api/pdf_service/documents/', formData, {
+    const uploadResponse = await axiosApi.post('/pdf_service/documents/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'X-Test-Mode': 'true', // Ensure test mode header is set
@@ -107,7 +107,7 @@ export async function processMockDataThroughBackend(
   
   try {
     // Start real backend processing
-    const processResponse = await axiosInstance.post(`/api/pdf_service/documents/${documentId}/process/`, {}, {
+    const processResponse = await axiosApi.post(`/pdf_service/documents/${documentId}/process/`, {}, {
       headers: {
         'X-Test-Mode': 'true', // Ensure test mode header is set
       }
@@ -126,7 +126,7 @@ export async function processMockDataThroughBackend(
       await new Promise(resolve => setTimeout(resolve, pollInterval));
       
       try {
-        const statusResponse = await axiosInstance.get(`/api/pdf_service/documents/${documentId}/`, {
+        const statusResponse = await axiosApi.get(`/pdf_service/documents/${documentId}/`, {
           headers: {
             'X-Test-Mode': 'true', // Ensure test mode header is set
           }
@@ -139,7 +139,7 @@ export async function processMockDataThroughBackend(
           console.log(`🧪 HYBRID MODE: Real processing completed, using mock data as fallback`);
           
           // Get the processed data from backend
-          const processedDataResponse = await axiosInstance.get(`/api/pdf_service/documents/${documentId}/processed_data/`, {
+          const processedDataResponse = await axiosApi.get(`/pdf_service/documents/${documentId}/processed_data/`, {
             headers: {
               'X-Test-Mode': 'true', // Ensure test mode header is set
             }

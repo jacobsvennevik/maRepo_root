@@ -1,4 +1,5 @@
 import { registerUpload } from "./cleanup-utils";
+import { axiosApi } from "@/lib/axios-api";
 
 // Shared upload utilities for project creation steps
 export const API_BASE_URL =
@@ -62,20 +63,21 @@ export const uploadFileToService = async (
     formData.append("file", file);
     formData.append("upload_type", uploadType);
 
-    const response = await fetch(`${API_BASE_URL}/api/documents/upload/`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: formData,
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `Upload failed: ${response.status} ${response.statusText}`,
-      );
-    }
-
-    const result = await response.json();
+    const response = await axiosApi.post(
+      `/documents/upload/`,
+      formData,
+      {
+        headers: getAuthHeaders(),
+        signal: controller.signal as any,
+        onUploadProgress: (evt) => {
+          if (evt.total && onProgress) {
+            const percent = Math.round((evt.loaded * 100) / evt.total);
+            onProgress(percent);
+          }
+        },
+      }
+    );
+    const result = response.data as any;
     return {
       id: result.id,
       filename: file.name,
@@ -101,20 +103,11 @@ export const startDocumentProcessing = async (
   registerUpload(controller);
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/documents/${documentId}/process/`,
-      {
-        method: "POST",
-        headers: getAuthHeaders(),
-        signal: controller.signal,
-      },
+    await axiosApi.post(
+      `/documents/${documentId}/process/`,
+      {},
+      { headers: getAuthHeaders(), signal: controller.signal as any }
     );
-
-    if (!response.ok) {
-      throw new Error(
-        `Processing failed: ${response.status} ${response.statusText}`,
-      );
-    }
 
     if (onProgress) {
       onProgress(100);
@@ -139,16 +132,11 @@ export const pollDocumentStatus = async (
 
   while (attempts < maxAttempts && !processedData) {
     try {
-      const statusResponse = await fetch(
-        `${API_BASE_URL}/api/pdf_service/documents/${documentId}/`,
-        {
-          method: "GET",
-          headers: getAuthHeaders(),
-        },
+      const statusResponse = await axiosApi.get(
+        `/pdf_service/documents/${documentId}/`
       );
-
-      if (statusResponse.ok) {
-        const statusData = await statusResponse.json();
+      if (statusResponse.status === 200) {
+        const statusData = statusResponse.data as any;
 
         if (statusData.status === "completed") {
           processedData = statusData;

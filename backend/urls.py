@@ -30,8 +30,11 @@ urlpatterns = [
     
     # Authentication
     path('accounts/', include('django.contrib.auth.urls')),
+    # JWT token endpoints (support both with and without trailing slash to avoid APPEND_SLASH issues on POST)
     path('api/token/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token', EmailTokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/refresh', TokenRefreshView.as_view()),
     
     # API
     path('api/', include(router.urls)),

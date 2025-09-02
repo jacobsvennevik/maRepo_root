@@ -7,7 +7,7 @@ import { ChevronRight, Upload, Download, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import axiosInstance from "@/lib/axios";
+import { axiosApi } from "@/lib/axios-api";
 
 interface ProjectFile {
   id: string;
@@ -43,7 +43,8 @@ export default function ProjectFiles() {
     try {
       setLoading(true);
       setError(null);
-      const response = await axiosInstance.get(`/api/projects/${projectId}/`);
+      // Reads via proxy client to avoid CORS/redirects (uploads stay direct)
+      const response = await axiosApi.get(`/projects/${projectId}/`);
       setProject(response.data);
     } catch (err: any) {
       console.error('Failed to fetch project:', err);
@@ -75,8 +76,8 @@ export default function ProjectFiles() {
         setUploadProgress(prev => Math.min(prev + 10, 90));
       }, 200);
 
-      const response = await axiosInstance.post(
-        `/api/projects/${projectId}/upload_file/`,
+      const response = await axiosApi.post(
+        `/projects/${projectId}/upload_file/`,
         formData,
         {
           headers: {

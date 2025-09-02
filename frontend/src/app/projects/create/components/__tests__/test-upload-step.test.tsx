@@ -80,7 +80,7 @@ jest.mock("@/components/ui/file-upload", () => ({
         accept={accept}
       />
       <div data-testid="file-list">
-        {files.map((file: File, index: number) => (
+        {(files ?? []).map((file: File, index: number) => (
           <div key={file.name} data-testid={`file-item-${file.name}`}>
             <span data-testid={`filename-${file.name}`}>{file.name}</span>
             <button
@@ -89,9 +89,9 @@ jest.mock("@/components/ui/file-upload", () => ({
             >
               Remove
             </button>
-            {uploadProgress[file.name] && (
+            {(uploadProgress ?? {})[file.name] && (
               <div data-testid={`progress-${file.name}`}>
-                {uploadProgress[file.name]}%
+                {(uploadProgress ?? {})[file.name]}%
               </div>
             )}
           </div>

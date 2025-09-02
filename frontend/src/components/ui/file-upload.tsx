@@ -239,7 +239,7 @@ export function FileUpload({
       </div>
 
       {(error || validationError) && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" data-testid="error-message">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             {error || validationError}

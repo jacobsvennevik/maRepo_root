@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { axiosApi } from "@/lib/axios-api";
-import { axiosGeneration } from "@/lib/axios";
+import { axiosGeneration } from "@/lib/axios-generation";
 import { unwrapResults, getCount, type Paginated } from "@/lib/api/pagination";
 import axios from "axios";
 
@@ -48,17 +48,16 @@ export function useProjectFlashcards(projectId: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const abortController = new AbortController();
+    // Removed AbortController signal to avoid XHR network errors on some browsers during fast route changes
     
     const fetchFlashcards = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        // Fetch flashcard sets for the project using axiosApi
-        const response = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
-          `/projects/${projectId}/flashcard-sets/`,
-          { signal: abortController.signal }
+        // Fetch flashcard sets for the project using generation API namespace
+        const response = await axiosGeneration.get<FlashcardSet[] | Paginated<FlashcardSet>>(
+          `/projects/${projectId}/flashcard-sets/`
         );
 
         // Unwrap paginated payloads to arrays
@@ -132,15 +131,13 @@ export function useProjectFlashcards(projectId: string) {
       fetchFlashcards();
     }
 
-    // Cleanup function to abort request on unmount or projectId change
-    return () => {
-      abortController.abort();
-    };
+    // No cleanup needed for simple GET without an abort signal
+    return () => {};
   }, [projectId]);
 
   const createFlashcardSet = async (title: string) => {
     try {
-      const response = await axiosApi.post(
+      const response = await axiosGeneration.post(
         `/projects/${projectId}/flashcard-sets/`,
         {
           title,
@@ -148,7 +145,7 @@ export function useProjectFlashcards(projectId: string) {
       );
 
       // Refresh the data using axiosApi
-      const updatedResponse = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
+      const updatedResponse = await axiosGeneration.get<FlashcardSet[] | Paginated<FlashcardSet>>(
         `/projects/${projectId}/flashcard-sets/`,
       );
       const updatedPayload = updatedResponse.data as any;
@@ -175,7 +172,7 @@ export function useProjectFlashcards(projectId: string) {
   ) => {
     try {
       const response = await axiosGeneration.post(
-        `/generation/api/projects/${projectId}/flashcards/generate/`,
+        `/projects/${projectId}/flashcards/generate/`,
         {
           source_type: sourceType,
           num_cards: numCards,
@@ -184,7 +181,7 @@ export function useProjectFlashcards(projectId: string) {
       );
 
       // Refresh the data using axiosApi
-      const updatedResponse = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
+      const updatedResponse = await axiosGeneration.get<FlashcardSet[] | Paginated<FlashcardSet>>(
         `/projects/${projectId}/flashcard-sets/`,
       );
       const updatedPayload = updatedResponse.data as any;
@@ -215,7 +212,7 @@ export function useProjectFlashcards(projectId: string) {
         params.append("algorithm", algorithm);
       }
 
-      const response = await axiosApi.get(
+      const response = await axiosGeneration.get(
         `/projects/${projectId}/flashcards/due/?${params}`,
       );
       return response.data;
@@ -231,7 +228,7 @@ export function useProjectFlashcards(projectId: string) {
     responseTimeSeconds?: number,
   ) => {
     try {
-      const response = await axiosApi.post(
+      const response = await axiosGeneration.post(
         `/flashcards/${flashcardId}/review/`,
         {
           quality,
@@ -240,7 +237,7 @@ export function useProjectFlashcards(projectId: string) {
       );
 
       // Refresh stats after review using axiosApi
-      const updatedResponse = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
+      const updatedResponse = await axiosGeneration.get<FlashcardSet[] | Paginated<FlashcardSet>>(
         `/projects/${projectId}/flashcard-sets/`,
       );
       const updatedPayload = updatedResponse.data as any;

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { axiosApi } from '@/lib/axios-api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -86,10 +87,8 @@ export default function DiagnosticSession({ sessionId }: { sessionId: string }) 
   const fetchSession = async () => {
     try {
       setIsLoading(true);
-      // TODO: Replace with actual API call
-      const response = await fetch(`/api/diagnostic-sessions/${sessionId}/`);
-      const data = await response.json();
-      setSession(data);
+      const response = await axiosApi.get(`/diagnostic-sessions/${sessionId}/`);
+      setSession(response.data);
     } catch (error) {
       console.error('Failed to fetch session:', error);
     } finally {
@@ -162,26 +161,19 @@ export default function DiagnosticSession({ sessionId }: { sessionId: string }) 
       setIsSubmitting(true);
       
       // Submit all responses
-      const response = await fetch(`/api/diagnostic-responses/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          session_id: sessionId,
-          responses: responses.map(r => ({
-            question_id: r.questionId,
-            answer_text: r.answer_text,
-            selected_choice_index: r.selected_choice_index,
-            confidence: r.confidence,
-            latency_ms: r.latency_ms,
-          })),
-        }),
-      });
-
-      if (response.ok) {
-        const resultData = await response.json();
-        setResults(resultData);
-        setShowResults(true);
-      }
+      const payload = {
+        session_id: sessionId,
+        responses: responses.map(r => ({
+          question_id: r.questionId,
+          answer_text: r.answer_text,
+          selected_choice_index: r.selected_choice_index,
+          confidence: r.confidence,
+          latency_ms: r.latency_ms,
+        })),
+      };
+      const response = await axiosApi.post(`/diagnostic-responses/`, payload);
+      setResults(response.data);
+      setShowResults(true);
     } catch (error) {
       console.error('Failed to submit responses:', error);
     } finally {

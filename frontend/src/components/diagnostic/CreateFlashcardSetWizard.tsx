@@ -190,7 +190,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
         return;
       }
 
-      const apiUrl = `/api/projects/${projectId}/`;
+      const apiUrl = `/projects/${projectId}/`;
       console.log('🔍 DEBUG: Fetching from URL:', apiUrl);
       
               // Fetch project details which includes uploaded files using axiosApi
@@ -407,7 +407,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
         mock_mode: true,
       };
 
-      const response = await axiosGeneration.post(`/projects/${projectId}/flashcards/generate`, payload, {
+      const response = await axiosGeneration.post(`/projects/${projectId}/flashcards/generate/`, payload, {
         headers: {
           'X-Test-Mode': 'true', // Add test mode header
         }
@@ -481,7 +481,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
       }
 
       // Create the flashcard set via API using axiosApi
-      const response = await axiosApi.post(`/projects/${projectId}/flashcard-sets`, {
+      const response = await axiosApi.post(`/projects/${projectId}/flashcard-sets/`, {
         title: form.getValues('title') || deriveTitleFromSource(),
         description: form.getValues('description') || `Generated from ${method === 'files' ? 'uploaded files' : 'manual entry'}`,
         difficulty_level: 'INTERMEDIATE',

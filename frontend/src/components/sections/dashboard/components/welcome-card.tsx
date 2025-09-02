@@ -44,13 +44,9 @@ export function WelcomeCard({ userName }: WelcomeCardProps) {
           <div className="aspect-square relative z-10">
             <div className="absolute inset-0 flex items-center justify-center">
               <img
-                src="/images/dashboard/welcome-illustration.svg"
+                src="/images/placeholders/feature.svg"
                 alt="Welcome illustration"
                 className="w-full h-auto"
-                onError={(e) => {
-                  // @ts-ignore
-                  e.target.src = "/placeholder.svg?height=200&width=200";
-                }}
               />
             </div>
           </div>

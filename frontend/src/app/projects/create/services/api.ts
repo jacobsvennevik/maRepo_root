@@ -1,5 +1,6 @@
 import axios from "axios";
 import axiosInstance from "@/lib/axios";
+import { axiosApi } from "@/lib/axios-api";
 import { ProjectSetup } from "../types";
 
 export interface ProjectData {
@@ -26,7 +27,7 @@ const TEST_MODE =
 
 export const createProject = async (projectData: ProjectData) => {
   try {
-    const response = await axiosInstance.post("/api/projects/", projectData, {
+    const response = await axiosApi.post("/projects/", projectData, {
       headers: {
         "Idempotency-Key": crypto.randomUUID()
       }
@@ -61,8 +62,8 @@ export const uploadFileWithProgress = async (
     formData.append("file", file);
     formData.append("project_id", projectId);
 
-    const response = await axiosInstance.post(
-      `/api/projects/${projectId}/upload_file/`,
+    const response = await axiosApi.post(
+      `/projects/${projectId}/upload_file/`,
       formData,
       {
         headers: {
@@ -106,8 +107,8 @@ export async function uploadSyllabus(
   formData.append("file", file);
 
   try {
-    const response = await axiosInstance.post(
-      `/api/projects/${projectId}/upload_file/`,
+    const response = await axiosApi.post(
+      `/projects/${projectId}/upload_file/`,
       formData,
       {
         headers: {
@@ -151,8 +152,8 @@ export async function uploadFile(file: File, uploadType: string): Promise<any> {
   const backendUploadType = uploadTypeMap[uploadType] || uploadType;
 
   try {
-    const response = await axiosInstance.post(
-      `/api/upload/${backendUploadType}/`,
+    const response = await axiosApi.post(
+      `/upload/${backendUploadType}/`,
       formData,
       {
         headers: {
@@ -181,7 +182,7 @@ export async function uploadFile(file: File, uploadType: string): Promise<any> {
 
 export const getProjects = async () => {
   try {
-    const response = await axiosInstance.get("/api/projects/");
+    const response = await axiosApi.get("/projects/");
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -198,7 +199,7 @@ export const getProjects = async () => {
 
 export const finalizeProject = async (projectId: string) => {
   try {
-    const response = await axiosInstance.patch(`/api/projects/${projectId}/`, {
+    const response = await axiosApi.patch(`/projects/${projectId}/`, {
       is_draft: false,
     });
     return response.data;
@@ -217,7 +218,7 @@ export const finalizeProject = async (projectId: string) => {
 
 export const cleanupAbandonedDrafts = async (hours: number = 24) => {
   try {
-    const response = await axiosInstance.post("/api/projects/cleanup_drafts/", {
+    const response = await axiosApi.post("/projects/cleanup_drafts/", {
       hours,
     });
     return response.data;
