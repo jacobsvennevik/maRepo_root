@@ -12,6 +12,8 @@ from backend.apps.accounts.views_api import CustomUserViewSet, EmailTokenObtainP
 from backend.apps.generation.api_views.flashcard_views import FlashcardSetViewSet, FlashcardViewSet
 from backend.apps.generation.api_views.mindmap_views import MindMapViewSet
 from backend.apps.projects.views import ProjectViewSet
+from django.views.decorators.csrf import csrf_exempt
+from graphene_django.views import GraphQLView
 
 # API router setup
 router = DefaultRouter()
@@ -41,6 +43,9 @@ urlpatterns = [
     path('api/pdf_service/', include('backend.apps.pdf_service.api_urls')),
     path('api/', include('backend.apps.pdf_service.urls')),  # Include upload endpoints
     path('api/auth/', include('rest_framework.urls')),
+    
+    # GraphQL
+    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
 
     # App URLs
     path('generation/', include('backend.apps.generation.urls')),

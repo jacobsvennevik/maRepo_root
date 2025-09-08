@@ -55,8 +55,8 @@ export function useProjectFlashcards(projectId: string) {
         setIsLoading(true);
         setError(null);
 
-        // Fetch flashcard sets for the project using generation API namespace
-        const response = await axiosGeneration.get<FlashcardSet[] | Paginated<FlashcardSet>>(
+        // Fetch flashcard sets for the project using main API (not generation API)
+        const response = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
           `/projects/${projectId}/flashcard-sets/`
         );
 
@@ -137,7 +137,7 @@ export function useProjectFlashcards(projectId: string) {
 
   const createFlashcardSet = async (title: string) => {
     try {
-      const response = await axiosGeneration.post(
+      const response = await axiosApi.post(
         `/projects/${projectId}/flashcard-sets/`,
         {
           title,
@@ -145,7 +145,7 @@ export function useProjectFlashcards(projectId: string) {
       );
 
       // Refresh the data using axiosApi
-      const updatedResponse = await axiosGeneration.get<FlashcardSet[] | Paginated<FlashcardSet>>(
+      const updatedResponse = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
         `/projects/${projectId}/flashcard-sets/`,
       );
       const updatedPayload = updatedResponse.data as any;
@@ -181,7 +181,7 @@ export function useProjectFlashcards(projectId: string) {
       );
 
       // Refresh the data using axiosApi
-      const updatedResponse = await axiosGeneration.get<FlashcardSet[] | Paginated<FlashcardSet>>(
+      const updatedResponse = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
         `/projects/${projectId}/flashcard-sets/`,
       );
       const updatedPayload = updatedResponse.data as any;
@@ -228,7 +228,7 @@ export function useProjectFlashcards(projectId: string) {
     responseTimeSeconds?: number,
   ) => {
     try {
-      const response = await axiosGeneration.post(
+      const response = await axiosApi.post(
         `/flashcards/${flashcardId}/review/`,
         {
           quality,
@@ -237,7 +237,7 @@ export function useProjectFlashcards(projectId: string) {
       );
 
       // Refresh stats after review using axiosApi
-      const updatedResponse = await axiosGeneration.get<FlashcardSet[] | Paginated<FlashcardSet>>(
+      const updatedResponse = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
         `/projects/${projectId}/flashcard-sets/`,
       );
       const updatedPayload = updatedResponse.data as any;
@@ -269,7 +269,7 @@ export function useProjectFlashcards(projectId: string) {
         response_time_seconds: review.responseTimeSeconds || 0,
       }));
 
-      const response = await axiosGeneration.post(
+      const response = await axiosApi.post(
         `/flashcards/reviews/`,
         {
           reviews: reviewsData,

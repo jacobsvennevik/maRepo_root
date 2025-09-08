@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_spectacular',  # OpenAPI schema generation
+    'channels',  # WebSocket support
+    'graphene_django',  # GraphQL support
+    'django_filters',  # Advanced filtering
 ]
 
 MIDDLEWARE = [
@@ -77,6 +80,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "backend.wsgi.application"
+ASGI_APPLICATION = "backend.asgi.application"
 
 # Database
 DATABASES = {
@@ -88,6 +92,15 @@ DATABASES = {
         'HOST': settings.DB_HOST,
         'PORT': settings.DB_PORT,
         'CONN_MAX_AGE': 60,  # seconds; set to 0 in tests, higher in prod behind pgbouncer
+    },
+    "read_replica": {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': settings.DB_NAME,
+        'USER': settings.DB_USER,
+        'PASSWORD': settings.DB_PASSWORD,
+        'HOST': settings.DB_READ_HOST or settings.DB_HOST,  # Use read replica if available
+        'PORT': settings.DB_READ_PORT or settings.DB_PORT,
+        'CONN_MAX_AGE': 60,
     }
 }
 
@@ -102,6 +115,27 @@ CACHES = {
         "KEY_PREFIX": f"ocean:{settings.DJANGO_ENV}",
     }
 }
+
+# Channels configuration
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [settings.REDIS_URL],
+        },
+    },
+}
+
+# GraphQL configuration
+GRAPHENE = {
+    "SCHEMA": "backend.apps.generation.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
+}
+
+# Database routing
+DATABASE_ROUTERS = ['backend.core_platform.database.ReadWriteRouter']
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

@@ -34,10 +34,27 @@ export async function fetchProjects(): Promise<ProjectV2[]> {
     return apiResponse.map(mapApiResponseToProjectV2);
   } catch (error) {
     console.error("Failed to fetch projects:", error);
-    // Provide a consistent error message for network/API errors
+    
+    // Provide more specific error messages based on error type
     if (error instanceof Error) {
-      throw new Error("Failed to load projects");
+      // Check if it's an authentication error
+      if (error.message.includes("401") || error.message.includes("Unauthorized")) {
+        throw new Error("Authentication required. Please log in again.");
+      }
+      // Check if it's a network error
+      if (error.message.includes("Network Error") || error.message.includes("Failed to fetch")) {
+        throw new Error("Network error. Please check your connection and try again.");
+      }
+      // Check if it's a server error
+      if (error.message.includes("500") || error.message.includes("Server Error")) {
+        throw new Error("Server error. Please try again later.");
+      }
+      // Use the original error message if it's informative
+      if (error.message && error.message !== "Failed to load projects") {
+        throw new Error(error.message);
+      }
     }
+    
     throw new Error("Failed to load projects");
   }
 }

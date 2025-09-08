@@ -47,6 +47,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Get user's projects with optimized queries."""
+        # Temporarily disable read replica until properly configured
+        # from backend.core_platform.db_manager import read_from_replica
+        
+        # Use default database for all operations until read replica is configured
         base_queryset = self.request.user.projects.all()
         
         # Read ENABLE_STI dynamically

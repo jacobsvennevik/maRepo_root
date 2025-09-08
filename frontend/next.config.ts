@@ -12,10 +12,10 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       { source: "/backend/generation/:path*", destination: `${GENERATION_ORIGIN}/:path*` },
-      { source: "/backend/:path*", destination: `${API_ORIGIN}/:path*` },
+      { source: "/backend/api/:path*", destination: `${API_ORIGIN}/api/:path*` },
     ];
   },
-  trailingSlash: true,
+  trailingSlash: false, // Explicitly disable trailing slash handling
 };
 
 export default nextConfig;

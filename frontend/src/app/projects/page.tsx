@@ -12,6 +12,8 @@ import { ProjectType, ProjectV2 } from "./types";
 import { WhiteBackground } from "@/components/common/backgrounds/white-background";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { useProjectUpdates, useStudyProgress } from "@/hooks/useRealtime";
+import { webSocketService } from "@/services/websocket";
 
 const projectTypes: ProjectType[] = [
   "biology",
@@ -31,6 +33,10 @@ export default function Projects() {
   const [error, setError] = useState<string | null>(null);
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  
+  // Real-time hooks
+  const { projects: realtimeProjects, isConnected: projectsConnected } = useProjectUpdates();
+  const { stats: studyStats, isConnected: studyConnected } = useStudyProgress();
 
   const filteredProjects =
     selectedType === "all"
@@ -106,7 +112,25 @@ export default function Projects() {
       <main className="flex-1 p-8 flex flex-col">
         <div className="flex flex-col h-full">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-slate-900">Projects</h1>
+            <div className="flex items-center gap-4">
+              <h1 className="text-3xl font-bold text-slate-900">Projects</h1>
+              {/* Real-time connection status */}
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${projectsConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className="text-sm text-gray-600">
+                  {projectsConnected ? 'Live updates' : 'Offline'}
+                </span>
+              </div>
+            </div>
+            {/* Study stats */}
+            {studyStats && (
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <span>📚 {studyStats.total_cards} cards</span>
+                <span>✅ {studyStats.reviewed_today} today</span>
+                <span>⏰ {studyStats.due_cards} due</span>
+                <span>🔥 {studyStats.study_streak} day streak</span>
+              </div>
+            )}
           </div>
           {/* Project Type Filter */}
           <div className="flex flex-wrap gap-3 mb-8">

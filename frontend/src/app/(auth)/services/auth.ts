@@ -73,7 +73,30 @@ export class AuthService {
   static isAuthenticated(): boolean {
     try {
       const token = localStorage.getItem("access_token");
-      return !!token;
+      if (!token) {
+        return false;
+      }
+      
+      // Basic JWT token validation - check if it's expired
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+        
+        // Check if token is expired
+        if (payload.exp && payload.exp < currentTime) {
+          console.log('🔐 Token is expired, removing from storage');
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          return false;
+        }
+        
+        return true;
+      } catch (parseError) {
+        console.log('🔐 Invalid token format, removing from storage');
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        return false;
+      }
     } catch (error) {
       return false;
     }
