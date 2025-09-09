@@ -3,6 +3,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { webSocketService, StudyProgressUpdate } from '@/services/websocket';
+import { connectionManager } from '@/services/websocket-connection';
 
 export interface StudyStats {
   total_cards: number;
@@ -20,14 +21,11 @@ export function useStudyProgress() {
 
   // Update connection status
   useEffect(() => {
-    const checkConnection = () => {
-      setIsConnected(webSocketService.isConnected());
-    };
+    const unsubscribe = connectionManager.subscribe((status) => {
+      setIsConnected(status.isConnected);
+    });
 
-    checkConnection();
-    const interval = setInterval(checkConnection, 1000);
-
-    return () => clearInterval(interval);
+    return unsubscribe;
   }, []);
 
   // Listen for study progress updates
@@ -94,14 +92,11 @@ export function useProjectUpdates() {
 
   // Update connection status
   useEffect(() => {
-    const checkConnection = () => {
-      setIsConnected(webSocketService.isConnected());
-    };
+    const unsubscribe = connectionManager.subscribe((status) => {
+      setIsConnected(status.isConnected);
+    });
 
-    checkConnection();
-    const interval = setInterval(checkConnection, 1000);
-
-    return () => clearInterval(interval);
+    return unsubscribe;
   }, []);
 
   // Listen for project updates
@@ -144,14 +139,11 @@ export function useFileProcessing() {
 
   // Update connection status
   useEffect(() => {
-    const checkConnection = () => {
-      setIsConnected(webSocketService.isConnected());
-    };
+    const unsubscribe = connectionManager.subscribe((status) => {
+      setIsConnected(status.isConnected);
+    });
 
-    checkConnection();
-    const interval = setInterval(checkConnection, 1000);
-
-    return () => clearInterval(interval);
+    return unsubscribe;
   }, []);
 
   // Listen for file processing updates

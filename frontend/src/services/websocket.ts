@@ -2,6 +2,7 @@
  * WebSocket service for real-time study progress updates.
  */
 import { AuthService } from '@/app/(auth)/services/auth';
+import { WEBSOCKET_CONFIG } from '@/constants/design-tokens';
 
 export interface StudyProgressUpdate {
   flashcard_id: string;
@@ -27,8 +28,8 @@ export interface ProjectUpdate {
 export class WebSocketService {
   private socket: WebSocket | null = null;
   private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
-  private reconnectDelay = 1000;
+  private maxReconnectAttempts = WEBSOCKET_CONFIG.MAX_RECONNECT_ATTEMPTS;
+  private reconnectDelay = WEBSOCKET_CONFIG.RECONNECT_DELAY;
   private reconnectTimer: NodeJS.Timeout | null = null;
 
   constructor() {
@@ -214,7 +215,6 @@ export class WebSocketService {
   public isConnected(): boolean {
     // Temporarily return false until Django Channels is properly configured
     return false;
-    // return this.socket?.readyState === WebSocket.OPEN;
   }
 
   /**

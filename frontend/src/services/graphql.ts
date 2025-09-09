@@ -5,6 +5,8 @@ import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/clien
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import { AuthService } from '@/app/(auth)/services/auth';
+import { ErrorHandler } from '@/utils/error-handling';
+import { GRAPHQL_CONFIG } from '@/constants/design-tokens';
 
 // HTTP link
 const httpLink = createHttpLink({
@@ -26,21 +28,11 @@ const authLink = setContext((_, { headers }) => {
 // Error link for handling errors
 const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
   if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path }) => {
-      console.error(
-        `GraphQL error: Message: ${message}, Location: ${locations}, Path: ${path}`
-      );
-    });
+    ErrorHandler.handleGraphQLErrors(graphQLErrors);
   }
 
   if (networkError) {
-    console.error(`GraphQL network error: ${networkError}`);
-    
-    // Handle 401 errors by redirecting to login
-    if ('statusCode' in networkError && networkError.statusCode === 401) {
-      AuthService.logout();
-      window.location.href = '/login';
-    }
+    ErrorHandler.handleNetworkError(networkError as any);
   }
 });
 
@@ -72,10 +64,10 @@ export const apolloClient = new ApolloClient({
   }),
   defaultOptions: {
     watchQuery: {
-      errorPolicy: 'all',
+      errorPolicy: GRAPHQL_CONFIG.ERROR_POLICY,
     },
     query: {
-      errorPolicy: 'all',
+      errorPolicy: GRAPHQL_CONFIG.ERROR_POLICY,
     },
   },
 });
@@ -232,7 +224,7 @@ export const graphqlService = {
       const result = await apolloClient.query({
         query: gql(query),
         variables,
-        fetchPolicy: 'cache-first',
+        fetchPolicy: GRAPHQL_CONFIG.CACHE_POLICY,
       });
       return result.data;
     } catch (error) {

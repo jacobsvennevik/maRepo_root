@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { StudyStatsDisplay } from '@/components/shared/study-stats-display';
+import { UI_CONSTANTS } from '@/constants/design-tokens';
 
 interface ProjectDetailProps {
   projectId: string;
@@ -126,43 +128,17 @@ export function ProjectDetailGraphQL({ projectId }: ProjectDetailProps) {
 
       {/* Study Statistics */}
       {studyStats && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Study Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{studyStats.totalCards}</div>
-                <div className="text-sm text-gray-600">Total Cards</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{studyStats.reviewedToday}</div>
-                <div className="text-sm text-gray-600">Reviewed Today</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">{studyStats.dueCards}</div>
-                <div className="text-sm text-gray-600">Due Cards</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">{studyStats.studyStreak}</div>
-                <div className="text-sm text-gray-600">Day Streak</div>
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Completion Rate</span>
-                <span>{Math.round(studyStats.completionRate)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${studyStats.completionRate}%` }}
-                ></div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <StudyStatsDisplay 
+          stats={{
+            total_cards: studyStats.totalCards,
+            reviewed_today: studyStats.reviewedToday,
+            due_cards: studyStats.dueCards,
+            study_streak: studyStats.studyStreak,
+            completion_rate: studyStats.completionRate,
+            cards_by_difficulty: studyStats.cardsByDifficulty
+          }}
+          showProgressBar={true}
+        />
       )}
 
       {/* Files */}
@@ -209,7 +185,7 @@ export function ProjectDetailGraphQL({ projectId }: ProjectDetailProps) {
                   
                   {/* Sample flashcards */}
                   <div className="space-y-2">
-                    {set.flashcards.slice(0, 3).map((card: any) => (
+                    {set.flashcards.slice(0, UI_CONSTANTS.MAX_CARDS_PREVIEW).map((card: any) => (
                       <div key={card.id} className="bg-gray-50 p-2 rounded text-sm">
                         <p><strong>Q:</strong> {card.question}</p>
                         <p><strong>A:</strong> {card.answer}</p>
@@ -225,9 +201,9 @@ export function ProjectDetailGraphQL({ projectId }: ProjectDetailProps) {
                         </div>
                       </div>
                     ))}
-                    {set.flashcards.length > 3 && (
+                    {set.flashcards.length > UI_CONSTANTS.MAX_CARDS_PREVIEW && (
                       <p className="text-xs text-gray-500">
-                        ... and {set.flashcards.length - 3} more cards
+                        ... and {set.flashcards.length - UI_CONSTANTS.MAX_CARDS_PREVIEW} more cards
                       </p>
                     )}
                   </div>

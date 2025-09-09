@@ -2,22 +2,12 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  ChevronRight,
-  Brain,
-  BookOpen,
-  Sparkles,
-  Zap,
-  Plus,
-  Clock,
-  Target,
-  BarChart3,
-} from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { ChevronRight, Brain } from "lucide-react";
 import { useProjectFlashcards } from "./hooks/use-project-flashcards";
 import { ProjectFlashcardStats } from "./components/project-flashcard-stats";
 import { QuickActions } from "./components/quick-actions";
+import { DeckGrid } from "@/components/flashcards";
+import { FlashcardSet } from "@/features/flashcards/types";
 
 export default function ProjectFlashcards() {
   const params = useParams();
@@ -26,21 +16,54 @@ export default function ProjectFlashcards() {
   const { flashcardSets, stats, isLoading, error } =
     useProjectFlashcards(projectId);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  // Transform the data to match the new FlashcardSet interface
+  const transformedDecks: FlashcardSet[] = flashcardSets.map(set => ({
+    id: set.id,
+    title: set.title,
+    description: `Flashcard set with ${set.total_cards} cards`,
+    owner: parseInt(projectId),
+    difficulty_level: 'INTERMEDIATE' as const,
+    target_audience: 'Students',
+    estimated_study_time: set.total_cards * 2, // Estimate 2 minutes per card
+    tags: [],
+    created_at: set.created_at,
+    updated_at: set.created_at, // Use created_at as updated_at fallback
+    flashcard_count: set.total_cards,
+    is_public: false,
+    study_stats: {
+      total_cards: set.total_cards,
+      due_cards: set.due_cards,
+      mastered_cards: set.review_cards,
+      learning_cards: set.learning_cards,
+      review_cards: set.review_cards,
+      retention_rate: set.average_accuracy / 100,
+      streak_days: 0,
+      next_review: set.created_at,
+    },
+    flashcards: [],
+    learning_objectives: [],
+    themes: [],
+  }));
 
-  if (error) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-red-600">Error loading flashcards: {error}</p>
-      </div>
-    );
-  }
+  const handleEdit = (deck: FlashcardSet) => {
+    console.log('Edit deck:', deck);
+    // TODO: Implement edit functionality
+  };
+
+  const handleDelete = (deck: FlashcardSet) => {
+    console.log('Delete deck:', deck);
+    // TODO: Implement delete functionality
+  };
+
+  const handleShare = (deck: FlashcardSet) => {
+    console.log('Share deck:', deck);
+    // TODO: Implement share functionality
+  };
+
+  const handleToggleFavorite = (deck: FlashcardSet) => {
+    console.log('Toggle favorite:', deck);
+    // TODO: Implement favorite functionality
+  };
 
   return (
     <div className="relative min-h-screen">
@@ -80,128 +103,19 @@ export default function ProjectFlashcards() {
         <QuickActions projectId={projectId} />
 
         {/* Flashcard Sets */}
-        <Card className="bg-gradient-to-r from-slate-50 to-blue-50/50 backdrop-blur-sm border-blue-200/50">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900">
-                  Your Flashcard Sets
-                </h3>
-                <p className="text-sm text-slate-600">
-                  Manage and study your flashcard collections
-                </p>
-              </div>
-              <Button
-                asChild
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-              >
-                <Link href={`/projects/${projectId}/flashcards/create`}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create New Set
-                </Link>
-              </Button>
-            </div>
+        <DeckGrid
+          decks={transformedDecks}
+          isLoading={isLoading}
+          error={error}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onShare={handleShare}
+          onToggleFavorite={handleToggleFavorite}
+        />
 
-            {flashcardSets.length === 0 ? (
-              <div className="text-center py-12">
-                <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h4 className="text-lg font-medium text-gray-900 mb-2">
-                  No flashcard sets yet
-                </h4>
-                <p className="text-gray-600 mb-6">
-                  Create your first flashcard set to start studying
-                </p>
-              </div>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {flashcardSets.map((set) => (
-                  <Card
-                    key={set.id}
-                    className="hover:shadow-md transition-shadow"
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-3">
-                        <h4 className="font-medium text-slate-900">
-                          {set.title}
-                        </h4>
-                        <div className="flex items-center gap-1 text-xs text-slate-500">
-                          <BookOpen className="h-3 w-3" />
-                          <span>{set.total_cards}</span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-slate-600">Due today:</span>
-                          <span className="font-medium text-orange-600">
-                            {set.due_cards}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-slate-600">Learning:</span>
-                          <span className="font-medium text-blue-600">
-                            {set.learning_cards}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-slate-600">Accuracy:</span>
-                          <span className="font-medium text-green-600">
-                            {set.average_accuracy.toFixed(1)}%
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button
-                          asChild
-                          size="sm"
-                          className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700"
-                        >
-                          <Link
-                            href={`/projects/${projectId}/flashcards/${set.id}/study`}
-                          >
-                            <Zap className="h-3 w-3 mr-1" />
-                            Study
-                          </Link>
-                        </Button>
-                        <Button asChild size="sm" variant="outline">
-                          <Link
-                            href={`/projects/${projectId}/flashcards/${set.id}`}
-                          >
-                            <BarChart3 className="h-3 w-3 mr-1" />
-                            View
-                          </Link>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Stats Dashboard - Moved to bottom */}
+        {/* Stats Dashboard */}
         <ProjectFlashcardStats stats={stats} />
-
-        {/* Floating Cards Animation - Removed as no longer needed */}
       </div>
-
-      <style jsx>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 }

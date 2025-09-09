@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { StudyStatsDisplay } from '@/components/shared/study-stats-display';
+import { DIFFICULTY_COLORS, RATING_BUTTON_COLORS, RATING_LABELS, UI_CONSTANTS } from '@/constants/design-tokens';
 
 interface Flashcard {
   id: string;
@@ -80,19 +82,11 @@ export function FlashcardReview({ flashcards, onComplete }: FlashcardReviewProps
   };
 
   const getDifficultyColor = (difficulty: number) => {
-    const colors = ['bg-green-100 text-green-800', 'bg-blue-100 text-blue-800', 'bg-yellow-100 text-yellow-800', 'bg-orange-100 text-orange-800', 'bg-red-100 text-red-800'];
-    return colors[difficulty - 1] || colors[0];
+    return DIFFICULTY_COLORS[difficulty as keyof typeof DIFFICULTY_COLORS] || DIFFICULTY_COLORS[1];
   };
 
   const getRatingButtonColor = (rating: number) => {
-    const colors = {
-      1: 'bg-red-500 hover:bg-red-600',
-      2: 'bg-orange-500 hover:bg-orange-600',
-      3: 'bg-yellow-500 hover:bg-yellow-600',
-      4: 'bg-blue-500 hover:bg-blue-600',
-      5: 'bg-green-500 hover:bg-green-600',
-    };
-    return colors[rating as keyof typeof colors] || colors[3];
+    return RATING_BUTTON_COLORS[rating as keyof typeof RATING_BUTTON_COLORS] || RATING_BUTTON_COLORS[3];
   };
 
   if (!currentCard) {
@@ -127,7 +121,7 @@ export function FlashcardReview({ flashcards, onComplete }: FlashcardReviewProps
           <span>Card {currentIndex + 1} of {flashcards.length}</span>
           <span>{Math.round(progress)}% complete</span>
         </div>
-        <Progress value={progress} className="h-2" />
+        <Progress value={progress} className={UI_CONSTANTS.PROGRESS_BAR_HEIGHT} />
       </div>
 
       {/* Session stats */}
@@ -138,7 +132,7 @@ export function FlashcardReview({ flashcards, onComplete }: FlashcardReviewProps
       </div>
 
       {/* Flashcard */}
-      <Card className="min-h-[300px]">
+      <Card className={UI_CONSTANTS.CARD_MIN_HEIGHT}>
         <CardHeader>
           <CardTitle className="text-center">
             {currentCard.flashcard_set.project.name} - {currentCard.flashcard_set.title}
@@ -183,11 +177,9 @@ export function FlashcardReview({ flashcards, onComplete }: FlashcardReviewProps
                   ))}
                 </div>
                 <div className="flex justify-center gap-8 text-xs text-gray-500 mt-2">
-                  <span>1 - Hard</span>
-                  <span>2 - Medium</span>
-                  <span>3 - Good</span>
-                  <span>4 - Easy</span>
-                  <span>5 - Perfect</span>
+                  {Object.entries(RATING_LABELS).map(([rating, label]) => (
+                    <span key={rating}>{rating} - {label}</span>
+                  ))}
                 </div>
               </div>
             )}
@@ -197,29 +189,7 @@ export function FlashcardReview({ flashcards, onComplete }: FlashcardReviewProps
 
       {/* Global study stats */}
       {stats && (
-        <Card>
-          <CardContent className="p-4">
-            <h4 className="font-semibold text-gray-800 mb-2">Your Study Progress</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div className="text-center">
-                <div className="text-lg font-bold text-blue-600">{stats.total_cards}</div>
-                <div className="text-gray-600">Total Cards</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-green-600">{stats.reviewed_today}</div>
-                <div className="text-gray-600">Reviewed Today</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-orange-600">{stats.due_cards}</div>
-                <div className="text-gray-600">Due Cards</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-bold text-purple-600">{stats.study_streak}</div>
-                <div className="text-gray-600">Day Streak</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <StudyStatsDisplay stats={stats} />
       )}
     </div>
   );

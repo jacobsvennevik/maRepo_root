@@ -1,20 +1,15 @@
 import { useState, useEffect } from "react";
 import { axiosApi } from "@/lib/axios-api";
 import { axiosGeneration } from "@/lib/axios-generation";
-import { unwrapResults, getCount, type Paginated } from "@/lib/api/pagination";
 import axios from "axios";
+import { 
+  unwrapFlashcardSets, 
+  refreshFlashcardSets, 
+  calculateFlashcardStats,
+  type FlashcardSetApi 
+} from "../utils/data-transformation";
 
-export interface FlashcardSet {
-  id: number;
-  title: string;
-  total_cards: number;
-  due_cards: number;
-  learning_cards: number;
-  review_cards: number;
-  new_cards: number;
-  average_accuracy: number;
-  created_at: string;
-}
+export interface FlashcardSet extends FlashcardSetApi {}
 
 export interface FlashcardStats {
   total_sets: number;
@@ -47,6 +42,12 @@ export function useProjectFlashcards(projectId: string) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const refreshData = async () => {
+    const sets = await refreshFlashcardSets(projectId);
+    setFlashcardSets(sets);
+    setStats(calculateFlashcardStats(sets));
+  };
+
   useEffect(() => {
     // Removed AbortController signal to avoid XHR network errors on some browsers during fast route changes
     
@@ -54,62 +55,7 @@ export function useProjectFlashcards(projectId: string) {
       try {
         setIsLoading(true);
         setError(null);
-
-        // Fetch flashcard sets for the project using main API (not generation API)
-        const response = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
-          `/projects/${projectId}/flashcard-sets/`
-        );
-
-        // Unwrap paginated payloads to arrays
-        const payload = response.data as any;
-        const sets: FlashcardSet[] = Array.isArray(payload)
-          ? payload
-          : Array.isArray(payload?.results)
-          ? payload.results
-          : [];
-
-        // Optional debug
-        console.log('[flashcards] payload shape:', {
-          isArray: Array.isArray(payload),
-          hasResultsArray: Array.isArray(payload?.results),
-          count: Array.isArray(payload?.results) ? payload?.results?.length : Array.isArray(payload) ? payload.length : 0,
-        });
-
-        setFlashcardSets(sets);
-
-        // Calculate aggregate stats with defensive defaults
-        const totalCards = sets.reduce(
-          (sum: number, set: FlashcardSet) => sum + set.total_cards,
-          0,
-        );
-        const dueToday = sets.reduce(
-          (sum: number, set: FlashcardSet) => sum + set.due_cards,
-          0,
-        );
-        const learningCards = sets.reduce(
-          (sum: number, set: FlashcardSet) => sum + set.learning_cards,
-          0,
-        );
-        const reviewCards = sets.reduce(
-          (sum: number, set: FlashcardSet) => sum + set.review_cards,
-          0,
-        );
-        const avgAccuracy =
-          sets.length > 0
-            ? sets.reduce(
-                (sum: number, set: FlashcardSet) => sum + set.average_accuracy,
-                0,
-              ) / sets.length
-            : 0;
-
-        setStats({
-          total_sets: sets.length,
-          total_cards: totalCards,
-          due_today: dueToday,
-          learning_cards: learningCards,
-          mastered_cards: reviewCards, // Cards in review state are considered mastered
-          average_accuracy: avgAccuracy,
-        });
+        await refreshData();
       } catch (err: any) {
         // Don't set error if request was aborted or canceled
         if (err.name === 'AbortError' || axios.isCancel?.(err) || err?.name === "CanceledError" || err?.code === "ERR_CANCELED") return;
@@ -139,29 +85,13 @@ export function useProjectFlashcards(projectId: string) {
     try {
       const response = await axiosApi.post(
         `/projects/${projectId}/flashcard-sets/`,
-        {
-          title,
-        },
+        { title },
       );
-
-      // Refresh the data using axiosApi
-      const updatedResponse = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
-        `/projects/${projectId}/flashcard-sets/`,
-      );
-      const updatedPayload = updatedResponse.data as any;
-      const updatedSets: FlashcardSet[] = Array.isArray(updatedPayload)
-        ? updatedPayload
-        : Array.isArray(updatedPayload?.results)
-        ? updatedPayload.results
-        : [];
-      setFlashcardSets(updatedSets);
-
+      await refreshData();
       return response.data;
     } catch (err: any) {
       console.error("Failed to create flashcard set:", err);
-      throw new Error(
-        err.response?.data?.error || "Failed to create flashcard set",
-      );
+      throw new Error(err.response?.data?.error || "Failed to create flashcard set");
     }
   };
 
@@ -179,25 +109,11 @@ export function useProjectFlashcards(projectId: string) {
           difficulty: difficulty,
         },
       );
-
-      // Refresh the data using axiosApi
-      const updatedResponse = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
-        `/projects/${projectId}/flashcard-sets/`,
-      );
-      const updatedPayload = updatedResponse.data as any;
-      const updatedSets: FlashcardSet[] = Array.isArray(updatedPayload)
-        ? updatedPayload
-        : Array.isArray(updatedPayload?.results)
-        ? updatedPayload.results
-        : [];
-      setFlashcardSets(updatedSets);
-
+      await refreshData();
       return response.data;
     } catch (err: any) {
       console.error("Failed to generate flashcards:", err);
-      throw new Error(
-        err.response?.data?.error || "Failed to generate flashcards",
-      );
+      throw new Error(err.response?.data?.error || "Failed to generate flashcards");
     }
   };
 
@@ -235,19 +151,7 @@ export function useProjectFlashcards(projectId: string) {
           response_time_seconds: responseTimeSeconds,
         },
       );
-
-      // Refresh stats after review using axiosApi
-      const updatedResponse = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
-        `/projects/${projectId}/flashcard-sets/`,
-      );
-      const updatedPayload = updatedResponse.data as any;
-      const updatedSets: FlashcardSet[] = Array.isArray(updatedPayload)
-        ? updatedPayload
-        : Array.isArray(updatedPayload?.results)
-        ? updatedPayload.results
-        : [];
-      setFlashcardSets(updatedSets);
-
+      await refreshData();
       return response.data;
     } catch (err: any) {
       console.error("Failed to submit review:", err);
@@ -271,29 +175,13 @@ export function useProjectFlashcards(projectId: string) {
 
       const response = await axiosApi.post(
         `/flashcards/reviews/`,
-        {
-          reviews: reviewsData,
-        },
+        { reviews: reviewsData },
       );
-
-      // Refresh stats after bulk review
-      const updatedResponse = await axiosApi.get<FlashcardSet[] | Paginated<FlashcardSet>>(
-        `/projects/${projectId}/flashcard-sets/`,
-      );
-      const updatedPayload = updatedResponse.data as any;
-      const updatedSets: FlashcardSet[] = Array.isArray(updatedPayload)
-        ? updatedPayload
-        : Array.isArray(updatedPayload?.results)
-        ? updatedPayload.results
-        : [];
-      setFlashcardSets(updatedSets);
-
+      await refreshData();
       return response.data;
     } catch (err: any) {
       console.error("Failed to submit bulk reviews:", err);
-      throw new Error(
-        err.response?.data?.error || "Failed to submit bulk reviews",
-      );
+      throw new Error(err.response?.data?.error || "Failed to submit bulk reviews");
     }
   };
 

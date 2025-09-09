@@ -104,15 +104,15 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
 );
 SelectItem.displayName = "SelectItem";
 
-const SelectValue = React.forwardRef<HTMLSpanElement, { placeholder?: string }>(
-  ({ placeholder, ...props }, ref) => {
+const SelectValue = React.forwardRef<HTMLSpanElement, { placeholder?: string; children?: React.ReactNode }>(
+  ({ placeholder, children, ...props }, ref) => {
     return (
       <span
         ref={ref}
-        className="block truncate"
+        className="block truncate text-gray-500"
         {...props}
       >
-        {placeholder || "Select option..."}
+        {children || placeholder || "Select option..."}
       </span>
     );
   }

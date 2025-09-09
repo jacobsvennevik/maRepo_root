@@ -7,6 +7,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 from django.contrib.auth import get_user_model
 from backend.apps.projects.models import Project
 from backend.apps.generation.models import FlashcardSet, Flashcard
+from backend.apps.generation.services.study_stats import StudyStatsService
 from backend.apps.pdf_service.models import UploadedFile
 from backend.apps.reflection.models import ReflectionEntry
 
@@ -170,7 +171,7 @@ class Query(graphene.ObjectType):
             ).order_by('-created_at')[:5]
             
             # Calculate study stats
-            study_stats = self.calculate_study_stats(info.context.user, project)
+            study_stats = StudyStatsService.calculate_study_stats(info.context.user, project)
             
             return ProjectDetailType(
                 project=project,
@@ -198,59 +199,8 @@ class Query(graphene.ObjectType):
         if not info.context.user.is_authenticated:
             return None
         
-        return self.calculate_study_stats(info.context.user)
+        return StudyStatsService.calculate_study_stats(info.context.user)
     
-    def calculate_study_stats(self, user, project=None):
-        """Calculate study statistics for user/project."""
-        from django.utils import timezone
-        from datetime import timedelta
-        
-        # Base queryset
-        cards_queryset = Flashcard.objects.filter(user=user)
-        if project:
-            cards_queryset = cards_queryset.filter(flashcard_set__project=project)
-        
-        # Basic stats
-        total_cards = cards_queryset.count()
-        reviewed_today = cards_queryset.filter(
-            last_reviewed__date=timezone.now().date()
-        ).count()
-        
-        due_cards = cards_queryset.filter(
-            next_review__lte=timezone.now()
-        ).count()
-        
-        # Calculate streak
-        streak = 0
-        current_date = timezone.now().date()
-        
-        while True:
-            has_study = cards_queryset.filter(
-                last_reviewed__date=current_date
-            ).exists()
-            
-            if has_study:
-                streak += 1
-                current_date -= timedelta(days=1)
-            else:
-                break
-        
-        # Cards by difficulty
-        cards_by_difficulty = []
-        for difficulty in range(1, 6):
-            count = cards_queryset.filter(difficulty=difficulty).count()
-            cards_by_difficulty.append(count)
-        
-        completion_rate = (reviewed_today / max(total_cards, 1)) * 100
-        
-        return StudyStatsType(
-            total_cards=total_cards,
-            reviewed_today=reviewed_today,
-            due_cards=due_cards,
-            study_streak=streak,
-            completion_rate=completion_rate,
-            cards_by_difficulty=cards_by_difficulty
-        )
 
 
 class CreateProjectMutation(graphene.Mutation):

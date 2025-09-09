@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from backend.apps.generation.models import Flashcard, FlashcardSet
 from backend.apps.generation.services.spaced_repetition import SpacedRepetitionService
+from backend.apps.generation.services.study_stats import StudyStatsService
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -118,7 +119,7 @@ class StudyProgressConsumer(AsyncWebsocketConsumer):
             updated_card = spaced_repetition.review_card(flashcard, rating)
             
             # Get updated progress stats
-            progress_stats = self.get_user_progress_stats()
+            progress_stats = StudyStatsService.calculate_study_stats(self.scope["user"])
             
             return {
                 'flashcard_id': flashcard_id,
@@ -134,54 +135,7 @@ class StudyProgressConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_user_progress_stats(self):
         """Get comprehensive study progress statistics."""
-        user = self.scope["user"]
-        
-        # Get flashcard statistics
-        total_cards = Flashcard.objects.filter(user=user).count()
-        reviewed_today = Flashcard.objects.filter(
-            user=user,
-            last_reviewed__date=timezone.now().date()
-        ).count()
-        
-        # Get due cards count
-        due_cards = Flashcard.objects.filter(
-            user=user,
-            next_review__lte=timezone.now()
-        ).count()
-        
-        # Get streak information
-        streak = self.calculate_study_streak(user)
-        
-        return {
-            'total_cards': total_cards,
-            'reviewed_today': reviewed_today,
-            'due_cards': due_cards,
-            'study_streak': streak,
-            'completion_rate': (reviewed_today / max(total_cards, 1)) * 100
-        }
-    
-    @database_sync_to_async
-    def calculate_study_streak(self, user):
-        """Calculate consecutive study days."""
-        from django.utils import timezone
-        from datetime import timedelta
-        
-        streak = 0
-        current_date = timezone.now().date()
-        
-        while True:
-            has_study = Flashcard.objects.filter(
-                user=user,
-                last_reviewed__date=current_date
-            ).exists()
-            
-            if has_study:
-                streak += 1
-                current_date -= timedelta(days=1)
-            else:
-                break
-        
-        return streak
+        return StudyStatsService.calculate_study_stats(self.scope["user"])
     
     async def send_initial_stats(self):
         """Send initial study statistics on connection."""
