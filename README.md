@@ -1,12 +1,15 @@
 Study Helper (Work in Progress)
 
-A hobby website I'm building to optimize my studying generating study plans, flashcards, and different tests. I haven't built a website before, so this is great practice. The frontend and parts of the backend are written with the AI code editor Cursor and "vibe coded" along the way.
+A hobby website I'm building to optimize my studying generating study plans, flashcards, and different tests. I haven't built a website before, so this is great practice. The frontend and parts of the backend are written with the AI code editor Cursor and "vibe coded" along the way. Its right now a clash of stiles so will be working on that
 
 Screenshots
 
 Pics of the website so far (placeholder names, early UI):
 
 <!-- Drop images here when ready, e.g. docs/screenshots/*.png -->
+
+### Demo video
+- See a short demo capture: [`docs/media/screen-capture-9.sep.webm`](docs/media/screen-capture-9.sep.webm)
 
 ### Features (early)
 - **Study plans**: draft and iterate on personalized plans
