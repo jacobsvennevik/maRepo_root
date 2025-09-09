@@ -9,6 +9,7 @@ Pics of the website so far (placeholder names, early UI):
 <!-- Drop images here when ready, e.g. docs/screenshots/*.png -->
 
 ### Demo video
+You have to download it right now, sorry
 - See a short demo capture: [`docs/media/screen-capture-9.sep.webm`](docs/media/screen-capture-9.sep.webm)
 
 ### Features (early)
