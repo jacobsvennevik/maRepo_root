@@ -67,3 +67,4 @@ export function FileStorageEmpty({ onUpload }: FileStorageEmptyProps) {
     </div>
   );
 }
+

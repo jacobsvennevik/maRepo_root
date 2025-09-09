@@ -234,3 +234,4 @@ export const mockFilesWithProcessing: FileItem[] = [
     borderColor: 'border-blue-200'
   }
 ];
+

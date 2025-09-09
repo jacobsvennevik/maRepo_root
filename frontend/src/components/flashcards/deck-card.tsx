@@ -69,8 +69,8 @@ export function DeckCard({
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      // Navigate to study page
-      window.location.href = `/projects/${deck.owner}/flashcards/${deck.id}/study`;
+      // Navigate to project-scoped deck carousel page
+      window.location.href = `/projects/${deck.owner}/flashcards/${deck.id}`;
     }
   };
 
@@ -145,7 +145,7 @@ export function DeckCard({
                 size="sm"
                 className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700"
               >
-                <Link href={`/projects/${deck.owner}/flashcards/${deck.id}/study`}>
+                <Link href={`/projects/${deck.owner}/flashcards/${deck.id}`}>
                   <Play className="h-3 w-3 mr-1" />
                   Study
                 </Link>
@@ -270,7 +270,7 @@ export function DeckCard({
           asChild
           className={cn("w-full bg-gradient-to-r text-white font-medium rounded-lg py-3 text-base", getDeckColor(deck.id, 'button'))}
         >
-          <Link href={`/projects/${deck.owner}/flashcards/${deck.id}/study`}>
+          <Link href={`/projects/${deck.owner}/flashcards/${deck.id}`}>
             Study Deck
             <ChevronRight className="h-5 w-5 ml-2" />
           </Link>
