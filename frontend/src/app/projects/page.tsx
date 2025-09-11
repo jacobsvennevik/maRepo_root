@@ -1,19 +1,13 @@
 "use client";
 
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { ProjectCard } from "./components/project-card";
-import {
-  CreateProjectCard,
-  ProjectPlaceholderCard,
-} from "./components/add-project-card";
-import { fetchProjects } from "./api";
+import { ProjectCard, CreateProjectCard, ProjectPlaceholderCard, fetchProjects, ProjectType, ProjectV2 } from "@/features/projects";
 import { useEffect, useState } from "react";
-import { ProjectType, ProjectV2 } from "./types";
 import { WhiteBackground } from "@/components/common/backgrounds/white-background";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useProjectUpdates, useStudyProgress } from "@/hooks/useRealtime";
-import { webSocketService } from "@/services/websocket";
+import { webSocketService } from "@/lib/websocket";
 
 const projectTypes: ProjectType[] = [
   "biology",

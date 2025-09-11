@@ -1,124 +1,127 @@
-# Flashcard Carousel Component
+# Flashcard Deck Components
 
-A sophisticated, animated flashcard carousel component that provides an engaging learning experience with 3D flip animations and smooth navigation.
+A comprehensive set of React components for displaying and managing flashcard decks with modern design, full accessibility support, and responsive layouts.
 
-## Features
+## Components
 
-### 🎠 Carousel Interface
-- **Horizontal scrolling** with smooth snap-to-center behavior
-- **Partially visible side cards** that scale down to 30% with reduced opacity
-- **Responsive design** that adapts to different screen sizes
-- **Touch-friendly** scrolling on mobile devices
+### DeckCard
+The main component for displaying individual flashcard decks with two layout variants:
+- **Grid Layout**: Card-based design with detailed information
+- **List Layout**: Compact horizontal layout for space-efficient display
 
-### 🎭 3D Card Animations
-- **3D flip effect** with perspective and backface visibility
-- **Smooth transitions** between question and answer states
-- **Hover effects** with shadow elevation changes
-- **Card scaling** animations for focus management
+**Features:**
+- Deck title, description, and metadata
+- Card count, due today, last studied, updated date
+- Favorite star indicator
+- Difficulty level badge
+- Primary "Study Deck" CTA button
+- Quick actions menu (Edit, Share, Delete, Favorite)
+- Full keyboard navigation and screen reader support
+- Responsive design across all breakpoints
 
-### 🎮 Interactive Controls
-- **Navigation arrows** on left and right sides
-- **Progress dots** showing current position in the deck
-- **Keyboard shortcuts** (arrow keys, spacebar, enter)
-- **Action buttons** for editing, adding cards, and viewing all
+### DeckGrid
+Container component that manages multiple deck cards with:
+- Sorting options (Recent, Name, Cards) with direction toggle
+- Layout toggle (Grid/List view)
+- Loading, empty, and error states
+- Responsive grid layout (1-4 columns based on screen size)
+- Accessibility-compliant grid structure
 
-### 🎨 Visual Design
-- **Modern UI** with rounded corners and subtle shadows
-- **Color-coded cards** (blue for questions, green for answers)
-- **Gradient backgrounds** and smooth color transitions
-- **Responsive typography** that scales appropriately
+### SortChips
+Interactive sorting controls with:
+- Three sort options: Recent, Name, Cards
+- Visual direction indicators (up/down arrows)
+- Accessible button states
+- Smooth transitions
+
+### LayoutToggle
+Simple toggle for switching between grid and list views:
+- Visual grid/list icons
+- Active state indication
+- Smooth transitions
 
 ## Usage
 
-### Basic Implementation
-
 ```tsx
-import { FlashcardCarousel } from '@/features/flashcards/components/FlashcardCarousel';
+import { DeckGrid } from '@/components/flashcards';
 
-function MyFlashcardPage() {
-  const flashcardSet = {
-    id: 1,
-    title: "World Geography",
-    description: "Learn about countries and capitals",
-    // ... other properties
-  };
+function MyFlashcardsPage() {
+  const decks = [
+    // Your flashcard deck data
+  ];
 
   return (
-    <FlashcardCarousel
-      flashcardSet={flashcardSet}
-      onBack={() => router.back()}
-      onEditCard={(card) => handleEditCard(card)}
-      onDiscardCard={(card) => handleDiscardCard(card)}
-      onAddCard={() => handleAddCard()}
-      onViewAll={() => handleViewAll()}
+    <DeckGrid
+      decks={decks}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      onShare={handleShare}
+      onToggleFavorite={handleToggleFavorite}
     />
   );
 }
 ```
 
-### Required Props
+## Design System Compliance
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `flashcardSet` | `FlashcardSet` | Yes | The flashcard set to display |
-| `onBack` | `() => void` | Yes | Function called when back button is clicked |
-| `onEditCard` | `(card: Flashcard) => void` | No | Function called when edit button is clicked |
-| `onDiscardCard` | `(card: Flashcard) => void` | No | Function called when discard button is clicked |
-| `onAddCard` | `() => void` | No | Function called when add card button is clicked |
-| `onViewAll` | `() => void` | No | Function called when view all button is clicked |
+The components follow the existing design system:
+- **Colors**: Uses existing color tokens (primary, ocean, emerald, etc.)
+- **Typography**: Consistent with Inter font family and sizing
+- **Spacing**: Follows Tailwind spacing scale
+- **Shadows**: Subtle shadows with hover effects
+- **Border Radius**: Consistent rounded corners (xl for cards)
+- **Icons**: Lucide React icons throughout
 
-## Keyboard Shortcuts
+## Accessibility Features
 
-- **Arrow Left/Right**: Navigate between cards
-- **Spacebar**: Next card
-- **Enter/F**: Flip current card
-- **Escape**: Close modals
+- **Keyboard Navigation**: Full keyboard support with Enter/Space activation
+- **Screen Reader Support**: Proper ARIA labels and roles
+- **Focus Management**: Clear focus indicators
+- **Semantic HTML**: Proper heading hierarchy and landmarks
+- **Color Contrast**: Meets WCAG AA standards
 
-## Styling
+## Responsive Design
 
-The component uses a combination of Tailwind CSS classes and custom CSS for advanced animations. The custom CSS file (`FlashcardCarousel.css`) provides:
+- **Mobile**: Single column layout with stacked controls
+- **Tablet**: 2-column grid with horizontal controls
+- **Desktop**: 3-4 column grid with inline controls
+- **Large Screens**: Optimized spacing and layout
 
-- 3D perspective and transform styles
-- Custom scrollbar hiding
-- Enhanced transition effects
-- Responsive scaling classes
+## Data Requirements
 
-## Dependencies
+The components expect `FlashcardSet` objects with the following structure:
 
-- **React**: 18+ with hooks
-- **Lucide React**: For icons
-- **Tailwind CSS**: For styling
-- **Custom CSS**: For 3D effects and animations
-
-## Browser Support
-
-- **Modern browsers** with CSS Grid and Flexbox support
-- **Mobile browsers** with touch scrolling support
-- **CSS transforms** and transitions support required
+```typescript
+interface FlashcardSet {
+  id: number;
+  title: string;
+  description?: string;
+  owner: number;
+  difficulty_level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+  study_stats: {
+    total_cards: number;
+    due_cards: number;
+    mastered_cards: number;
+    learning_cards: number;
+    review_cards: number;
+    retention_rate: number;
+    next_review: string;
+  };
+}
+```
 
 ## Performance
 
-- **Hardware acceleration** for smooth animations
-- **Efficient re-renders** with React hooks optimization
-- **Smooth scrolling** with CSS scroll-snap
-- **Optimized transitions** targeting transform properties
+- Optimized rendering with React.memo where appropriate
+- Efficient sorting with useMemo
+- Minimal re-renders through proper state management
+- Lazy loading support ready
 
-## Accessibility
+## Browser Support
 
-- **Keyboard navigation** support
-- **Screen reader** friendly structure
-- **Focus management** for interactive elements
-- **ARIA labels** for navigation controls
-
-## Customization
-
-The component can be customized by:
-
-1. **Modifying the CSS** file for different animation timings
-2. **Adjusting color schemes** in the Tailwind classes
-3. **Changing card dimensions** and spacing
-4. **Adding custom animations** for specific interactions
-
-## Examples
-
-See `FlashcardCarouselDemo.tsx` for a complete working example with sample data.
+- Modern browsers with CSS Grid support
+- Graceful degradation for older browsers
+- Mobile-first responsive design

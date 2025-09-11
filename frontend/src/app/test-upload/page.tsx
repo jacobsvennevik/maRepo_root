@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { FileUpload } from '@/components/ui/file-upload';
-import { AnalyzeButton } from '@/app/projects/create/components/steps/shared/analyze-button';
+import { AnalyzeButton } from '@/features/projects';
 
 export default function TestUploadPage() {
   const [files, setFiles] = useState<File[]>([]);

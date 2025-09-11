@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Play } from "lucide-react";
-import { CreateFlashcardSetWizard } from "@/components/diagnostic/CreateFlashcardSetWizard";
+import { CreateFlashcardSetWizard } from "@/features/diagnostics";
 
 interface QuickActionsProps {
   projectId: string;

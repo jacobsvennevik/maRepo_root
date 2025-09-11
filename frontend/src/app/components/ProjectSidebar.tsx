@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { useOptionalProject } from "@/app/projects/_context/useOptionalProject";
+import { useOptionalProject } from "@/features/projects";
 import Link from "next/link";
 import {
   Book,

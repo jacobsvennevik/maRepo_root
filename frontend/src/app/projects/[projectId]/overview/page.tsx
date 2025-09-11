@@ -8,8 +8,8 @@ import {
   LearningJourney,
   UpcomingVoyages,
   OceanActionSection,
-} from "./components";
-import { useFloatingAnimation } from "./hooks/use-floating-animation";
+  useFloatingAnimation,
+} from "@/features/projects";
 
 export default function ProjectOverview() {
   const params = useParams();

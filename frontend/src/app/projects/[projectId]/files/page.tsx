@@ -1,6 +1,6 @@
 'use client';
 
-import FileStorage from './components/file-storage';
+import { FileStorage } from "@/features/projects";
 
 export default function ProjectFiles() {
   return <FileStorage />;

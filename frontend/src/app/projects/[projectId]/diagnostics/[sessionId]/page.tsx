@@ -1,17 +1,19 @@
 import React from 'react';
-import { DiagnosticSession } from '@/components/diagnostic';
+import { DiagnosticSession } from '@/features/diagnostics';
 
 interface DiagnosticSessionPageProps {
-  params: {
+  params: Promise<{
     projectId: string;
     sessionId: string;
-  };
+  }>;
 }
 
-export default function DiagnosticSessionPage({ params }: DiagnosticSessionPageProps) {
+export default async function DiagnosticSessionPage({ params }: DiagnosticSessionPageProps) {
+  const { projectId, sessionId } = await params;
+  
   return (
     <div className="container mx-auto py-6 px-4">
-      <DiagnosticSession sessionId={params.sessionId} />
+      <DiagnosticSession sessionId={sessionId} />
     </div>
   );
 }

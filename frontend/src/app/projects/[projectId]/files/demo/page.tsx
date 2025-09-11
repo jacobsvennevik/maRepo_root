@@ -10,9 +10,9 @@ import {
   mockFilesWithUploading, 
   mockFilesWithError, 
   mockFilesWithProcessing,
-  mockStorageStats 
-} from './mock-data';
-import FileStorage from './file-storage';
+  mockStorageStats,
+  FileStorage
+} from "@/features/projects";
 
 type DemoState = 'normal' | 'empty' | 'loading' | 'error' | 'uploading' | 'processing';
 

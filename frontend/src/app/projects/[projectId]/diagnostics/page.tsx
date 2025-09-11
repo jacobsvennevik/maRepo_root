@@ -1,16 +1,18 @@
 import React from 'react';
-import { DiagnosticDashboard } from '@/components/diagnostic';
+import { DiagnosticDashboard } from '@/features/diagnostics';
 
 interface DiagnosticPageProps {
-  params: {
+  params: Promise<{
     projectId: string;
-  };
+  }>;
 }
 
-export default function DiagnosticPage({ params }: DiagnosticPageProps) {
+export default async function DiagnosticPage({ params }: DiagnosticPageProps) {
+  const { projectId } = await params;
+  
   return (
     <div className="container mx-auto py-6 px-4">
-      <DiagnosticDashboard projectId={params.projectId} />
+      <DiagnosticDashboard projectId={projectId} />
     </div>
   );
 }

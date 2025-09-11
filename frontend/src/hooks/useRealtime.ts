@@ -2,8 +2,8 @@
  * React hook for real-time study progress updates.
  */
 import { useState, useEffect, useCallback } from 'react';
-import { webSocketService, StudyProgressUpdate } from '@/services/websocket';
-import { connectionManager } from '@/services/websocket-connection';
+import { webSocketService, StudyProgressUpdate, ProjectUpdate } from '@/lib/websocket';
+import { connectionManager } from '@/lib/websocket-connection';
 
 export interface StudyStats {
   total_cards: number;
@@ -84,7 +84,6 @@ export function useStudyProgress() {
 /**
  * React hook for real-time project updates.
  */
-import { ProjectUpdate } from '@/services/websocket';
 
 export function useProjectUpdates() {
   const [projects, setProjects] = useState<ProjectUpdate[]>([]);

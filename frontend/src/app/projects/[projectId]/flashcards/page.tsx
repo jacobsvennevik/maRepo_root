@@ -6,7 +6,7 @@ import { ChevronRight, Brain } from "lucide-react";
 import { useProjectFlashcards } from "./hooks/use-project-flashcards";
 import { ProjectFlashcardStats } from "./components/project-flashcard-stats";
 import { QuickActions } from "./components/quick-actions";
-import { DeckGrid } from "@/components/flashcards";
+import { DeckGrid } from "@/features/flashcards";
 import { FlashcardSet } from "@/features/flashcards/types";
 
 export default function ProjectFlashcards() {

@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { ChevronLeft, Wand2, Settings, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import GuidedSetup from '../create/guided-setup';
-import { CustomSetup } from '../create/components/custom-setup';
-import { performComprehensiveCleanup } from '../create/utils/cleanup-utils';
+import { GuidedSetup } from '@/features/projects';
+import { CustomSetup } from '@/features/projects';
+import { performComprehensiveCleanup } from '@/features/projects';
 
 type SetupMode = 'selection' | 'guided' | 'custom';
 

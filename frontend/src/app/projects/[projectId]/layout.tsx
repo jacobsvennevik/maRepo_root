@@ -1,7 +1,7 @@
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import ProjectSidebar from "@/app/components/ProjectSidebar";
 import { WhiteBackground } from "@/components/common/backgrounds/white-background";
-import { ProjectProvider } from "./_context/project-context";
+import { ProjectProvider } from "@/features/projects";
 
 // This would typically come from your database/API
 const getProjectName = async (projectId: string) => {

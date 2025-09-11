@@ -1,10 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { PageLayout } from "./components/layout";
-import { ProjectTypeCards } from "./components/project-type-cards";
-import { NavigationService } from "@/services/NavigationService";
-import { performComprehensiveCleanup } from "./utils/cleanup-utils";
+import { PageLayout, ProjectTypeCards, performComprehensiveCleanup } from "@/features/projects";
+import { NavigationService } from "@/lib/NavigationService";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 
