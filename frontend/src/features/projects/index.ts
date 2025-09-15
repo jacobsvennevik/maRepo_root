@@ -6,6 +6,7 @@ export * from "./components/ai-metadata-tags-client";
 export * from "./components/ProjectErrorBoundary";
 export * from "./components/project-type-cards";
 export * from "./components/project-summary";
+export * from "./components/project-summary-variants";
 export * from "./components/guided-setup";
 export * from "./components/custom-setup";
 export * from "./components/ai/ai-loading";

@@ -1,5 +1,4 @@
 import axios from "axios";
-import axiosInstance from "@/lib/axios";
 import { axiosApi } from "@/lib/axios-api";
 import { ProjectSetup } from "../types";
 
@@ -182,8 +181,17 @@ export async function uploadFile(file: File, uploadType: string): Promise<any> {
 
 export const getProjects = async () => {
   try {
-    const response = await axiosApi.get("/projects/");
-    return response.data;
+    console.log('🔥 TESTING: Back to axios with dev-guards disabled');
+    const response = await axiosApi.get("projects");
+    // Import the mapping function
+    const { mapApiResponseToProjectV2 } = await import("./utils");
+    
+    // Transform API response to ProjectV2 format
+    const projects = Array.isArray(response.data) 
+      ? response.data.map(mapApiResponseToProjectV2)
+      : [response.data].map(mapApiResponseToProjectV2);
+    
+    return projects;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       throw new APIError(

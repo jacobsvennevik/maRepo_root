@@ -151,52 +151,55 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
     setIsLoadingFiles(true);
     
     try {
-      // Check if we're in test mode
-      if (isTestMode()) {
-        // Use mock data in test mode
-        const mockProjectFiles: ProjectFile[] = [
+      // Check if we're in test mode and if we should skip API call
+      const testMode = isTestMode();
+      
+      // In test mode, check if we have authentication
+      let hasAuth = false;
+      if (typeof window !== "undefined" && window.localStorage) {
+        const token = localStorage.getItem("access_token");
+        hasAuth = !!token;
+      }
+      
+      console.log('🔍 DEBUG: Test mode:', testMode, 'Has auth:', hasAuth);
+      
+      // If we're in test mode and don't have auth, skip API call and use fallback
+      if (testMode && !hasAuth) {
+        console.log('🔍 DEBUG: Test mode without auth - using fallback files directly');
+        const fallbackFiles: ProjectFile[] = [
           {
-            id: 'file_1',
-            name: 'Natural Language Processing Syllabus.pdf',
+            id: 'demo_1',
+            name: 'Course Syllabus.pdf',
             file_type: 'pdf',
             uploaded_at: '2025-01-15T10:30:00Z',
             file_size: 2048576
           },
           {
-            id: 'file_2',
-            name: 'NLP Course Notes.docx',
+            id: 'demo_2',
+            name: 'Lecture Notes.docx',
             file_type: 'docx',
             uploaded_at: '2025-01-16T14:20:00Z',
             file_size: 1536000
           },
           {
-            id: 'file_3',
-            name: 'Language Models Research Paper.pdf',
+            id: 'demo_3',
+            name: 'Assignment Guidelines.pdf',
             file_type: 'pdf',
             uploaded_at: '2025-01-17T09:15:00Z',
             file_size: 3145728
-          },
-          {
-            id: 'file_4',
-            name: 'Neural Networks Overview.pptx',
-            file_type: 'pptx',
-            uploaded_at: '2025-01-18T16:45:00Z',
-            file_size: 5242880
           }
         ];
-        
-        console.log('🔍 DEBUG: Using mock project files:', mockProjectFiles);
-        setProjectFiles(mockProjectFiles);
+        setProjectFiles(fallbackFiles);
         return;
       }
-
+      
+      // Try to load real project files from API
       const apiUrl = `/projects/${projectId}/`;
       console.log('🔍 DEBUG: Fetching from URL:', apiUrl);
       
-              // Fetch project details which includes uploaded files using axiosApi
-        const response = await axiosApi.get(apiUrl, {
+      const response = await axiosApi.get(apiUrl, {
         headers: {
-          'X-Test-Mode': 'true', // Add test mode header
+          'X-Test-Mode': testMode ? 'true' : 'false',
         }
       });
 
@@ -205,9 +208,6 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
       
       const project = response.data;
       console.log('🔍 DEBUG: Project data received:', project);
-      console.log('🔍 DEBUG: Project uploaded_files:', project.uploaded_files);
-      console.log('🔍 DEBUG: Project uploaded_files type:', typeof project.uploaded_files);
-      console.log('🔍 DEBUG: Project uploaded_files length:', project.uploaded_files?.length);
       
       // Extract uploaded files from project response
       const files = project.uploaded_files || [];
@@ -215,7 +215,6 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
       
       // Transform the response to match our ProjectFile interface
       const projectFiles: ProjectFile[] = files.map((file: any) => {
-        console.log('🔍 DEBUG: Processing file:', file);
         const transformedFile = {
           id: file.id,
           name: file.original_name || file.file?.split('/').pop() || 'Unknown file',
@@ -223,16 +222,39 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
           uploaded_at: file.uploaded_at,
           file_size: file.file_size || file.file?.size || 0
         };
-        console.log('🔍 DEBUG: Transformed file:', transformedFile);
         return transformedFile;
       });
       
       console.log('🔍 DEBUG: Final projectFiles array:', projectFiles);
       setProjectFiles(projectFiles);
+      
     } catch (error) {
       console.error('🔍 DEBUG: Error fetching project files:', error);
-      // Fallback to empty state
-      setProjectFiles([]);
+      
+      // In test mode, provide fallback mock files if API fails
+      if (isTestMode()) {
+        console.log('🔍 DEBUG: API failed in test mode, using fallback mock files');
+        const fallbackFiles: ProjectFile[] = [
+          {
+            id: 'fallback_1',
+            name: 'Uploaded Course Material.pdf',
+            file_type: 'pdf',
+            uploaded_at: '2025-01-15T10:30:00Z',
+            file_size: 2048576
+          },
+          {
+            id: 'fallback_2',
+            name: 'Study Notes.docx',
+            file_type: 'docx',
+            uploaded_at: '2025-01-16T14:20:00Z',
+            file_size: 1536000
+          }
+        ];
+        setProjectFiles(fallbackFiles);
+      } else {
+        // In production mode, fallback to empty state
+        setProjectFiles([]);
+      }
     } finally {
       setIsLoadingFiles(false);
     }
@@ -280,6 +302,18 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
     }
     return '';
   };
+
+  // Auto-populate title when files are selected
+  React.useEffect(() => {
+    const currentTitle = form.getValues('title');
+    if (!currentTitle?.trim() && method === 'files') {
+      const suggestedTitle = deriveTitleFromSource();
+      if (suggestedTitle) {
+        form.setValue('title', suggestedTitle);
+        console.log('🔍 DEBUG: Auto-populated title from files:', suggestedTitle);
+      }
+    }
+  }, [uploadedFiles, selectedExistingFileIds, method, form]);
 
   const goNext = () => {
     if (step < totalSteps) {
@@ -661,6 +695,21 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
 
           {step === 2 && (
             <div className="space-y-3">
+              {/* Test mode banner for step 2 */}
+              {isTestMode() && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-yellow-600 text-sm">🧪</span>
+                    <span className="text-yellow-800 text-sm font-medium">Mock Mode Enabled</span>
+                  </div>
+                  <p className="text-yellow-700 text-xs mt-1">
+                    Using predefined flashcard templates instead of AI generation for testing purposes.
+                    {projectFiles.length > 0 && ' Real project files loaded successfully.'}
+                    {projectFiles.length === 0 && ' Using fallback demo files for testing.'}
+                  </p>
+                </div>
+              )}
+
               {method === 'files' && (
                 <div className="space-y-3">
                   {/* Files Selection Section - Side by Side */}

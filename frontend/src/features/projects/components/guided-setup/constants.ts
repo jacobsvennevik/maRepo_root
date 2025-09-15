@@ -1,16 +1,8 @@
 import { CalendarDays, BookOpen, Target, Users, Clock, TrendingUp } from 'lucide-react';
-import { 
-  ProjectNameStep,
-  EducationLevelStep,
-  SyllabusUploadStep,
-  ExtractionResultsStep,
-  CourseContentUploadStep,
-  TestUploadStep
-} from '@/features/projects';
 
 export type StepKey = 'projectName' | 'educationLevel' | 'uploadSyllabus' | 'extractionResults' | 'courseContentUpload' | 'testUpload';
 
-export const STEPS = [
+export const STEP_CONFIG = [
   {
     key: 'projectName' as StepKey,
     id: 'projectName',
@@ -18,7 +10,6 @@ export const STEPS = [
     description: 'Give your study project a memorable name',
     icon: BookOpen,
     canSkip: false,
-    Component: ProjectNameStep,
   },
   {
     key: 'educationLevel' as StepKey,
@@ -27,7 +18,6 @@ export const STEPS = [
     description: 'What level of education is this for?',
     icon: TrendingUp,
     canSkip: false,
-    Component: EducationLevelStep,
   },
   {
     key: 'uploadSyllabus' as StepKey,
@@ -37,7 +27,6 @@ export const STEPS = [
     icon: BookOpen,
     canSkip: true,
     skipText: "Skip",
-    Component: SyllabusUploadStep,
   },
   {
     key: 'extractionResults' as StepKey,
@@ -46,7 +35,6 @@ export const STEPS = [
     description: 'Review and confirm the extracted information',
     icon: BookOpen,
     canSkip: false,
-    Component: ExtractionResultsStep,
   },
   {
     key: 'courseContentUpload' as StepKey,
@@ -56,7 +44,6 @@ export const STEPS = [
     icon: BookOpen,
     canSkip: true,
     skipText: "Skip",
-    Component: CourseContentUploadStep,
   },
   {
     key: 'testUpload' as StepKey,
@@ -66,12 +53,8 @@ export const STEPS = [
     icon: BookOpen,
     canSkip: true,
     skipText: "Skip",
-    Component: TestUploadStep,
   },
 ];
-
-// Legacy STEP_CONFIG for backward compatibility (deprecated)
-export const STEP_CONFIG = STEPS.map(({ Component, ...config }) => config);
 
 export const TIMEFRAME_OPTIONS = [
   { value: '1_week', label: '1 Week', icon: CalendarDays },

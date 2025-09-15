@@ -50,6 +50,9 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
         project_type: 'school', // This is the school setup
         study_frequency: setup.studyFrequency,
         important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
+        // Include uploaded file URLs
+        course_files: courseFileUrls,
+        test_files: testFileUrls,
         // Mock mode flags for backend AI mocking
         mock_mode: true,
         seed_syllabus: true,
@@ -436,6 +439,9 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
         project_type: 'school', // This is the school setup
         study_frequency: setup.studyFrequency,
         important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
+        // Include uploaded file URLs
+        course_files: courseFileUrls,
+        test_files: testFileUrls,
         // Mock mode flags for backend AI mocking
         mock_mode: true,
         seed_syllabus: true,
@@ -669,6 +675,9 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
         project_type: 'school', // This is the school setup
         study_frequency: setup.studyFrequency,
         important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
+        // Include uploaded file URLs
+        course_files: courseFileUrls,
+        test_files: testFileUrls,
         // Mock mode flags for backend AI mocking
         mock_mode: true,
         seed_syllabus: true,

@@ -17,6 +17,11 @@ class ProjectCreateInput(serializers.Serializer):
     end_date = serializers.DateField(required=False)
     is_draft = serializers.BooleanField(required=False, default=True)
 
+    # File upload fields (URLs from frontend file uploads)
+    course_files = serializers.ListField(required=False, default=list)
+    test_files = serializers.ListField(required=False, default=list)
+    uploaded_files = serializers.ListField(required=False, default=list)
+
     # Mock flags (write-only, not model fields)
     mock_mode = serializers.BooleanField(required=False, default=False)
     mock_bypass_content = serializers.BooleanField(required=False, default=False)

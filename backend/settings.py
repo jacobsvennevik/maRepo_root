@@ -79,6 +79,7 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
     'idempotency-key',  # Allow idempotency key header
+    'x-test-mode',      # Allow test mode header for flashcard wizard
 ]
 
 # CORS Methods configuration

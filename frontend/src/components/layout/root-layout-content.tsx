@@ -6,6 +6,11 @@ import { usePathname } from "next/navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { HttpDevGuard } from "@/components/dev/HttpDevGuard";
 
+// Load development guards
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  import("@/lib/dev-guards");
+}
+
 export function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isDashboard = pathname?.startsWith("/dashboard");

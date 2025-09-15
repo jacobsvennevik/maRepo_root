@@ -1,0 +1,246 @@
+# Local Development Operations Runbook
+
+This guide explains how to start, stop, and manage all services for local development.
+
+## 1. Prerequisites
+
+- Node.js (for frontend)
+- Python 3.x (for backend)
+- npm or pnpm (package manager)
+- Python virtual environment
+- Redis (for Celery task queue)
+- Celery (task runner)
+
+## 2. Initial Setup
+
+### Frontend Setup (@frontend/)
+```bash
+cd frontend
+npm install
+```
+
+### Backend Setup (@backend/)
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+# Install Redis (macOS)
+brew install redis
+# Start Redis
+brew services start redis
+
+# Verify Redis is running
+redis-cli ping  # Should return PONG
+```
+
+## 3. Starting Services
+
+### Step 1: Kill Existing Processes
+Before starting fresh, kill any existing processes:
+```bash
+# Kill processes on common ports
+pkill -f "next dev" || true
+pkill -f node || true
+lsof -ti tcp:3000 | xargs -r kill -9  # Frontend
+lsof -ti tcp:8000 | xargs -r kill -9  # Backend
+lsof -ti tcp:6006 | xargs -r kill -9  # Storybook
+```
+
+### Step 2: Start Backend
+```bash
+cd backend
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+python manage.py runserver 8000  # For Django
+# OR
+uvicorn app.main:app --reload --port 8000  # For FastAPI
+```
+
+### Step 3: Start Frontend
+In a new terminal:
+```bash
+cd frontend
+rm -rf .next  # Clean build cache if needed
+npm run dev
+```
+
+### Step 4: Start Task Runner (Celery)
+```bash
+# Terminal for Celery Worker
+cd backend
+source .venv/bin/activate
+celery -A backend worker --loglevel=info
+
+# Terminal for Celery Beat (if scheduled tasks are needed)
+cd backend
+source .venv/bin/activate
+celery -A backend beat --loglevel=info
+```
+
+### Step 5: Optional Services
+If needed, in separate terminals:
+
+#### Storybook (UI Development)
+```bash
+cd frontend
+npm run storybook  # Usually runs on port 6006
+```
+
+#### Cypress (E2E Testing)
+```bash
+cd frontend
+npm run cypress:open  # Interactive mode
+# OR
+npm run cypress:run  # Headless mode
+```
+
+## 4. Accessing the Application
+
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- Storybook: http://localhost:6006
+- API Documentation: http://localhost:8000/docs (if using FastAPI)
+                    http://localhost:8000/api/docs (if using Django REST framework)
+
+## 5. Common Issues & Solutions
+
+### Frontend Issues
+
+1. Port 3000 already in use:
+   ```bash
+   lsof -ti tcp:3000 | xargs -r kill -9
+   npm run dev
+   ```
+
+2. Stale build cache:
+   ```bash
+   rm -rf .next
+   npm run dev
+   ```
+
+3. Dependencies issues:
+   ```bash
+   rm -rf node_modules
+   npm install
+   ```
+
+### Backend Issues
+
+1. Database migrations:
+   ```bash
+   python manage.py migrate
+   ```
+
+2. Virtual environment not activated:
+   ```bash
+   source .venv/bin/activate
+   ```
+
+3. Port 8000 in use:
+   ```bash
+   lsof -ti tcp:8000 | xargs -r kill -9
+   python manage.py runserver 8000
+   ```
+
+## 6. Environment Variables
+
+### Frontend (.env.local)
+Required variables:
+```
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+### Backend (.env)
+Required variables:
+```
+DEBUG=True
+SECRET_KEY=your_secret_key
+DATABASE_URL=your_database_url
+CELERY_BROKER_URL=redis://localhost:6379/0
+CELERY_RESULT_BACKEND=redis://localhost:6379/0
+```
+
+## 7. Quick Commands (from project root)
+
+### Start Everything
+```bash
+# Terminal 1 (Backend)
+cd backend && source .venv/bin/activate && python manage.py runserver 8000
+
+# Terminal 2 (Frontend)
+cd frontend && npm run dev
+
+# Terminal 3 (Optional - Storybook)
+cd frontend && npm run storybook
+```
+
+### Stop Everything
+```bash
+# Stop all processes
+pkill -f "next dev" || true
+pkill -f node || true
+pkill -f "python manage.py runserver" || true
+pkill -f "celery worker" || true
+pkill -f "celery beat" || true
+lsof -ti tcp:3000,8000,6006 | xargs -r kill -9
+
+# Stop Redis (if needed)
+brew services stop redis
+```
+
+## 8. Development Tips
+
+1. Always run services in this order:
+   - Redis first
+   - Backend second
+   - Celery worker/beat third
+   - Frontend fourth
+   - Optional services last
+
+2. Keep terminals organized:
+   - One for backend
+   - One for frontend
+   - One for Celery worker
+   - One for Celery beat (if needed)
+   - One for additional services
+   - One for running commands
+
+3. Watch the logs:
+   - Backend logs for API errors
+   - Frontend console for React issues
+   - Celery worker logs for task processing
+   - Celery beat logs for scheduled tasks
+   - Redis logs for queue issues
+   - Network tab in browser dev tools for API calls
+
+4. Use the right package manager:
+   - Stick to npm (or pnpm if configured) for frontend
+   - Use pip for backend Python packages
+
+## 9. Maintenance
+
+### Regular Maintenance Tasks
+1. Update dependencies:
+   ```bash
+   # Frontend
+   cd frontend
+   npm update
+
+   # Backend
+   cd backend
+   source .venv/bin/activate
+   pip install --upgrade -r requirements.txt
+   ```
+
+2. Clean up:
+   ```bash
+   # Frontend
+   rm -rf .next
+   rm -rf node_modules/.cache
+
+   # Backend
+   find . -type d -name "__pycache__" -exec rm -r {} +
+   ```
+
+Remember to check the project's README.md for any project-specific instructions or requirements that might override these general guidelines.

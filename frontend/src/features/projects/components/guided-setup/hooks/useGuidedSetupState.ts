@@ -1,8 +1,10 @@
+'use client';
+
 import { useState, useCallback } from 'react';
 import { DEFAULTS } from '../constants';
 import { transformBackendData, ExtractedData } from '../utils/transformBackendData';
 
-export interface ProjectSetup {
+export interface GuidedProjectSetup {
   projectName: string;
   testLevel: string;
   timeframe: string;
@@ -21,11 +23,11 @@ export interface ProjectSetup {
 }
 
 // Migration function to handle v1 → v2 upgrades
-function migrateSetup(input: any): ProjectSetup {
+function migrateSetup(input: any): GuidedProjectSetup {
   const version = input?.__version ?? 1;
   
   if (version === 2) {
-    return input as ProjectSetup;
+    return input as GuidedProjectSetup;
   }
   
   // v1 → v2 migration: drop deprecated fields, map what we can, set defaults
@@ -58,11 +60,11 @@ function migrateSetup(input: any): ProjectSetup {
   };
 }
 
-export const useGuidedSetupState = (initialSetup: Partial<ProjectSetup> = {}) => {
+export const useGuidedSetupState = (initialSetup: Partial<GuidedProjectSetup> = {}) => {
   // Migrate any existing setup data
   const migratedSetup = migrateSetup(initialSetup);
   
-  const [setup, setSetup] = useState<ProjectSetup>({ ...DEFAULTS, ...migratedSetup });
+  const [setup, setSetup] = useState<GuidedProjectSetup>({ ...DEFAULTS, ...migratedSetup });
   const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
   const [syllabusFileName, setSyllabusFileName] = useState<string>('');
   const [contentData, setContentData] = useState<any>(null);
@@ -74,7 +76,7 @@ export const useGuidedSetupState = (initialSetup: Partial<ProjectSetup> = {}) =>
   const [projectId, setProjectId] = useState<string | null>(null);
   const [hasSyllabusUploadCompleted, setHasSyllabusUploadCompleted] = useState(false);
 
-  const handleOptionSelect = useCallback((field: keyof ProjectSetup, value: any) => {
+  const handleOptionSelect = useCallback((field: keyof GuidedProjectSetup, value: any) => {
     setSetup(prev => ({ ...prev, [field]: value }));
     setHasUnsavedChanges(true);
   }, []);

@@ -10,6 +10,12 @@ export interface ProjectSetup {
   timeframe: string;
   studyFrequency: string;
   customDescription?: string;
+  // Additional properties used in guided setup
+  purpose?: string;
+  goal?: string;
+  collaboration?: string;
+  learningStyle?: string[] | string;
+  studyPreference?: string[] | string;
 }
 
 // Centralized schema for project creation to prevent drift
@@ -21,6 +27,10 @@ export interface ProjectCreateInput {
   end_date?: string;
   is_draft?: boolean;
   important_dates?: Array<{ title: string; date: string }>;
+  // File uploads
+  course_files?: any[];
+  test_files?: any[];
+  uploaded_files?: any[];
   // Mock mode flags for backend AI mocking
   mock_mode?: boolean;
   seed_syllabus?: boolean;
@@ -39,6 +49,9 @@ export function validateProjectCreateInput(input: any): ProjectCreateInput {
     end_date,
     is_draft,
     important_dates,
+    course_files,
+    test_files,
+    uploaded_files,
     mock_mode,
     seed_syllabus,
     seed_tests,
@@ -70,6 +83,9 @@ export function validateProjectCreateInput(input: any): ProjectCreateInput {
     end_date,
     is_draft: is_draft ?? true,
     important_dates,
+    course_files,
+    test_files,
+    uploaded_files,
     mock_mode: mock_mode ?? false,
     seed_syllabus: seed_syllabus ?? true,
     seed_tests: seed_tests ?? true,
@@ -78,7 +94,46 @@ export function validateProjectCreateInput(input: any): ProjectCreateInput {
   };
 }
 
-export interface ProjectType {
+// Project V2 interface based on mock data structure
+export interface ProjectV2 {
+  id: string;
+  title: string;
+  description: string;
+  lastUpdated: string;
+  type: string;
+  progress: number;
+  collaborators: number;
+  kind?: "school" | "self_study";
+  school_meta?: SchoolMeta;
+  self_study_meta?: SelfStudyMeta;
+}
+
+// API Response types for project creation and fetching
+export interface ProjectApiResponse {
+  id: string;
+  title: string;
+  description?: string;
+  type: string;
+  created_at: string;
+  updated_at: string;
+  // Add other fields as needed
+}
+
+export interface SchoolMeta {
+  grade_level?: string;
+  course_name?: string;
+  instructor?: string;
+}
+
+export interface SelfStudyMeta {
+  topics?: string[];
+  goals?: string[];
+  learning_style?: string;
+}
+
+export type ProjectType = "biology" | "chemistry" | "physics" | "math" | "computer-science" | "literature" | "history" | "geography" | string;
+
+export interface ProjectTypeInfo {
   id: string;
   name: string;
   description?: string;

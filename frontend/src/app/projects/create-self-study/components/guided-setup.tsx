@@ -312,6 +312,7 @@ export function GuidedSetup({ onBack }: GuidedSetupProps) {
       default:
         return null;
     }
+  };
 
   if (showSummary) {
     return <ProjectSummary setup={setup} onBack={() => setShowSummary(false)} />;
@@ -575,4 +576,4 @@ function ProjectSummary({ setup, onBack }: { setup: SelfStudyProjectSetup; onBac
       </div>
     </div>
   );
-}}
+}

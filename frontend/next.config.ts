@@ -16,6 +16,21 @@ const nextConfig: NextConfig = {
     ];
   },
   trailingSlash: false, // Explicitly disable trailing slash handling
+  webpack: (config, { isServer }) => {
+    // Fix for mime-db module resolution issues
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push('mime-db');
+    }
+    
+    // Fallback for missing modules
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      'mime-db': false,
+    };
+    
+    return config;
+  },
 };
 
 export default nextConfig;

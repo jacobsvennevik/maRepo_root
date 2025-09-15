@@ -1,6 +1,8 @@
+'use client';
+
 import { useState, useCallback } from 'react';
 import { STEP_CONFIG } from '../constants';
-import { ProjectSetup } from './useGuidedSetupState';
+import { ProjectSetup } from '@/features/projects/types';
 
 export const useStepNavigation = (setup: ProjectSetup, onBack: () => void, extractedData?: any) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);

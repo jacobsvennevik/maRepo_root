@@ -124,6 +124,7 @@ export function mapApiResponseToProjectV2(
   
   const baseProject = {
     id: apiResponse.id,
+    title: apiResponse.name, // Use name as title
     description: apiResponse.name, // Use name as description for now
     lastUpdated: new Date(apiResponse.updated_at).toLocaleDateString(),
     type: projectType,
@@ -171,14 +172,11 @@ export function mapApiResponseToProjectV2(
  */
 export function getProjectDisplayName(project: ProjectV2): string {
   if (isSchoolProject(project)) {
-    return project.school_meta.course_name || project.description;
+    return project.school_meta.course_name || project.title || project.description;
   }
   if (isSelfStudyProject(project)) {
-    return project.self_study_meta.goal_description || project.description;
+    return project.self_study_meta.goal_description || project.title || project.description;
   }
-  // This should never happen due to discriminated union, but TypeScript needs this
-  return (
-    ((project as Record<string, unknown>).description as string) ||
-    "Unknown Project"
-  );
+  // Fallback to title or description if type guards fail
+  return project.title || project.description || "Unknown Project";
 }

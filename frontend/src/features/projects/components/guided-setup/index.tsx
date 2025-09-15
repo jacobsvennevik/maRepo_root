@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useGuidedSetupState } from './hooks/useGuidedSetupState';
+import { useGuidedSetupState, GuidedProjectSetup } from './hooks/useGuidedSetupState';
 import { useStepNavigation } from './hooks/useStepNavigation';
 import { ProjectSummaryColorful } from '@/features/projects';
 import { StepIndicator } from './components/StepIndicator';
@@ -58,7 +58,7 @@ export default function GuidedSetup({ onBack }: GuidedSetupProps) {
     handleSkip,
     handleBackWithCleanup,
     canSkipCurrentStep,
-  } = useStepNavigation(setup, onBack, extractedData);
+  } = useStepNavigation(setup as ProjectSetup, onBack, extractedData);
 
   // Keyboard navigation
   useKeyboardNavigation({

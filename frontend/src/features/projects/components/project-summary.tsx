@@ -54,6 +54,9 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
         goal_description: setup.goal,
         study_frequency: setup.studyFrequency,
         important_dates: setup.importantDates.map(d => ({ title: d.description, date: d.date })),
+        // Include uploaded file URLs
+        course_files: courseFileUrls,
+        test_files: testFileUrls,
         // Add other fields from the 'setup' object as needed
       };
 

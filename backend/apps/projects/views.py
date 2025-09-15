@@ -83,12 +83,42 @@ class ProjectViewSet(viewsets.ModelViewSet):
         seed_tests = v.pop("seed_tests")
         seed_content = v.pop("seed_content")
         seed_fc = v.pop("seed_flashcards")
+        
+        # Extract file data (not model fields)
+        course_files = v.pop("course_files", [])
+        test_files = v.pop("test_files", [])
+        uploaded_files = v.pop("uploaded_files", [])
 
         # 2) Create project with only model fields
         with transaction.atomic():
             project = Project.objects.create(owner=request.user, **v)
+            
+            # 2.1) Create UploadedFile objects for any uploaded files
+            from .models import UploadedFile
+            from backend.apps.pdf_service.django_models import Document
+            all_files = course_files + test_files + uploaded_files
+            
+            for file_data in all_files:
+                # file_data should contain Document information from frontend upload
+                if isinstance(file_data, dict) and file_data.get('id'):
+                    try:
+                        # Get the Document object from pdf_service
+                        document = Document.objects.get(id=file_data.get('id'))
+                        
+                        # Create UploadedFile object linked to this project
+                        UploadedFile.objects.create(
+                            project=project,
+                            file=document.file,  # Use the actual file field
+                            original_name=document.file.name.split('/')[-1],  # Extract filename
+                            content_type=file_data.get('file_type', ''),
+                            file_size=document.file.size if hasattr(document.file, 'size') else 0,
+                            processing_status='pending'
+                        )
+                    except Document.DoesNotExist:
+                        logger.warning(f"Document with id {file_data.get('id')} not found when creating project {project.id}")
+                        continue
 
-            # 3) Seed (mock only LLM calls)
+            # 2.2) Seed (mock only LLM calls)
             if mock_mode:
                 try:
                     seed_project_artifacts(
@@ -104,7 +134,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 except Exception as e:
                     logger.error("Failed to seed artifacts for project %s: %s", project.id, e)
 
-        # 4) Return standard output shape
+        # 3) Return standard output shape
         out = ProjectSerializer(project).data
         return Response(out, status=status.HTTP_201_CREATED)
 
