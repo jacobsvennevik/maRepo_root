@@ -2,7 +2,8 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { quizApi, type DiagnosticSession } from '@/features/quiz';
 import { 
   ChevronRight, 
   Plus, 
@@ -35,61 +36,25 @@ import {
   List,
   Grid3X3
 } from 'lucide-react';
+import { OceanCenteredPageHeader } from '@/components/ui/common/OceanCenteredPageHeader';
 import { Card, CardContent } from "@/components/ui/card";
+import { QuizStatsFooter } from '@/features/quiz/components/QuizStatsFooter';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-// Mock data for demonstration
-const mockTests = [
-  {
-    id: '1',
-    title: 'Biology Midterm Review',
-    subject: 'Biology',
-    type: 'Multiple Choice',
-    questions: 50,
-    timeEstimate: 60,
-    lastScore: 85,
-    status: 'completed',
-    createdAt: '2024-01-15',
-    icon: '🧬'
-  },
-  {
-    id: '2',
-    title: 'Chemistry Quiz #3',
-    subject: 'Chemistry',
-    type: 'Matching Pairs',
-    questions: 20,
-    timeEstimate: 30,
-    lastScore: null,
-    status: 'upcoming',
-    createdAt: '2024-01-20',
-    icon: '⚗️'
-  },
-  {
-    id: '3',
-    title: 'Physics Practice Test',
-    subject: 'Physics',
-    type: 'Short Answer',
-    questions: 40,
-    timeEstimate: 45,
-    lastScore: 72,
-    status: 'needs-review',
-    createdAt: '2024-01-18',
-    icon: '⚡'
-  },
-  {
-    id: '4',
-    title: 'Math Problem Solving',
-    subject: 'Mathematics',
-    type: 'Interactive Diagram',
-    questions: 25,
-    timeEstimate: 35,
-    lastScore: 95,
-    status: 'completed',
-    createdAt: '2024-01-22',
-    icon: '📐'
-  }
-];
+// Loaded from backend
+type QuizCard = {
+  id: string;
+  title: string;
+  subject: string;
+  type: string;
+  questions: number;
+  timeEstimate: number;
+  lastScore?: number | null;
+  status: 'completed' | 'upcoming' | 'needs-review';
+  createdAt?: string;
+  icon: string;
+};
 
 const testTypes = [
   { name: 'Multiple Choice', icon: '✅', description: 'Single or multi-select questions' },
@@ -148,16 +113,56 @@ export default function ProjectTests() {
   const params = useParams();
   const projectId = params.projectId as string;
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sessions, setSessions] = useState<DiagnosticSession[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const recommendedTest = mockTests[1]; // Chemistry Quiz as recommended
-  const completedTests = mockTests.filter(test => test.status === 'completed');
-  const averageScore = completedTests.length > 0 
-    ? Math.round(completedTests.reduce((sum, test) => sum + (test.lastScore || 0), 0) / completedTests.length)
-    : 0;
+  useEffect(() => {
+    let isMounted = true;
+    const fetchSessions = async () => {
+      try {
+        setLoading(true);
+        const data = await quizApi.listSessions({ project: projectId });
+        if (isMounted) setSessions(data);
+      } catch (e: any) {
+        if (isMounted) setError(e?.message || 'Failed to load quizzes');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    fetchSessions();
+    return () => { isMounted = false; };
+  }, [projectId]);
+
+  const tests: QuizCard[] = useMemo(() => (
+    sessions.map(s => ({
+      id: s.id,
+      title: s.title || 'Quiz Session',
+      subject: 'Mixed',
+      type: 'Mixed',
+      questions: 0,
+      timeEstimate: s.time_limit_sec || 0,
+      lastScore: null,
+      status: 'upcoming',
+      createdAt: s.created_at,
+      icon: '📝'
+    }))
+  ), [sessions]);
+
+  const completedTests = tests.filter(test => test.status === 'completed');
+  const averageScore = 0; // Placeholder until analytics are wired
 
   // Event handlers
-  const handleStartTest = (testId: string) => {
-    console.log('Starting test:', testId);
+  const handleStartTest = async (testId: string) => {
+    try {
+      setLoading(true);
+      await quizApi.start(testId);
+      // TODO: navigate to quiz runner when available
+    } catch (e) {
+      console.error('Failed to start quiz', e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleQuickAction = (action: string) => {
@@ -166,29 +171,48 @@ export default function ProjectTests() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="relative min-h-screen space-y-6">
       <Breadcrumbs />
-      <OceanHeader 
-        totalTests={mockTests.length}
-        completedTests={completedTests.length}
-        averageScore={averageScore}
+      {/* Centered Page Header for consistency */}
+      <OceanCenteredPageHeader
+        title="Project Quizzes"
+        subtitle="Assess your knowledge with auto-generated quizzes"
+        icon={<Target className="h-8 w-8 text-white" />}
+        gradientClassName="from-blue-400 to-purple-600"
       />
-      <StatsCards 
-        totalTests={mockTests.length}
-        completedTests={completedTests.length}
-        averageScore={averageScore}
-      />
-      <RecommendedTestCard 
-        test={recommendedTest}
-        onStart={handleStartTest}
-      />
+      {/* Removed top stats; using compact footer like quiz center */}
+      {tests[0] && (
+        <RecommendedTestCard 
+          test={tests[0]}
+          onStart={handleStartTest}
+        />
+      )}
       <QuickActionsGrid onAction={handleQuickAction} />
       <TestTypesSection />
-      <YourTestsSection 
-        tests={mockTests}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onStartTest={handleStartTest}
+      {tests.length === 0 ? (
+        <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-white/60">
+          <div className="text-4xl mb-2">📝</div>
+          <div className="text-lg font-semibold text-slate-900 mb-1">No quizzes yet</div>
+          <div className="text-slate-600 mb-4">Generate your first quiz from project materials.</div>
+          <Button onClick={() => handleQuickAction('auto-generate')}>Auto-Generate Quiz</Button>
+        </div>
+      ) : (
+        <YourTestsSection 
+          tests={tests}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          onStartTest={handleStartTest}
+        />
+      )}
+      <QuizStatsFooter
+        totalQuizzes={tests.length}
+        averageScore={averageScore}
+        completedCount={completedTests.length}
+        dueToday={0}
+        learningCount={0}
+        accuracyPct={averageScore}
+        setsCount={tests.length}
+        pillLabel="Completed"
       />
     </div>
   );
@@ -225,14 +249,14 @@ function OceanHeader({
                 <Target className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-slate-900">Test Center</h1>
+                <h1 className="text-3xl font-bold text-slate-900">Quiz Center</h1>
                 <p className="text-slate-600">Navigate your learning journey</p>
               </div>
             </div>
             <div className="flex items-center gap-6 text-sm text-slate-600">
               <div className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4 text-blue-600" />
-                <span>{totalTests} Total Tests</span>
+                <span>{totalTests} Total Quizzes</span>
               </div>
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-purple-600" />

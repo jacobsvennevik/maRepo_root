@@ -237,3 +237,54 @@ Test mode should be tested to ensure:
 ---
 
 **Remember**: Test mode = Mock AI only, everything else is real!
+
+## Quick Start: Projects → Files → Flashcards
+
+- Basics
+  - Projects, file ingestion, database writes, and API transport are always real.
+  - Only AI calls are mocked in test mode (deterministic, schema-compliant data).
+
+- Environment
+  - Frontend: set `NEXT_PUBLIC_TEST_MODE=true` to enable test mode UI behavior and headers.
+  - Backend: test-mode detection via `X-Test-Mode: true` header or `USE_MOCK_AI=true`.
+
+- Frontend clients (see `frontend/src/lib/axios.ts`)
+  - `axiosApi`: `${API_ORIGIN}/api/` (projects, files, non-generation flashcards)
+  - `axiosGeneration`: `${API_ORIGIN}/generation/api/` (content generation endpoints)
+
+- Typical endpoints
+  - Projects
+    - List/create: `GET/POST /api/projects/`
+    - Detail: `GET /api/projects/{projectId}/`
+  - Files (project materials)
+    - Upload/list under `/api/` (scoped by `project={projectId}`), e.g. PDF/text ingestion services
+  - Flashcards
+    - Generate set: `POST /generation/api/projects/{projectId}/flashcards/generate`
+      - In test mode, send header `X-Test-Mode: true`; backend mocks only AI
+    - Get set: `GET /generation/api/projects/{projectId}/flashcard-sets/{setId}/`
+    - Get cards for set: `GET /api/flashcards/?flashcard_set={setId}` (or project-scoped variant used by the frontend service)
+
+- Frontend flow
+  - Create Project → store `projectId` → Files Page lists project files via `/api/`
+  - Create Flashcard Deck Wizard:
+    - Loads project materials (real) via `/api/`
+    - Calls generation endpoint via `axiosGeneration` → backend saves real FlashcardSet/Flashcards
+    - Navigates to `/projects/{projectId}/flashcards/{setId}`
+
+- Backend flow
+  - `backend/urls.py`: mounts `generation/` → `backend/apps/generation/urls.py`
+  - `ProjectFlashcardSetViewSet.generate_from_project` aggregates project content and calls `FlashcardGenerator`
+  - `FlashcardGenerator` → `AIClient.call(Task.FLASHCARDS, payload)`
+    - Test mode: returns `mock_flashcards` from `services/mock_data/registry.py`
+    - Real mode: calls provider (LLM) with selected model
+  - DB writes (FlashcardSet, Flashcard, project linkage) are always real
+
+- Test mode guardrails
+  - Do: Mock AI responses only (via `AIClient` + `MOCK_REGISTRY`)
+  - Don’t: Mock uploads, DB operations, or REST endpoints
+  - UI may show a small banner/badge indicating test mode; logic remains the same
+
+- Troubleshooting
+  - 404 on generate: ensure `axiosGeneration` base is `/generation/api/` (or `${API_ORIGIN}/generation/api/`)
+  - 400 "No content": in test mode, backend will inject placeholder content so mocks still work
+  - Auth: ensure interceptors attach JWT; generation endpoints typically require an authenticated user

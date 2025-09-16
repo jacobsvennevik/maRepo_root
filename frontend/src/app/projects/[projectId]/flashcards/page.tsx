@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, Brain } from "lucide-react";
+import { OceanCenteredPageHeader } from "@/components/ui/common/OceanCenteredPageHeader";
 import { useProjectFlashcards } from "./hooks/use-project-flashcards";
 import { ProjectFlashcardStats } from "./components/project-flashcard-stats";
 import { QuickActions } from "./components/quick-actions";
@@ -85,19 +86,12 @@ export default function ProjectFlashcards() {
         </div>
 
         {/* Page Header */}
-        <div className="text-center py-6">
-          <div className="flex items-center justify-center gap-4 mb-2">
-            <div className="p-3 rounded-xl bg-gradient-to-r from-blue-400 to-purple-600 shadow-lg">
-              <Brain className="h-8 w-8 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-slate-900">
-              Project Flashcards
-            </h1>
-          </div>
-          <p className="text-slate-600 text-lg">
-            Master your knowledge with interactive learning
-          </p>
-        </div>
+        <OceanCenteredPageHeader
+          title="Project Flashcards"
+          subtitle="Master your knowledge with interactive learning"
+          icon={<Brain className="h-8 w-8 text-white" />}
+          gradientClassName="from-blue-400 to-purple-600"
+        />
 
         {/* Quick Actions */}
         <QuickActions projectId={projectId} />

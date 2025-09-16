@@ -25,7 +25,7 @@ const sidebarItems = [
   { name: "Study Materials", href: "materials", icon: FileText },
   { name: "Flashcards", href: "flashcards", icon: Brain },
   { name: "Diagnostics", href: "diagnostics", icon: ClipboardList },
-  { name: "Tests", href: "tests", icon: StickyNote },
+  { name: "Quiz Center", href: "tests", icon: StickyNote },
   { name: "Files", href: "files", icon: File },
   { name: "Settings", href: "settings", icon: BarChart2 },
 ];
@@ -42,7 +42,7 @@ export default function ProjectSidebar({
 
   return (
     <aside
-      className={`mt-8 mx-8 bg-white border border-gray-200 rounded-2xl shadow-lg transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"}`}
+      className={`mx-8 mt-8 mb-8 bg-white border border-gray-200 rounded-2xl shadow-lg transition-all duration-300 sticky top-8 max-h-[calc(100vh-4rem)] overflow-y-auto ${isCollapsed ? "w-16" : "w-64"}`}
     >
       <div className="p-4 border-b border-gray-100 rounded-t-2xl">
         <div className="flex items-center justify-between">
@@ -110,7 +110,7 @@ export default function ProjectSidebar({
           return (
             <Link
               key={item.href}
-              href={`/projects/${id}/${item.href}`}
+              href={`/projects/${id}/${item.href}` as any}
               className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
                 isActive
                   ? "bg-blue-100 text-blue-700 shadow-sm"

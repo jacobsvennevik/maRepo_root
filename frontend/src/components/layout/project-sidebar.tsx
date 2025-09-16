@@ -24,7 +24,7 @@ const sidebarItems = [
   { name: "Overview", href: "overview", icon: Book },
   { name: "Flashcards", href: "flashcards", icon: FileText },
   { name: "Mind Maps", href: "mindmaps", icon: Brain },
-  { name: "Tests", href: "tests", icon: ClipboardList },
+  { name: "Quiz Center", href: "tests", icon: ClipboardList },
   { name: "Notes", href: "notes", icon: StickyNote },
   { name: "Files", href: "files", icon: File },
   { name: "Analytics", href: "analytics", icon: BarChart2 },
@@ -42,7 +42,7 @@ export function ProjectSidebar({
 
   return (
     <div
-      className={`flex flex-col h-screen bg-white border-r border-gray-200 transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"}`}
+      className={`flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"}`}
     >
       {/* Collapse Toggle */}
       <button

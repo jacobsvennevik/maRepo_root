@@ -31,14 +31,14 @@ export default async function ProjectLayout({
 
   return (
     <ProjectProvider value={projectData}>
-      <div className="flex flex-col min-h-screen relative overflow-hidden">
+      <div className="relative">
         <WhiteBackground />
         <DashboardHeader />
-        <div className="flex flex-1">
-          <div className="z-50">
+        <div className="flex min-h-screen">
+          <div className="flex-shrink-0">
             <ProjectSidebar />
           </div>
-          <main className="flex-1 p-6 pt-4 z-10">{children}</main>
+          <main className="flex-1 p-6 pt-4">{children}</main>
         </div>
       </div>
     </ProjectProvider>
