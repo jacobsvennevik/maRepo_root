@@ -43,6 +43,12 @@ class DiagnosticSession(models.Model):
     variant = models.CharField(max_length=1, default='A')
     feature_flag_key = models.CharField(max_length=64, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    # Optional test style configuration (MVP)
+    # Example IDs: "mcq_quiz", "mixed_checkpoint", "stem_problem_set"
+    test_style = models.CharField(max_length=64, null=True, blank=True)
+    # Small JSON object with overrides; ignored keys are allowed
+    style_config_override = models.JSONField(default=dict, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:

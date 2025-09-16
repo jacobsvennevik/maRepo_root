@@ -39,6 +39,7 @@ import {
 import { OceanCenteredPageHeader } from '@/components/ui/common/OceanCenteredPageHeader';
 import { Card, CardContent } from "@/components/ui/card";
 import { QuizStatsFooter } from '@/features/quiz/components/QuizStatsFooter';
+import { CreateQuizWizard } from '@/features/quiz/components/CreateQuizWizard';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -115,6 +116,7 @@ export default function ProjectTests() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sessions, setSessions] = useState<DiagnosticSession[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isWizardOpen, setIsWizardOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -168,6 +170,9 @@ export default function ProjectTests() {
   const handleQuickAction = (action: string) => {
     console.log('Quick action:', action);
     // TODO: Implement specific actions
+    if (action === 'auto-generate') {
+      setIsWizardOpen(true);
+    }
   };
 
   return (
@@ -188,6 +193,11 @@ export default function ProjectTests() {
         />
       )}
       <QuickActionsGrid onAction={handleQuickAction} />
+      <CreateQuizWizard
+        projectId={projectId}
+        open={isWizardOpen}
+        onOpenChange={setIsWizardOpen}
+      />
       <TestTypesSection />
       {tests.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-white/60">

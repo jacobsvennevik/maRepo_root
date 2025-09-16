@@ -3,14 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useGuidedSetupState } from './hooks/useGuidedSetupState';
-import { useStepNavigation } from './hooks/useStepNavigation';
+// import { useGuidedSetupState } from './hooks/useGuidedSetupState';
+// import { useStepNavigation } from './hooks/useStepNavigation';
 import { ProjectSummaryColorful } from '@/features/projects';
-import { StepIndicator } from './components/StepIndicator';
+// import { StepIndicator } from './components/StepIndicator';
 import { STEP_CONFIG } from './constants';
 
-import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
-import { KeyboardShortcuts } from './components/KeyboardShortcuts';
+// import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
+// import { KeyboardShortcuts } from './components/KeyboardShortcuts';
 
 // Import step components
 import { 
@@ -28,48 +28,105 @@ interface GuidedSetupProps {
 }
 
 export default function GuidedSetup({ onBack }: GuidedSetupProps) {
-  const {
-    setup,
-    extractedData,
-    setExtractedData,
-    syllabusFileName,
-    isSyllabusAnalysisComplete,
-    setHasUnsavedChanges,
-    handleOptionSelect,
-    handleSyllabusUploadComplete,
-    handleCourseContentUploadComplete,
-    handleTestUploadComplete,
-    resetSyllabusUploadState,
-  } = useGuidedSetupState();
+  // Commented out useGuidedSetupState destructuring
+  // const {
+  //   setup,
+  //   extractedData,
+  //   setExtractedData,
+  //   syllabusFileName,
+  //   isSyllabusAnalysisComplete,
+  //   setHasUnsavedChanges,
+  //   handleOptionSelect,
+  //   handleSyllabusUploadComplete,
+  //   handleCourseContentUploadComplete,
+  //   handleTestUploadComplete,
+  //   resetSyllabusUploadState,
+  // } = useGuidedSetupState();
 
-  const {
-    currentStepIndex,
-    currentStepData,
-    isFirstStep,
-    isLastStep,
-    showSummary,
-    setShowSummary,
-    progress,
-    getCurrentStepIndex,
-    getTotalSteps,
-    isStepComplete,
-    handleNext,
-    handleBack,
-    handleSkip,
-    handleBackWithCleanup,
-    canSkipCurrentStep,
-  } = useStepNavigation(setup, onBack, extractedData);
+// Placeholder implementations for useGuidedSetupState
+const setup = {
+  projectName: '',
+  educationLevel: '',
+  testLevel: '',
+  purpose: '',
+  goal: '',
+  collaboration: '',
+  learningStyle: '',
+  studyPreference: '',
+  learningDifficulties: '',
+  evaluationTypes: '',
+  courseType: '',
+  assessmentType: '',
+  courseFiles: [],
+  testFiles: [],
+  importantDates: [],
+  uploadedFiles: [],
+  timeframe: '',
+  studyFrequency: '',
+};
+  const extractedData = null;
+  const setExtractedData = (data: any) => console.log('setExtractedData placeholder', data);
+  const syllabusFileName = '';
+  const isSyllabusAnalysisComplete = false;
+  const setHasUnsavedChanges = (value: boolean) => console.log('setHasUnsavedChanges placeholder', value);
+  const handleOptionSelect = (key: string, value: string) => console.log('handleOptionSelect placeholder', key, value);
+  const handleSyllabusUploadComplete = () => console.log('handleSyllabusUploadComplete placeholder');
+  const handleCourseContentUploadComplete = () => console.log('handleCourseContentUploadComplete placeholder');
+  const handleTestUploadComplete = () => console.log('handleTestUploadComplete placeholder');
+  const resetSyllabusUploadState = () => console.log('resetSyllabusUploadState placeholder');
+
+  // Commented out useStepNavigation destructuring
+  // const {
+  //   currentStepIndex,
+  //   currentStepData,
+  //   isFirstStep,
+  //   isLastStep,
+  //   showSummary,
+  //   setShowSummary,
+  //   progress,
+  //   getCurrentStepIndex,
+  //   getTotalSteps,
+  //   isStepComplete,
+  //   handleNext,
+  //   handleBack,
+  //   handleSkip,
+  //   handleBackWithCleanup,
+  //   canSkipCurrentStep,
+  // } = useStepNavigation(setup, onBack, extractedData);
+
+  // Placeholder implementations for useStepNavigation
+  const currentStepData = { 
+    id: 'placeholder',
+    icon: ({ className }: { className?: string }) => null,
+    title: 'Placeholder Step',
+    description: 'This is a placeholder step',
+    skipText: 'Skip'
+  };
+  const currentStepIndex = 0;
+  const isFirstStep = true;
+  const isLastStep = false;
+  const showSummary = false;
+  const setShowSummary = (value: boolean) => {};
+  const progress = 0;
+  const getCurrentStepIndex = () => 0;
+  const getTotalSteps = () => 1;
+  const isStepComplete = () => true;
+  const handleNext = () => console.log('handleNext placeholder');
+  const handleBack = () => console.log('handleBack placeholder');
+  const handleSkip = () => console.log('handleSkip placeholder');
+  const handleBackWithCleanup = () => console.log('handleBackWithCleanup placeholder');
+  const canSkipCurrentStep = () => false;
 
   // Keyboard navigation
-  useKeyboardNavigation({
-    onNext: handleNext,
-    onBack: handleBackWithCleanup,
-    onSkip: handleSkip,
-    canGoNext: isStepComplete(),
-    canGoBack: !isFirstStep,
-    canSkip: canSkipCurrentStep() && !isStepComplete(),
-    enabled: !showSummary
-  });
+  // useKeyboardNavigation({
+  //   onNext: handleNext,
+  //   onBack: handleBackWithCleanup,
+  //   onSkip: handleSkip,
+  //   canGoNext: isStepComplete(),
+  //   canGoBack: !isFirstStep,
+  //   canSkip: canSkipCurrentStep() && !isStepComplete(),
+  //   enabled: !showSummary
+  // });
 
   const renderStepContent = () => {
     switch (currentStepData.id) {
@@ -168,17 +225,17 @@ export default function GuidedSetup({ onBack }: GuidedSetupProps) {
             <div className="text-xs sm:text-sm text-gray-600">
               Step {getCurrentStepIndex()} of {getTotalSteps()}
             </div>
-            <KeyboardShortcuts />
+            {/* <KeyboardShortcuts /> */}
           </div>
         </div>
 
         {/* Step Indicator */}
-        <StepIndicator 
+        {/* <StepIndicator 
           steps={STEP_CONFIG}
           currentStepIndex={currentStepIndex}
           completedSteps={[]} // TODO: Track completed steps
           skippedSteps={!extractedData ? ['extractionResults'] : []}
-        />
+        /> */}
         
 
 

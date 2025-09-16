@@ -393,9 +393,20 @@ class DiagnosticSessionSerializer(serializers.ModelSerializer):
             'delivery_mode', 'scheduled_for', 'due_at', 'time_limit_sec',
             'max_questions', 'questions_order', 'seed', 'created_by',
             'variant', 'feature_flag_key', 'created_at', 'updated_at',
+            # New optional fields
+            'test_style', 'style_config_override',
             'questions', 'is_open', 'participation_rate'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'questions']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'questions', 'created_by']
+
+    def validate_style_config_override(self, value):
+        # Accept any object; ensure dict or None
+        if value in (None, ""):
+            return None
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("style_config_override must be an object")
+        # Ignore unknown keys by design; could log here
+        return value
 
 
 class DiagnosticResponseSerializer(serializers.ModelSerializer):
@@ -491,8 +502,17 @@ class DiagnosticSessionCreateSerializer(serializers.ModelSerializer):
         fields = [
             'project', 'topic', 'content_source', 'delivery_mode',
             'scheduled_for', 'due_at', 'time_limit_sec', 'max_questions',
-            'questions_order', 'variant', 'feature_flag_key'
+            'questions_order', 'variant', 'feature_flag_key',
+            # Allow setting the new optional fields on create
+            'test_style', 'style_config_override'
         ]
+
+    def validate_style_config_override(self, value):
+        if value in (None, ""):
+            return None
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("style_config_override must be an object")
+        return value
 
 
 class DiagnosticSessionStartSerializer(serializers.Serializer):

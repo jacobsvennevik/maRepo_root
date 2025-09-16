@@ -224,6 +224,8 @@ class AnkiExportService:
         
         # Generate package
         package = genanki.Package(deck)
+        # Ensure media_files is an iterable (genanki may iterate over this)
+        package.media_files = []
         
         # Create temporary file to get the .apkg content
         with tempfile.NamedTemporaryFile(suffix='.apkg', delete=False) as temp_file:
@@ -284,6 +286,7 @@ class AnkiExportService:
         
         # Generate package
         package = genanki.Package(deck)
+        package.media_files = []
         
         # Create temporary file to get the .apkg content
         with tempfile.NamedTemporaryFile(suffix='.apkg', delete=False) as temp_file:
@@ -334,6 +337,6 @@ class AnkiExportService:
         
         return self.export_multiple_sets(
             list(flashcard_sets),
-            deck_name=f"{user.username}'s Ocean Learn Flashcards",
+            deck_name=f"{user.email.split('@')[0]}'s Ocean Learn Flashcards",
             include_source=include_source
         ) 

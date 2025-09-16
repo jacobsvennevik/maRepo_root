@@ -28,7 +28,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from freezegun import freeze_time
 
-from apps.projects.models import Project
+from backend.apps.projects.models import Project
 
 User = get_user_model()
 

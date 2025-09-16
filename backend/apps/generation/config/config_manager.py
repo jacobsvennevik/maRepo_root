@@ -33,7 +33,7 @@ class ConfigurationManager:
     - Environment-specific configuration overrides
     """
     
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: Optional[str] = None, autoload: bool = True):
         """
         Initialize the configuration manager.
         
@@ -51,7 +51,8 @@ class ConfigurationManager:
         self._initialize_config_sources()
         
         # Load initial configuration
-        self._load_configuration()
+        if autoload:
+            self._load_configuration()
     
     def _get_default_config_path(self) -> str:
         """Get default configuration file path."""
@@ -442,8 +443,8 @@ class ConfigurationManager:
         }
 
 
-# Global configuration manager instance
-config_manager = ConfigurationManager()
+# Global configuration manager instance (lazy-loaded to avoid import-time failures in tests)
+config_manager = ConfigurationManager(autoload=False)
 
 
 def get_config() -> GlobalConfig:

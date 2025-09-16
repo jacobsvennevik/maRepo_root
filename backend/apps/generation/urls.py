@@ -51,6 +51,11 @@ urlpatterns = [
     path('flashcards/<int:flashcard_set_id>/export-anki/', traditional_views.export_flashcard_set_to_anki, name="export_flashcard_set_anki"),
     path('flashcards/export-all-anki/', traditional_views.export_user_flashcards_to_anki, name="export_user_flashcards_anki"),
     path('flashcards/export-multiple-anki/', traditional_views.export_multiple_flashcard_sets_to_anki, name="export_multiple_flashcards_anki"),
+
+    # Aliases expected by tests
+    path('flashcards/<int:pk>/export-anki/', traditional_views.export_flashcard_set_to_anki, name='flashcardset-export-anki'),
+    path('flashcards/export-all-anki/', traditional_views.export_user_flashcards_to_anki, name='flashcardset-export-all-anki'),
+    path('flashcards/export-multiple-anki/', traditional_views.export_multiple_flashcard_sets_to_anki, name='flashcardset-export-multiple-anki'),
     
     # API ViewSet endpoints
     path('api/', include(router.urls)),

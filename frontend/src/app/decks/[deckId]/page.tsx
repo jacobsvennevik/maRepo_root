@@ -22,7 +22,7 @@ export default function DeckCarouselPage() {
 
   const backHref = useMemo(() => {
     const from = searchParams?.get("from");
-    return from || "/projects";
+    return (from || "/projects") as any;
   }, [searchParams]);
 
   useEffect(() => {

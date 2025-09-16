@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, FileText, Link, X, Youtube, Github, ExternalLink } from "lucide-react";
 import { LearningMaterial } from '../../types';
 import { LINK_TYPES } from '../../constants';
-import { createDragHandlers, formatFileSize } from '../../../create/utils/file-helpers';
+// import { createDragHandlers, formatFileSize } from '../../../create/utils/file-helpers';
 
 interface LearningMaterialsStepProps {
   learningMaterials: LearningMaterial[];
@@ -24,19 +24,31 @@ export function LearningMaterialsStep({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Use shared drag and drop handlers with custom transformation
-  const { handleDragOver, handleDragLeave, handleDrop } = createDragHandlers(
-    (droppedFiles) => {
-      const newMaterials = droppedFiles.map(file => ({
-        id: `file-${Date.now()}-${Math.random()}`,
-        type: 'file' as const,
-        name: file.name,
-        file,
-        size: file.size
-      }));
-      onMaterialsChange([...learningMaterials, ...newMaterials]);
-    },
-    setIsDragOver
-  );
+  // const { handleDragOver, handleDragLeave, handleDrop } = createDragHandlers(
+  //   (droppedFiles) => {
+  //     const newMaterials = droppedFiles.map(file => ({
+  //       id: `file-${Date.now()}-${Math.random()}`,
+  //       type: 'file' as const,
+  //       name: file.name,
+  //       file,
+  //       size: file.size
+  //     }));
+  //     onMaterialsChange([...learningMaterials, ...newMaterials]);
+  //   },
+  //   setIsDragOver
+  // );
+
+  // Temporary placeholder handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    // TODO: Implement file handling
+  };
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -198,7 +210,7 @@ export function LearningMaterialsStep({
                     <div>
                       <p className="text-sm font-medium text-slate-900">{material.name}</p>
                       {material.type === 'file' && material.size && (
-                        <p className="text-xs text-gray-500">{formatFileSize(material.size)}</p>
+                        <p className="text-xs text-gray-500">{material.size ? `${(material.size / 1024).toFixed(1)} KB` : 'Unknown size'}</p>
                       )}
                       {material.type === 'link' && material.url && (
                         <p className="text-xs text-gray-500 truncate max-w-xs">{material.url}</p>

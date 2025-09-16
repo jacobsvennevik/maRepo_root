@@ -135,7 +135,7 @@ class ConfigValidator:
             self._validate_algorithm_consistency,
             self._validate_performance_settings,
             self._validate_environment_consistency,
-        ]
+        ])
     
     def add_rule(self, rule: ValidationRule):
         """Add a custom validation rule."""

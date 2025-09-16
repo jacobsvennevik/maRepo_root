@@ -1125,6 +1125,9 @@ class DiagnosticGenerationView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         try:
+            # Check for test mode header
+            mock_mode = request.headers.get('X-Test-Mode') == 'true'
+            
             # Generate diagnostic using AI
             generator = DiagnosticGenerator()
             session = generator.generate_diagnostic(
@@ -1134,7 +1137,8 @@ class DiagnosticGenerationView(APIView):
                 question_mix=serializer.validated_data.get('question_mix'),
                 difficulty=serializer.validated_data['difficulty'],
                 delivery_mode=serializer.validated_data['delivery_mode'],
-                max_questions=serializer.validated_data['max_questions']
+                max_questions=serializer.validated_data['max_questions'],
+                mock_mode=mock_mode
             )
             
             # Return the generated session

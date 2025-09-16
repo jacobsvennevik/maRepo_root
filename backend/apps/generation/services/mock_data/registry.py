@@ -112,6 +112,116 @@ def mock_assessment(payload: dict) -> dict:
     }
 
 
+def mock_quiz(payload: dict) -> dict:
+    """Return comprehensive quiz data for testing following the provided schema."""
+    # Extract parameters from payload
+    topic = payload.get('topic', 'Natural Language Processing')
+    difficulty = payload.get('difficulty', 'medium')
+    max_questions = payload.get('max_questions', 5)
+    
+    # Generate quiz items based on the schema provided
+    quiz_items = [
+        {
+            "derived_from_item_id": "EX-ITEM-1",
+            "objective_id": "OBJ-A",
+            "type": "short_answer",
+            "difficulty": "easy",
+            "transfer": "near",
+            "bloom": "Remember",
+            "stem": "What are the three main types of language modeling tasks studied in NLP?",
+            "choices": [
+                {"id": "A", "text": "Causal Language Modeling (CLM)", "correct": True},
+                {"id": "B", "text": "Masked Language Modeling (MLM)", "correct": True},
+                {"id": "C", "text": "Next Sentence Prediction (NSP)", "correct": True},
+                {"id": "D", "text": "Named Entity Recognition (NER)", "correct": False}
+            ],
+            "answer": "CLM, MLM, and NSP are the three main language modeling tasks",
+            "type_specific": {"tolerance": 0.001, "unit": "unitless"},
+            "rationale": "These three tasks represent the core approaches to language modeling in transformer architectures.",
+            "hints": ["Think about how tokens are predicted in different contexts.", "Consider what each task is trying to learn."],
+            "tags": ["concept:language-modeling", "bloom:Remember"],
+            "source_ids": ["doc:lm-slides#mlm-clm-nsp"],
+            "structure_fidelity": "exact"
+        },
+        {
+            "derived_from_item_id": "EX-ITEM-2",
+            "objective_id": "OBJ-B",
+            "type": "explain_why",
+            "difficulty": "medium",
+            "transfer": "near",
+            "bloom": "Understand",
+            "stem": "Explain why self-supervised pre-training is effective for language models.",
+            "choices": [],
+            "answer": "Self-supervised pre-training is effective because it learns general language patterns from large amounts of unlabeled text, providing a strong foundation for downstream tasks.",
+            "type_specific": {},
+            "rationale": "Pre-training on raw text allows models to learn fundamental language understanding before task-specific fine-tuning.",
+            "hints": ["Consider the amount of data available.", "Think about what general patterns can be learned."],
+            "tags": ["concept:pretrain-finetune", "bloom:Understand"],
+            "source_ids": ["doc:lm-slides#pretrain-finetune-transfer"],
+            "structure_fidelity": "exact"
+        },
+        {
+            "derived_from_item_id": "EX-ITEM-3",
+            "objective_id": "OBJ-C",
+            "type": "numeric_response",
+            "difficulty": "hard",
+            "transfer": "near",
+            "bloom": "Apply",
+            "stem": "A classifier with softmax predicts p(correct)=0.25 for the true class. Compute the cross-entropy loss L = −log p(correct). Use natural log.",
+            "choices": [],
+            "answer": 1.386294361,
+            "type_specific": {"tolerance": 0.001, "unit": "unitless"},
+            "rationale": "Cross-entropy loss for one-hot encoded labels equals the negative log probability of the correct class.",
+            "hints": ["Recall L = −log p(y_true).", "Use p=0.25."],
+            "tags": ["concept:cross-entropy", "bloom:Apply"],
+            "source_ids": ["doc:lm-slides#loss-softmax"],
+            "structure_fidelity": "adapted"
+        },
+        {
+            "derived_from_item_id": "EX-ITEM-4",
+            "objective_id": "OBJ-D",
+            "type": "short_answer",
+            "difficulty": "easy",
+            "transfer": "near",
+            "bloom": "Remember",
+            "stem": "What does the softmax function do to a vector of logits?",
+            "choices": [],
+            "answer": "Softmax transforms logits into a probability distribution where all values are non-negative and sum to 1.",
+            "type_specific": {},
+            "rationale": "Softmax normalizes logits to create valid probability distributions for multi-class classification.",
+            "hints": ["Think about normalization.", "What should probabilities sum to?"],
+            "tags": ["concept:softmax", "bloom:Remember"],
+            "source_ids": ["doc:lm-slides#loss-softmax"],
+            "structure_fidelity": "exact"
+        },
+        {
+            "derived_from_item_id": "EX-ITEM-5",
+            "objective_id": "OBJ-E",
+            "type": "explain_why",
+            "difficulty": "medium",
+            "transfer": "far",
+            "bloom": "Analyze",
+            "stem": "Compare and contrast the membership and continuation problems in language modeling. Which approach would be better for each?",
+            "choices": [],
+            "answer": "Membership asks 'is this sequence in language L?' and is best solved by discriminative models. Continuation asks 'what follows this sequence?' and is best solved by generative models like causal LMs.",
+            "type_specific": {},
+            "rationale": "Different problems require different modeling approaches based on their inherent nature and goals.",
+            "hints": ["Think about what each problem is trying to determine.", "Consider the difference between classification and generation."],
+            "tags": ["concept:membership", "concept:continuation", "bloom:Analyze"],
+            "source_ids": ["doc:lm-slides#membership-continuation"],
+            "structure_fidelity": "exact"
+        }
+    ]
+    
+    # Adjust number of questions based on max_questions parameter
+    if max_questions < len(quiz_items):
+        quiz_items = quiz_items[:max_questions]
+    
+    return {
+        "items": quiz_items
+    }
+
+
 def mock_diagnostic(payload: dict) -> dict:
     """Return mock diagnostic data for testing."""
     return {
@@ -167,7 +277,8 @@ MOCK_REGISTRY = {
         "entities": [],
         "concepts": [],
         "sections": []
-    }
+    },
+    Task.QUIZ: mock_quiz
 }
 
 

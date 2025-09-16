@@ -10,14 +10,22 @@ const sampleFlashcardSet: FlashcardSet = {
   title: "World Geography",
   description: "Learn about countries, capitals, and landmarks around the world",
   owner: 1,
-  project: 1,
-  total_cards: 7,
-  due_cards: 3,
-  learning_cards: 2,
-  review_cards: 2,
-  average_accuracy: 0.85,
+  difficulty_level: 'INTERMEDIATE',
+  tags: ['geography', 'world', 'capitals'],
   created_at: "2024-01-01T00:00:00Z",
-  updated_at: "2024-01-01T00:00:00Z"
+  updated_at: "2024-01-01T00:00:00Z",
+  flashcard_count: 7,
+  is_public: true,
+  study_stats: {
+    total_cards: 7,
+    due_cards: 3,
+    mastered_cards: 2,
+    learning_cards: 2,
+    review_cards: 2,
+    retention_rate: 0.85,
+    streak_days: 5,
+    next_review: '2024-01-15T10:30:00Z'
+  }
 };
 
 export const FlashcardCarouselDemo: React.FC = () => {

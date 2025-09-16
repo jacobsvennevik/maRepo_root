@@ -127,6 +127,69 @@ class DiagnosticSessionSerializerTest(TestCase):
         self.assertEqual(response1.question, question)
         self.assertEqual(response2.question, question)
 
+    def test_session_create_and_round_trip_with_style_fields(self):
+        """Round-trip create/read including optional style fields."""
+        from backend.apps.projects.tests.factories import ProjectFactory
+        from django.urls import reverse
+        from rest_framework import status
+        from rest_framework.test import APIClient
+        user = User.objects.create_user(email='style@example.com', password='x')
+        project = ProjectFactory(owner=user)
+        client = APIClient()
+        client.force_authenticate(user=user)
+        payload = {
+            'project': str(project.id),
+            'topic': 'Kinematics',
+            'delivery_mode': 'DEFERRED_FEEDBACK',
+            'max_questions': 3,
+            'questions_order': 'SCRAMBLED',
+            'test_style': 'mcq_quiz',
+            'style_config_override': {
+                'timing': {'total_minutes': 15, 'per_item_seconds': 60},
+                'feedback': 'immediate',
+                'item_mix': {'single_select': 0.9, 'cloze': 0.1}
+            }
+        }
+        url = reverse('diagnostic-sessions-list')
+        response = client.post(url, data=payload, content_type='application/json')
+        if response.status_code != status.HTTP_201_CREATED:
+            print(f"Response status: {response.status_code}")
+            print(f"Response data: {response.data}")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        session_id = response.data['id']
+        # Read back
+        detail_url = reverse('diagnostic-sessions-detail', args=[session_id])
+        get_resp = client.get(detail_url)
+        self.assertEqual(get_resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(get_resp.data['test_style'], 'mcq_quiz')
+        self.assertIn('timing', get_resp.data['style_config_override'])
+
+    def test_session_create_without_style_fields_is_accepted(self):
+        """Create without optional fields should succeed and return null/{} defaults."""
+        from backend.apps.projects.tests.factories import ProjectFactory
+        from django.urls import reverse
+        from rest_framework import status
+        from rest_framework.test import APIClient
+        user = User.objects.create_user(email='nostyle@example.com', password='x')
+        project = ProjectFactory(owner=user)
+        client = APIClient()
+        client.force_authenticate(user=user)
+        payload = {
+            'project': str(project.id),
+            'topic': 'Vectors',
+            'delivery_mode': 'DEFERRED_FEEDBACK',
+            'max_questions': 3,
+            'questions_order': 'SCRAMBLED'
+        }
+        url = reverse('diagnostic-sessions-list')
+        response = client.post(url, data=payload, content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('id', response.data)
+        self.assertTrue('test_style' in response.data)
+        self.assertIsNone(response.data.get('test_style'))
+        override = response.data.get('style_config_override')
+        self.assertTrue(override in (None, {}) or isinstance(override, dict))
+
 
 class DiagnosticResponseSerializerTest(TestCase):
     """Test DiagnosticResponseSerializer functionality."""

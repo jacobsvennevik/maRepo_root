@@ -69,7 +69,7 @@ export function DashboardNav() {
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
-                  href={link.href}
+                  href={link.href as any}
                   className={cn(
                     "text-sm font-medium py-2 border-b-2 transition-colors",
                     link.active
@@ -113,13 +113,13 @@ export function DashboardNav() {
                 <div className="absolute right-0 mt-2 w-56 rounded-md border border-cyan-300 bg-white p-2 shadow-lg dropdown-menu">
                   <div className="py-1">
                     <Link
-                      href="/dashboard/profile"
+                      href="/dashboard/profile" as any
                       className="block px-4 py-2 text-sm text-slate-700 hover:bg-cyan-100 hover:text-cyan-700 rounded-md"
                     >
                       Your Profile
                     </Link>
                     <Link
-                      href="/dashboard/settings"
+                      href="/dashboard/settings" as any
                       className="block px-4 py-2 text-sm text-slate-700 hover:bg-cyan-100 hover:text-cyan-700 rounded-md"
                     >
                       Settings

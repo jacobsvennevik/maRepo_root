@@ -13,84 +13,129 @@ import {
 } from './components';
 import { useEffect, useMemo } from 'react';
 import { QuizStatsFooter } from '@/features/quiz/components/QuizStatsFooter';
-import { Target } from 'lucide-react';
-import { quizApi, type DiagnosticSession } from '@/features/quiz';
+import { Target, AlertCircle, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useQuizCenter } from '@/features/quiz/hooks/useQuizCenter';
+import { CreateQuizWizard } from '@/features/quiz/components/CreateQuizWizard';
+import { isTestMode } from '@/features/projects/services/upload-utils';
 
 export default function QuizCenter() {
   const params = useParams();
   const projectId = params.projectId as string;
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [sessions, setSessions] = useState<DiagnosticSession[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [showCreateWizard, setShowCreateWizard] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchSessions = async () => {
-      try {
-        setLoading(true);
-        const data = await quizApi.listSessions({ project: projectId });
-        if (isMounted) setSessions(data);
-      } catch (e: any) {
-        if (isMounted) setError(e?.message || 'Failed to load quizzes');
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-    fetchSessions();
-    return () => {
-      isMounted = false;
-    };
-  }, [projectId]);
+  // Use the new comprehensive hook
+  const {
+    sessions,
+    loading,
+    error,
+    generatingQuiz,
+    totalSessions,
+    completedSessions,
+    averageScore,
+    totalTimeSpent,
+    loadSessions,
+    createSession,
+    startSession,
+    deleteSession,
+    clearError,
+    refreshData
+  } = useQuizCenter({ 
+    projectId, 
+    autoLoad: true,
+    refreshInterval: 30000 // Refresh every 30 seconds
+  });
 
-  const averageScore = useMemo(() => {
-    // Placeholder: backend analytics not wired yet
-    return 0;
-  }, [sessions]);
-
-  const totalCount = sessions.length;
-  const completedCount = 0; // Placeholder until status mapping exists
-
-  // Event handlers
+  // Event handlers using the new architecture
   const handleStartTest = async (sessionId: string) => {
     try {
-      setLoading(true);
-      await quizApi.start(sessionId);
+      await startSession(sessionId);
       // TODO: navigate to quiz runner when implemented
+      console.log(`Started quiz session: ${sessionId}`);
     } catch (e) {
       console.error('Failed to start quiz', e);
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleQuickAction = async (action: string) => {
     if (action === 'auto-generate') {
       try {
-        setLoading(true);
-        await quizApi.generate({
+        await createSession({
           project: projectId,
           difficulty: 'INTERMEDIATE',
           delivery_mode: 'IMMEDIATE',
           max_questions: 10,
         });
-        // Refresh sessions after generation
-        const data = await quizApi.listSessions({ project: projectId });
-        setSessions(data);
+        // Data is automatically refreshed by the hook
       } catch (e) {
         console.error('Failed to generate quiz', e);
-      } finally {
-        setLoading(false);
       }
+    } else if (action === 'create-custom') {
+      setShowCreateWizard(true);
     } else {
       console.log('Quick action:', action);
     }
   };
 
+  const handleDeleteTest = async (sessionId: string) => {
+    try {
+      await deleteSession(sessionId);
+      // Data is automatically refreshed by the hook
+    } catch (e) {
+      console.error('Failed to delete quiz', e);
+    }
+  };
+
+  const handleCreateQuiz = async (config: any) => {
+    try {
+      await createSession({
+        project: projectId,
+        ...config
+      });
+      setShowCreateWizard(false);
+    } catch (e) {
+      console.error('Failed to create quiz', e);
+    }
+  };
+
+  // Show test mode banner
+  const showTestModeBanner = isTestMode();
+
   return (
     <div className="relative min-h-screen space-y-6">
       <Breadcrumbs />
-      {/* Centered Page Header like Flashcards */}
+      
+      {/* Test Mode Banner */}
+      {showTestModeBanner && (
+        <Alert className="border-yellow-200 bg-yellow-50">
+          <AlertCircle className="h-4 w-4 text-yellow-600" />
+          <AlertDescription className="text-yellow-800">
+            🧪 Test Mode Active - AI responses are mocked for development
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Error Banner */}
+      {error && (
+        <Alert className="border-red-200 bg-red-50">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-800">
+            {error}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="ml-2"
+              onClick={clearError}
+            >
+              Dismiss
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Centered Page Header */}
       <div className="text-center py-6">
         <div className="flex items-center justify-center gap-4 mb-2">
           <div className="p-3 rounded-xl bg-gradient-to-r from-blue-400 to-purple-600 shadow-lg">
@@ -100,45 +145,80 @@ export default function QuizCenter() {
         </div>
         <p className="text-slate-600 text-lg">Assess your knowledge with auto-generated quizzes</p>
       </div>
-      {/* Removed top stats; footer card used instead */}
-      {/* Placeholder recommended card until analytics available */}
-      {sessions[0] && (
+
+      {/* Loading State */}
+      {loading && sessions.length === 0 && (
+        <div className="flex items-center justify-center p-10">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <span className="ml-2 text-slate-600">Loading quiz sessions...</span>
+        </div>
+      )}
+
+      {/* Recommended Quiz Card */}
+      {sessions.length > 0 && sessions[0] && (
         <RecommendedTestCard 
           test={{
             id: sessions[0].id,
             title: sessions[0].title || 'Quiz Session',
-            subject: 'Mixed',
+            subject: sessions[0].topic || 'Mixed',
             type: 'Mixed',
-            questions: 0,
-            timeEstimate: sessions[0].time_limit_sec || 0,
-            lastScore: undefined,
-            status: 'upcoming',
+            questions: sessions[0].maxQuestions,
+            timeEstimate: sessions[0].timeLimitSec || 0,
             icon: '📝',
           }}
           onStart={handleStartTest}
         />
       )}
-      <QuickActionsGrid onAction={handleQuickAction} />
+
+      {/* Quick Actions */}
+      <QuickActionsGrid 
+        onAction={handleQuickAction}
+      />
+
+      {/* Test Types Section */}
       <TestTypesSection />
-      {sessions.length === 0 ? (
+
+      {/* Main Content */}
+      {sessions.length === 0 && !loading ? (
         <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-white/60">
           <div className="text-4xl mb-2">📝</div>
           <div className="text-lg font-semibold text-slate-900 mb-1">No quizzes yet</div>
           <div className="text-slate-600 mb-4">Generate your first quiz from project materials.</div>
-          <Button onClick={() => handleQuickAction('auto-generate')}>Auto-Generate Quiz</Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => handleQuickAction('auto-generate')}
+              disabled={generatingQuiz}
+            >
+              {generatingQuiz ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Generating...
+                </>
+              ) : (
+                'Auto-Generate Quiz'
+              )}
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => handleQuickAction('create-custom')}
+            >
+              Create Custom Quiz
+            </Button>
+          </div>
         </div>
       ) : (
         <YourTestsSection 
           tests={sessions.map(s => ({
             id: s.id,
             title: s.title || 'Quiz Session',
-            subject: 'Mixed',
+            subject: s.topic || 'Mixed',
             type: 'Mixed',
-            questions: 0,
-            timeEstimate: s.time_limit_sec || 0,
-            lastScore: undefined,
-            status: 'upcoming',
-            createdAt: s.created_at,
+            questions: s.maxQuestions,
+            timeEstimate: s.timeLimitSec || 0,
+            lastScore: s.averageScore,
+            status: s.status === 'completed' ? 'completed' : 
+                   s.status === 'active' ? 'needs-review' : 'upcoming',
+            createdAt: s.createdAt.toISOString(),
             icon: '📝'
           }))}
           viewMode={viewMode}
@@ -146,16 +226,28 @@ export default function QuizCenter() {
           onStartTest={handleStartTest}
         />
       )}
+
+      {/* Stats Footer */}
       <QuizStatsFooter 
-        totalQuizzes={totalCount}
+        totalQuizzes={totalSessions}
         averageScore={averageScore}
-        completedCount={completedCount}
-        dueToday={0}
-        learningCount={0}
+        completedCount={completedSessions}
+        dueToday={0} // TODO: Implement due today logic
+        learningCount={sessions.filter(s => s.status === 'active').length}
         accuracyPct={averageScore}
-        setsCount={totalCount}
+        setsCount={totalSessions}
         pillLabel="Completed"
       />
+
+      {/* Create Quiz Wizard */}
+      {showCreateWizard && (
+        <CreateQuizWizard
+          projectId={projectId}
+          open={showCreateWizard}
+          onOpenChange={setShowCreateWizard}
+          onCreated={handleCreateQuiz}
+        />
+      )}
     </div>
   );
 } 

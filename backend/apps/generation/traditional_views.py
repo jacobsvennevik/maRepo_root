@@ -127,7 +127,7 @@ def export_user_flashcards_to_anki(request):
     try:
         # Get optional parameters
         include_source = request.GET.get('include_source', 'true').lower() == 'true'
-        deck_name = request.GET.get('deck_name', f"{request.user.username}'s Ocean Learn Flashcards")
+        deck_name = request.GET.get('deck_name', f"{request.user.email.split('@')[0]}'s Ocean Learn Flashcards")
         
         # Export user's flashcards
         exporter = AnkiExportService()
@@ -137,7 +137,7 @@ def export_user_flashcards_to_anki(request):
         )
         
         # Create filename
-        safe_username = "".join(c for c in request.user.username if c.isalnum() or c in (' ', '-', '_')).rstrip()
+        safe_username = "".join(c for c in request.user.email.split('@')[0] if c.isalnum() or c in (' ', '-', '_')).rstrip()
         filename = f"{safe_username}_all_flashcards.apkg"
         
         # Return file response

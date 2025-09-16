@@ -31,7 +31,7 @@ export default function FlashcardRestfulTestPage() {
       
     } catch (error) {
       console.error('Test failed:', error);
-      setResults({ error: error.message });
+      setResults({ error: error instanceof Error ? error.message : 'Unknown error' });
     } finally {
       setLoading(false);
     }

@@ -15,14 +15,15 @@ from .dashboard_generator import DashboardGenerator
 from .study_planner import StudyPlanner
 from .analytics_calculator import AnalyticsCalculator
 from .schedule_optimizer import ScheduleOptimizer
+from ..scheduler_core import ReviewScheduleManager, ReviewSession as CoreReviewSession
 
 __all__ = [
-    # Main classes
     'ReviewSession',
     'DashboardGenerator',
     'StudyPlanner',
     'AnalyticsCalculator',
-    'ScheduleOptimizer'
+    'ScheduleOptimizer',
+    'ReviewScheduleManager',
 ]
 
 # Version information

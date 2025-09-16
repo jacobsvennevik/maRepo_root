@@ -11,8 +11,7 @@ from typing import Dict, List, Any, Optional
 from django.conf import settings
 from django.utils import timezone
 from ..models import DiagnosticSession, DiagnosticQuestion
-from .base import BaseAIClient
-from .mock_ai_client import MockAIClient
+from .api_client import AIClient, Task
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +22,8 @@ class DiagnosticGenerator:
     """
     
     def __init__(self, ai_client=None):
-        """Initialize with AI client or use mock for testing."""
-        self.ai_client = ai_client or MockAIClient()
+        """Initialize with AI client or create default one."""
+        self.ai_client = ai_client or AIClient(model='gemini-1.5-flash')
     
     def generate_diagnostic(
         self,
@@ -34,7 +33,8 @@ class DiagnosticGenerator:
         question_mix: Optional[Dict[str, int]] = None,
         difficulty: int = 2,
         delivery_mode: str = 'DEFERRED_FEEDBACK',
-        max_questions: int = 3
+        max_questions: int = 3,
+        mock_mode: bool = False
     ) -> DiagnosticSession:
         """
         Generate a complete diagnostic session with questions.
@@ -47,6 +47,7 @@ class DiagnosticGenerator:
             difficulty: Difficulty level 1-5
             delivery_mode: When to show feedback
             max_questions: Maximum number of questions
+            mock_mode: Whether to use mock AI responses
             
         Returns:
             DiagnosticSession with generated questions
@@ -64,8 +65,20 @@ class DiagnosticGenerator:
             # Build prompt for AI generation
             prompt = self._build_prompt(topic, source_ids, question_mix, difficulty)
             
-            # Generate questions using AI
-            raw_response = self.ai_client.get_response([{"role": "user", "content": prompt}])
+            # Generate questions using AI client with test mode support
+            payload = {
+                "prompt": prompt,
+                "topic": topic,
+                "difficulty": difficulty,
+                "max_questions": max_questions,
+                "question_mix": question_mix
+            }
+            
+            raw_response = self.ai_client.call(
+                task=Task.QUIZ,
+                payload=payload,
+                mock_mode=mock_mode
+            )
             
             # Parse and validate AI response
             data = json.loads(raw_response)
@@ -306,7 +319,8 @@ RULES:
         self,
         project_id: str,
         topic: str = None,
-        difficulty: int = 2
+        difficulty: int = 2,
+        mock_mode: bool = False
     ) -> DiagnosticSession:
         """
         Generate diagnostic from project content (simplified interface).
@@ -315,6 +329,7 @@ RULES:
             project_id: UUID of the project
             topic: Optional topic override
             difficulty: Difficulty level 1-5
+            mock_mode: Whether to use mock AI responses
             
         Returns:
             DiagnosticSession with generated questions
@@ -334,5 +349,6 @@ RULES:
             project_id=project_id,
             topic=topic,
             question_mix=question_mix,
-            difficulty=difficulty
+            difficulty=difficulty,
+            mock_mode=mock_mode
         )

@@ -22,7 +22,7 @@ export default function ProjectFlashcards() {
     id: set.id,
     title: set.title,
     description: `Flashcard set with ${set.total_cards} cards`,
-    owner: set.owner, // Keep the actual owner ID from the API
+    owner: 1, // Default owner ID since API doesn't provide this
     difficulty_level: 'INTERMEDIATE' as const,
     target_audience: 'Students',
     estimated_study_time: set.total_cards * 2, // Estimate 2 minutes per card
@@ -76,7 +76,7 @@ export default function ProjectFlashcards() {
           </Link>
           <ChevronRight size={16} className="mx-2" />
           <Link
-            href={`/projects/${projectId}`}
+            href={`/projects/${projectId}` as any}
             className="hover:text-emerald-600"
           >
             Project

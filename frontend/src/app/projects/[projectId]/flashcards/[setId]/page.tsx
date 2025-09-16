@@ -41,10 +41,12 @@ export default function FlashcardSetCarouselPage() {
             study_stats: {
               total_cards: 3,
               due_cards: 3,
-              new_cards: 3,
+              mastered_cards: 0,
               learning_cards: 0,
               review_cards: 0,
-              average_accuracy: 0
+              retention_rate: 0,
+              streak_days: 0,
+              next_review: '2024-01-01T00:00:00Z'
             },
             flashcards: [
               {
@@ -75,6 +77,7 @@ export default function FlashcardSetCarouselPage() {
                 metrics: {},
                 flashcard_set: {} as FlashcardSet, // Circular reference, will be set below
                 accuracy_rate: 0,
+                is_overdue: false,
                 is_due: true,
                 days_until_due: 0,
                 retention_rate: 0,
@@ -108,6 +111,7 @@ export default function FlashcardSetCarouselPage() {
                 metrics: {},
                 flashcard_set: {} as FlashcardSet,
                 accuracy_rate: 0,
+                is_overdue: false,
                 is_due: true,
                 days_until_due: 0,
                 retention_rate: 0,
@@ -141,6 +145,7 @@ export default function FlashcardSetCarouselPage() {
                 metrics: {},
                 flashcard_set: {} as FlashcardSet,
                 accuracy_rate: 0,
+                is_overdue: false,
                 is_due: true,
                 days_until_due: 0,
                 retention_rate: 0,

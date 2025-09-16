@@ -10,6 +10,7 @@ This module provides comprehensive test fixtures including:
 """
 
 import pytest
+import os
 import json
 import tempfile
 import shutil
@@ -32,10 +33,12 @@ from .factories import (
     DiagnosticSessionFactory, DiagnosticQuestionFactory,
     DiagnosticResponseFactory, DiagnosticAnalyticsFactory
 )
-from ..config import ConfigurationManager, GlobalConfig
-from ..services.spaced_repetition import AlgorithmFactory, SM2Algorithm, LeitnerAlgorithm
+from ..config import get_configuration_manager
+from ..services.spaced_repetition_package.algorithm_factory import AlgorithmFactory
+from ..services.spaced_repetition_package.sm2_algorithm import SM2Algorithm
+from ..services.spaced_repetition_package.leitner_algorithm import LeitnerAlgorithm
 from ..services.interleaving_session_new import InterleavingSessionService
-from ..services.scheduler_new import SchedulerService
+from ..services.scheduler import ReviewScheduleManager
 
 User = get_user_model()
 
@@ -255,18 +258,18 @@ def interleaving_service():
 
 @pytest.fixture
 def scheduler_service():
-    """Create a scheduler service instance."""
-    return SchedulerService()
+    """Create a scheduler service instance (alias to ReviewScheduleManager)."""
+    return ReviewScheduleManager()
 
 
 # Configuration Fixtures
 @pytest.fixture
 def mock_config_manager():
     """Create a mock configuration manager."""
-    mock_config = Mock(spec=ConfigurationManager)
+    mock_config = Mock(spec=get_configuration_manager().__class__)
     
     # Mock global config
-    mock_global_config = Mock(spec=GlobalConfig)
+    mock_global_config = Mock()
     mock_global_config.environment = 'test'
     mock_global_config.debug_mode = True
     mock_global_config.cache_enabled = True

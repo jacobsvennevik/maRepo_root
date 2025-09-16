@@ -5,17 +5,28 @@ This package provides centralized configuration management for the generation ap
 including service configurations, algorithm parameters, and feature flags.
 """
 
-from .config_manager import ConfigurationManager
-from .config_schemas import (
-    SpacedRepetitionConfig,
-    InterleavingConfig,
-    DiagnosticConfig,
-    AIProviderConfig,
-    FeatureFlagsConfig
-)
-from .config_validators import ConfigValidator
-from .config_cache import ConfigCache
-from .config_migrations import ConfigMigrationManager
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .config_manager import ConfigurationManager
+    from .config_schemas import (
+        SpacedRepetitionConfig,
+        InterleavingConfig,
+        DiagnosticConfig,
+        AIProviderConfig,
+        FeatureFlagsConfig,
+        GlobalConfig,
+    )
+    from .config_validators import ConfigValidator
+    from .config_cache import ConfigCache
+    from .config_migrations import ConfigMigrationManager
+
+def get_configuration_manager():
+    from .config_manager import ConfigurationManager, config_manager
+    # Ensure config is loaded on first use
+    if getattr(config_manager, '_config', None) is None:
+        config_manager.reload_configuration()
+    return config_manager
 
 __all__ = [
     'ConfigurationManager',
@@ -27,6 +38,7 @@ __all__ = [
     'ConfigValidator',
     'ConfigCache',
     'ConfigMigrationManager',
+    'get_configuration_manager',
 ]
 
 # Version information

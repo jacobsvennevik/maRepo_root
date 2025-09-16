@@ -31,6 +31,7 @@ class Task(Enum):
     SYLLABUS = "syllabus"
     TEST = "test"
     CONTENT = "content"
+    QUIZ = "quiz"
 
 class AIClient(BaseAIClient):
     def __init__(self, model: str, request=None):
@@ -124,6 +125,8 @@ class AIClient(BaseAIClient):
             data = self._call_llm_for_content(payload, model_override=selected_model)
         elif task is Task.FLASHCARDS:
             data = self._call_llm_for_flashcards(payload, model_override=selected_model)
+        elif task is Task.QUIZ:
+            data = self._call_llm_for_quiz(payload, model_override=selected_model)
         else:
             raise NotImplementedError(f"Unsupported task: {task}")
 
@@ -199,6 +202,15 @@ class AIClient(BaseAIClient):
         except Exception:
             return {"cards": []}
 
+    def _call_llm_for_quiz(self, payload: dict, *, model_override: str | None = None) -> dict:
+        prompt = payload.get("prompt") or f"Generate quiz questions in JSON format from: {payload.get('content','')[:2000]}"
+        messages = [self.format_message("user", prompt)]
+        raw = self._get_response_with_model(model_override or self.model, messages)
+        try:
+            return json.loads(raw)
+        except Exception:
+            return {"items": []}
+
     def _validate_and_dump(self, task: Task, data: Dict[str, Any]) -> Dict[str, Any]:
         try:
             if task is Task.SYLLABUS:
@@ -209,6 +221,8 @@ class AIClient(BaseAIClient):
                 return ContentOut.model_validate(data).model_dump()
             if task is Task.FLASHCARDS:
                 return FlashcardsOut.model_validate(data).model_dump()
+            if task is Task.QUIZ:
+                return TestsOut.model_validate(data).model_dump()  # Use same schema as TEST
         except Exception as e:
             self._logger.warning("DTO validation failed for task=%s: %s", task, e)
             # Return minimally safe shape
@@ -217,6 +231,7 @@ class AIClient(BaseAIClient):
                 Task.TEST: {"items": []},
                 Task.CONTENT: {"summary": "", "keywords": [], "entities": [], "concepts": [], "sections": []},
                 Task.FLASHCARDS: {"cards": []},
+                Task.QUIZ: {"items": []},
             }
             return minimal.get(task, {})
         return data

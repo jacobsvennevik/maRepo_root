@@ -210,7 +210,7 @@ class StressTestCase(TestCase):
         ) as executor:
             futures = [
                 executor.submit(worker) 
-                for _ in range(self.stress_config['concurrent_users']
+                for _ in range(self.stress_config['concurrent_users'])
             ]
             
             # Wait for completion with timeout

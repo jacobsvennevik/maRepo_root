@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DialogDescription } from '@/components/ui/dialog';
+import { WizardShell } from '@/components/wizard/WizardShell';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -427,13 +428,34 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
         language: form.getValues('language'),
       });
 
+      // Build preview-friendly cards for the review step
+      const previewCards = (Array.isArray(cards) ? cards : []).map((c: any, idx: number) => {
+        // Support multiple shapes: {question, answer}, {front, back}, string pairs, etc.
+        const front = typeof c.front === 'string' ? c.front
+          : typeof c.question === 'string' ? c.question
+          : c.q || c.prompt || '';
+        const back = typeof c.back === 'string' ? c.back
+          : typeof c.answer === 'string' ? c.answer
+          : c.a || c.response || '';
+        const tags = Array.isArray(c.tags) ? c.tags : [];
+        return {
+          id: String(c.id ?? idx + 1),
+          front,
+          back,
+          tags,
+        };
+      });
+
       // Convert to expected format for the wizard
       const normalizedResult = {
         deck: {
           suggested_title: suggestedTitle,
           suggested_description: suggestedDescription,
         },
+        // Keep original cards for API submission
         cards: cards,
+        // Use normalized preview cards for UI
+        previewCards,
         // Include the flashcard set ID if the API created it
         flashcardSetId: result.id || null
       };
@@ -461,7 +483,21 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
       // The generated deck should contain the flashcard set info if it was created by the API
       if (generatedDeck.flashcardSetId) {
         console.log('🔍 DEBUG: Using existing flashcard set ID:', generatedDeck.flashcardSetId);
-        
+        // Ensure the deck uses the user-provided Deck name (title)
+        const desiredTitle = form.getValues('title');
+        const desiredDescription = form.getValues('description');
+        try {
+          if (desiredTitle || desiredDescription) {
+            // Generated sets are managed via the generation service
+            await axiosGeneration.patch(`/projects/${projectId}/flashcard-sets/${generatedDeck.flashcardSetId}/`, {
+              ...(desiredTitle ? { title: desiredTitle } : {}),
+              ...(desiredDescription ? { description: desiredDescription } : {}),
+            });
+          }
+        } catch (e) {
+          console.warn('Could not update deck title/description after generation', e);
+        }
+
         // Close the wizard
         onOpenChange(false);
         
@@ -562,14 +598,14 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create Flashcard Set</DialogTitle>
-          <DialogDescription>
-            Step {step} of {totalSteps}
-          </DialogDescription>
-          
+    <WizardShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Create Flashcard Set"
+      step={step}
+      totalSteps={totalSteps}
+      headerExtras={(
+        <>
           {/* Debug Banner */}
           <div className="bg-blue-50 border border-blue-200 rounded-md p-2 mt-2 text-xs">
             <div className="font-medium text-blue-800">🔍 DEBUG INFO:</div>
@@ -600,7 +636,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
               </Button>
             </div>
           </div>
-          
+
           {/* Mock Mode Banner */}
           <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3 mt-2">
             <div className="flex items-center gap-2 text-yellow-800">
@@ -613,9 +649,9 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
               Using predefined flashcard templates instead of AI generation for testing purposes.
             </p>
           </div>
-        </DialogHeader>
-
-        <div className="space-y-3">
+        </>
+      )}
+    >
           {step === 1 && (
             <div className="space-y-3">
               <div className="text-center space-y-2">
@@ -976,7 +1012,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
 
           {step === 4 && generatedDeck && (
             <FlashcardReviewStep
-              cards={generatedDeck.cards}
+              cards={generatedDeck.previewCards || generatedDeck.cards}
               form={form}
               mockMode={isTestMode()}
               suggestedTitle={suggestedTitle}
@@ -1041,9 +1077,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
               )}
             </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+    </WizardShell>
   );
 }
 

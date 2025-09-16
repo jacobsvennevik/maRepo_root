@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { projectIcons, projectColors, type ProjectType } from '../../create/types';
+// import { projectIcons, projectColors, type ProjectType } from '../../create/types';
 
 interface CustomSetupProps {
   onBack: () => void;

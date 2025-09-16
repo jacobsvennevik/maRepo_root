@@ -6,13 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DropdownMenu } from '@/components/ui/dropdown-menu';
-import { Progress } from '@/components/ui/progress';
+import { CreateDiagnosticWizard } from './CreateDiagnosticWizard';
 import { Calendar, Clock, Users, Target, Plus, BarChart3, Play, Edit, Trash2 } from 'lucide-react';
 
 interface DiagnosticSession {
@@ -41,12 +35,6 @@ export default function DiagnosticDashboard({ projectId }: { projectId: string }
   const [sessions, setSessions] = useState<DiagnosticSession[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState<CreateDiagnosticForm>({
-    topic: '',
-    delivery_mode: 'DEFERRED_FEEDBACK',
-    max_questions: 3,
-    difficulty: 2,
-  });
 
   useEffect(() => {
     fetchDiagnosticSessions();
@@ -65,35 +53,8 @@ export default function DiagnosticDashboard({ projectId }: { projectId: string }
     }
   };
 
-  const handleCreateDiagnostic = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axiosApi.post('/diagnostics/generate/', {
-        project_id: projectId,
-        topic: formData.topic,
-        difficulty: formData.difficulty,
-        delivery_mode: formData.delivery_mode,
-        max_questions: formData.max_questions,
-        scheduled_for: formData.scheduled_for,
-        due_at: formData.due_at,
-      });
-
-      if (response.status >= 200 && response.status < 300) {
-        const newSession = response.data;
-        setSessions(prev => [newSession, ...prev]);
-        setIsCreateDialogOpen(false);
-        setFormData({
-          topic: '',
-          delivery_mode: 'DEFERRED_FEEDBACK',
-          max_questions: 3,
-          difficulty: 2,
-        });
-      }
-    } catch (error) {
-      console.error('Failed to create diagnostic:', error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDiagnosticCreated = (newSession: any) => {
+    setSessions(prev => [newSession, ...prev]);
   };
 
   const getStatusBadge = (status: string) => {
@@ -130,102 +91,17 @@ export default function DiagnosticDashboard({ projectId }: { projectId: string }
             Assess student readiness and identify knowledge gaps before lectures
           </p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Diagnostic
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Create New Diagnostic</DialogTitle>
-              <DialogDescription>
-                Generate a pre-lecture diagnostic to assess student knowledge
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="topic">Topic</Label>
-                <Input
-                  id="topic"
-                  placeholder="e.g., Thermodynamics Fundamentals"
-                  value={formData.topic}
-                  onChange={(e) => setFormData(prev => ({ ...prev, topic: e.target.value }))}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="delivery_mode">Feedback Mode</Label>
-                  <DropdownMenu>
-                    <Select
-                      value={formData.delivery_mode}
-                      onValueChange={(value: string) => 
-                        setFormData(prev => ({ ...prev, delivery_mode: value as 'IMMEDIATE_FEEDBACK' | 'DEFERRED_FEEDBACK' }))
-                      }
-                    >
-                      <SelectTrigger id="delivery_mode">
-                        <SelectValue placeholder={formData.delivery_mode === 'IMMEDIATE_FEEDBACK' ? 'Immediate Feedback' : 'Deferred Feedback'} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="IMMEDIATE_FEEDBACK">Immediate Feedback</SelectItem>
-                        <SelectItem value="DEFERRED_FEEDBACK">Deferred Feedback</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </DropdownMenu>
-                </div>
-                <div>
-                  <Label htmlFor="max_questions">Questions</Label>
-                  <DropdownMenu>
-                    <Select
-                      value={formData.max_questions.toString()}
-                      onValueChange={(value) => 
-                        setFormData(prev => ({ ...prev, max_questions: parseInt(value) }))
-                      }
-                    >
-                      <SelectTrigger id="max_questions">
-                        <SelectValue placeholder={`${formData.max_questions} Questions`} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="3">3 Questions</SelectItem>
-                        <SelectItem value="5">5 Questions</SelectItem>
-                        <SelectItem value="10">10 Questions</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </DropdownMenu>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="scheduled_for">Scheduled For</Label>
-                  <Input
-                    id="scheduled_for"
-                    type="datetime-local"
-                    value={formData.scheduled_for || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, scheduled_for: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="due_at">Due By</Label>
-                  <Input
-                    id="due_at"
-                    type="datetime-local"
-                    value={formData.due_at || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, due_at: e.target.value }))}
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleCreateDiagnostic} disabled={isLoading}>
-                  {isLoading ? 'Creating...' : 'Create Diagnostic'}
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Create Diagnostic
+        </Button>
+        
+        <CreateDiagnosticWizard
+          open={isCreateDialogOpen}
+          onOpenChange={setIsCreateDialogOpen}
+          projectId={projectId}
+          onCreated={handleDiagnosticCreated}
+        />
       </div>
 
       {/* Tabs */}
