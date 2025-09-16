@@ -21,7 +21,7 @@ export default function ProjectFlashcards() {
     id: set.id,
     title: set.title,
     description: `Flashcard set with ${set.total_cards} cards`,
-    owner: parseInt(projectId),
+    owner: set.owner, // Keep the actual owner ID from the API
     difficulty_level: 'INTERMEDIATE' as const,
     target_audience: 'Students',
     estimated_study_time: set.total_cards * 2, // Estimate 2 minutes per card
@@ -107,6 +107,7 @@ export default function ProjectFlashcards() {
           decks={transformedDecks}
           isLoading={isLoading}
           error={error}
+          projectId={projectId}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onShare={handleShare}

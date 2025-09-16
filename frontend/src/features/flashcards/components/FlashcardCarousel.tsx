@@ -11,6 +11,7 @@ import type { Flashcard, FlashcardSet } from '../types';
 
 interface FlashcardCarouselProps {
   flashcardSet: FlashcardSet;
+  projectId?: string;
   onBack: () => void;
   onEditCard?: (card: Flashcard) => void;
   onDiscardCard?: (card: Flashcard) => void;
@@ -202,6 +203,7 @@ const CarouselCard: React.FC<CarouselCardProps> = ({
 
 export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
   flashcardSet,
+  projectId,
   onBack,
   onEditCard,
   onDiscardCard,
@@ -213,7 +215,11 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
   const [showViewAllModal, setShowViewAllModal] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   
-  const { flashcards, isLoading, error, nextCard, prevCard, goToCard, flipCard } = useFlashcardCarousel(flashcardSet.id);
+  const { flashcards, isLoading, error, nextCard, prevCard, goToCard, flipCard } = useFlashcardCarousel(
+    flashcardSet.id, 
+    projectId, 
+    flashcardSet.flashcards
+  );
 
   const scrollToCard = useCallback((index: number) => {
     if (carouselRef.current) {
@@ -230,7 +236,8 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
   }, []);
 
   const handleNext = () => {
-    if (currentIndex < flashcards.length - 1) {
+    const flashcardsLength = Array.isArray(flashcards) ? flashcards.length : 0;
+    if (currentIndex < flashcardsLength - 1) {
       const nextIndex = currentIndex + 1;
       scrollToCard(nextIndex);
       nextCard();
@@ -292,7 +299,7 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, flashcards.length]);
+  }, [currentIndex, Array.isArray(flashcards) ? flashcards.length : 0]);
 
   if (isLoading) {
     return (
@@ -310,7 +317,7 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
     );
   }
 
-  if (!flashcards || flashcards.length === 0) {
+  if (!Array.isArray(flashcards) || flashcards.length === 0) {
     return (
       <div className="text-center py-8">
         <p className="text-gray-500">No flashcards in this set yet.</p>
@@ -351,7 +358,7 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
         
         <div className="flex items-center gap-2 text-gray-500">
           <span className="w-5 h-5">📚</span>
-          <span>{flashcards.length} flashcards</span>
+          <span>{Array.isArray(flashcards) ? flashcards.length : 0} flashcards</span>
         </div>
       </div>
 
@@ -374,7 +381,7 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
             size="lg"
             className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-white/80 hover:bg-white hover:scale-110 transition-all duration-200 shadow-lg"
             onClick={handleNext}
-            disabled={currentIndex === flashcards.length - 1}
+            disabled={currentIndex === (Array.isArray(flashcards) ? flashcards.length : 0) - 1}
           >
             <ChevronRight className="h-6 w-6" />
           </Button>
@@ -385,7 +392,7 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
             className="flex overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory gap-4 px-20"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {flashcards.map((card, index) => (
+            {Array.isArray(flashcards) && flashcards.map((card, index) => (
               <CarouselCard
                 key={card.id}
                 card={card}

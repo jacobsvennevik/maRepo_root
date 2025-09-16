@@ -33,6 +33,7 @@ export interface DeckCardProps extends DeckActionHandlers {
   deck: FlashcardSet;
   variant?: 'default' | 'compact';
   layout?: 'grid' | 'list';
+  projectId?: string;
   className?: string;
 }
 
@@ -40,6 +41,7 @@ export function DeckCard({
   deck,
   variant = 'default',
   layout = 'grid',
+  projectId,
   onEdit,
   onDelete,
   onShare,
@@ -70,7 +72,8 @@ export function DeckCard({
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       // Navigate to project-scoped deck carousel page
-      window.location.href = `/projects/${deck.owner}/flashcards/${deck.id}`;
+      const targetProjectId = projectId || deck.owner;
+      window.location.href = `/projects/${targetProjectId}/flashcards/${deck.id}`;
     }
   };
 
@@ -145,7 +148,7 @@ export function DeckCard({
                 size="sm"
                 className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700"
               >
-                <Link href={`/projects/${deck.owner}/flashcards/${deck.id}`}>
+                <Link href={`/projects/${projectId || deck.owner}/flashcards/${deck.id}`}>
                   <Play className="h-3 w-3 mr-1" />
                   Study
                 </Link>

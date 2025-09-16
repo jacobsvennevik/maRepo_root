@@ -413,7 +413,6 @@ class ProjectFlashcardSetViewSet(viewsets.ModelViewSet):
             source_type = request.data.get('source_type', 'files')
             num_cards = request.data.get('num_cards', 10)
             difficulty = request.data.get('difficulty', 'medium')
-            mock_mode = request.data.get('mock_mode', False)
             
             # Anti-spam limit: cap generation at 200 cards per project
             if num_cards > 200:
@@ -441,11 +440,16 @@ class ProjectFlashcardSetViewSet(viewsets.ModelViewSet):
                 return create_error_response('Invalid source_type', status.HTTP_400_BAD_REQUEST)
             
             if not content:
-                return create_error_response('No content found for flashcard generation', status.HTTP_400_BAD_REQUEST)
+                # In test mode, allow generation without real content by providing placeholder
+                from ..utils.test_mode import is_test_mode
+                if is_test_mode(request):
+                    content = f"Test mode placeholder content for project {project.name}. This enables mocked AI to return a deterministic deck."
+                else:
+                    return create_error_response('No content found for flashcard generation', status.HTTP_400_BAD_REQUEST)
             
             # Generate flashcards using enhanced service
             from ..services.flashcard_generator import FlashcardGenerator
-            generator = FlashcardGenerator()
+            generator = FlashcardGenerator(request=request)
             
             # Use enhanced generation with deterministic metadata
             result = generator.generate_enhanced_flashcards(
@@ -485,10 +489,11 @@ class ProjectFlashcardSetViewSet(viewsets.ModelViewSet):
             
             response_data = FlashcardSetSerializer(flashcard_set, context={'request': request}).data
             
-            # Add mock mode banner if enabled
-            if mock_mode:
-                response_data['mock_mode'] = True
-                response_data['mock_banner'] = '🧪 Mock Mode: Using predefined flashcard templates instead of AI generation'
+            # Add test mode banner if enabled (check header)
+            from ..utils.test_mode import is_test_mode
+            if is_test_mode(request):
+                response_data['test_mode'] = True
+                response_data['test_banner'] = '🧪 Test Mode: Using mock AI responses for testing purposes'
             
             return Response(response_data, status=status.HTTP_201_CREATED)
             

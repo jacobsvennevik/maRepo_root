@@ -7,19 +7,20 @@ assessments, and other generated content for testing purposes.
 
 import uuid
 from typing import Dict, List, Any
+from ..api_client import Task
 
 
 def mock_flashcards(payload: dict) -> dict:
-    """Return comprehensive language model flashcards for testing."""
+    """Return comprehensive neural network training flashcards for testing."""
     # Extract title from payload or generate a default one
-    title = payload.get('title', 'Natural Language Processing Fundamentals')
+    title = payload.get('title', 'Neural Network Training Fundamentals')
     content_type = payload.get('content_type', 'mixed')
     difficulty = payload.get('difficulty', 'medium')
     
     # Generate a descriptive title and description based on content
-    if 'natural language' in title.lower() or 'nlp' in title.lower():
-        deck_title = "Natural Language Processing Fundamentals"
-        deck_description = "Comprehensive flashcards covering core NLP concepts including language models, tokenization, and neural network architectures."
+    if 'neural network' in title.lower() or 'training' in title.lower():
+        deck_title = "Neural Network Training Fundamentals"
+        deck_description = "Comprehensive flashcards covering neural network training algorithms, optimization, and key concepts."
     elif 'machine learning' in title.lower() or 'ml' in title.lower():
         deck_title = "Machine Learning Essentials"
         deck_description = "Essential machine learning concepts covering algorithms, model evaluation, and practical applications."
@@ -37,64 +38,39 @@ def mock_flashcards(payload: dict) -> dict:
         },
         "cards": [
             {
-                "id": "card_1",
-                "front": "What two core problems do language models target?",
-                "back": "Belonging: decide if a sequence is a sentence of language L. Continuation: predict the most likely next item given a segment.",
-                "tags": ["belonging-problem", "continuation-problem", "causal-language-modeling"]
+                "question": "What are the three main steps in a neural network training algorithm?",
+                "answer": "The three steps are: (1) Forward pass – compute predictions, (2) Loss estimation – measure error between prediction and desired output, (3) Backward pass – update weights using gradients.",
+                "tags": ["training-algorithm-steps", "optimization", "neural-networks"]
             },
             {
-                "id": "card_2", 
-                "front": "What is the belonging (membership) problem in language modeling?",
-                "back": "Determine whether a given sequence is a sentence of language L.",
-                "tags": ["role-of-language-models", "continuation-problem"]
+                "question": "How does the softmax function transform a vector?",
+                "answer": "Softmax transforms a vector into a probability distribution by applying exponentiation to each component and dividing by the sum of all exponentials. Each output is in [0,1] and the sum equals 1.",
+                "tags": ["softmax-function", "classification", "probability"]
             },
             {
-                "id": "card_3",
-                "front": "What does the continuation problem ask a language model to do?",
-                "back": "Given a segment, predict the most likely next item (token or sequence) in language L.",
-                "tags": ["role-of-language-models", "causal-language-modeling", "masked-language-modeling"]
+                "question": "Why is binary cross-entropy also called logistic loss?",
+                "answer": "Binary cross-entropy is equivalent to the negative log-likelihood of logistic regression, where outputs are probabilities in [0,1] and labels are 0 or 1.",
+                "tags": ["binary-cross-entropy", "loss-function", "logistic-regression"]
             },
             {
-                "id": "card_4",
-                "front": "Why is self-supervised learning suited to language modeling?",
-                "back": "It needs no manual labels: remove the next segment and ask the model to predict it using raw running texts, enabling much larger training sets than annotated ones.",
-                "tags": ["colossal-datasets", "cross-entropy-loss", "forward-pass"]
+                "question": "How does backpropagation use gradients to adjust weights?",
+                "answer": "Backpropagation computes the gradient of the loss with respect to each parameter and updates weights in the opposite direction of the gradient, scaled by a learning rate.",
+                "tags": ["backpropagation", "gradient-descent", "optimization"]
             },
             {
-                "id": "card_5",
-                "front": "What does softmax enforce on the output vector y^?",
-                "back": "Each component lies in [0,1] and the components sum to 1 across the vocabulary, making y^ a probability distribution.",
-                "tags": ["cross-entropy-loss", "predicted-item-argmax"]
+                "question": "What distinguishes categorical cross-entropy from binary cross-entropy?",
+                "answer": "Categorical cross-entropy handles multi-class classification with one-hot encoded labels and probabilities over multiple classes, while binary cross-entropy applies to two-class problems with scalar outputs.",
+                "tags": ["categorical-cross-entropy", "multi-class-classification", "loss-function"]
             },
             {
-                "id": "card_6",
-                "front": "How is the predicted next item selected from y^?",
-                "back": "Choose the index with the highest value (argmax) in the softmax-normalized output vector.",
-                "tags": ["softmax-normalization", "cross-entropy-loss"]
+                "question": "Fill in the blank: In stochastic gradient descent (SGD), each parameter p is updated as p ← p – η·g, where g is ______.",
+                "answer": "The gradient of the loss function with respect to parameter p.",
+                "tags": ["stochastic-gradient-descent", "optimization", "gradients"]
             },
             {
-                "id": "card_7",
-                "front": "What is the difference between causal and masked language modeling?",
-                "back": "Causal LM predicts next token given previous tokens (left-to-right). Masked LM predicts masked tokens given surrounding context (bidirectional).",
-                "tags": ["causal-language-modeling", "masked-language-modeling", "bidirectional"]
-            },
-            {
-                "id": "card_8",
-                "front": "What are the key advantages of transformer architecture?",
-                "back": "Parallel processing, long-range dependencies, self-attention mechanism, and scalability to large models.",
-                "tags": ["transformer", "self-attention", "parallel-processing", "scalability"]
-            },
-            {
-                "id": "card_9",
-                "front": "What is the attention mechanism in transformers?",
-                "back": "A mechanism that allows the model to focus on different parts of the input sequence when processing each token.",
-                "tags": ["attention", "self-attention", "transformer"]
-            },
-            {
-                "id": "card_10",
-                "front": "What is tokenization in NLP?",
-                "back": "The process of breaking down text into smaller units (tokens) that can be processed by language models.",
-                "tags": ["tokenization", "text-processing", "nlp"]
+                "question": "Why are adaptive learning rate methods (e.g., Adam, RMSProp) used instead of plain SGD?",
+                "answer": "They adjust learning rates dynamically for each parameter, improving convergence speed and stability compared to constant learning rate SGD.",
+                "tags": ["adaptive-learning-rate", "adam", "optimization"]
             }
         ]
     }
@@ -163,6 +139,35 @@ MOCK_DATA_REGISTRY = {
     "flashcards": mock_flashcards,
     "assessment": mock_assessment,
     "diagnostic": mock_diagnostic,
+}
+
+# AI Client mock registry mapping Task enum to mock functions
+MOCK_REGISTRY = {
+    Task.FLASHCARDS: mock_flashcards,
+    Task.SYLLABUS: lambda payload: {
+        "title": "Sample Syllabus",
+        "modules": [],
+        "total_hours": 40,
+        "bloom_levels": ["remember", "understand", "apply"]
+    },
+    Task.TEST: lambda payload: {
+        "items": [
+            {
+                "id": "test_1",
+                "question": "What is machine learning?",
+                "type": "multiple_choice",
+                "options": ["AI subset", "Statistics", "Programming", "Data analysis"],
+                "correct_answer": 0
+            }
+        ]
+    },
+    Task.CONTENT: lambda payload: {
+        "summary": "Mock content summary",
+        "keywords": ["machine learning", "artificial intelligence"],
+        "entities": [],
+        "concepts": [],
+        "sections": []
+    }
 }
 
 

@@ -20,8 +20,8 @@ class FlashcardGenerator:
     Service for generating flashcards from content using AI.
     """
     
-    def __init__(self):
-        self.api_client = AIClient("gpt-4")
+    def __init__(self, request=None):
+        self.api_client = AIClient("gpt-4", request=request)
     
     def generate_from_content(self, content: str, num_cards: int = 10, 
                             difficulty: str = 'medium', title: str = "Generated Flashcards",
@@ -67,8 +67,8 @@ class FlashcardGenerator:
                 "num_cards": num_cards
             }
             
-            # Call AIClient with mock mode enabled
-            result = self.api_client.call(task=Task.FLASHCARDS, payload=payload, mock_mode=True)
+            # Call AIClient - test mode will be handled via request headers
+            result = self.api_client.call(task=Task.FLASHCARDS, payload=payload)
             
             # Ensure the response has the correct structure
             if isinstance(result, dict) and 'cards' in result:

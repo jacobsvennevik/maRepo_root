@@ -369,89 +369,52 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
     setIsGenerating(true);
     
     try {
-      // Check if we're in test mode
-      if (isTestMode()) {
-        // Use mock data in test mode
-        const mockResult = {
-          deck: {
-            suggested_title: "Natural Language Processing Fundamentals",
-            suggested_description: "Comprehensive flashcards covering core NLP concepts including language models, tokenization, and neural network architectures.",
-          },
-          cards: [
-            {
-              id: "card_1",
-              front: "What two core problems do language models target?",
-              back: "Belonging: decide if a sequence is a sentence of language L. Continuation: predict the most likely next item given a segment.",
-              tags: ["belonging-problem", "continuation-problem", "causal-language-modeling"]
-            },
-            {
-              id: "card_2", 
-              front: "What is the belonging (membership) problem in language modeling?",
-              back: "Determine whether a given sequence is a sentence of language L.",
-              tags: ["role-of-language-models", "continuation-problem"]
-            },
-            {
-              id: "card_3",
-              front: "What does the continuation problem ask a language model to do?",
-              back: "Given a segment, predict the most likely next item (token or sequence) in language L.",
-              tags: ["role-of-language-models", "causal-language-modeling", "masked-language-modeling"]
-            },
-            {
-              id: "card_4",
-              front: "Why is self-supervised learning suited to language modeling?",
-              back: "It needs no manual labels: remove the next segment and ask the model to predict it using raw running texts, enabling much larger training sets than annotated ones.",
-              tags: ["colossal-datasets", "cross-entropy-loss", "forward-pass"]
-            },
-            {
-              id: "card_5",
-              front: "What does softmax enforce on the output vector y^?",
-              back: "Each component lies in [0,1] and the components sum to 1 across the vocabulary, making y^ a probability distribution.",
-              tags: ["cross-entropy-loss", "predicted-item-argmax"]
-            }
-          ]
-        };
-
-        // Auto-populate form with suggested title and description
-        const suggestedTitle = mockResult.deck.suggested_title;
-        const suggestedDescription = mockResult.deck.suggested_description;
-        
-        setSuggestedTitle(suggestedTitle);
-        setSuggestedDescription(suggestedDescription);
-        
-        // Reset form with suggestions
-        form.reset({
-          title: suggestedTitle,
-          description: suggestedDescription,
-          difficulty: form.getValues('difficulty'),
-          language: form.getValues('language'),
-        });
-
-        setGeneratedDeck(mockResult);
-        goNext();
-        return;
-      }
-
-      // Real API call using axiosInstance
+      // Always make real API call - let backend handle test mode via headers
       const payload = {
         project_id: projectId!,
         source_type: 'files' as const,
         num_cards: 20,
         difficulty: form.getValues('difficulty'),
         language: form.getValues('language'),
-        mock_mode: true,
       };
 
-      const response = await axiosGeneration.post(`/projects/${projectId}/flashcards/generate/`, payload, {
-        headers: {
-          'X-Test-Mode': 'true', // Add test mode header
-        }
+      const headers: any = {};
+      
+      // Add test mode header if in test mode (backend will handle AI mocking)
+      if (isTestMode()) {
+        headers['X-Test-Mode'] = 'true';
+        console.log('🧪 Test mode: Adding X-Test-Mode header for backend AI mocking');
+      }
+
+      console.log('🚀 Generating flashcards with payload:', payload);
+      console.log('🚀 Headers:', headers);
+
+      const response = await axiosGeneration.post(`/projects/${projectId}/flashcards/generate`, payload, {
+        headers
       });
 
       const result = response.data;
+      console.log('✅ Received flashcard generation response:', result);
       
-      // Auto-populate form with suggested title and description
-      const suggestedTitle = result.deck.suggested_title;
-      const suggestedDescription = result.deck.suggested_description;
+      // Handle different response formats
+      let suggestedTitle, suggestedDescription, cards;
+      
+      if (result.deck && result.cards) {
+        // New format with deck metadata and cards
+        suggestedTitle = result.deck.suggested_title;
+        suggestedDescription = result.deck.suggested_description;
+        cards = result.cards;
+      } else if (result.title && result.flashcards) {
+        // FlashcardSet format from API
+        suggestedTitle = result.title;
+        suggestedDescription = result.description || `Generated flashcard set with ${result.total_cards || result.flashcards?.length || 0} cards`;
+        cards = result.flashcards || [];
+      } else {
+        // Fallback
+        suggestedTitle = "Generated Flashcards";
+        suggestedDescription = "AI-generated flashcard set";
+        cards = result.cards || result.flashcards || [];
+      }
       
       setSuggestedTitle(suggestedTitle);
       setSuggestedDescription(suggestedDescription);
@@ -464,7 +427,18 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
         language: form.getValues('language'),
       });
 
-      setGeneratedDeck(result);
+      // Convert to expected format for the wizard
+      const normalizedResult = {
+        deck: {
+          suggested_title: suggestedTitle,
+          suggested_description: suggestedDescription,
+        },
+        cards: cards,
+        // Include the flashcard set ID if the API created it
+        flashcardSetId: result.id || null
+      };
+
+      setGeneratedDeck(normalizedResult);
       goNext();
       
     } catch (error) {
@@ -481,40 +455,24 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
     setIsSubmitting(true);
     
     try {
-      // Check if we're in test mode
-      if (isTestMode()) {
-        // Simulate successful creation in test mode
-        const mockCreatedSet = {
-          id: 'mock_flashcard_set_1',
-          title: form.getValues('title') || deriveTitleFromSource(),
-          description: form.getValues('description') || `Generated from ${method === 'files' ? 'uploaded files' : 'manual entry'}`,
-          difficulty_level: 'INTERMEDIATE',
-          target_audience: '',
-          estimated_study_time: 30,
-          tags: [],
-          flashcards: generatedDeck.cards,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-        
-        console.log('🔍 DEBUG: Mock flashcard set created:', mockCreatedSet);
+      // Since the generate API already created the flashcard set, 
+      // we just need to navigate to it
+      
+      // The generated deck should contain the flashcard set info if it was created by the API
+      if (generatedDeck.flashcardSetId) {
+        console.log('🔍 DEBUG: Using existing flashcard set ID:', generatedDeck.flashcardSetId);
         
         // Close the wizard
         onOpenChange(false);
         
-        // Call the onCreated callback if provided
-        if (onCreated) {
-          onCreated(mockCreatedSet);
-        }
-        
         // Navigate to the created set
-        const encodedTitle = encodeURIComponent(form.getValues('title') || deriveTitleFromSource() || 'Untitled Deck');
-        router.push(`/projects/${projectId}/flashcards/create?title=${encodedTitle}` as any);
-        
+        router.push(`/projects/${projectId}/flashcards/${generatedDeck.flashcardSetId}` as any);
         return;
       }
 
-      // Create the flashcard set via API using axiosApi
+      // Fallback: Create the flashcard set if it wasn't created during generation
+      console.log('🔍 DEBUG: Creating new flashcard set from generated cards');
+      
       const response = await axiosApi.post(`/projects/${projectId}/flashcard-sets/`, {
         title: form.getValues('title') || deriveTitleFromSource(),
         description: form.getValues('description') || `Generated from ${method === 'files' ? 'uploaded files' : 'manual entry'}`,
@@ -536,8 +494,12 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
       }
       
       // Navigate to the created set
-      const encodedTitle = encodeURIComponent(form.getValues('title') || deriveTitleFromSource() || 'Untitled Deck');
-      router.push(`/projects/${projectId}/flashcards/create?title=${encodedTitle}` as any);
+      if (createdSet?.id) {
+        router.push(`/projects/${projectId}/flashcards/${createdSet.id}` as any);
+      } else {
+        // Fallback to flashcards dashboard if no ID
+        router.push(`/projects/${projectId}/flashcards` as any);
+      }
       
     } catch (error: any) {
       console.error('Failed to create deck:', error);

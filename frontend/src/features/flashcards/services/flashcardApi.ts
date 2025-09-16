@@ -69,22 +69,34 @@ class FlashcardApiService {
   }
 
   // Flashcard Operations
-  async getFlashcards(setId: number): Promise<Flashcard[]> {
+  async getFlashcards(setId: number, projectId?: string): Promise<Flashcard[]> {
     console.group('🔍 Flashcards API');
-    console.log('→ GET /flashcards/?flashcard_set=${setId}');
+    
+    // Try project-scoped endpoint first if projectId is provided
+    const endpoint = projectId 
+      ? `/projects/${projectId}/flashcard-sets/${setId}/flashcards/`
+      : `/flashcards/?flashcard_set=${setId}`;
+    
+    console.log('→ GET', endpoint);
 
     try {
-      const data = await axiosApi.get<FlashcardApiResponse | Flashcard[]>(`/flashcards/?flashcard_set=${setId}`);
-      console.log('✅ Payload:', data);
+      const response = await axiosApi.get<FlashcardApiResponse | Flashcard[]>(endpoint);
+      console.log('✅ Response:', response);
+      
+      // Extract data from axios response
+      const responseData = response.data;
+      console.log('✅ Response data:', responseData);
       
       // Handle different response formats
-      const cards = (data as any).results || data || [];
+      const cards = (responseData as any)?.results || responseData || [];
       console.log('📋 Normalized cards:', cards);
       
-      return cards;
+      // Ensure we return an array
+      return Array.isArray(cards) ? cards : [];
     } catch (err) {
       console.error('❌ Network/parse failure:', err);
-      throw err;
+      // Return empty array on error to prevent .map() errors
+      return [];
     } finally {
       console.groupEnd();
     }

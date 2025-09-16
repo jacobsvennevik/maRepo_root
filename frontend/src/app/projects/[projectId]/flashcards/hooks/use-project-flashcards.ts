@@ -8,6 +8,7 @@ import {
   calculateFlashcardStats,
   type FlashcardSetApi 
 } from "../utils/data-transformation";
+import { isTestMode } from "@/features/projects/services/upload-utils";
 
 export interface FlashcardSet extends FlashcardSetApi {}
 
@@ -101,13 +102,21 @@ export function useProjectFlashcards(projectId: string) {
     difficulty: string = "medium",
   ) => {
     try {
+      const headers: any = {};
+      
+      // Add test mode header if in development mode (backend will handle mocking)
+      if (isTestMode()) {
+        headers['X-Test-Mode'] = 'true';
+      }
+
       const response = await axiosGeneration.post(
-        `/projects/${projectId}/flashcards/generate/`,
+        `/projects/${projectId}/flashcards/generate`,
         {
           source_type: sourceType,
           num_cards: numCards,
           difficulty: difficulty,
         },
+        { headers }
       );
       await refreshData();
       return response.data;

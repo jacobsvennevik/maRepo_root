@@ -110,7 +110,7 @@ export function useFlashcardDashboard(projectId: string) {
 }
 
 // Hook for managing flashcard carousel state
-export function useFlashcardCarousel(setId: number) {
+export function useFlashcardCarousel(setId: number, projectId?: string, initialFlashcards?: Flashcard[]) {
   const [state, setState] = useState<FlashcardCarouselState>({
     currentIndex: 0,
     showAnswer: false,
@@ -119,14 +119,23 @@ export function useFlashcardCarousel(setId: number) {
     error: null
   });
 
-  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
+  const [flashcards, setFlashcards] = useState<Flashcard[]>(initialFlashcards || []);
 
   const loadFlashcards = useCallback(async () => {
+    // If we already have initial flashcards (e.g., from mock data), use those
+    if (initialFlashcards && initialFlashcards.length > 0) {
+      console.log('🚀 Using provided flashcards for set:', setId);
+      setFlashcards(initialFlashcards);
+      setState(prev => ({ ...prev, isLoading: false }));
+      console.log('✅ Loaded flashcards from props:', { count: initialFlashcards.length });
+      return;
+    }
+
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
-      console.log('🚀 Loading flashcards for set:', setId);
-      const cards = await flashcardApi.getFlashcards(setId);
+      console.log('🚀 Loading flashcards for set:', setId, 'project:', projectId);
+      const cards = await flashcardApi.getFlashcards(setId, projectId);
       setFlashcards(cards);
       setState(prev => ({ ...prev, isLoading: false }));
       console.log('✅ Successfully loaded flashcards:', { count: cards.length });
@@ -138,7 +147,7 @@ export function useFlashcardCarousel(setId: number) {
         isLoading: false
       }));
     }
-  }, [setId]);
+  }, [setId, projectId, initialFlashcards]);
 
   const nextCard = useCallback(() => {
     if (flashcards.length === 0) return;

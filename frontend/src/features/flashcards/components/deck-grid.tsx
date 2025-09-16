@@ -15,6 +15,7 @@ export interface DeckGridProps extends DeckActionHandlers {
   decks: FlashcardSet[];
   isLoading?: boolean;
   error?: string | null;
+  projectId?: string;
   className?: string;
 }
 
@@ -22,6 +23,7 @@ export function DeckGrid({
   decks,
   isLoading = false,
   error = null,
+  projectId,
   onEdit,
   onDelete,
   onShare,
@@ -95,6 +97,7 @@ export function DeckGrid({
             <DeckCard
               deck={deck}
               layout={layoutMode}
+              projectId={projectId}
               onEdit={onEdit}
               onDelete={onDelete}
               onShare={onShare}
