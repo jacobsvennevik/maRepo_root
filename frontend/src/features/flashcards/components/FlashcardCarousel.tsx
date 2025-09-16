@@ -6,8 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { useFlashcardCarousel } from '../hooks/useFlashcards';
+import CarouselCard from './CarouselCard';
 import type { Flashcard, FlashcardSet } from '../types';
+import { centerScrollToChild } from '../utils/centerScroll';
 
 interface FlashcardCarouselProps {
   flashcardSet: FlashcardSet;
@@ -45,7 +49,15 @@ const CarouselCard: React.FC<CarouselCardProps> = ({
   const [isFlipped, setIsFlipped] = useState(false);
   const [showCardHint, setShowCardHint] = useState(false);
 
+  // Ensure only the centered card can stay flipped; reset when it leaves center
+  useEffect(() => {
+    if (!isActive && isFlipped) {
+      setIsFlipped(false);
+    }
+  }, [isActive, isFlipped]);
+
   const handleFlip = () => {
+    if (!isActive) return; // Only flip the centered card
     setIsFlipped(!isFlipped);
     onFlip();
   };
@@ -56,60 +68,60 @@ const CarouselCard: React.FC<CarouselCardProps> = ({
   };
 
   const getCardClasses = () => {
+    // Centered card prominent; neighbors slightly wider (leaving/entering feel)
     if (isActive) {
-      return 'scale-100 opacity-100 z-20';
+      return 'scale-105 opacity-100 z-30';
     } else if (isLeft) {
-      return 'scale-[0.3] opacity-30 -translate-x-8 z-10';
+      return 'scale-95 opacity-65 -translate-x-6 blur-[1px] z-10';
     } else if (isRight) {
-      return 'scale-[0.3] opacity-30 translate-x-8 z-10';
+      return 'scale-95 opacity-65 translate-x-6 blur-[1px] z-10';
     }
-    return 'scale-[0.3] opacity-20 z-0';
+    return 'scale-75 opacity-30 blur-[2px] z-0';
   };
 
   return (
-    <div className={`flex-shrink-0 basis-full md:basis-1/2 lg:basis-1/3 transition-all duration-500 ease-in-out ${getCardClasses()}`}>
+    <div className={`flex-shrink-0 basis-[92%] md:basis-3/4 lg:basis-3/5 xl:basis-[55%] max-w-[980px] snap-center transition-all duration-500 ease-in-out motion-reduce:duration-0 ${getCardClasses()}`}>
       <div className="perspective-1000">
         <div
-          className={`relative w-full h-64 md:h-80 transform-style-preserve-3d transition-transform duration-700 ease-in-out cursor-pointer ${
+          className={`relative w-full h-60 md:h-72 transform-style-preserve-3d transition-transform duration-700 ease-in-out motion-reduce:duration-0 ${
             isFlipped ? 'rotate-y-180' : ''
-          }`}
+          } flip-animate ${isActive ? 'cursor-pointer' : 'cursor-default'}`}
           onClick={handleFlip}
         >
           {/* Front Face */}
           <div className="absolute inset-0 backface-hidden">
-            <Card className="h-full w-full border-2 border-blue-200 bg-blue-50 hover:shadow-xl transition-all duration-300">
-              <CardContent className="p-6 h-full flex flex-col">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-gray-100 transition-colors duration-200"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit();
-                      }}
-                      title="Edit card"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-red-100 transition-colors duration-200"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDiscard();
-                      }}
-                      title="Discard card"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
+            <Card className={`h-full w-full bg-white border border-blue-100 transition-all duration-300 ${isActive ? 'shadow-xl' : 'shadow-sm'} rounded-xl`}>
+              <CardContent className="p-5 h-full flex flex-col">
+                {/* Top actions aligned right */}
+                <div className="flex justify-end items-start gap-1 mb-2.5">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0 hover:bg-blue-100 transition-colors duration-200"
+                    className="h-8 w-8 p-0 hover:bg-gray-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit();
+                    }}
+                    title="Edit card"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-red-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDiscard();
+                    }}
+                    title="Discard card"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-blue-100"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleShowHint();
@@ -120,21 +132,22 @@ const CarouselCard: React.FC<CarouselCardProps> = ({
                   </Button>
                 </div>
 
-                <div className="flex-1 flex flex-col justify-center">
-                  <Badge variant="secondary" className="w-fit mb-3 bg-blue-100 text-blue-700 border-blue-200">
+                {/* Content: centered group (vertically and horizontally) */}
+                <div className="flex-1 flex flex-col items-center justify-center h-full p-2 text-center">
+                  <Badge variant="secondary" className="w-fit mb-2 bg-blue-50 text-blue-700 border-blue-200 uppercase tracking-wide text-[9px] font-semibold">
                     Question
                   </Badge>
-                  <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 leading-relaxed">
+                  <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2.5 leading-relaxed text-center text-balance max-w-full">
                     {card.question}
                   </h3>
-                  <p className="text-sm text-gray-500 text-center">
+                  <p className="text-xs md:text-sm text-gray-500 text-center">
                     Click to reveal answer
                   </p>
                 </div>
 
                 {showCardHint && card.hints && card.hints.length > 0 && (
-                  <div className="mt-4 p-3 bg-blue-100 rounded-lg transition-all duration-300">
-                    <p className="text-sm text-blue-800">
+                  <div className="mt-3 p-3 bg-blue-50 rounded-lg w-full">
+                    <p className="text-xs md:text-sm text-blue-800">
                       💡 {card.hints[0]}
                     </p>
                   </div>
@@ -145,10 +158,10 @@ const CarouselCard: React.FC<CarouselCardProps> = ({
 
           {/* Back Face */}
           <div className="absolute inset-0 backface-hidden rotate-y-180">
-            <Card className="h-full w-full border-2 border-green-200 bg-green-50">
-              <CardContent className="p-6 h-full flex flex-col">
-                <div className="flex justify-between items-start mb-4">
-                  <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
+            <Card className={`h-full w-full bg-white border border-green-100 ${isActive ? 'shadow-xl' : 'shadow-sm'} rounded-xl`}>
+              <CardContent className="p-5 h-full flex flex-col">
+                <div className="flex justify-between items-start mb-3">
+                  <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 uppercase tracking-wide text-[9px] font-semibold">
                     Answer
                   </Badge>
                   <div className="flex gap-2">
@@ -179,15 +192,15 @@ const CarouselCard: React.FC<CarouselCardProps> = ({
                   </div>
                 </div>
 
-                <div className="flex-1 flex flex-col justify-center">
-                  <p className="text-base md:text-lg text-gray-900 leading-relaxed">
+                <div className="flex flex-col">
+                  <p className="text-sm md:text-base text-gray-900 leading-relaxed">
                     {card.answer}
                   </p>
                 </div>
 
                 {card.notes && (
-                  <div className="mt-4 p-3 bg-green-100 rounded-lg">
-                    <p className="text-sm text-green-800">
+                  <div className="mt-3 p-3 bg-green-100 rounded-lg">
+                    <p className="text-xs md:text-sm text-green-800">
                       📝 {card.notes}
                     </p>
                   </div>
@@ -213,6 +226,11 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showHint, setShowHint] = useState(false);
   const [showViewAllModal, setShowViewAllModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newQuestion, setNewQuestion] = useState('');
+  const [newAnswer, setNewAnswer] = useState('');
+  const [newHint, setNewHint] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   
   const { flashcards, isLoading, error, nextCard, prevCard, goToCard, flipCard } = useFlashcardCarousel(
@@ -222,18 +240,23 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
   );
 
   const scrollToCard = useCallback((index: number) => {
-    if (carouselRef.current) {
-      const cardElement = carouselRef.current.children[index] as HTMLElement;
+    const container = carouselRef.current;
+    if (container) {
+      const cardElement = container.children[index] as HTMLElement;
       if (cardElement) {
-        cardElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center'
-        });
+        centerScrollToChild(container, cardElement, 'smooth');
       }
     }
     setCurrentIndex(index);
   }, []);
+
+  // Ensure initial centering and on resize
+  useEffect(() => {
+    scrollToCard(currentIndex);
+    const handleResize = () => scrollToCard(currentIndex);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [scrollToCard, currentIndex]);
 
   const handleNext = () => {
     const flashcardsLength = Array.isArray(flashcards) ? flashcards.length : 0;
@@ -369,7 +392,8 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
           <Button
             variant="ghost"
             size="lg"
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-white/80 hover:bg-white hover:scale-110 transition-all duration-200 shadow-lg"
+            aria-label="Previous card"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-white/80 hover:bg-white hover:scale-110 transition-all duration-200 motion-reduce:transition-none shadow-lg"
             onClick={handlePrev}
             disabled={currentIndex === 0}
           >
@@ -379,7 +403,8 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
           <Button
             variant="ghost"
             size="lg"
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-white/80 hover:bg-white hover:scale-110 transition-all duration-200 shadow-lg"
+            aria-label="Next card"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-white/80 hover:bg-white hover:scale-110 transition-all duration-200 motion-reduce:transition-none shadow-lg"
             onClick={handleNext}
             disabled={currentIndex === (Array.isArray(flashcards) ? flashcards.length : 0) - 1}
           >
@@ -389,7 +414,7 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
           {/* Carousel */}
           <div
             ref={carouselRef}
-            className="flex overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory gap-4 px-20"
+            className="flex overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory gap-8 px-10 md:px-16 lg:px-24 py-6 items-stretch"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {Array.isArray(flashcards) && flashcards.map((card, index) => (
@@ -427,25 +452,25 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-6 mt-2">
           <Button
             variant="outline"
             size="lg"
             onClick={() => setShowViewAllModal(true)}
-            className="hover:scale-105 transition-transform duration-200"
+            className="hover:scale-105 transition-transform duration-200 motion-reduce:transition-none text-gray-700 border-gray-300"
           >
             <Grid className="h-5 w-5 mr-2" />
             View All
           </Button>
           
-          <Button
-            size="lg"
-            onClick={onAddCard}
-            className="bg-green-500 hover:bg-green-600 hover:scale-105 transition-all duration-200"
+          {/* Teal circular add button */}
+          <button
+            aria-label="Add card"
+            onClick={() => setShowAddModal(true)}
+            className="bg-teal-600 hover:bg-teal-700 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-md transition-colors"
           >
-            <Plus className="h-5 w-5 mr-2" />
-            Add Card
-          </Button>
+            <Plus className="h-5 w-5" />
+          </button>
         </div>
       </div>
 
@@ -463,30 +488,72 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
             {flashcards.map((card, index) => (
               <Card
                 key={card.id}
-                className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
-                onClick={() => {
-                  handleCardClick(index);
-                  setShowViewAllModal(false);
-                }}
+                className="hover:shadow-lg transition-shadow duration-200"
               >
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <Badge variant="outline" className="text-xs">
-                      Card {index + 1}
-                    </Badge>
-                    <Badge variant="secondary" className="text-xs">
-                      {card.difficulty}
-                    </Badge>
+                <CardContent className="p-4 relative">
+                  <div className="absolute top-2 right-2 flex gap-1">
+                    <Button size="sm" variant="ghost" onClick={() => handleEdit(card)} className="h-7 w-7 p-0">
+                      <Edit className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => handleDiscard(card)} className="h-7 w-7 p-0">
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
-                  <h4 className="font-medium text-gray-900 mb-2 line-clamp-2">
-                    {card.question}
-                  </h4>
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {card.answer}
-                  </p>
+                  <div className="flex flex-col gap-1 pr-12">
+                    <h4 className="font-semibold text-gray-900 line-clamp-2">
+                      {card.question}
+                    </h4>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {card.answer}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Card Modal */}
+      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Add a new flashcard</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {formError && (
+              <div className="text-sm text-red-600">{formError}</div>
+            )}
+            <div>
+              <label className="block text-sm font-medium mb-1">Question</label>
+              <Textarea value={newQuestion} onChange={(e) => setNewQuestion(e.target.value)} placeholder="Enter the question" rows={4} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Answer</label>
+              <Textarea value={newAnswer} onChange={(e) => setNewAnswer(e.target.value)} placeholder="Enter the answer" rows={4} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Hint (optional)</label>
+              <Input value={newHint} onChange={(e) => setNewHint(e.target.value)} placeholder="Add a hint" />
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" onClick={() => setShowAddModal(false)}>Cancel</Button>
+              <Button onClick={() => {
+                if (!newQuestion.trim() || !newAnswer.trim()) {
+                  setFormError('Please provide both a question and an answer.');
+                  return;
+                }
+                setFormError(null);
+                setShowAddModal(false);
+                setNewQuestion('');
+                setNewAnswer('');
+                setNewHint('');
+                // Delegate creation to parent if provided
+                if (onAddCard) onAddCard();
+              }} className="bg-teal-600 hover:bg-teal-700">
+                Save Card
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
