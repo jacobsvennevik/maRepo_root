@@ -92,17 +92,16 @@ describe('StylePicker', () => {
     const mcqCard = screen.getByText('MCQ Quiz').closest('[data-testid="card"]');
     fireEvent.click(mcqCard!);
     
-    expect(mockOnChange).toHaveBeenCalledWith({
-      test_style: 'mcq_quiz',
-      style_config_override: expect.objectContaining({
-        timing: { total_minutes: 15, per_item_seconds: 60 },
-        feedback: 'immediate',
-        item_mix: expect.objectContaining({
-          single_select: 0.9,
-          cloze: 0.1
-        })
+    expect(mockOnChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        test_style: 'mcq_quiz',
+        style_config_override: expect.objectContaining({
+          timing: expect.objectContaining({ total_minutes: 15, per_item_seconds: 60 }),
+          feedback: 'immediate',
+          item_mix: expect.objectContaining({ single_select: 0.9, cloze: 0.1 }),
+        }),
       })
-    });
+    );
   });
 
   it('shows advanced configuration when checkbox is checked', () => {
@@ -147,8 +146,9 @@ describe('StylePicker', () => {
     const checkbox = screen.getByTestId('checkbox');
     fireEvent.click(checkbox);
     
-    // Change feedback mode
-    const feedbackSelect = screen.getByDisplayValue('immediate');
+    // Change feedback mode by label to reduce brittleness
+    const feedbackLabel = screen.getByText('Feedback Mode');
+    const feedbackSelect = feedbackLabel.parentElement!.querySelector('select') as HTMLSelectElement;
     fireEvent.change(feedbackSelect, { target: { value: 'on_submit' } });
     
     expect(mockOnChange).toHaveBeenCalledWith(

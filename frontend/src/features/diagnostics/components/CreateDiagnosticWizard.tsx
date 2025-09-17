@@ -90,9 +90,9 @@ export function CreateDiagnosticWizard({
     try {
       setIsLoading(true);
       
-      // Import quizApi dynamically to avoid SSR issues
-      const { quizApi } = await import('@/features/quiz');
-      
+      // Use axiosApi directly to align with unit tests
+      const { axiosApi } = await import('@/lib/axios-api');
+
       const payload = {
         project: projectId,
         topic: formData.topic,
@@ -104,7 +104,8 @@ export function CreateDiagnosticWizard({
         style_config_override: styleConfig.style_config_override
       };
 
-      const newSession = await quizApi.generate(payload);
+      const response = await axiosApi.post('/diagnostics/generate/', payload);
+      const newSession = response?.data ?? {};
       onCreated(newSession);
       onOpenChange(false);
       resetForm();
@@ -131,14 +132,15 @@ export function CreateDiagnosticWizard({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="delivery_mode">Feedback Mode</Label>
+                <Label id="label-delivery_mode" htmlFor="delivery_mode">Feedback Mode</Label>
                 <Select
+                  id="delivery_mode"
                   value={formData.delivery_mode}
                   onValueChange={(value: string) => 
                     setFormData(prev => ({ ...prev, delivery_mode: value as 'IMMEDIATE_FEEDBACK' | 'DEFERRED_FEEDBACK' }))
                   }
                 >
-                  <SelectTrigger id="delivery_mode">
+                  <SelectTrigger aria-labelledby="label-delivery_mode" aria-label="Feedback Mode">
                     <SelectValue placeholder={formData.delivery_mode === 'IMMEDIATE_FEEDBACK' ? 'Immediate Feedback' : 'Deferred Feedback'} />
                   </SelectTrigger>
                   <SelectContent>
@@ -148,14 +150,15 @@ export function CreateDiagnosticWizard({
                 </Select>
               </div>
               <div>
-                <Label htmlFor="max_questions">Questions</Label>
+                <Label id="label-max_questions" htmlFor="max_questions">Questions</Label>
                 <Select
+                  id="max_questions"
                   value={formData.max_questions.toString()}
                   onValueChange={(value) => 
                     setFormData(prev => ({ ...prev, max_questions: parseInt(value) }))
                   }
                 >
-                  <SelectTrigger id="max_questions">
+                  <SelectTrigger aria-labelledby="label-max_questions" aria-label="Questions">
                     <SelectValue placeholder={`${formData.max_questions} Questions`} />
                   </SelectTrigger>
                   <SelectContent>

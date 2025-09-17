@@ -6,32 +6,32 @@ import '@testing-library/jest-dom';
 describe('PDF Processing Integration', () => {
   
   describe('Step Navigation Order', () => {
-    it('should have uploadFiles step before extractionResults step', () => {
+    it('should have uploadSyllabus step before extractionResults step', () => {
       // Import the steps to validate order
-      const { SETUP_STEPS } = require('../../constants/steps');
+      const { SETUP_STEPS } = require('../../services/steps');
       
-      const uploadFilesIndex = SETUP_STEPS.findIndex((step: any) => step.id === 'uploadFiles');
+      const uploadSyllabusIndex = SETUP_STEPS.findIndex((step: any) => step.id === 'uploadSyllabus');
       const extractionResultsIndex = SETUP_STEPS.findIndex((step: any) => step.id === 'extractionResults');
       const testUploadIndex = SETUP_STEPS.findIndex((step: any) => step.id === 'testUpload');
       
       // Validate the step order is correct
-      expect(uploadFilesIndex).toBeGreaterThan(-1);
+      expect(uploadSyllabusIndex).toBeGreaterThan(-1);
       expect(extractionResultsIndex).toBeGreaterThan(-1);
       expect(testUploadIndex).toBeGreaterThan(-1);
       
-      // uploadFiles should come before extractionResults
-      expect(uploadFilesIndex).toBeLessThan(extractionResultsIndex);
+      // uploadSyllabus should come before extractionResults
+      expect(uploadSyllabusIndex).toBeLessThan(extractionResultsIndex);
       
       // extractionResults should come before testUpload
       expect(extractionResultsIndex).toBeLessThan(testUploadIndex);
     });
 
     it('should have all required steps for PDF processing flow', () => {
-      const { SETUP_STEPS } = require('../../constants/steps');
+      const { SETUP_STEPS } = require('../../services/steps');
       
       const stepIds = SETUP_STEPS.map((step: any) => step.id);
       
-      expect(stepIds).toContain('uploadFiles');
+      expect(stepIds).toContain('uploadSyllabus');
       expect(stepIds).toContain('extractionResults');
       expect(stepIds).toContain('testUpload');
     });
@@ -172,7 +172,7 @@ describe('PDF Processing Integration', () => {
         id: 123,
         status: 'error',
         error_message: 'Failed to extract text from PDF'
-
+      };
       expect(processingErrorData.status).toBe('error');
       expect(processingErrorData.error_message).toBeTruthy();
     });
@@ -183,7 +183,7 @@ describe('PDF Processing Integration', () => {
       const props = {
         onUploadComplete: jest.fn(),
         onNext: jest.fn()
-
+      };
       expect(typeof props.onUploadComplete).toBe('function');
       expect(typeof props.onNext).toBe('function');
     });
@@ -195,6 +195,7 @@ describe('PDF Processing Integration', () => {
         original_text: 'Content',
         metadata: { course_name: 'Test Course' },
         status: 'completed'
+      };
       const mockFileName = 'syllabus.pdf';
 
       const onUploadComplete = jest.fn();

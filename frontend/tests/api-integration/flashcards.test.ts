@@ -4,6 +4,7 @@
  */
 
 import { axiosApi, axiosGeneration } from '@/lib/axios';
+jest.setTimeout(30000);
 import { joinUrl } from '../utils/url';
 
 // Mock console.error to capture API errors

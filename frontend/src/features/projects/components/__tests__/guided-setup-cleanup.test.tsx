@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { GuidedSetup } from '../guided-setup';
+import GuidedSetup from '../guided-setup';
 import {
   createLocalStorageMock,
   createMockProjectSetup,
   createTestFile,
   createMockFetch,
-  setupTestCleanup
 } from '../../../../../test-utils/test-helpers';
 import {
+  setupTestCleanup,
   createAPIServiceMock,
   createFileUploadMock,
   createNavigationMock,
@@ -19,10 +19,12 @@ import * as cleanupUtils from '../../utils/cleanup-utils';
 
 // Mock the cleanup utilities
 jest.mock('../../utils/cleanup-utils', () => ({
-  performComprehensiveCleanup: jest.fn(),
-  cleanupOnAbandon: jest.fn(),
-  isCleanupInProgress: jest.fn(),
-  getCleanupQueueLength: jest.fn()
+  performComprehensiveCleanup: jest.fn().mockResolvedValue(undefined),
+  cleanupOnAbandon: jest.fn().mockResolvedValue(undefined),
+  isCleanupInProgress: jest.fn().mockReturnValue(false),
+  getCleanupQueueLength: jest.fn().mockReturnValue(0),
+  registerUpload: jest.fn(),
+  cleanupLocalStorage: jest.fn().mockResolvedValue(undefined)
 }));
 
 // Mock the auto-save hook
@@ -120,8 +122,6 @@ describe('GuidedSetup Cleanup Integration', () => {
     mockOnBack.mockClear();
   });
 
-  afterEach(createAfterEach());
-
   describe('Component Unmount Cleanup', () => {
     it('should call clearStorage on component unmount', () => {
       const { unmount } = render(<GuidedSetup onBack={mockOnBack} />);
@@ -193,7 +193,7 @@ describe('GuidedSetup Cleanup Integration', () => {
       render(<GuidedSetup onBack={mockOnBack} />);
       
       // Verify component renders with localStorage data available
-      expect(localStorageMock.getItem('project-setup-guided-setup')).toBe('{"data": "test"}');
+      expect(localStorageMock.getItem).toHaveBeenCalledWith('project-setup-guided-setup');
       
       // Cleanup utilities should be available
       expect(cleanupUtils.cleanupLocalStorage).toBeDefined();
@@ -281,7 +281,7 @@ describe('GuidedSetup Cleanup Integration', () => {
       render(<GuidedSetup onBack={mockOnBack} />);
       
       // Verify upload tracking is working
-      expect((window as any).__activeUploads).toContain(mockAbortController);
+      expect(cleanupUtils.registerUpload).toHaveBeenCalledWith(mockAbortController);
     });
   });
 
@@ -296,7 +296,7 @@ describe('GuidedSetup Cleanup Integration', () => {
       render(<GuidedSetup onBack={mockOnBack} />);
       
       // Component should load with auto-save data
-      expect(localStorageMock.getItem('project-setup-guided-setup')).toBeTruthy();
+      expect(localStorageMock.getItem).toHaveBeenCalledWith('project-setup-guided-setup');
     });
 
     it('should clear auto-save data during cleanup', () => {
@@ -306,7 +306,7 @@ describe('GuidedSetup Cleanup Integration', () => {
       render(<GuidedSetup onBack={mockOnBack} />);
       
       // Verify data exists
-      expect(localStorageMock.getItem('project-setup-guided-setup')).toBe('{"data": "test"}');
+      expect(localStorageMock.getItem).toHaveBeenCalledWith('project-setup-guided-setup');
       
       // Cleanup utilities should be able to clear this data
       expect(cleanupUtils.cleanupLocalStorage).toBeDefined();

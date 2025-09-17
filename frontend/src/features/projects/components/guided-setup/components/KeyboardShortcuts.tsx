@@ -9,7 +9,7 @@ interface KeyboardShortcutsProps {
   className?: string;
 }
 
-export function KeyboardShortcuts({ className }: KeyboardShortcutsProps) {
+export default function KeyboardShortcuts({ className }: KeyboardShortcutsProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const shortcuts = [

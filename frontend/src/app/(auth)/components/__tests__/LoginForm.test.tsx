@@ -6,7 +6,8 @@ import '@testing-library/jest-dom';
 import {
   setupTestCleanup
 } from '../../../../test-utils/test-helpers';
-import axiosInstance from '@/lib/axios';
+import { axiosAuth } from '@/lib/axios-auth';
+import { axiosApi } from '@/lib/axios-api';
 
 // Mock Next.js router at the top level
 const mockPush = jest.fn();
@@ -50,26 +51,35 @@ Object.defineProperty(window, 'localStorage', {
   writable: true,
 });
 
-// Mock axios instance to handle both login and profile requests
-jest.mock('@/lib/axios', () => ({
+// Mock axios clients used by the implementation
+jest.mock('@/lib/axios-auth', () => ({
   __esModule: true,
-  default: {
+  axiosAuth: {
     post: jest.fn(),
-    get: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
   },
 }));
 
-const mockAxios = axiosInstance as jest.Mocked<typeof axiosInstance>;
+jest.mock('@/lib/axios-api', () => ({
+  __esModule: true,
+  axiosApi: {
+    get: jest.fn(),
+    post: jest.fn(),
+    patch: jest.fn(),
+    delete: jest.fn(),
+    defaults: { baseURL: 'http://localhost:8000/api/' }
+  },
+}));
+
+const mockAxiosAuth = axiosAuth as unknown as { post: jest.Mock };
+const mockAxiosApi = axiosApi as unknown as { get: jest.Mock };
 
 describe('LoginForm', () => {
     setupTestCleanup([mockPush, localStorageMock.getItem, localStorageMock.setItem, localStorageMock.removeItem, localStorageMock.clear]);
 
     beforeEach(() => {
         // Reset all mocks
-        mockAxios.post.mockClear();
-        mockAxios.get.mockClear();
+        mockAxiosAuth.post.mockClear();
+        mockAxiosApi.get.mockClear();
         mockPush.mockClear();
         
         // Clear the storage
@@ -88,16 +98,16 @@ describe('LoginForm', () => {
     it('handles successful login', async () => {
         const user = userEvent.setup();
         
-        // Mock successful login response
-        mockAxios.post.mockResolvedValueOnce({
+        // Mock successful login response (AuthService.login uses axiosAuth)
+        mockAxiosAuth.post.mockResolvedValueOnce({
             data: {
                 access: 'mock-access-token',
                 refresh: 'mock-refresh-token',
             },
         });
         
-        // Mock successful user profile request that happens after login
-        mockAxios.get.mockResolvedValueOnce({
+        // Mock successful user profile request via axiosApi
+        mockAxiosApi.get.mockResolvedValueOnce({
             data: { id: 1, email: 'test@example.com' }
         });
 
@@ -116,11 +126,11 @@ describe('LoginForm', () => {
 
         // Wait for the login to complete and check if router.push was called
         await waitFor(() => {
-            expect(mockAxios.post).toHaveBeenCalledWith('/api/token/', {
+            expect(mockAxiosAuth.post).toHaveBeenCalledWith('/token/', {
                 email: 'test@example.com',
                 password: 'password123',
             });
-            expect(mockAxios.get).toHaveBeenCalledWith('/api/users/me/');
+            expect(mockAxiosApi.get).toHaveBeenCalledWith('users/me/');
             expect(mockPush).toHaveBeenCalledWith('/dashboard');
         }, { timeout: 5000 });
     }, 15000);
@@ -128,8 +138,8 @@ describe('LoginForm', () => {
     it('handles login error', async () => {
         const user = userEvent.setup();
         
-        // Mock failed login
-        mockAxios.post.mockRejectedValueOnce({
+        // Mock failed login via axiosAuth
+        mockAxiosAuth.post.mockRejectedValueOnce({
             response: {
                 data: {
                     detail: 'Invalid credentials'

@@ -1,5 +1,4 @@
 // Shared test utilities for upload step tests
-import React from 'react';
 import { jest } from '@jest/globals';
 
 /**
@@ -49,45 +48,52 @@ export const createAPIServiceMock = () => ({
 /**
  * Component mocking utilities
  */
-export const createFileUploadMock = () => ({
-  FileUpload: ({ onUpload, onRemove, files, uploadProgress, title, description, accept, error }: any) => (
-    <div data-testid="file-upload">
-      <h3>{title}</h3>
-      <p>{description}</p>
-      <div data-testid="accepted-types">{accept}</div>
-      {error && (
-        <div data-testid="error-message" className="bg-red-50 border border-red-200 rounded-lg p-3">
-          <div className="flex items-center space-x-2">
-            <span className="text-red-600 text-sm">⚠️</span>
-            <span className="text-red-800 text-sm font-medium">{error}</span>
-          </div>
-        </div>
-      )}
-      <input
-        type="file"
-        data-testid="file-input"
-        onChange={(e) => {
-          if (e.target.files) {
-            onUpload(Array.from(e.target.files));
-          }
-        }}
-        multiple
-        accept={accept}
-      />
-      <div data-testid="file-list">
-        {files.map((file: File, index: number) => (
-          <div key={file.name} data-testid={`file-item-${file.name}`}>
-            <span data-testid={`filename-${file.name}`}>{file.name}</span>
-            <button data-testid={`remove-${file.name}`} onClick={() => onRemove(file)}>Remove</button>
-            {uploadProgress[file.name] && (
-              <div data-testid={`progress-${file.name}`}>{uploadProgress[file.name]}%</div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-});
+export const createFileUploadMock = () => {
+  const React = require('react');
+  return {
+    FileUpload: ({ onUpload, onRemove, files, uploadProgress, title, description, accept, error }: any) => 
+      React.createElement('div', { 'data-testid': 'file-upload' },
+        React.createElement('h3', null, title),
+        React.createElement('p', null, description),
+        React.createElement('div', { 'data-testid': 'accepted-types' }, accept),
+        error && React.createElement('div', { 
+          'data-testid': 'error-message', 
+          className: 'bg-red-50 border border-red-200 rounded-lg p-3' 
+        },
+          React.createElement('div', { className: 'flex items-center space-x-2' },
+            React.createElement('span', { className: 'text-red-600 text-sm' }, '⚠️'),
+            React.createElement('span', { className: 'text-red-800 text-sm font-medium' }, error)
+          )
+        ),
+        React.createElement('input', {
+          type: 'file',
+          'data-testid': 'file-input',
+          onChange: (e: any) => {
+            if (e.target.files) {
+              onUpload(Array.from(e.target.files));
+            }
+          },
+          multiple: true,
+          accept: accept
+        }),
+        React.createElement('div', { 'data-testid': 'file-list' },
+          (files || []).map((file: File, index: number) =>
+            React.createElement('div', { key: file.name, 'data-testid': `file-item-${file.name}` },
+              React.createElement('span', { 'data-testid': `filename-${file.name}` }, file.name),
+              React.createElement('button', { 
+                'data-testid': `remove-${file.name}`, 
+                onClick: () => onRemove(file) 
+              }, 'Remove'),
+              (uploadProgress || {})[file.name] && 
+                React.createElement('div', { 'data-testid': `progress-${file.name}` }, 
+                  (uploadProgress || {})[file.name] + '%'
+                )
+            )
+          )
+        )
+      )
+  };
+};
 
 export const createNavigationMock = () => ({
   useRouter: () => ({
@@ -99,24 +105,49 @@ export const createNavigationMock = () => ({
   })
 });
 
-export const createUIComponentMocks = () => ({
-  Card: ({ children, className }: any) => <div className={className} data-testid="card">{children}</div>,
-  CardHeader: ({ children, className, onClick }: any) => (
-    <div className={className} onClick={onClick} data-testid="card-header">{children}</div>
-  ),
-  CardContent: ({ children, className }: any) => <div className={className} data-testid="card-content">{children}</div>,
-  CardTitle: ({ children, className }: any) => <div className={className} data-testid="card-title">{children}</div>,
-  Button: ({ children, onClick, className, variant, size, disabled }: any) => (
-    <button 
-      onClick={onClick} 
-      className={className} 
-      disabled={disabled}
-      data-testid={`button-${variant || 'default'}-${size || 'default'}`}
-    >
-      {children}
-    </button>
-  )
-});
+export const createUIComponentMocks = () => {
+  const React = require('react');
+  return {
+    Card: ({ children, className }: any) => 
+      React.createElement('div', { className, 'data-testid': 'card' }, children),
+    CardHeader: ({ children, className, onClick }: any) => 
+      React.createElement('div', { className, onClick, 'data-testid': 'card-header' }, children),
+    CardContent: ({ children, className }: any) => 
+      React.createElement('div', { className, 'data-testid': 'card-content' }, children),
+    CardTitle: ({ children, className }: any) => 
+      React.createElement('div', { className, 'data-testid': 'card-title' }, children),
+    Button: ({ children, onClick, className, variant, size, disabled }: any) => 
+      React.createElement('button', {
+        onClick,
+        className,
+        disabled,
+        'data-testid': `button-${variant || 'default'}-${size || 'default'}`
+      }, children)
+  };
+};
+
+/**
+ * Sets up common test environment cleanup
+ */
+export const setupTestCleanup = (mocks: any[] = []) => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mocks.forEach((mock) => {
+      if (mock && typeof mock.mockClear === "function") {
+        mock.mockClear();
+      }
+    });
+  });
+};
+
+/**
+ * Creates a mock fetch implementation for API testing
+ */
+export const createMockFetch = () => {
+  const mockFetch = jest.fn();
+  global.fetch = mockFetch as jest.MockedFunction<typeof fetch>;
+  return mockFetch;
+};
 
 /**
  * Test setup utilities

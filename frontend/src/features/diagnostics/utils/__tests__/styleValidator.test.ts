@@ -6,7 +6,7 @@ import {
   hasCriticalErrors,
   validateField,
   type StyleConfig 
-} from '../utils/styleValidator';
+} from '../styleValidator';
 
 describe('Style Validator', () => {
   describe('validateConfig', () => {

@@ -155,6 +155,11 @@ describe('Style Analytics', () => {
     });
 
     it('should provide analytics summary', () => {
+      // Mock Date.now to return different timestamps
+      const originalDateNow = Date.now;
+      let timestamp = 1000;
+      Date.now = jest.fn(() => timestamp++);
+      
       styleAnalytics.styleSelected('test-style');
       styleAnalytics.styleCustomized('test-style', 'path', 'from', 'to');
       styleAnalytics.styleSelected('another-style');
@@ -166,6 +171,9 @@ describe('Style Analytics', () => {
       expect(summary.eventTypes.style_customized).toBe(1);
       expect(summary.timeRange.start).toBeGreaterThan(0);
       expect(summary.timeRange.end).toBeGreaterThan(summary.timeRange.start);
+      
+      // Restore original Date.now
+      Date.now = originalDateNow;
     });
 
     it('should clear events', () => {

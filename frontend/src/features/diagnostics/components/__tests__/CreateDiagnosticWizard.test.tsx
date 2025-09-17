@@ -58,19 +58,33 @@ jest.mock('@/components/ui/label', () => ({
   ),
 }));
 
-jest.mock('@/components/ui/select', () => ({
-  Select: ({ children, value, onValueChange }: any) => (
-    <div data-testid="select">
-      <select value={value} onChange={(e) => onValueChange(e.target.value)}>
-        {children}
-      </select>
-    </div>
-  ),
-  SelectContent: ({ children }: any) => <div data-testid="select-content">{children}</div>,
-  SelectItem: ({ children, value }: any) => <option value={value}>{children}</option>,
-  SelectTrigger: ({ children }: any) => <div data-testid="select-trigger">{children}</div>,
-  SelectValue: ({ placeholder }: any) => <span data-testid="select-value">{placeholder}</span>,
-}));
+jest.mock('@/components/ui/select', () => {
+  const React = require('react');
+  return {
+    Select: ({ children, value, onValueChange, id }: any) => {
+      const childArray = React.Children.toArray(children) as any[];
+      const extractOptions = (nodes: any[]): any[] =>
+        nodes.flatMap((node: any) => {
+          if (!React.isValidElement(node)) return [];
+          if (node.type === 'option') return [node];
+          const inner = (node.props && node.props.children) ? React.Children.toArray(node.props.children) : [];
+          return extractOptions(inner as any[]);
+        });
+      const options = extractOptions(childArray);
+      return (
+        <div data-testid="select">
+          <select id={id} value={value} onChange={(e) => onValueChange(e.target.value)}>
+            {options}
+          </select>
+        </div>
+      );
+    },
+    SelectContent: ({ children }: any) => <>{children}</>,
+    SelectItem: ({ children, value }: any) => <option value={value}>{children}</option>,
+    SelectTrigger: () => null,
+    SelectValue: () => null,
+  };
+});
 
 jest.mock('@/components/ui/progress', () => ({
   Progress: ({ value, className }: any) => (
@@ -169,8 +183,8 @@ describe('CreateDiagnosticWizard', () => {
     let nextButton = screen.getByText('Next');
     fireEvent.click(nextButton); // Step 2
     
-    nextButton = screen.getByText('Next');
-    fireEvent.click(nextButton); // Step 3
+    const styleNext = screen.getByTestId('style-next');
+    fireEvent.click(styleNext); // Step 3
     
     expect(screen.getByText('Schedule')).toBeInTheDocument();
     expect(screen.getByLabelText('Scheduled For')).toBeInTheDocument();

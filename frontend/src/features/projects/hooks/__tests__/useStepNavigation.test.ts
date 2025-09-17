@@ -1,6 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
 import { useStepNavigation } from "../useStepNavigation";
-import { SETUP_STEPS } from "../../constants/steps";
+import { SETUP_STEPS } from "../../services/steps";
 import { createMockProjectSetup } from "../../../../../test-utils/test-helpers";
 
 describe("useStepNavigation", () => {

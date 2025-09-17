@@ -1,5 +1,4 @@
 import { registerUpload } from "./cleanup-utils";
-import { axiosApi } from "@/lib/axios-api";
 
 // Shared upload utilities for project creation steps
 export const API_BASE_URL =
@@ -63,27 +62,25 @@ export const uploadFileToService = async (
     formData.append("file", file);
     formData.append("upload_type", uploadType);
 
-    const response = await axiosApi.post(
-      `/documents/upload/`,
-      formData,
-      {
-        headers: getAuthHeaders(),
-        signal: controller.signal as any,
-        onUploadProgress: (evt) => {
-          if (evt.total && onProgress) {
-            const percent = Math.round((evt.loaded * 100) / evt.total);
-            onProgress(percent);
-          }
-        },
-      }
-    );
-    const result = response.data as any;
+    const response = await fetch(`${API_BASE_URL}/api/documents/upload/`, {
+      method: "POST",
+      body: formData,
+      headers: getAuthHeaders(),
+      signal: controller.signal as any,
+    } as RequestInit);
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => "");
+      throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+    }
+
+    const result = await response.json();
     return {
       id: result.id,
       filename: file.name,
       status: result.status,
     };
-  } catch (error) {
+  } catch (error: any) {
     if (error.name === "AbortError") {
       console.log("Upload aborted:", file.name);
       throw new Error("Upload was cancelled");
@@ -103,16 +100,21 @@ export const startDocumentProcessing = async (
   registerUpload(controller);
 
   try {
-    await axiosApi.post(
-      `/documents/${documentId}/process/`,
-      {},
-      { headers: getAuthHeaders(), signal: controller.signal as any }
-    );
+    const response = await fetch(`${API_BASE_URL}/api/documents/${documentId}/process/`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      signal: controller.signal as any,
+    } as RequestInit);
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => "");
+      throw new Error(`Processing failed: ${response.status} ${response.statusText}`);
+    }
 
     if (onProgress) {
       onProgress(100);
     }
-  } catch (error) {
+  } catch (error: any) {
     if (error.name === "AbortError") {
       console.log("Document processing aborted:", documentId);
       throw new Error("Processing was cancelled");

@@ -23,6 +23,7 @@ import {
 } from '../constants/options';
 import { formatFileSize, formatDate } from '../utils/formatters';
 import { validateProjectCreateInput, type ProjectCreateInput } from '../types';
+import { isTestMode } from '../services/mock-data';
 
 // Variant 1: Colorful Dashboard Style
 export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }) {
@@ -36,6 +37,29 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
   const handleCreateProject = async () => {
     setIsSubmitting(true);
     try {
+      // TEST MODE: Skip API calls and use mock data
+      if (isTestMode()) {
+        console.log('🧪 TEST MODE: Creating project with mock data');
+        
+        // Simulate a short delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Create mock project data
+        const mockProject = {
+          id: 'mock123',
+          name: setup.projectName,
+          project_type: 'school',
+          ...setup
+        };
+        
+        console.log('🧪 TEST MODE: Mock project created:', mockProject);
+        
+        // Navigate to the mock project's overview page
+        router.push(`/projects/${mockProject.id}/overview`);
+        return;
+      }
+
+      // Real API calls for production
       // 1. Upload files and get their URLs
       const courseFileUrls = await Promise.all(
         setup.courseFiles.map(file => uploadFile(file, 'course-files'))
@@ -425,6 +449,29 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
   const handleCreateProject = async () => {
     setIsSubmitting(true);
     try {
+      // TEST MODE: Skip API calls and use mock data
+      if (isTestMode()) {
+        console.log('🧪 TEST MODE: Creating project with mock data');
+        
+        // Simulate a short delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Create mock project data
+        const mockProject = {
+          id: 'mock123',
+          name: setup.projectName,
+          project_type: 'school',
+          ...setup
+        };
+        
+        console.log('🧪 TEST MODE: Mock project created:', mockProject);
+        
+        // Navigate to the mock project's overview page
+        router.push(`/projects/${mockProject.id}/overview`);
+        return;
+      }
+
+      // Real API calls for production
       // 1. Upload files and get their URLs
       const courseFileUrls = await Promise.all(
         setup.courseFiles.map(file => uploadFile(file, 'course-files', authToken))
@@ -661,6 +708,29 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
   const handleCreateProject = async () => {
     setIsSubmitting(true);
     try {
+      // TEST MODE: Skip API calls and use mock data
+      if (isTestMode()) {
+        console.log('🧪 TEST MODE: Creating project with mock data');
+        
+        // Simulate a short delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Create mock project data
+        const mockProject = {
+          id: 'mock123',
+          name: setup.projectName,
+          project_type: 'school',
+          ...setup
+        };
+        
+        console.log('🧪 TEST MODE: Mock project created:', mockProject);
+        
+        // Navigate to the mock project's overview page
+        router.push(`/projects/${mockProject.id}/overview`);
+        return;
+      }
+
+      // Real API calls for production
       // 1. Upload files and get their URLs
       const courseFileUrls = await Promise.all(
         setup.courseFiles.map(file => uploadFile(file, 'course-files', authToken))

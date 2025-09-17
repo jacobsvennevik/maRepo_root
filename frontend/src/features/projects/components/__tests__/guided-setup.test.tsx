@@ -14,6 +14,59 @@ jest.mock("next/dynamic", () => () => {
   return DynamicComponent;
 });
 
+// Stub KeyboardShortcuts which uses useState and UI internals
+jest.mock('../guided-setup/components/KeyboardShortcuts', () => () => <div data-testid="keyboard-shortcuts" />);
+
+// Stub StepIndicator as a named export
+jest.mock('../guided-setup/components/StepIndicator', () => ({
+  StepIndicator: () => <div role="progressbar" data-testid="step-indicator" />,
+}));
+
+// Stub the features barrel to provide all step components and helpers
+jest.mock('@/features/projects', () => ({
+  ProjectNameStep: ({ projectName, onProjectNameChange }: any) => (
+    <div data-testid="project-name-step">
+      <input
+        value={projectName || ""}
+        onChange={(e) => onProjectNameChange(e.target.value)}
+      />
+    </div>
+  ),
+  EducationLevelStep: ({ testLevel, onTestLevelChange }: any) => (
+    <div data-testid="education-level-step">
+      <button onClick={() => onTestLevelChange("high-school")}>High School</button>
+    </div>
+  ),
+  SyllabusUploadStep: ({ onUploadComplete, onNext }: any) => (
+    <div data-testid="syllabus-upload-step">
+      <button onClick={() => { onUploadComplete("test-project", {}, "test.pdf"); onNext?.(); }}>Upload</button>
+    </div>
+  ),
+  ExtractionResultsStep: ({ onConfirm }: any) => (
+    <div data-testid="extraction-results-step">
+      <button onClick={onConfirm}>Confirm</button>
+    </div>
+  ),
+  CourseContentUploadStep: ({ onUploadComplete }: any) => (
+    <div data-testid="course-content-upload-step">
+      <button onClick={() => onUploadComplete([], [], [])}>Upload</button>
+    </div>
+  ),
+  TestUploadStep: ({ onUploadComplete }: any) => (
+    <div data-testid="test-upload-step">
+      <button onClick={() => onUploadComplete([])}>Upload</button>
+    </div>
+  ),
+  SkipButton: ({ onSkip, text }: any) => (
+    <button onClick={onSkip}>{text || 'Skip'}</button>
+  ),
+  ProjectSummaryColorful: ({ onBack }: any) => (
+    <div data-testid="project-summary-colorful">
+      <button onClick={onBack}>Back</button>
+    </div>
+  ),
+}));
+
 // Mock all UI components
 jest.mock("@/components/ui/card", () => ({
   Card: ({ children }: any) => <div data-testid="card">{children}</div>,
@@ -134,22 +187,48 @@ jest.mock("../../hooks/useProjectSetup", () => ({
   }),
 }));
 
-jest.mock("../../hooks/useStepNavigation", () => ({
+// Mock guided-setup specific hooks used by the component
+jest.mock("../guided-setup/hooks/useGuidedSetupState", () => ({
+  useGuidedSetupState: () => ({
+    setup: {
+      projectName: "",
+      testLevel: "",
+    },
+    extractedData: null,
+    setExtractedData: jest.fn(),
+    syllabusFileName: "",
+    isSyllabusAnalysisComplete: false,
+    setHasUnsavedChanges: jest.fn(),
+    handleOptionSelect: jest.fn(),
+    handleSyllabusUploadComplete: jest.fn(),
+    handleCourseContentUploadComplete: jest.fn(),
+    handleTestUploadComplete: jest.fn(),
+    resetSyllabusUploadState: jest.fn(),
+  }),
+}));
+
+jest.mock("../guided-setup/hooks/useStepNavigation", () => ({
   useStepNavigation: () => ({
-    currentStep: 0,
-    handleNext: jest.fn(),
-    handleBack: jest.fn(),
-    getCurrentStepIndex: () => 1,
-    getTotalSteps: () => 12,
-    progress: 10,
+    currentStepIndex: 1,
     currentStepData: {
       id: "projectName",
       title: "Project Name",
       description: "Enter your project name",
       icon: () => <span>📝</span>,
     },
-    isLastStep: false,
     isFirstStep: true,
+    isLastStep: false,
+    showSummary: false,
+    setShowSummary: jest.fn(),
+    progress: 10,
+    getCurrentStepIndex: () => 1,
+    getTotalSteps: () => 6,
+    isStepComplete: () => false,
+    handleNext: jest.fn(),
+    handleBack: jest.fn(),
+    handleSkip: jest.fn(),
+    handleBackWithCleanup: jest.fn(),
+    canSkipCurrentStep: () => true,
   }),
 }));
 
@@ -242,7 +321,7 @@ jest.mock("../../utils", () => ({
   formatDate: (date: string) => new Date(date).toLocaleDateString(),
 }));
 
-jest.mock("../../constants", () => ({
+jest.mock("../../services/index", () => ({
   SCHOOL_PURPOSE_OPTIONS: [{ value: "good-grades", label: "Good Grades" }],
   TEST_LEVEL_OPTIONS: [{ value: "high-school", label: "High School" }],
   TIMEFRAME_OPTIONS: [{ value: "1-month", label: "1 Month" }],
@@ -251,7 +330,7 @@ jest.mock("../../constants", () => ({
 }));
 
 // Import the component after all mocks are set up
-import { GuidedSetup } from "../guided-setup";
+import GuidedSetup from "../guided-setup";
 
 describe("GuidedSetup", () => {
   const mockOnBack = jest.fn();
@@ -267,8 +346,7 @@ describe("GuidedSetup", () => {
 
   it("shows progress indicator", () => {
     render(<GuidedSetup onBack={mockOnBack} />);
-    const progressBar = screen.getByRole("progressbar");
-    expect(progressBar).toBeInTheDocument();
+    expect(screen.getByTestId("step-indicator")).toBeInTheDocument();
   });
 
   it("handles navigation", () => {

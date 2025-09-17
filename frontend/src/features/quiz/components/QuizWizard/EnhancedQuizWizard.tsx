@@ -532,7 +532,9 @@ export const EnhancedQuizWizard: React.FC<EnhancedQuizWizardProps> = ({
         </div>
       }
     >
-      {renderCurrentStep()}
+      <div data-testid="source-selection">
+        {renderCurrentStep()}
+      </div>
 
       {/* Navigation */}
       <div className="flex justify-between pt-4">

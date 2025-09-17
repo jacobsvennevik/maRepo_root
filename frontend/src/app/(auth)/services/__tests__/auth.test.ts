@@ -1,15 +1,14 @@
 import { AuthService } from "../auth";
 
-// Mock axios completely to avoid interceptor issues
-jest.mock("../../../../lib/axios", () => ({
+// Mock axios-auth used by AuthService
+jest.mock("../../../../lib/axios-auth", () => ({
   __esModule: true,
-  default: {
+  axiosAuth: {
     post: jest.fn(),
   },
-  setupAxiosInterceptors: jest.fn(),
 }));
 
-import axiosInstance from "../../../../lib/axios";
+import { axiosAuth } from "../../../../lib/axios-auth";
 
 describe("AuthService", () => {
   beforeEach(() => {
@@ -42,24 +41,24 @@ describe("AuthService", () => {
         },
       };
 
-      (axiosInstance.post as jest.Mock).mockResolvedValue(mockResponse);
+      (axiosAuth.post as jest.Mock).mockResolvedValue(mockResponse);
 
       const result = await AuthService.login({
         email: "test@example.com",
         password: "password123",
       });
 
-      expect(axiosInstance.post).toHaveBeenCalledWith("/api/token/", {
+      expect(axiosAuth.post).toHaveBeenCalledWith("/token/", {
         email: "test@example.com",
         password: "password123",
       });
 
       expect(localStorage.setItem).toHaveBeenCalledWith(
-        "authToken",
+        "access_token",
         "mock-access-token",
       );
       expect(localStorage.setItem).toHaveBeenCalledWith(
-        "refreshToken",
+        "refresh_token",
         "mock-refresh-token",
       );
 
@@ -77,7 +76,7 @@ describe("AuthService", () => {
         },
       };
 
-      (axiosInstance.post as jest.Mock).mockRejectedValue(mockError);
+      (axiosAuth.post as jest.Mock).mockRejectedValue(mockError);
 
       await expect(
         AuthService.login({
@@ -94,8 +93,8 @@ describe("AuthService", () => {
     it("should clear tokens from localStorage", () => {
       AuthService.logout();
 
-      expect(localStorage.removeItem).toHaveBeenCalledWith("authToken");
-      expect(localStorage.removeItem).toHaveBeenCalledWith("refreshToken");
+      expect(localStorage.removeItem).toHaveBeenCalledWith("access_token");
+      expect(localStorage.removeItem).toHaveBeenCalledWith("refresh_token");
     });
   });
 
@@ -105,7 +104,7 @@ describe("AuthService", () => {
 
       const token = AuthService.getAuthToken();
 
-      expect(localStorage.getItem).toHaveBeenCalledWith("authToken");
+      expect(localStorage.getItem).toHaveBeenCalledWith("access_token");
       expect(token).toBe("mock-token");
     });
 
@@ -124,7 +123,7 @@ describe("AuthService", () => {
 
       const token = AuthService.getRefreshToken();
 
-      expect(localStorage.getItem).toHaveBeenCalledWith("refreshToken");
+      expect(localStorage.getItem).toHaveBeenCalledWith("refresh_token");
       expect(token).toBe("mock-refresh-token");
     });
   });

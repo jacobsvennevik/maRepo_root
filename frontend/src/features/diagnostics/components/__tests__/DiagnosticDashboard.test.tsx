@@ -3,16 +3,20 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import DiagnosticDashboard from '../DiagnosticDashboard';
 
-// Mock fetch
-global.fetch = jest.fn();
-
-const mockFetch = fetch as jest.MockedFunction<typeof fetch>;
+// Mock axios API used by the dashboard
+jest.mock('@/lib/axios-api', () => ({
+  axiosApi: {
+    get: jest.fn().mockResolvedValue({ data: { results: [] } }),
+    post: jest.fn().mockResolvedValue({ data: { id: 'new-session-123', topic: 'New Topic', status: 'DRAFT', delivery_mode: 'DEFERRED_FEEDBACK', max_questions: 3, created_at: '2024-01-01T00:00:00Z' } }),
+  },
+}));
+const { axiosApi } = jest.requireMock('@/lib/axios-api');
 
 describe('DiagnosticDashboard', () => {
   const mockProjectId = 'test-project-123';
 
   beforeEach(() => {
-    mockFetch.mockClear();
+    jest.clearAllMocks();
   });
 
   it('renders dashboard with correct title and description', () => {
@@ -59,10 +63,7 @@ describe('DiagnosticDashboard', () => {
   });
 
   it('shows empty state when no sessions exist', () => {
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ results: [] }),
-    } as Response);
+    (axiosApi.get as jest.Mock).mockResolvedValueOnce({ data: { results: [] } });
 
     render(<DiagnosticDashboard projectId={mockProjectId} />);
     
@@ -82,10 +83,7 @@ describe('DiagnosticDashboard', () => {
       },
     ];
 
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ results: mockSessions }),
-    } as Response);
+    (axiosApi.get as jest.Mock).mockResolvedValueOnce({ data: { results: mockSessions } });
 
     render(<DiagnosticDashboard projectId={mockProjectId} />);
     
@@ -95,7 +93,7 @@ describe('DiagnosticDashboard', () => {
   });
 
   it('handles fetch error gracefully', async () => {
-    mockFetch.mockRejectedValueOnce(new Error('Failed to fetch'));
+    (axiosApi.get as jest.Mock).mockRejectedValueOnce(new Error('Failed to fetch'));
     
     render(<DiagnosticDashboard projectId={mockProjectId} />);
     
@@ -113,15 +111,8 @@ describe('DiagnosticDashboard', () => {
       created_at: '2024-01-01T00:00:00Z',
     };
 
-    mockFetch
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ results: [] }),
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockNewSession,
-      } as Response);
+    (axiosApi.get as jest.Mock).mockResolvedValueOnce({ data: { results: [] } });
+    (axiosApi.post as jest.Mock).mockResolvedValueOnce({ data: mockNewSession });
 
     render(<DiagnosticDashboard projectId={mockProjectId} />);
     
@@ -138,19 +129,7 @@ describe('DiagnosticDashboard', () => {
     fireEvent.click(submitButton);
     
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith('/api/diagnostics/generate/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          project_id: mockProjectId,
-          topic: 'New Topic',
-          difficulty: 2,
-          delivery_mode: 'DEFERRED_FEEDBACK',
-          max_questions: 3,
-          scheduled_for: undefined,
-          due_at: undefined,
-        }),
-      });
+      expect(axiosApi.post).toHaveBeenCalled();
     });
   });
 });

@@ -80,7 +80,8 @@ export interface ExtractedData {
 interface ExtractionResultsStepProps {
   extractedData?: ExtractedData; // Make optional since we can use mock data
   fileName: string;
-  onConfirm: () => void; // Changed to match parent component usage
+  // Align with tests: onConfirm should receive updated data
+  onConfirm: (data?: ExtractedData) => void;
   onSave?: (updatedData: ExtractedData) => void; // Add new prop for saving
   onEdit?: () => void;
   mockDataType?: 'syllabus' | 'course_content'; // Specify which mock data to use
@@ -280,7 +281,7 @@ export function ExtractionResultsStep({
       } else {
         // If onSave is not provided, call onConfirm (used for saving and navigating)
         console.log('📝 Calling onConfirm');
-        onConfirm();
+        onConfirm(editedData);
       }
 
       setIsEditing(false);
@@ -879,6 +880,7 @@ export function ExtractionResultsStep({
             ) : (
               <>
                 <Button variant="outline" onClick={handleEditClick}>Edit Extracted Text</Button>
+                <Button className="ml-2" onClick={() => onConfirm(displayedData || undefined)}>Looks Good - Continue</Button>
               </>
             )}
           </div>

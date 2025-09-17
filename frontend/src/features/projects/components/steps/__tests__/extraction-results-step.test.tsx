@@ -44,6 +44,7 @@ describe('ExtractionResultsStep', () => {
     fileName: 'test.pdf',
     onConfirm: jest.fn(),
     onEdit: jest.fn()
+  } as any;
 
   it('renders extracted data correctly', () => {
     render(<ExtractionResultsStep {...defaultProps} />);
@@ -197,6 +198,7 @@ describe('ExtractionResultsStep', () => {
         label: `Topic ${i}`,
         confidence: 90
       }))
+    } as any;
 
     render(<ExtractionResultsStep {...defaultProps} extractedData={manyTopics} />);
 

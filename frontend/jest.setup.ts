@@ -29,6 +29,32 @@ Object.defineProperty(window.URL, 'createObjectURL', {
   value: jest.fn(),
 })
 
+// Default mock for axios instances to avoid real network during unit tests
+jest.mock('@/lib/axios', () => {
+  const resolve = (data: any = {}) => Promise.resolve({ data, status: 200, config: {}, headers: {}, statusText: 'OK' });
+  const api = {
+    get: jest.fn(() => resolve({ results: [] })),
+    post: jest.fn(() => resolve({})),
+    patch: jest.fn(() => resolve({})),
+    delete: jest.fn(() => resolve({})),
+    defaults: { baseURL: 'http://localhost:8000/api/' }
+  };
+  const gen = {
+    get: jest.fn(() => resolve({ results: [] })),
+    post: jest.fn(() => resolve({})),
+    patch: jest.fn(() => resolve({})),
+    delete: jest.fn(() => resolve({})),
+    defaults: { baseURL: 'http://localhost:8000/generation/api/' }
+  };
+  const def = { ...api };
+  return {
+    __esModule: true,
+    axiosApi: api,
+    axiosGeneration: gen,
+    default: def,
+  };
+});
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -77,11 +103,15 @@ global.fetch = jest.fn(() =>
 const originalError = console.error;
 beforeAll(() => {
   console.error = (...args: any[]) => {
-    if (
-      typeof args[0] === 'string' &&
-      args[0].includes('Warning: ReactDOM.render is no longer supported')
-    ) {
-      return;
+    if (typeof args[0] === 'string') {
+      const msg = args[0];
+      if (
+        msg.includes('Warning: ReactDOM.render is no longer supported') ||
+        msg.includes('API error (axios') ||
+        msg.includes('Network error (axios')
+      ) {
+        return;
+      }
     }
     originalError.call(console, ...args);
   };
@@ -116,6 +146,28 @@ global.resetTestEnvironment = () => {
     NEXT_PUBLIC_TEST_MODE: 'false'
   });
 };
+
+// Polyfill StorageEvent for jsdom usage in tests that dispatch it
+try {
+  if (typeof (global as any).StorageEvent === 'undefined') {
+    class PolyfillStorageEvent extends Event {
+      key: string | null;
+      newValue: string | null;
+      oldValue: string | null;
+      storageArea: Storage | null;
+      url: string;
+      constructor(type: string, init: any = {}) {
+        super(type);
+        this.key = init.key ?? null;
+        this.newValue = init.newValue ?? null;
+        this.oldValue = init.oldValue ?? null;
+        this.storageArea = init.storageArea ?? null;
+        this.url = init.url ?? '';
+      }
+    }
+    ;(global as any).StorageEvent = PolyfillStorageEvent as any;
+  }
+} catch {}
 
 // Add type definitions
 declare global {

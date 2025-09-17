@@ -10,7 +10,7 @@ import { StepIndicator } from './components/StepIndicator';
 import { STEP_CONFIG } from './constants';
 
 import { useKeyboardNavigation } from './hooks/useKeyboardNavigation';
-import { KeyboardShortcuts } from './components/KeyboardShortcuts';
+import KeyboardShortcuts from './components/KeyboardShortcuts';
 
 // Import step components
 import { 
@@ -195,7 +195,7 @@ export default function GuidedSetup({ onBack }: GuidedSetupProps) {
         <Card className="max-w-2xl mx-auto">
           <CardHeader className="text-center">
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-              <currentStepData.icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+              {(() => { const Icon = currentStepData.icon as any; return <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />; })()}
             </div>
             <CardTitle className="text-xl sm:text-2xl text-slate-900" data-testid="step-title">{currentStepData.title}</CardTitle>
             <p className="text-sm sm:text-base text-slate-600">{currentStepData.description}</p>
@@ -232,3 +232,5 @@ export default function GuidedSetup({ onBack }: GuidedSetupProps) {
     </div>
   );
 }
+
+export default GuidedSetup;

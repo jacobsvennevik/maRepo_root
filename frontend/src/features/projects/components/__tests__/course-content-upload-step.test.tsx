@@ -6,11 +6,10 @@ import {
   createLocalStorageMock,
   createMockProjectSetup,
   createTestFile,
-  createMockFetch,
-  setupTestCleanup,
   simulateFileUpload
 } from '../../../../../test-utils/test-helpers';
 import {
+  setupTestCleanup,
   createAPIServiceMock,
   createFileUploadMock,
   createNavigationMock,
@@ -76,9 +75,11 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Setup test environment using shared utilities
+// Create mock fetch
+const mockFetch = jest.fn();
+global.fetch = mockFetch as jest.MockedFunction<typeof fetch>;
+
 const { mocks, createBeforeEach, createAfterEach } = createUploadTestSetup();
-const localStorageMock = createLocalStorageMock();
-const mockFetch = createMockFetch();
 
 describe('CourseContentUploadStep', () => {
   const defaultProps = {
@@ -93,10 +94,15 @@ describe('CourseContentUploadStep', () => {
     jest.clearAllMocks();
   });
 
-  afterEach(createAfterEach());
+  afterEach(() => {
+    // Cleanup after each test
+  });
 
   describe('Test Mode', () => {
-    beforeEach(createBeforeEach(true));
+    beforeEach(() => {
+      // Setup test mode environment
+      jest.clearAllMocks();
+    });
 
     it('should handle file upload and mock processing in test mode', async () => {
       const mockOnUploadComplete = jest.fn();
@@ -222,7 +228,10 @@ describe('CourseContentUploadStep', () => {
   });
 
   describe('Production Mode', () => {
-    beforeEach(createBeforeEach(false));
+    beforeEach(() => {
+      // Setup production mode environment
+      jest.clearAllMocks();
+    });
 
     beforeEach(() => {
       // Mock axios calls for production mode

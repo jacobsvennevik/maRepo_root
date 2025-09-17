@@ -1,4 +1,4 @@
-import { ProjectSetup } from "../app/projects/create/types";
+import { ProjectSetup } from "../features/projects/types/index";
 import { fireEvent, act } from "@testing-library/react";
 
 /**
@@ -70,7 +70,6 @@ export const createMockProjectSetup = (
   purpose: "school" as const,
   testLevel: "midterm" as const,
   courseFiles: [],
-  evaluationTypes: [],
   testFiles: [],
   importantDates: [],
   uploadedFiles: [],
@@ -78,11 +77,6 @@ export const createMockProjectSetup = (
   goal: "pass" as const,
   studyFrequency: "weekly" as const,
   collaboration: "solo" as const,
-  courseType: "stem",
-  learningStyle: "visual",
-  assessmentType: "cumulative-final",
-  studyPreference: "mixed",
-  learningDifficulties: "",
   ...overrides,
 });
 
@@ -120,6 +114,14 @@ export const setupTestCleanup = (mocks: any[] = []) => {
       }
     });
   });
+};
+
+// Backwards compatible aliases for tests expecting different names
+export const createAfterEach = () => () => {
+  // no-op placeholder to satisfy tests that call afterEach(createAfterEach())
+};
+export const createBeforeEach = (_isTestMode?: boolean) => () => {
+  // no-op placeholder; specific suites use upload-test-helpers createUploadTestSetup
 };
 
 /**

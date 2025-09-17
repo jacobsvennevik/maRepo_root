@@ -82,7 +82,7 @@ const checkLocalStorageQuota = (): {
  */
 const abortInFlightUploads = () => {
   // Store abort controllers for active uploads
-  const activeUploads = (window as any).__activeUploads || [];
+  const activeUploads = (window as any).__activeUploads || (window as any).__uploads || [];
 
   activeUploads.forEach((controller: AbortController) => {
     try {
@@ -94,6 +94,7 @@ const abortInFlightUploads = () => {
 
   // Clear the array
   (window as any).__activeUploads = [];
+  (window as any).__uploads = [];
 };
 
 /**
@@ -103,7 +104,11 @@ export const registerUpload = (controller: AbortController) => {
   if (!(window as any).__activeUploads) {
     (window as any).__activeUploads = [];
   }
+  if (!(window as any).__uploads) {
+    (window as any).__uploads = [];
+  }
   (window as any).__activeUploads.push(controller);
+  (window as any).__uploads.push(controller);
 };
 
 /**
@@ -126,6 +131,13 @@ export const cleanupLocalStorage = () => {
         console.log("🧹 Cleaned up localStorage");
       } catch (error) {
         console.warn("Failed to cleanup localStorage:", error);
+        // Surface error via toast if available
+        if (typeof (window as any).showToast === 'function') {
+          (window as any).showToast(
+            "Storage limit reached. Please clear some data and try again.",
+            "error"
+          );
+        }
       } finally {
         resolve();
       }
@@ -153,30 +165,35 @@ export const cleanupBackendDrafts = async (hours: number = 24) => {
 export const performComprehensiveCleanup = async () => {
   console.log("🧹 Starting non-blocking cleanup...");
 
-  // Clean up localStorage immediately (non-blocking)
-  cleanupLocalStorage();
+  return executeCleanupSafely(async () => {
+    // Abort in-flight uploads
+    abortInFlightUploads();
 
-  // Clean up backend drafts in background
-  setTimeout(() => {
-    cleanupBackendDrafts().catch((error) => {
-      console.warn("Background cleanup failed:", error);
-    });
-  }, 100);
+    // Clean up localStorage immediately (non-blocking)
+    await cleanupLocalStorage();
 
-  console.log("🧹 Cleanup initiated");
+    // Clean up backend drafts in background
+    setTimeout(() => {
+      cleanupBackendDrafts().catch((error) => {
+        console.warn("Background cleanup failed:", error);
+      });
+    }, 100);
+
+    console.log("🧹 Cleanup initiated");
+  });
 };
 
 /**
  * Cleanup function specifically for when users abandon projects
  */
-export const cleanupOnAbandon = () => {
+export const cleanupOnAbandon = (): Promise<void> => {
   console.log("🧹 Cleaning up abandoned project data...");
 
   // Abort in-flight uploads immediately
   abortInFlightUploads();
 
   // Clean up localStorage immediately
-  cleanupLocalStorage().catch((error) => {
+  const localStorageCleanup = cleanupLocalStorage().catch((error) => {
     console.warn("localStorage cleanup failed:", error);
   });
 
@@ -186,6 +203,8 @@ export const cleanupOnAbandon = () => {
       console.warn("Background cleanup failed:", error);
     });
   }, 0);
+
+  return localStorageCleanup;
 };
 
 /**

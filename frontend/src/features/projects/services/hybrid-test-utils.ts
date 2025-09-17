@@ -20,7 +20,12 @@ export interface MockBackendResponse {
  */
 function setTestModeEnvironment() {
   // Set a custom header to indicate test mode
-  axiosApi.defaults.headers.common['X-Test-Mode'] = 'true';
+  if (axiosApi.defaults && axiosApi.defaults.headers) {
+    if (!axiosApi.defaults.headers.common) {
+      axiosApi.defaults.headers.common = {};
+    }
+    axiosApi.defaults.headers.common['X-Test-Mode'] = 'true';
+  }
   
   // Also try to set environment variable (may not work in browser)
   if (typeof window !== 'undefined') {

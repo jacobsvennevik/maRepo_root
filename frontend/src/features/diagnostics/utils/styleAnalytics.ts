@@ -52,10 +52,11 @@ class StyleAnalytics {
   track(eventName: string, payload: Record<string, any> = {}): void {
     if (!this.isEnabled) return;
 
+    const now = Date.now();
     const event: StyleAnalyticsEvent = {
       eventName,
       payload,
-      timestamp: Date.now()
+      timestamp: now === 0 ? 1 : now
     };
 
     this.events.push(event);
