@@ -28,6 +28,9 @@ export const QuizCreationSchema = z.object({
     .optional(),
 
   // Quiz Configuration
+  quiz_type: z.enum(['formative', 'summative', 'diagnostic', 'mastery'])
+    .default('formative'),
+  
   difficulty: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'])
     .default('INTERMEDIATE'),
   

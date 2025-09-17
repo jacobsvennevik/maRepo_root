@@ -121,8 +121,8 @@ export class QuizApiService {
         console.log('🧪 Test mode: Adding X-Test-Mode header for backend AI mocking');
       }
 
-      // Use global endpoint (like the backend expects)
-      const response = await axiosGeneration.post(`${this.generationUrl}generate/`, request, {
+      // Use the new quiz generation endpoint
+      const response = await axiosGeneration.post('quizzes/generate/', request, {
         headers
       });
       

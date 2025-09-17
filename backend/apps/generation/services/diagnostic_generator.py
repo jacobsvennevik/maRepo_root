@@ -25,6 +25,74 @@ class DiagnosticGenerator:
         """Initialize with AI client or create default one."""
         self.ai_client = ai_client or AIClient(model='gemini-1.5-flash')
     
+    def generate_quiz(
+        self,
+        project_id: str,
+        topic: str,
+        quiz_type: str = 'formative',
+        source_ids: Optional[List[str]] = None,
+        difficulty: str = 'medium',
+        max_questions: int = 5,
+        mock_mode: bool = False
+    ) -> DiagnosticSession:
+        """
+        Generate a quiz session with different quiz types (formative, summative, diagnostic, mastery).
+        
+        Args:
+            project_id: UUID of the project
+            topic: Topic for the quiz
+            quiz_type: Type of quiz (formative, summative, diagnostic, mastery)
+            source_ids: List of document IDs to use as source material
+            difficulty: Difficulty level (easy, medium, hard)
+            max_questions: Maximum number of questions
+            mock_mode: Whether to use mock AI responses
+            
+        Returns:
+            DiagnosticSession with generated quiz questions
+        """
+        try:
+            # Build prompt for AI generation based on quiz type
+            prompt = self._build_quiz_prompt(topic, quiz_type, source_ids, difficulty, max_questions)
+            
+            # Generate questions using AI client with test mode support
+            payload = {
+                "prompt": prompt,
+                "topic": topic,
+                "quiz_type": quiz_type,
+                "difficulty": difficulty,
+                "max_questions": max_questions,
+                "source_ids": source_ids or []
+            }
+            
+            raw_response = self.ai_client.call(
+                task=Task.QUIZ,
+                payload=payload,
+                mock_mode=mock_mode
+            )
+            
+            # Parse and validate AI response
+            data = json.loads(raw_response)
+            validated_data = self._validate_and_normalize_quiz(data, max_questions, quiz_type)
+            
+            # Create diagnostic session
+            session = self._create_diagnostic_session(
+                project_id=project_id,
+                topic=f"{topic} - {quiz_type.title()} Quiz",
+                delivery_mode='IMMEDIATE_FEEDBACK' if quiz_type == 'formative' else 'DEFERRED_FEEDBACK',
+                max_questions=max_questions,
+                validated_data=validated_data
+            )
+            
+            # Create questions
+            self._create_questions(session, validated_data['questions'])
+            
+            logger.info(f"Generated {quiz_type} quiz session {session.id} with {max_questions} questions")
+            return session
+            
+        except Exception as e:
+            logger.error(f"Failed to generate {quiz_type} quiz: {str(e)}")
+            raise
+    
     def generate_diagnostic(
         self,
         project_id: str,
@@ -36,22 +104,6 @@ class DiagnosticGenerator:
         max_questions: int = 3,
         mock_mode: bool = False
     ) -> DiagnosticSession:
-        """
-        Generate a complete diagnostic session with questions.
-        
-        Args:
-            project_id: UUID of the project
-            topic: Topic for the diagnostic
-            source_ids: List of document IDs to use as source material
-            question_mix: Dict specifying question type distribution
-            difficulty: Difficulty level 1-5
-            delivery_mode: When to show feedback
-            max_questions: Maximum number of questions
-            mock_mode: Whether to use mock AI responses
-            
-        Returns:
-            DiagnosticSession with generated questions
-        """
         try:
             # Default question mix if not specified
             if question_mix is None:
@@ -352,3 +404,149 @@ RULES:
             difficulty=difficulty,
             mock_mode=mock_mode
         )
+    
+    def _build_quiz_prompt(self, topic: str, quiz_type: str, source_ids: List[str], difficulty: str, max_questions: int) -> str:
+        """Build the AI prompt for generating quiz questions based on quiz type."""
+        
+        # Get source content if available
+        source_content = ""
+        if source_ids:
+            source_content = f"Source documents: {', '.join(source_ids)}"
+        
+        # Quiz type specific instructions
+        quiz_instructions = {
+            'formative': {
+                'goal': 'produce formative quiz items that optimize retrieval practice and metacognitive calibration',
+                'feedback': 'Provide 2 hints (conceptual, then procedural) and a ≤40-word rationale. Include ask_confidence:true on each item.',
+                'types': 'Use only item types from allowed_item_types registry. mcq_single: exactly one correct. mcq_multi: 2–3 correct.'
+            },
+            'summative': {
+                'goal': 'create exam items with measurement-first approach',
+                'feedback': 'No hints. Rationale: one sentence. Include intended_p_value (easy≈0.85, medium≈0.60, hard≈0.35) and discrimination_intent:"high".',
+                'types': 'Single best answer unless mcq_multi explicitly allowed. Prefer two_tier and data_interpretation for higher-order when allowed.'
+            },
+            'diagnostic': {
+                'goal': 'create a diagnostic quiz to map prior knowledge',
+                'feedback': 'No hints. Rationale ≤ 25 words. Tag items diagnostic:true and enumerate subskills. ask_confidence:true on each item.',
+                'types': 'Maximize coverage: 1–2 items per objective before allocating extras. Mostly medium difficulty with a few hard anchors.'
+            },
+            'mastery': {
+                'goal': 'generate a short mastery quiz on a narrow objective set',
+                'feedback': 'Provide 1 hint and a ≤40-word rationale. Generate 2–3 variants per concept for successive relearning. Include self_explanation_prompt (≤30 words).',
+                'types': 'For each objective: include one near-transfer and one far-transfer item. Difficulty skew: medium→hard.'
+            }
+        }
+        
+        instructions = quiz_instructions.get(quiz_type, quiz_instructions['formative'])
+        
+        prompt = f"""
+SYSTEM: You are an expert assessment writer.
+Goal: {instructions['goal']}
+
+Return ONLY valid JSON per schema. No prose.
+Use ONLY provided source_ids; omit any item you cannot ground. Paraphrase (no >12-token overlap).
+Reading level ≤ CEFR-B2. Language: en.
+
+Rules:
+- Respect coverage and difficulty_mix exactly.
+- Use only item types from allowed_item_types (registry included).
+- {instructions['types']}
+- {instructions['feedback']}
+- If an image is referenced, include alt_text.
+- Enforce fairness and accessibility; avoid stereotypes and culture-bound trivia.
+- Follow the Type-Specific Schema Addendum for each item type.
+
+USER (BLUEPRINT):
+{{
+  "test_id": "{topic.lower().replace(' ', '-')}-{quiz_type}-001",
+  "title": "{topic} — {quiz_type.title()} Quiz",
+  "audience": {{"grade": 13, "language": "en", "reading_level": "CEFR-B2"}},
+  "objectives": [{{"id":"OBJ-1","text":"Master key concepts in {topic}","bloom":"Understand"}}],
+  "coverage": {{"OBJ-1": {max_questions}}},
+  "difficulty_mix": {{"easy": 0.2, "medium": 0.6, "hard": 0.2}},
+  "allowed_item_types": ["mcq_single", "short_answer", "explain_why", "numeric_response", "two_tier", "data_interpretation"],
+  "feedback_policy": {{"rationale": true, "hints": 2}},
+  "paraphrase_threshold": 0.2,
+  "sources": [{{"id":"doc:source","excerpt":"{source_content}"}}],
+  "time_limit_minutes": 20
+}}
+
+OUTPUT JSON SCHEMA:
+{{
+  "items": [
+    {{
+      "objective_id":"OBJ-1",
+      "type":"mcq_single|short_answer|explain_why|numeric_response|two_tier|data_interpretation",
+      "difficulty":"easy|medium|hard",
+      "transfer":"near|far|unspecified",
+      "stem":"string",
+      "choices":[{{"id":"A","text":"...","correct":false}}, {{"id":"B","text":"...","correct":true}}],
+      "answer":"string|regex|object (per type)",
+      "type_specific": {{ ... per addendum ... }},
+      "rationale":"<=40 words",
+      "hints":["conceptual","procedural"],
+      "tags":["concept:x","bloom:Apply"],
+      "source_ids":["doc:source"],
+      "ask_confidence": true,
+      "reading_level_grade": 13,
+      "alt_text":"optional"
+    }}
+  ]
+}}
+"""
+        return prompt
+
+    def _validate_and_normalize_quiz(self, data: Dict[str, Any], max_questions: int, quiz_type: str) -> Dict[str, Any]:
+        """Validate and normalize quiz data from AI response."""
+        try:
+            # Ensure we have items
+            items = data.get('items', [])
+            if not items:
+                raise ValueError("No quiz items found in AI response")
+            
+            # Limit to max_questions
+            items = items[:max_questions]
+            
+            # Normalize each item
+            normalized_items = []
+            for i, item in enumerate(items):
+                normalized_item = {
+                    'type': item.get('type', 'short_answer'),
+                    'text': item.get('stem', ''),
+                    'choices': item.get('choices', []),
+                    'correct_choice_index': item.get('correct_choice_index', 0),
+                    'acceptable_answers': [item.get('answer', '')],
+                    'explanation': item.get('rationale', ''),
+                    'concept_id': f"concept_{i+1}",
+                    'bloom_level': item.get('bloom', 'Understand'),
+                    'difficulty': item.get('difficulty', 'medium'),
+                    'tags': item.get('tags', []),
+                    'source_ids': item.get('source_ids', []),
+                    'ask_confidence': item.get('ask_confidence', quiz_type == 'formative'),
+                    'hints': item.get('hints', []),
+                    'type_specific': item.get('type_specific', {}),
+                    'transfer': item.get('transfer', 'near'),
+                    'structure_fidelity': item.get('structure_fidelity', 'exact')
+                }
+                normalized_items.append(normalized_item)
+            
+            return {
+                'session': {
+                    'topic': f"Quiz - {quiz_type.title()}",
+                    'tags': [quiz_type, 'quiz'],
+                    'difficulty': 'medium'
+                },
+                'questions': normalized_items
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to validate quiz data: {str(e)}")
+            # Return minimal valid structure
+            return {
+                'session': {
+                    'topic': f"Quiz - {quiz_type.title()}",
+                    'tags': [quiz_type, 'quiz'],
+                    'difficulty': 'medium'
+                },
+                'questions': []
+            }

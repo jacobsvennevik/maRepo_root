@@ -28,7 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <Script src="http://localhost:8097" strategy="beforeInteractive" />
+        {process.env.NODE_ENV === 'development' && (
+          <Script src="http://localhost:8097" strategy="afterInteractive" />
+        )}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

@@ -5,8 +5,14 @@ export * from './types';
 export * from './utils/transformers';
 
 // Enhanced wizard components
-// export { CreateQuizWizard } from './components/CreateQuizWizard';
+export { QuizWizard } from './components/QuizWizard';
+export * from './components/QuizWizard/steps';
 export * from './schemas/quizCreation';
+
+// Shared utilities and hooks
+export * from './constants';
+export * from './utils';
+export * from './hooks';
 
 // Legacy exports for backward compatibility
 import { axiosGeneration } from "@/lib/axios";

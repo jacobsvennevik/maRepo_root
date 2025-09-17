@@ -30,7 +30,8 @@ from .api_views.diagnostic_views import (
     DiagnosticSessionViewSet,
     DiagnosticResponseViewSet,
     DiagnosticGenerationView,
-    DiagnosticAnalyticsView
+    DiagnosticAnalyticsView,
+    QuizGenerationView
 )
 from .api_views.mindmap_views import MindMapViewSet
 
@@ -91,4 +92,7 @@ urlpatterns = [
     path('api/diagnostics/generate/', DiagnosticGenerationView.as_view(), name='diagnostic-generate'),
     path('api/diagnostics/sessions/<uuid:session_id>/analytics/', DiagnosticAnalyticsView.as_view(), name='diagnostic-analytics'),
     path('api/diagnostics/sessions/<uuid:session_id>/analytics/export/', DiagnosticAnalyticsView.as_view(), name='diagnostic-analytics-export'),
+    
+    # Quiz API endpoints
+    path('api/quizzes/generate/', QuizGenerationView.as_view(), name='quiz-generate'),
 ]

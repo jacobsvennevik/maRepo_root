@@ -48,66 +48,114 @@ def mock_flashcards(payload: dict) -> dict:
                 "tags": ["softmax-function", "classification", "probability"]
             },
             {
-                "question": "Why is binary cross-entropy also called logistic loss?",
-                "answer": "Binary cross-entropy is equivalent to the negative log-likelihood of logistic regression, where outputs are probabilities in [0,1] and labels are 0 or 1.",
-                "tags": ["binary-cross-entropy", "loss-function", "logistic-regression"]
+                "question": "What is the purpose of gradient descent in neural network training?",
+                "answer": "Gradient descent is an optimization algorithm that minimizes the loss function by iteratively adjusting model parameters in the direction of steepest descent of the gradient.",
+                "tags": ["gradient-descent", "optimization", "training"]
             },
             {
-                "question": "How does backpropagation use gradients to adjust weights?",
-                "answer": "Backpropagation computes the gradient of the loss with respect to each parameter and updates weights in the opposite direction of the gradient, scaled by a learning rate.",
-                "tags": ["backpropagation", "gradient-descent", "optimization"]
+                "question": "Explain the difference between overfitting and underfitting in machine learning.",
+                "answer": "Overfitting occurs when a model learns training data too well, including noise, leading to poor generalization. Underfitting happens when a model is too simple to capture underlying patterns in the data.",
+                "tags": ["overfitting", "underfitting", "generalization", "model-complexity"]
             },
             {
-                "question": "What distinguishes categorical cross-entropy from binary cross-entropy?",
-                "answer": "Categorical cross-entropy handles multi-class classification with one-hot encoded labels and probabilities over multiple classes, while binary cross-entropy applies to two-class problems with scalar outputs.",
-                "tags": ["categorical-cross-entropy", "multi-class-classification", "loss-function"]
+                "question": "What is the role of activation functions in neural networks?",
+                "answer": "Activation functions introduce non-linearity into neural networks, enabling them to learn complex patterns and relationships that linear models cannot capture.",
+                "tags": ["activation-functions", "non-linearity", "neural-networks"]
             },
             {
-                "question": "Fill in the blank: In stochastic gradient descent (SGD), each parameter p is updated as p ← p – η·g, where g is ______.",
-                "answer": "The gradient of the loss function with respect to parameter p.",
-                "tags": ["stochastic-gradient-descent", "optimization", "gradients"]
+                "question": "How does batch normalization improve neural network training?",
+                "answer": "Batch normalization normalizes inputs to each layer, reducing internal covariate shift, allowing higher learning rates, and providing regularization effects that improve training stability and speed.",
+                "tags": ["batch-normalization", "regularization", "training-stability"]
             },
             {
-                "question": "Why are adaptive learning rate methods (e.g., Adam, RMSProp) used instead of plain SGD?",
-                "answer": "They adjust learning rates dynamically for each parameter, improving convergence speed and stability compared to constant learning rate SGD.",
-                "tags": ["adaptive-learning-rate", "adam", "optimization"]
+                "question": "What is the vanishing gradient problem and how can it be addressed?",
+                "answer": "The vanishing gradient problem occurs when gradients become exponentially small during backpropagation in deep networks. Solutions include ReLU activation functions, residual connections, and proper weight initialization.",
+                "tags": ["vanishing-gradients", "deep-networks", "backpropagation", "residual-connections"]
+            },
+            {
+                "question": "Explain the concept of learning rate in neural network training.",
+                "answer": "Learning rate controls the step size during gradient descent optimization. Too high causes instability, too low slows convergence. Adaptive methods like Adam adjust learning rates automatically.",
+                "tags": ["learning-rate", "optimization", "gradient-descent", "adam"]
+            },
+            {
+                "question": "What is dropout and how does it prevent overfitting?",
+                "answer": "Dropout randomly sets a fraction of input units to 0 during training, preventing the network from becoming overly dependent on specific neurons and improving generalization.",
+                "tags": ["dropout", "regularization", "overfitting-prevention"]
+            },
+            {
+                "question": "How do convolutional neural networks (CNNs) differ from fully connected networks?",
+                "answer": "CNNs use convolutional layers with shared weights and local connectivity, making them translation-invariant and efficient for spatial data like images, unlike fully connected networks that connect every neuron to every other neuron.",
+                "tags": ["cnn", "convolutional-layers", "translation-invariance", "spatial-data"]
             }
         ]
     }
 
 
-def mock_assessment(payload: dict) -> dict:
-    """Return mock assessment data for testing."""
+def mock_syllabus(payload: dict) -> dict:
+    """Return comprehensive syllabus data for testing."""
+    title = payload.get('title', 'Machine Learning Fundamentals')
+    
     return {
-        "title": "Sample Assessment",
-        "description": "A comprehensive assessment covering key concepts.",
-        "questions": [
+        "title": f"{title} - Course Syllabus",
+        "modules": [
             {
-                "id": str(uuid.uuid4()),
-                "question": "What is the primary goal of machine learning?",
-                "type": "multiple_choice",
-                "options": [
-                    "To replace human intelligence",
-                    "To learn patterns from data",
-                    "To solve all problems automatically",
-                    "To create artificial consciousness"
-                ],
-                "correct_answer": 1,
-                "explanation": "Machine learning focuses on learning patterns from data to make predictions or decisions."
+                "title": "Introduction to Machine Learning",
+                "hours": 8,
+                "topics": ["Supervised vs Unsupervised Learning", "Model Evaluation", "Data Preprocessing"],
+                "objectives": ["Understand basic ML concepts", "Learn evaluation metrics"]
             },
             {
-                "id": str(uuid.uuid4()),
-                "question": "Which of the following is NOT a type of machine learning?",
-                "type": "multiple_choice",
-                "options": [
-                    "Supervised Learning",
-                    "Unsupervised Learning",
-                    "Reinforcement Learning",
-                    "Deterministic Learning"
-                ],
-                "correct_answer": 3,
-                "explanation": "Deterministic Learning is not a recognized type of machine learning."
+                "title": "Neural Networks and Deep Learning",
+                "hours": 12,
+                "topics": ["Perceptrons", "Backpropagation", "Deep Networks", "Regularization"],
+                "objectives": ["Build neural networks", "Understand training process"]
+            },
+            {
+                "title": "Advanced Topics",
+                "hours": 10,
+                "topics": ["CNNs", "RNNs", "Transfer Learning", "Model Optimization"],
+                "objectives": ["Apply advanced architectures", "Optimize model performance"]
             }
+        ],
+        "total_hours": 30,
+        "bloom_levels": ["Remember", "Understand", "Apply", "Analyze"]
+    }
+
+
+def mock_test(payload: dict) -> dict:
+    """Return comprehensive test data for testing."""
+    return {
+        "items": [
+            {
+                "question": "What is the primary advantage of using neural networks over traditional machine learning algorithms?",
+                "answer": "Neural networks can automatically learn complex non-linear relationships and feature representations from raw data without manual feature engineering.",
+                "type": "short_answer",
+                "difficulty": "medium",
+                "tags": ["neural-networks", "feature-learning", "non-linearity"]
+            },
+            {
+                "question": "Which of the following is NOT a common activation function?",
+                "options": ["ReLU", "Sigmoid", "Tanh", "Linear"],
+                "answer": "Linear",
+                "type": "multiple_choice",
+                "difficulty": "easy",
+                "tags": ["activation-functions"]
+            }
+        ]
+    }
+
+
+def mock_content(payload: dict) -> dict:
+    """Return comprehensive content analysis data for testing."""
+    return {
+        "summary": "This content covers fundamental concepts in machine learning and neural networks, including training algorithms, optimization techniques, and practical applications.",
+        "keywords": ["machine learning", "neural networks", "training", "optimization", "deep learning"],
+        "entities": ["TensorFlow", "PyTorch", "Scikit-learn", "Python"],
+        "concepts": ["gradient descent", "backpropagation", "overfitting", "regularization"],
+        "sections": [
+            {"title": "Introduction", "content": "Overview of machine learning concepts"},
+            {"title": "Neural Networks", "content": "Deep dive into neural network architectures"},
+            {"title": "Training Process", "content": "Detailed explanation of training algorithms"}
         ]
     }
 
@@ -118,173 +166,304 @@ def mock_quiz(payload: dict) -> dict:
     topic = payload.get('topic', 'Natural Language Processing')
     difficulty = payload.get('difficulty', 'medium')
     max_questions = payload.get('max_questions', 5)
+    quiz_type = payload.get('quiz_type', 'formative')  # formative, summative, diagnostic, mastery
     
-    # Generate quiz items based on the schema provided
-    quiz_items = [
-        {
-            "derived_from_item_id": "EX-ITEM-1",
-            "objective_id": "OBJ-A",
-            "type": "short_answer",
-            "difficulty": "easy",
-            "transfer": "near",
-            "bloom": "Remember",
-            "stem": "What are the three main types of language modeling tasks studied in NLP?",
-            "choices": [
-                {"id": "A", "text": "Causal Language Modeling (CLM)", "correct": True},
-                {"id": "B", "text": "Masked Language Modeling (MLM)", "correct": True},
-                {"id": "C", "text": "Next Sentence Prediction (NSP)", "correct": True},
-                {"id": "D", "text": "Named Entity Recognition (NER)", "correct": False}
-            ],
-            "answer": "CLM, MLM, and NSP are the three main language modeling tasks",
-            "type_specific": {"tolerance": 0.001, "unit": "unitless"},
-            "rationale": "These three tasks represent the core approaches to language modeling in transformer architectures.",
-            "hints": ["Think about how tokens are predicted in different contexts.", "Consider what each task is trying to learn."],
-            "tags": ["concept:language-modeling", "bloom:Remember"],
-            "source_ids": ["doc:lm-slides#mlm-clm-nsp"],
-            "structure_fidelity": "exact"
-        },
-        {
-            "derived_from_item_id": "EX-ITEM-2",
-            "objective_id": "OBJ-B",
-            "type": "explain_why",
-            "difficulty": "medium",
-            "transfer": "near",
-            "bloom": "Understand",
-            "stem": "Explain why self-supervised pre-training is effective for language models.",
-            "choices": [],
-            "answer": "Self-supervised pre-training is effective because it learns general language patterns from large amounts of unlabeled text, providing a strong foundation for downstream tasks.",
-            "type_specific": {},
-            "rationale": "Pre-training on raw text allows models to learn fundamental language understanding before task-specific fine-tuning.",
-            "hints": ["Consider the amount of data available.", "Think about what general patterns can be learned."],
-            "tags": ["concept:pretrain-finetune", "bloom:Understand"],
-            "source_ids": ["doc:lm-slides#pretrain-finetune-transfer"],
-            "structure_fidelity": "exact"
-        },
-        {
-            "derived_from_item_id": "EX-ITEM-3",
-            "objective_id": "OBJ-C",
-            "type": "numeric_response",
-            "difficulty": "hard",
-            "transfer": "near",
-            "bloom": "Apply",
-            "stem": "A classifier with softmax predicts p(correct)=0.25 for the true class. Compute the cross-entropy loss L = −log p(correct). Use natural log.",
-            "choices": [],
-            "answer": 1.386294361,
-            "type_specific": {"tolerance": 0.001, "unit": "unitless"},
-            "rationale": "Cross-entropy loss for one-hot encoded labels equals the negative log probability of the correct class.",
-            "hints": ["Recall L = −log p(y_true).", "Use p=0.25."],
-            "tags": ["concept:cross-entropy", "bloom:Apply"],
-            "source_ids": ["doc:lm-slides#loss-softmax"],
-            "structure_fidelity": "adapted"
-        },
-        {
-            "derived_from_item_id": "EX-ITEM-4",
-            "objective_id": "OBJ-D",
-            "type": "short_answer",
-            "difficulty": "easy",
-            "transfer": "near",
-            "bloom": "Remember",
-            "stem": "What does the softmax function do to a vector of logits?",
-            "choices": [],
-            "answer": "Softmax transforms logits into a probability distribution where all values are non-negative and sum to 1.",
-            "type_specific": {},
-            "rationale": "Softmax normalizes logits to create valid probability distributions for multi-class classification.",
-            "hints": ["Think about normalization.", "What should probabilities sum to?"],
-            "tags": ["concept:softmax", "bloom:Remember"],
-            "source_ids": ["doc:lm-slides#loss-softmax"],
-            "structure_fidelity": "exact"
-        },
-        {
-            "derived_from_item_id": "EX-ITEM-5",
-            "objective_id": "OBJ-E",
-            "type": "explain_why",
-            "difficulty": "medium",
-            "transfer": "far",
-            "bloom": "Analyze",
-            "stem": "Compare and contrast the membership and continuation problems in language modeling. Which approach would be better for each?",
-            "choices": [],
-            "answer": "Membership asks 'is this sequence in language L?' and is best solved by discriminative models. Continuation asks 'what follows this sequence?' and is best solved by generative models like causal LMs.",
-            "type_specific": {},
-            "rationale": "Different problems require different modeling approaches based on their inherent nature and goals.",
-            "hints": ["Think about what each problem is trying to determine.", "Consider the difference between classification and generation."],
-            "tags": ["concept:membership", "concept:continuation", "bloom:Analyze"],
-            "source_ids": ["doc:lm-slides#membership-continuation"],
-            "structure_fidelity": "exact"
-        }
-    ]
-    
-    # Adjust number of questions based on max_questions parameter
-    if max_questions < len(quiz_items):
-        quiz_items = quiz_items[:max_questions]
+    # Generate quiz items based on the schema provided and quiz type
+    if quiz_type == 'formative':
+        quiz_items = _generate_formative_quiz_items(topic, difficulty, max_questions)
+    elif quiz_type == 'summative':
+        quiz_items = _generate_summative_quiz_items(topic, difficulty, max_questions)
+    elif quiz_type == 'diagnostic':
+        quiz_items = _generate_diagnostic_quiz_items(topic, difficulty, max_questions)
+    elif quiz_type == 'mastery':
+        quiz_items = _generate_mastery_quiz_items(topic, difficulty, max_questions)
+    else:
+        # Default to formative
+        quiz_items = _generate_formative_quiz_items(topic, difficulty, max_questions)
     
     return {
         "items": quiz_items
     }
 
 
-def mock_diagnostic(payload: dict) -> dict:
-    """Return mock diagnostic data for testing."""
-    return {
-        "title": "Learning Diagnostic",
-        "description": "Assessment of current knowledge and learning gaps.",
-        "sections": [
-            {
-                "id": "section_1",
-                "title": "Core Concepts",
-                "questions": [
-                    {
-                        "id": "q1",
-                        "question": "How confident are you with basic concepts?",
-                        "type": "confidence_scale",
-                        "options": ["Not at all", "Somewhat", "Confident", "Very confident"]
-                    }
+def _generate_formative_quiz_items(topic: str, difficulty: str, max_questions: int) -> list:
+    """Generate formative practice quiz items with rich feedback."""
+    return [
+        {
+            "derived_from_item_id": "EX-Q1",
+            "objective_id": "OBJ1",
+            "type": "explain_why",
+            "difficulty": "medium",
+            "transfer": "near",
+            "bloom": "Understand",
+            "stem": "List three major language-model task families (e.g., CLM, MLM, NSP) and explain for each how training data are obtained without manual labels.",
+            "answer": "Self-supervised setups: CLM uses next-token prediction on raw text; MLM masks tokens and predicts them; NSP judges sentence continuity. All use raw corpora.",
+            "type_specific": {},
+            "rationale": "Slides describe CLM/MLM/NSP and that large raw corpora enable self-supervised training.",
+            "hints": ["Think how tokens are hidden or predicted.", "Name the prediction target for each task."],
+            "tags": ["concept:task-families", "bloom:Understand"],
+            "source_ids": ["doc:lm-slides#mlm-clm-nsp"],
+            "structure_fidelity": "adapted",
+            "ask_confidence": True,
+            "reading_level_grade": 13
+        },
+        {
+            "derived_from_item_id": "EX-Q2",
+            "objective_id": "OBJ2",
+            "type": "short_answer",
+            "difficulty": "medium",
+            "transfer": "near",
+            "bloom": "Understand",
+            "stem": "Define the membership and continuation problems in language modeling and name a model type suited to each.",
+            "answer": "Membership: decide if a sequence belongs to language L; Continuation: predict what follows a given prefix. Grammars or discriminators address membership; causal LMs address continuation.",
+            "type_specific": {},
+            "rationale": "Slides explicitly define both problems and typical solutions.",
+            "hints": ["Membership asks 'is this in L?'", "Continuation asks 'what comes next?'"],
+            "tags": ["concept:membership", "concept:continuation", "bloom:Understand"],
+            "source_ids": ["doc:lm-slides#membership-continuation"],
+            "structure_fidelity": "exact",
+            "ask_confidence": True,
+            "reading_level_grade": 13
+        },
+        {
+            "derived_from_item_id": "EX-Q3",
+            "objective_id": "OBJ3",
+            "type": "short_answer",
+            "difficulty": "easy",
+            "transfer": "near",
+            "bloom": "Understand",
+            "stem": "Briefly contrast supervised learning with self-supervised pre-training plus fine-tuning.",
+            "answer": "Supervised uses labeled pairs for the target task. Self-supervised pre-training learns from raw text (e.g., CLM/MLM), then a smaller labeled set fine-tunes the model.",
+            "type_specific": {},
+            "rationale": "Slides cover pre-training on raw text and fine-tuning with labels as transfer learning.",
+            "hints": ["Which phase uses labels?", "Which phase uses raw text only?"],
+            "tags": ["concept:pretrain-finetune", "bloom:Understand"],
+            "source_ids": ["doc:lm-slides#pretrain-finetune-transfer"],
+            "structure_fidelity": "adapted",
+            "ask_confidence": True,
+            "reading_level_grade": 13
+        },
+        {
+            "derived_from_item_id": "EX-Q4",
+            "objective_id": "OBJ4",
+            "type": "numeric_response",
+            "difficulty": "hard",
+            "transfer": "near",
+            "bloom": "Apply",
+            "stem": "A classifier with softmax predicts p(correct)=0.20 for the true class. Compute the cross-entropy loss L = −log p(correct). Use natural log.",
+            "answer": 1.609437912,
+            "type_specific": {"tolerance": 0.001, "unit": "unitless"},
+            "rationale": "For one-hot y, cross-entropy equals −log probability of the true class.",
+            "hints": ["Recall L = −log p(y_true).", "Use p=0.20."],
+            "tags": ["concept:cross-entropy", "bloom:Apply"],
+            "source_ids": ["doc:lm-slides#loss-softmax"],
+            "structure_fidelity": "adapted",
+            "ask_confidence": True,
+            "reading_level_grade": 13
+        },
+        {
+            "derived_from_item_id": "EX-Q5",
+            "objective_id": "OBJ5",
+            "type": "short_answer",
+            "difficulty": "easy",
+            "transfer": "near",
+            "bloom": "Remember",
+            "stem": "What does softmax do to a real-valued vector of logits?",
+            "answer": "Maps it to a probability distribution: non-negative components that sum to 1, emphasizing relatively larger logits.",
+            "type_specific": {},
+            "rationale": "Slides present softmax-normalized outputs for multi-class prediction.",
+            "hints": ["Think normalization.", "Sum of outputs equals what?"],
+            "tags": ["concept:softmax", "bloom:Remember"],
+            "source_ids": ["doc:lm-slides#loss-softmax"],
+            "structure_fidelity": "exact",
+            "ask_confidence": True,
+            "reading_level_grade": 13
+        }
+    ]
+
+
+def _generate_summative_quiz_items(topic: str, difficulty: str, max_questions: int) -> list:
+    """Generate summative exam quiz items with measurement focus."""
+    return [
+        {
+            "derived_from_item_id": "SUM-Q1",
+            "objective_id": "OBJ1",
+            "type": "two_tier",
+            "difficulty": "medium",
+            "transfer": "far",
+            "bloom": "Analyze",
+            "stem": "A language model trained on web text performs poorly on medical terminology. What is the primary reason?",
+            "choices": [
+                {"id": "A", "text": "The model lacks sufficient parameters", "correct": False},
+                {"id": "B", "text": "Domain mismatch between training and test data", "correct": True},
+                {"id": "C", "text": "The model uses outdated architecture", "correct": False},
+                {"id": "D", "text": "Insufficient training time", "correct": False}
+            ],
+            "answer": "B",
+            "type_specific": {
+                "answer_choices": [
+                    {"id": "A", "text": "The model lacks sufficient parameters", "correct": False},
+                    {"id": "B", "text": "Domain mismatch between training and test data", "correct": True},
+                    {"id": "C", "text": "The model uses outdated architecture", "correct": False},
+                    {"id": "D", "text": "Insufficient training time", "correct": False}
+                ],
+                "reason_choices": [
+                    {"id": "1", "text": "Web text contains limited medical vocabulary", "correct": True},
+                    {"id": "2", "text": "Medical texts require different tokenization", "correct": False},
+                    {"id": "3", "text": "Models cannot learn domain-specific patterns", "correct": False}
                 ]
-            }
-        ]
-    }
+            },
+            "rationale": "Domain mismatch occurs when training and test distributions differ significantly.",
+            "tags": ["concept:domain-adaptation", "bloom:Analyze"],
+            "source_ids": ["doc:lm-slides#pretrain-finetune-transfer"],
+            "intended_p_value": 0.6,
+            "discrimination_intent": "high"
+        },
+        {
+            "derived_from_item_id": "SUM-Q2",
+            "objective_id": "OBJ2",
+            "type": "data_interpretation",
+            "difficulty": "hard",
+            "transfer": "far",
+            "bloom": "Evaluate",
+            "stem": "Given the cross-entropy loss values: Training=0.5, Validation=0.8. What does this indicate?",
+            "answer": "The model is overfitting to the training data.",
+            "type_specific": {
+                "data_source": "table",
+                "data_spec": "Training Loss: 0.5\nValidation Loss: 0.8",
+                "question": "What does this loss pattern indicate about model performance?",
+                "answer": "The model is overfitting to the training data."
+            },
+            "rationale": "Higher validation loss than training loss indicates overfitting.",
+            "tags": ["concept:overfitting", "bloom:Evaluate"],
+            "source_ids": ["doc:lm-slides#loss-softmax"],
+            "intended_p_value": 0.35,
+            "discrimination_intent": "high"
+        }
+    ]
 
 
-# Registry mapping for different mock data types
-MOCK_DATA_REGISTRY = {
-    "flashcards": mock_flashcards,
-    "assessment": mock_assessment,
-    "diagnostic": mock_diagnostic,
-}
+def _generate_diagnostic_quiz_items(topic: str, difficulty: str, max_questions: int) -> list:
+    """Generate diagnostic pre-test quiz items for prior knowledge mapping."""
+    return [
+        {
+            "derived_from_item_id": "DIAG-Q1",
+            "objective_id": "OBJ1",
+            "type": "mcq_single",
+            "difficulty": "easy",
+            "transfer": "near",
+            "bloom": "Remember",
+            "stem": "What is the primary goal of language modeling?",
+            "choices": [
+                {"id": "A", "text": "To translate between languages", "correct": False},
+                {"id": "B", "text": "To predict the next word in a sequence", "correct": True},
+                {"id": "C", "text": "To classify text sentiment", "correct": False},
+                {"id": "D", "text": "To extract named entities", "correct": False}
+            ],
+            "answer": "B",
+            "type_specific": {},
+            "rationale": "Language modeling focuses on predicting subsequent tokens.",
+            "tags": ["diagnostic:true", "subskill:basic-understanding", "bloom:Remember"],
+            "source_ids": ["doc:lm-slides#membership-continuation"],
+            "ask_confidence": True
+        },
+        {
+            "derived_from_item_id": "DIAG-Q2",
+            "objective_id": "OBJ2",
+            "type": "categorization",
+            "difficulty": "medium",
+            "transfer": "near",
+            "bloom": "Understand",
+            "stem": "Categorize these learning approaches:",
+            "answer": "Supervised: labeled pairs, Self-supervised: raw text, Unsupervised: no labels",
+            "type_specific": {
+                "categories": ["Supervised", "Self-supervised", "Unsupervised"],
+                "items": [
+                    {"text": "Learning from labeled input-output pairs", "category": "Supervised"},
+                    {"text": "Learning from raw text without labels", "category": "Self-supervised"},
+                    {"text": "Learning patterns without any supervision", "category": "Unsupervised"}
+                ]
+            },
+            "rationale": "Different learning paradigms use different types of supervision.",
+            "tags": ["diagnostic:true", "subskill:learning-paradigms", "bloom:Understand"],
+            "source_ids": ["doc:lm-slides#pretrain-finetune-transfer"],
+            "ask_confidence": True
+        }
+    ]
 
-# AI Client mock registry mapping Task enum to mock functions
+
+def _generate_mastery_quiz_items(topic: str, difficulty: str, max_questions: int) -> list:
+    """Generate mastery check quiz items with high bar and narrow scope."""
+    return [
+        {
+            "derived_from_item_id": "MAST-Q1",
+            "objective_id": "OBJ1",
+            "type": "mcq_single",
+            "difficulty": "hard",
+            "transfer": "far",
+            "bloom": "Apply",
+            "stem": "In a transformer model, which component is responsible for learning contextual relationships between tokens?",
+            "choices": [
+                {"id": "A", "text": "Feed-forward networks", "correct": False},
+                {"id": "B", "text": "Multi-head attention", "correct": True},
+                {"id": "C", "text": "Layer normalization", "correct": False},
+                {"id": "D", "text": "Positional encoding", "correct": False}
+            ],
+            "answer": "B",
+            "type_specific": {},
+            "rationale": "Multi-head attention mechanisms capture relationships between all token pairs.",
+            "hints": ["Think about what component processes token relationships."],
+            "tags": ["concept:attention-mechanism", "bloom:Apply"],
+            "source_ids": ["doc:lm-slides#mlm-clm-nsp"],
+            "self_explanation_prompt": "Explain why attention is crucial for language understanding."
+        },
+        {
+            "derived_from_item_id": "MAST-Q2",
+            "objective_id": "OBJ2",
+            "type": "explain_why",
+            "difficulty": "hard",
+            "transfer": "far",
+            "bloom": "Analyze",
+            "stem": "Why does increasing model size typically improve performance on language tasks?",
+            "answer": "Larger models have more parameters to capture complex patterns and can store more knowledge, leading to better generalization.",
+            "type_specific": {},
+            "rationale": "Model capacity scales with parameter count, enabling better pattern recognition.",
+            "hints": ["Consider the relationship between parameters and model capacity."],
+            "tags": ["concept:model-scaling", "bloom:Analyze"],
+            "source_ids": ["doc:lm-slides#pretrain-finetune-transfer"],
+            "self_explanation_prompt": "Analyze the trade-offs of model scaling."
+        }
+    ]
+
+
+# Mock data registry mapping tasks to their respective mock functions
 MOCK_REGISTRY = {
     Task.FLASHCARDS: mock_flashcards,
-    Task.SYLLABUS: lambda payload: {
-        "title": "Sample Syllabus",
-        "modules": [],
-        "total_hours": 40,
-        "bloom_levels": ["remember", "understand", "apply"]
-    },
-    Task.TEST: lambda payload: {
-        "items": [
-            {
-                "id": "test_1",
-                "question": "What is machine learning?",
-                "type": "multiple_choice",
-                "options": ["AI subset", "Statistics", "Programming", "Data analysis"],
-                "correct_answer": 0
-            }
-        ]
-    },
-    Task.CONTENT: lambda payload: {
-        "summary": "Mock content summary",
-        "keywords": ["machine learning", "artificial intelligence"],
-        "entities": [],
-        "concepts": [],
-        "sections": []
-    },
+    Task.SYLLABUS: mock_syllabus,
+    Task.TEST: mock_test,
+    Task.CONTENT: mock_content,
     Task.QUIZ: mock_quiz
 }
 
 
-def get_mock_data(data_type: str, payload: dict) -> Dict[str, Any]:
-    """Get mock data for the specified type and payload."""
-    if data_type not in MOCK_DATA_REGISTRY:
-        raise ValueError(f"Unknown mock data type: {data_type}")
+class MockDataRegistry:
+    """Registry for mock data functions."""
     
-    return MOCK_DATA_REGISTRY[data_type](payload)
+    def __init__(self):
+        self.registry = MOCK_REGISTRY
+    
+    def get_mock_response(self, task: Task, payload: dict) -> dict:
+        """Get mock response for a given task."""
+        mock_func = self.registry.get(task)
+        if not mock_func:
+            raise ValueError(f"No mock function registered for task: {task}")
+        
+        return mock_func(payload)
+    
+    def register_mock_function(self, task: Task, mock_func):
+        """Register a mock function for a task."""
+        self.registry[task] = mock_func
+
+
+# Global registry instance
+mock_registry = MockDataRegistry()

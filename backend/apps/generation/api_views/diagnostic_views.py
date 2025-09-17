@@ -216,6 +216,45 @@ class DiagnosticGenerationView(APIView):
             return create_error_response(f'Failed to generate diagnostic: {str(e)}', status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+class QuizGenerationView(APIView):
+    """API view for generating quiz sessions with different quiz types."""
+    
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        """Generate a new quiz session."""
+        serializer = DiagnosticGenerationRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Check for test mode header
+            mock_mode = request.headers.get('X-Test-Mode') == 'true'
+            
+            # Extract quiz-specific parameters
+            quiz_type = request.data.get('quiz_type', 'formative')
+            difficulty = request.data.get('difficulty', 'medium')
+            
+            # Generate quiz using AI
+            generator = DiagnosticGenerator()
+            session = generator.generate_quiz(
+                project_id=serializer.validated_data['project'],
+                topic=serializer.validated_data.get('topic', 'General Knowledge'),
+                quiz_type=quiz_type,
+                source_ids=serializer.validated_data.get('source_ids'),
+                difficulty=difficulty,
+                max_questions=serializer.validated_data['max_questions'],
+                mock_mode=mock_mode
+            )
+            
+            # Return the generated session
+            session_serializer = DiagnosticSessionSerializer(session)
+            return Response(session_serializer.data, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return create_error_response(f'Failed to generate quiz: {str(e)}', status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 class DiagnosticAnalyticsView(APIView):
     """API view for diagnostic analytics."""
     
