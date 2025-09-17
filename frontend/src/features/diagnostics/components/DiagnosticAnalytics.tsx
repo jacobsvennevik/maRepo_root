@@ -78,7 +78,7 @@ export default function DiagnosticAnalytics({ sessionId }: { sessionId: string }
   const fetchAnalytics = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosApi.get(`/diagnostics/sessions/${sessionId}/analytics/`);
+      const response = await axiosApi.get(`diagnostics/sessions/${sessionId}/analytics/`);
       setAnalytics(response.data);
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
@@ -89,7 +89,7 @@ export default function DiagnosticAnalytics({ sessionId }: { sessionId: string }
 
   const handleExportAnalytics = async () => {
     try {
-      const response = await axiosApi.get(`/diagnostics/sessions/${sessionId}/analytics/export/`, { responseType: 'blob' });
+      const response = await axiosApi.get(`diagnostics/sessions/${sessionId}/analytics/export/`, { responseType: 'blob' });
       if (response.status === 200) {
         const blob = response.data as Blob;
         const url = window.URL.createObjectURL(blob);

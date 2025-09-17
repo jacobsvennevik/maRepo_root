@@ -26,7 +26,7 @@ const TEST_MODE =
 
 export const createProject = async (projectData: ProjectData) => {
   try {
-    const response = await axiosApi.post("/projects/", projectData, {
+    const response = await axiosApi.post("projects/", projectData, {
       headers: {
         "Idempotency-Key": crypto.randomUUID()
       }
@@ -207,7 +207,7 @@ export const getProjects = async () => {
 
 export const finalizeProject = async (projectId: string) => {
   try {
-    const response = await axiosApi.patch(`/projects/${projectId}/`, {
+    const response = await axiosApi.patch(`projects/${projectId}/`, {
       is_draft: false,
     });
     return response.data;
@@ -226,7 +226,7 @@ export const finalizeProject = async (projectId: string) => {
 
 export const cleanupAbandonedDrafts = async (hours: number = 24) => {
   try {
-    const response = await axiosApi.post("/projects/cleanup_drafts/", {
+    const response = await axiosApi.post("projects/cleanup_drafts/", {
       hours,
     });
     return response.data;

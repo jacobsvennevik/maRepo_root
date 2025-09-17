@@ -17,7 +17,7 @@ import { Target, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useQuizCenter } from '@/features/quiz/hooks/useQuizCenter';
-import { QuizWizard } from '@/features/quiz/components/QuizWizard';
+import { EnhancedQuizWizard } from '@/features/quiz/components/QuizWizard/EnhancedQuizWizard';
 import { isTestMode } from '@/features/projects/services/upload-utils';
 
 export default function QuizCenter() {
@@ -241,7 +241,7 @@ export default function QuizCenter() {
 
       {/* Create Quiz Wizard */}
       {showCreateWizard && (
-        <QuizWizard
+        <EnhancedQuizWizard
           projectId={projectId}
           open={showCreateWizard}
           onOpenChange={setShowCreateWizard}

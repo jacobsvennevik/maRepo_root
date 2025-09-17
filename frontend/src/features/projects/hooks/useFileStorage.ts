@@ -92,7 +92,7 @@ export function useFileStorage(): UseFileStorageReturn {
     try {
       setLoading(true);
       setError(null);
-      const response = await axiosApi.get(`/projects/${projectId}/`);
+      const response = await axiosApi.get(`projects/${projectId}/`);
       const project = response.data;
       
       // Transform backend files to frontend format

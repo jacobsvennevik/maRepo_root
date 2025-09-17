@@ -24,7 +24,7 @@ export function unwrapFlashcardSets(payload: any): FlashcardSetApi[] {
 
 export async function refreshFlashcardSets(projectId: string): Promise<FlashcardSetApi[]> {
   const response = await axiosApi.get<FlashcardSetApi[] | Paginated<FlashcardSetApi>>(
-    `/projects/${projectId}/flashcard-sets/`
+    `projects/${projectId}/flashcard-sets/`
   );
   return unwrapFlashcardSets(response.data);
 }

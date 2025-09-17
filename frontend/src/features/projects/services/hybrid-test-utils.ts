@@ -62,7 +62,7 @@ export async function uploadMockDataToBackend(
     formData.append('file_type', 'pdf');
     formData.append('upload_type', uploadType);
 
-    const uploadResponse = await axiosApi.post('/pdf_service/documents/', formData, {
+    const uploadResponse = await axiosApi.post('pdf_service/documents/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'X-Test-Mode': 'true', // Ensure test mode header is set
@@ -107,7 +107,7 @@ export async function processMockDataThroughBackend(
   
   try {
     // Start real backend processing
-    const processResponse = await axiosApi.post(`/pdf_service/documents/${documentId}/process/`, {}, {
+    const processResponse = await axiosApi.post(`pdf_service/documents/${documentId}/process/`, {}, {
       headers: {
         'X-Test-Mode': 'true', // Ensure test mode header is set
       }
@@ -126,7 +126,7 @@ export async function processMockDataThroughBackend(
       await new Promise(resolve => setTimeout(resolve, pollInterval));
       
       try {
-        const statusResponse = await axiosApi.get(`/pdf_service/documents/${documentId}/`, {
+        const statusResponse = await axiosApi.get(`pdf_service/documents/${documentId}/`, {
           headers: {
             'X-Test-Mode': 'true', // Ensure test mode header is set
           }
@@ -139,7 +139,7 @@ export async function processMockDataThroughBackend(
           console.log(`🧪 HYBRID MODE: Real processing completed, using mock data as fallback`);
           
           // Get the processed data from backend
-          const processedDataResponse = await axiosApi.get(`/pdf_service/documents/${documentId}/processed_data/`, {
+          const processedDataResponse = await axiosApi.get(`pdf_service/documents/${documentId}/processed_data/`, {
             headers: {
               'X-Test-Mode': 'true', // Ensure test mode header is set
             }

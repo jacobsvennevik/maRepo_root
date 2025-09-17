@@ -37,6 +37,7 @@ describe('ExtractionResultsStep', () => {
     grading: [
       { category: 'Tests', weight: 100 }
     ]
+  };
 
   const defaultProps = {
     extractedData: mockExtractedData,

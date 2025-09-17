@@ -68,7 +68,7 @@ export async function uploadTestFileToBackend(file: File, uploadType: string): P
   formData.append('upload_type', uploadType);
 
   try {
-    const response = await axiosApi.post('/pdf_service/documents/', formData, {
+    const response = await axiosApi.post('pdf_service/documents/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       }
@@ -90,7 +90,7 @@ export async function processTestFile(documentId: number): Promise<any> {
   
   try {
     // Start processing
-    const processResponse = await axiosApi.post(`/pdf_service/documents/${documentId}/process/`);
+    const processResponse = await axiosApi.post(`pdf_service/documents/${documentId}/process/`);
     console.log(`🧪 TEST MODE: Processing started:`, processResponse.data);
     
     // Poll for completion
@@ -101,7 +101,7 @@ export async function processTestFile(documentId: number): Promise<any> {
     while (attempts < maxAttempts) {
       await new Promise(resolve => setTimeout(resolve, pollInterval));
       
-      const statusResponse = await axiosApi.get(`/pdf_service/documents/${documentId}/`);
+      const statusResponse = await axiosApi.get(`pdf_service/documents/${documentId}/`);
       const statusData = statusResponse.data;
       
       console.log(`🧪 TEST MODE: Polling attempt ${attempts + 1}:`, statusData.status);

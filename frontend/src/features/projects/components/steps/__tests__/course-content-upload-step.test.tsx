@@ -2,11 +2,11 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { CourseContentUploadStep } from '../course-content-upload-step';
 import * as mockData from '../../../services/mock-data';
-import * as uploadUtils from '../../../utils/upload-utils';
+import * as uploadUtils from '../../../services/upload-utils';
 
 // Mock the dependencies
 jest.mock('../../../services/mock-data');
-jest.mock('../../../utils/upload-utils');
+jest.mock('../../../services/upload-utils');
 jest.mock('../../../utils/hybrid-test-utils', () => ({
   enhancedMockUpload: jest.fn().mockResolvedValue([
     {

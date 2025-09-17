@@ -138,6 +138,7 @@ describe('PDF Processing Integration', () => {
           ]
         },
         status: 'completed'
+      };
 
       // This mimics the transformation logic that should exist
       const frontendData = {
@@ -146,6 +147,7 @@ describe('PDF Processing Integration', () => {
         assignments: backendData.metadata.assignments,
         originalText: backendData.original_text,
         status: backendData.status
+      };
 
       expect(frontendData.courseName).toBe('Advanced Physics');
       expect(frontendData.topics).toEqual(['mechanics', 'thermodynamics']);

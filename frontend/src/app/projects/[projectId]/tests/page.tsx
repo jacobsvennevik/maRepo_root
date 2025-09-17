@@ -39,7 +39,7 @@ import {
 import { OceanCenteredPageHeader } from '@/components/ui/common/OceanCenteredPageHeader';
 import { Card, CardContent } from "@/components/ui/card";
 import { QuizStatsFooter } from '@/features/quiz/components/QuizStatsFooter';
-import { QuizWizard } from '@/features/quiz/components/QuizWizard';
+import { EnhancedQuizWizard } from '@/features/quiz/components/QuizWizard/EnhancedQuizWizard';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -193,7 +193,7 @@ export default function ProjectTests() {
         />
       )}
       <QuickActionsGrid onAction={handleQuickAction} />
-      <QuizWizard
+      <EnhancedQuizWizard
         projectId={projectId}
         open={isWizardOpen}
         onOpenChange={setIsWizardOpen}

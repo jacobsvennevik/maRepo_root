@@ -43,7 +43,7 @@ export default function DiagnosticDashboard({ projectId }: { projectId: string }
   const fetchDiagnosticSessions = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosApi.get(`/diagnostic-sessions/?project=${projectId}`);
+      const response = await axiosApi.get(`diagnostic-sessions/?project=${projectId}`);
       const data = response.data;
       setSessions(data.results || data || []);
     } catch (error) {
@@ -208,7 +208,7 @@ function DiagnosticSessionCard({
 
   const handleStatusChange = async (newStatus: string) => {
     try {
-      await axiosApi.patch(`/diagnostic-sessions/${session.id}/`, { status: newStatus });
+      await axiosApi.patch(`diagnostic-sessions/${session.id}/`, { status: newStatus });
       onRefresh();
     } catch (error) {
       console.error('Failed to update status:', error);
@@ -219,7 +219,7 @@ function DiagnosticSessionCard({
     if (!confirm('Are you sure you want to delete this diagnostic session?')) return;
     
     try {
-      await axiosApi.delete(`/diagnostic-sessions/${session.id}/`);
+      await axiosApi.delete(`diagnostic-sessions/${session.id}/`);
       onRefresh();
     } catch (error) {
       console.error('Failed to delete session:', error);

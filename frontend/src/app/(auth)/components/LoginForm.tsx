@@ -72,7 +72,7 @@ export function LoginForm({
 
       // Test authenticated request (through proxy client)
       try {
-        const testResponse = await axiosApi.get("/users/me/");
+        const testResponse = await axiosApi.get("users/me/");
       } catch (testError) {}
 
       router.push("/dashboard");

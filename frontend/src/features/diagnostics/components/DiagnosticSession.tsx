@@ -87,7 +87,7 @@ export default function DiagnosticSession({ sessionId }: { sessionId: string }) 
   const fetchSession = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosApi.get(`/diagnostic-sessions/${sessionId}/`);
+      const response = await axiosApi.get(`diagnostic-sessions/${sessionId}/`);
       setSession(response.data);
     } catch (error) {
       console.error('Failed to fetch session:', error);
@@ -171,7 +171,7 @@ export default function DiagnosticSession({ sessionId }: { sessionId: string }) 
           latency_ms: r.latency_ms,
         })),
       };
-      const response = await axiosApi.post(`/diagnostic-responses/`, payload);
+      const response = await axiosApi.post(`diagnostic-responses/`, payload);
       setResults(response.data);
       setShowResults(true);
     } catch (error) {

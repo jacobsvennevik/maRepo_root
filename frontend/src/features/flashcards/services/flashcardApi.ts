@@ -58,7 +58,7 @@ class FlashcardApiService {
     console.log('→ DELETE /flashcard-sets/${setId}/');
 
     try {
-      await axiosApi.delete(`/flashcard-sets/${setId}/`);
+      await axiosApi.delete(`flashcard-sets/${setId}/`);
       console.log('✅ Set deleted successfully');
     } catch (err) {
       console.error('❌ Delete failure:', err);
@@ -146,7 +146,7 @@ class FlashcardApiService {
     console.log('→ DELETE /api/flashcards/${cardId}/');
 
     try {
-      await axiosApi.delete(`/flashcards/${cardId}/`);
+      await axiosApi.delete(`flashcards/${cardId}/`);
       console.log('✅ Flashcard deleted successfully');
     } catch (err) {
       console.error('❌ Delete failure:', err);
@@ -163,7 +163,7 @@ class FlashcardApiService {
     console.log('→ Was correct:', wasCorrect);
 
     try {
-      await axiosApi.post(`/flashcards/${cardId}/review/`, { was_correct: wasCorrect });
+      await axiosApi.post(`flashcards/${cardId}/review/`, { was_correct: wasCorrect });
       console.log('✅ Card review recorded');
     } catch (err) {
       console.error('❌ Review failure:', err);

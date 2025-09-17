@@ -42,6 +42,7 @@ const localStorageMock = {
   clear: jest.fn(() => {
     Object.keys(globalMockStorage).forEach(key => delete globalMockStorage[key]);
   }),
+};
 
 // Override window.localStorage
 Object.defineProperty(window, 'localStorage', {

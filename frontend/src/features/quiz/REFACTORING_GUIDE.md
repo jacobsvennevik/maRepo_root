@@ -22,7 +22,7 @@ frontend/src/features/quiz/
 │   ├── CreateQuizWizard.tsx     # Original monolithic component (preserved)
 │   ├── QuizStatsFooter.tsx      # Existing component
 │   └── QuizWizard/              # New modular wizard structure
-│       ├── index.tsx            # Main wizard component
+│       ├── EnhancedQuizWizard.tsx  # Enhanced main wizard component
 │       └── steps/
 │           └── index.tsx        # Individual step components
 ├── hooks/
@@ -156,13 +156,13 @@ export const SourceConfigStep: React.FC<SourceConfigStepProps> = ({ method, uplo
 - Reusable step components
 - Better testing isolation
 
-### 5. **Main Wizard Component** (`components/QuizWizard/index.tsx`)
+### 5. **Main Wizard Component** (`components/QuizWizard/EnhancedQuizWizard.tsx`)
 
 **Before**: Monolithic component with mixed concerns
 **After**: Orchestrator component using hooks and step components
 
 ```typescript
-export const QuizWizard: React.FC<QuizWizardProps> = ({ projectId, open, onOpenChange }) => {
+export const EnhancedQuizWizard: React.FC<QuizWizardProps> = ({ projectId, open, onOpenChange }) => {
   // State management through custom hooks
   const form = useFormValidation({ schema: QuizCreationSchema });
   const fileManagement = useFileManagement({ projectId });
@@ -270,22 +270,11 @@ The refactor maintains backward compatibility by:
 
 ### **Usage Examples**
 
-**Old Usage** (still supported):
+**Usage**:
 ```typescript
-import { CreateQuizWizard } from '@/features/quiz';
+import { EnhancedQuizWizard } from '@/features/quiz';
 
-<CreateQuizWizard 
-  projectId={projectId}
-  open={open}
-  onOpenChange={setOpen}
-/>
-```
-
-**New Usage** (recommended):
-```typescript
-import { QuizWizard } from '@/features/quiz';
-
-<QuizWizard 
+<EnhancedQuizWizard 
   projectId={projectId}
   open={open}
   onOpenChange={setOpen}

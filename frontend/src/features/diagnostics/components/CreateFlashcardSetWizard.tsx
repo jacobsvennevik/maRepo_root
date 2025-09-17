@@ -14,7 +14,7 @@ import { FlashcardDeckSchema, type FlashcardDeckForm } from './schemas/flashcard
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { axiosApi } from '@/lib/axios-api';
-import { axiosGeneration } from '@/lib/axios';
+import { axiosGeneration, axiosApi } from '@/lib/axios';
 // Test mode detection - check dynamically to respond to environment variable changes during tests
 const isTestMode = (): boolean => {
   // Check if running in test environment
@@ -489,7 +489,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
         try {
           if (desiredTitle || desiredDescription) {
             // Generated sets are managed via the generation service
-            await axiosGeneration.patch(`/projects/${projectId}/flashcard-sets/${generatedDeck.flashcardSetId}/`, {
+            await axiosApi.patch(`projects/${projectId}/flashcard-sets/${generatedDeck.flashcardSetId}/`, {
               ...(desiredTitle ? { title: desiredTitle } : {}),
               ...(desiredDescription ? { description: desiredDescription } : {}),
             });
@@ -509,7 +509,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
       // Fallback: Create the flashcard set if it wasn't created during generation
       console.log('🔍 DEBUG: Creating new flashcard set from generated cards');
       
-      const response = await axiosApi.post(`/projects/${projectId}/flashcard-sets/`, {
+      const response = await axiosApi.post(`projects/${projectId}/flashcard-sets/`, {
         title: form.getValues('title') || deriveTitleFromSource(),
         description: form.getValues('description') || `Generated from ${method === 'files' ? 'uploaded files' : 'manual entry'}`,
         difficulty_level: 'INTERMEDIATE',
@@ -561,7 +561,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
         const formData = new FormData();
         formData.append('file', file);
         
-        const response = await axiosApi.post(`/projects/${projectId}/upload_file/`, formData, {
+        const response = await axiosApi.post(`projects/${projectId}/upload_file/`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           }

@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { FlashcardCarousel } from "@/features/flashcards/components/FlashcardCarousel";
 import type { FlashcardSet } from "@/features/flashcards/types";
 import { useEffect, useState } from "react";
-import { axiosGeneration } from "@/lib/axios";
+import { axiosApi } from "@/lib/axios";
 
 export default function FlashcardSetCarouselPage() {
   const params = useParams();
@@ -162,7 +162,7 @@ export default function FlashcardSetCarouselPage() {
           setFlashcardSet(mockFlashcardSet);
         } else {
           // Handle real flashcard set - use authenticated generation client
-          const res = await axiosGeneration.get<FlashcardSet>(`/projects/${projectId}/flashcard-sets/${setId}/`);
+          const res = await axiosApi.get<FlashcardSet>(`projects/${projectId}/flashcard-sets/${setId}/`);
           setFlashcardSet(res.data);
         }
       } catch (err: any) {

@@ -5,7 +5,7 @@ export * from './types';
 export * from './utils/transformers';
 
 // Enhanced wizard components
-export { QuizWizard } from './components/QuizWizard';
+export { EnhancedQuizWizard } from './components/QuizWizard';
 export * from './components/QuizWizard/steps';
 export * from './schemas/quizCreation';
 

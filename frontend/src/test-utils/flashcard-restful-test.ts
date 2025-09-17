@@ -29,7 +29,7 @@ export async function testRestfulFlashcardEndpoints(projectId: string) {
   try {
     // Test 1: GET /api/projects/{projectId}/flashcard-sets/
     console.log('📋 Test 1: Listing flashcard sets...');
-    const listResponse = await axiosApi.get(`/projects/${projectId}/flashcard-sets/`);
+    const listResponse = await axiosApi.get(`projects/${projectId}/flashcard-sets/`);
     console.log('✅ List response:', listResponse.data);
     
     // Test 2: POST /api/projects/{projectId}/flashcard-sets/ (create)
@@ -43,18 +43,18 @@ export async function testRestfulFlashcardEndpoints(projectId: string) {
       ]
     };
     
-    const createResponse = await axiosApi.post(`/projects/${projectId}/flashcard-sets/`, createData);
+    const createResponse = await axiosApi.post(`projects/${projectId}/flashcard-sets/`, createData);
     console.log('✅ Create response:', createResponse.data);
     console.log('📍 Location header:', createResponse.headers.location);
     
     // Test 3: GET again to verify the set appears
     console.log('📋 Test 3: Verifying set appears in list...');
-    const listResponse2 = await axiosApi.get(`/projects/${projectId}/flashcard-sets/`);
+    const listResponse2 = await axiosApi.get(`projects/${projectId}/flashcard-sets/`);
     console.log('✅ Updated list response:', listResponse2.data);
     
     // Test 4: POST same data again (idempotency test)
     console.log('🔄 Test 4: Testing idempotency...');
-    const createResponse2 = await axiosApi.post(`/projects/${projectId}/flashcard-sets/`, createData);
+    const createResponse2 = await axiosApi.post(`projects/${projectId}/flashcard-sets/`, createData);
     console.log('✅ Idempotent create response:', createResponse2.data);
     
     return {
@@ -78,7 +78,7 @@ export async function testFlashcardDueEndpoint(projectId: string) {
   console.log('📅 Testing flashcard due endpoint...');
   
   try {
-    const dueResponse = await axiosApi.get(`/projects/${projectId}/flashcards/due/?limit=10`);
+    const dueResponse = await axiosApi.get(`projects/${projectId}/flashcards/due/?limit=10`);
     console.log('✅ Due response:', dueResponse.data);
     
     return {
