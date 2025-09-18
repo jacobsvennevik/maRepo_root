@@ -1,0 +1,68 @@
+e267a2c3d16e6470948fdb620af749b1
+'use client';
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "useKeyboardNavigation", {
+    enumerable: true,
+    get: function() {
+        return useKeyboardNavigation;
+    }
+});
+const _react = require("react");
+function useKeyboardNavigation({ onNext, onBack, onSkip, canGoNext, canGoBack, canSkip = false, enabled = true }) {
+    const handleKeyDown = (0, _react.useCallback)((event)=>{
+        if (!enabled) return;
+        // Prevent navigation when user is typing in input fields
+        const target = event.target;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
+            return;
+        }
+        switch(event.key){
+            case 'ArrowRight':
+            case 'Enter':
+                event.preventDefault();
+                if (canGoNext) {
+                    onNext();
+                }
+                break;
+            case 'ArrowLeft':
+                event.preventDefault();
+                if (canGoBack) {
+                    onBack();
+                }
+                break;
+            case 'Escape':
+                event.preventDefault();
+                if (canSkip && onSkip) {
+                    onSkip();
+                }
+                break;
+        }
+    }, [
+        enabled,
+        onNext,
+        onBack,
+        onSkip,
+        canGoNext,
+        canGoBack,
+        canSkip
+    ]);
+    (0, _react.useEffect)(()=>{
+        document.addEventListener('keydown', handleKeyDown);
+        return ()=>{
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [
+        handleKeyDown
+    ]);
+    return {
+        // Expose methods for manual triggering
+        triggerNext: ()=>canGoNext && onNext(),
+        triggerBack: ()=>canGoBack && onBack(),
+        triggerSkip: ()=>canSkip && onSkip && onSkip()
+    };
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvcHJvamVjdHMvY29tcG9uZW50cy9ndWlkZWQtc2V0dXAvaG9va3MvdXNlS2V5Ym9hcmROYXZpZ2F0aW9uLnRzIl0sInNvdXJjZXNDb250ZW50IjpbIid1c2UgY2xpZW50JztcblxuaW1wb3J0IHsgdXNlRWZmZWN0LCB1c2VDYWxsYmFjayB9IGZyb20gJ3JlYWN0JztcblxuaW50ZXJmYWNlIFVzZUtleWJvYXJkTmF2aWdhdGlvblByb3BzIHtcbiAgb25OZXh0OiAoKSA9PiB2b2lkO1xuICBvbkJhY2s6ICgpID0+IHZvaWQ7XG4gIG9uU2tpcD86ICgpID0+IHZvaWQ7XG4gIGNhbkdvTmV4dDogYm9vbGVhbjtcbiAgY2FuR29CYWNrOiBib29sZWFuO1xuICBjYW5Ta2lwPzogYm9vbGVhbjtcbiAgZW5hYmxlZD86IGJvb2xlYW47XG59XG5cbmV4cG9ydCBmdW5jdGlvbiB1c2VLZXlib2FyZE5hdmlnYXRpb24oe1xuICBvbk5leHQsXG4gIG9uQmFjayxcbiAgb25Ta2lwLFxuICBjYW5Hb05leHQsXG4gIGNhbkdvQmFjayxcbiAgY2FuU2tpcCA9IGZhbHNlLFxuICBlbmFibGVkID0gdHJ1ZVxufTogVXNlS2V5Ym9hcmROYXZpZ2F0aW9uUHJvcHMpIHtcbiAgY29uc3QgaGFuZGxlS2V5RG93biA9IHVzZUNhbGxiYWNrKChldmVudDogS2V5Ym9hcmRFdmVudCkgPT4ge1xuICAgIGlmICghZW5hYmxlZCkgcmV0dXJuO1xuXG4gICAgLy8gUHJldmVudCBuYXZpZ2F0aW9uIHdoZW4gdXNlciBpcyB0eXBpbmcgaW4gaW5wdXQgZmllbGRzXG4gICAgY29uc3QgdGFyZ2V0ID0gZXZlbnQudGFyZ2V0IGFzIEhUTUxFbGVtZW50O1xuICAgIGlmICh0YXJnZXQudGFnTmFtZSA9PT0gJ0lOUFVUJyB8fCB0YXJnZXQudGFnTmFtZSA9PT0gJ1RFWFRBUkVBJyB8fCB0YXJnZXQuY29udGVudEVkaXRhYmxlID09PSAndHJ1ZScpIHtcbiAgICAgIHJldHVybjtcbiAgICB9XG5cbiAgICBzd2l0Y2ggKGV2ZW50LmtleSkge1xuICAgICAgY2FzZSAnQXJyb3dSaWdodCc6XG4gICAgICBjYXNlICdFbnRlcic6XG4gICAgICAgIGV2ZW50LnByZXZlbnREZWZhdWx0KCk7XG4gICAgICAgIGlmIChjYW5Hb05leHQpIHtcbiAgICAgICAgICBvbk5leHQoKTtcbiAgICAgICAgfVxuICAgICAgICBicmVhaztcbiAgICAgIGNhc2UgJ0Fycm93TGVmdCc6XG4gICAgICAgIGV2ZW50LnByZXZlbnREZWZhdWx0KCk7XG4gICAgICAgIGlmIChjYW5Hb0JhY2spIHtcbiAgICAgICAgICBvbkJhY2soKTtcbiAgICAgICAgfVxuICAgICAgICBicmVhaztcbiAgICAgIGNhc2UgJ0VzY2FwZSc6XG4gICAgICAgIGV2ZW50LnByZXZlbnREZWZhdWx0KCk7XG4gICAgICAgIGlmIChjYW5Ta2lwICYmIG9uU2tpcCkge1xuICAgICAgICAgIG9uU2tpcCgpO1xuICAgICAgICB9XG4gICAgICAgIGJyZWFrO1xuICAgIH1cbiAgfSwgW2VuYWJsZWQsIG9uTmV4dCwgb25CYWNrLCBvblNraXAsIGNhbkdvTmV4dCwgY2FuR29CYWNrLCBjYW5Ta2lwXSk7XG5cbiAgdXNlRWZmZWN0KCgpID0+IHtcbiAgICBkb2N1bWVudC5hZGRFdmVudExpc3RlbmVyKCdrZXlkb3duJywgaGFuZGxlS2V5RG93bik7XG4gICAgcmV0dXJuICgpID0+IHtcbiAgICAgIGRvY3VtZW50LnJlbW92ZUV2ZW50TGlzdGVuZXIoJ2tleWRvd24nLCBoYW5kbGVLZXlEb3duKTtcbiAgICB9O1xuICB9LCBbaGFuZGxlS2V5RG93bl0pO1xuXG4gIHJldHVybiB7XG4gICAgLy8gRXhwb3NlIG1ldGhvZHMgZm9yIG1hbnVhbCB0cmlnZ2VyaW5nXG4gICAgdHJpZ2dlck5leHQ6ICgpID0+IGNhbkdvTmV4dCAmJiBvbk5leHQoKSxcbiAgICB0cmlnZ2VyQmFjazogKCkgPT4gY2FuR29CYWNrICYmIG9uQmFjaygpLFxuICAgIHRyaWdnZXJTa2lwOiAoKSA9PiBjYW5Ta2lwICYmIG9uU2tpcCAmJiBvblNraXAoKSxcbiAgfTtcbn0gIl0sIm5hbWVzIjpbInVzZUtleWJvYXJkTmF2aWdhdGlvbiIsIm9uTmV4dCIsIm9uQmFjayIsIm9uU2tpcCIsImNhbkdvTmV4dCIsImNhbkdvQmFjayIsImNhblNraXAiLCJlbmFibGVkIiwiaGFuZGxlS2V5RG93biIsInVzZUNhbGxiYWNrIiwiZXZlbnQiLCJ0YXJnZXQiLCJ0YWdOYW1lIiwiY29udGVudEVkaXRhYmxlIiwia2V5IiwicHJldmVudERlZmF1bHQiLCJ1c2VFZmZlY3QiLCJkb2N1bWVudCIsImFkZEV2ZW50TGlzdGVuZXIiLCJyZW1vdmVFdmVudExpc3RlbmVyIiwidHJpZ2dlck5leHQiLCJ0cmlnZ2VyQmFjayIsInRyaWdnZXJTa2lwIl0sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7K0JBY2dCQTs7O2VBQUFBOzs7dUJBWnVCO0FBWWhDLFNBQVNBLHNCQUFzQixFQUNwQ0MsTUFBTSxFQUNOQyxNQUFNLEVBQ05DLE1BQU0sRUFDTkMsU0FBUyxFQUNUQyxTQUFTLEVBQ1RDLFVBQVUsS0FBSyxFQUNmQyxVQUFVLElBQUksRUFDYTtJQUMzQixNQUFNQyxnQkFBZ0JDLElBQUFBLGtCQUFXLEVBQUMsQ0FBQ0M7UUFDakMsSUFBSSxDQUFDSCxTQUFTO1FBRWQseURBQXlEO1FBQ3pELE1BQU1JLFNBQVNELE1BQU1DLE1BQU07UUFDM0IsSUFBSUEsT0FBT0MsT0FBTyxLQUFLLFdBQVdELE9BQU9DLE9BQU8sS0FBSyxjQUFjRCxPQUFPRSxlQUFlLEtBQUssUUFBUTtZQUNwRztRQUNGO1FBRUEsT0FBUUgsTUFBTUksR0FBRztZQUNmLEtBQUs7WUFDTCxLQUFLO2dCQUNISixNQUFNSyxjQUFjO2dCQUNwQixJQUFJWCxXQUFXO29CQUNiSDtnQkFDRjtnQkFDQTtZQUNGLEtBQUs7Z0JBQ0hTLE1BQU1LLGNBQWM7Z0JBQ3BCLElBQUlWLFdBQVc7b0JBQ2JIO2dCQUNGO2dCQUNBO1lBQ0YsS0FBSztnQkFDSFEsTUFBTUssY0FBYztnQkFDcEIsSUFBSVQsV0FBV0gsUUFBUTtvQkFDckJBO2dCQUNGO2dCQUNBO1FBQ0o7SUFDRixHQUFHO1FBQUNJO1FBQVNOO1FBQVFDO1FBQVFDO1FBQVFDO1FBQVdDO1FBQVdDO0tBQVE7SUFFbkVVLElBQUFBLGdCQUFTLEVBQUM7UUFDUkMsU0FBU0MsZ0JBQWdCLENBQUMsV0FBV1Y7UUFDckMsT0FBTztZQUNMUyxTQUFTRSxtQkFBbUIsQ0FBQyxXQUFXWDtRQUMxQztJQUNGLEdBQUc7UUFBQ0E7S0FBYztJQUVsQixPQUFPO1FBQ0wsdUNBQXVDO1FBQ3ZDWSxhQUFhLElBQU1oQixhQUFhSDtRQUNoQ29CLGFBQWEsSUFBTWhCLGFBQWFIO1FBQ2hDb0IsYUFBYSxJQUFNaEIsV0FBV0gsVUFBVUE7SUFDMUM7QUFDRiJ9

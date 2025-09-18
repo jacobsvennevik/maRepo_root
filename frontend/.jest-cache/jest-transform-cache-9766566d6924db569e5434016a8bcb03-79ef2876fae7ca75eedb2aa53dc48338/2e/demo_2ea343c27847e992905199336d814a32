@@ -1,0 +1,187 @@
+fb554a16c0598094e236a208cbe8283f
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "FlashcardDeckDemo", {
+    enumerable: true,
+    get: function() {
+        return FlashcardDeckDemo;
+    }
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_wildcard(require("react"));
+const _flashcards = require("..");
+function _getRequireWildcardCache(nodeInterop) {
+    if (typeof WeakMap !== "function") return null;
+    var cacheBabelInterop = new WeakMap();
+    var cacheNodeInterop = new WeakMap();
+    return (_getRequireWildcardCache = function(nodeInterop) {
+        return nodeInterop ? cacheNodeInterop : cacheBabelInterop;
+    })(nodeInterop);
+}
+function _interop_require_wildcard(obj, nodeInterop) {
+    if (!nodeInterop && obj && obj.__esModule) {
+        return obj;
+    }
+    if (obj === null || typeof obj !== "object" && typeof obj !== "function") {
+        return {
+            default: obj
+        };
+    }
+    var cache = _getRequireWildcardCache(nodeInterop);
+    if (cache && cache.has(obj)) {
+        return cache.get(obj);
+    }
+    var newObj = {
+        __proto__: null
+    };
+    var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+    for(var key in obj){
+        if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) {
+            var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+            if (desc && (desc.get || desc.set)) {
+                Object.defineProperty(newObj, key, desc);
+            } else {
+                newObj[key] = obj[key];
+            }
+        }
+    }
+    newObj.default = obj;
+    if (cache) {
+        cache.set(obj, newObj);
+    }
+    return newObj;
+}
+// Mock data for demonstration
+const mockDecks = [
+    {
+        id: 1,
+        title: "Classic Literature",
+        description: "Famous works and authors from literary history",
+        owner: 1,
+        difficulty_level: 'INTERMEDIATE',
+        target_audience: 'Literature Students',
+        estimated_study_time: 120,
+        tags: [
+            'favorite'
+        ],
+        created_at: '2024-01-25T10:00:00Z',
+        updated_at: '2024-01-25T10:00:00Z',
+        flashcard_count: 1,
+        is_public: false,
+        study_stats: {
+            total_cards: 1,
+            due_cards: 3,
+            mastered_cards: 8,
+            learning_cards: 4,
+            review_cards: 8,
+            retention_rate: 0.85,
+            streak_days: 5,
+            next_review: '2024-01-20T10:00:00Z'
+        },
+        flashcards: [],
+        learning_objectives: [],
+        themes: []
+    },
+    {
+        id: 2,
+        title: "Basic Science",
+        description: "Fundamental concepts in biology, chemistry, and physics",
+        owner: 1,
+        difficulty_level: 'BEGINNER',
+        target_audience: 'High School Students',
+        estimated_study_time: 180,
+        tags: [],
+        created_at: '2024-01-20T10:00:00Z',
+        updated_at: '2024-01-20T10:00:00Z',
+        flashcard_count: 2,
+        is_public: false,
+        study_stats: {
+            total_cards: 2,
+            due_cards: 7,
+            mastered_cards: 12,
+            learning_cards: 6,
+            review_cards: 12,
+            retention_rate: 0.78,
+            streak_days: 3,
+            next_review: '2024-01-18T10:00:00Z'
+        },
+        flashcards: [],
+        learning_objectives: [],
+        themes: []
+    },
+    {
+        id: 3,
+        title: "World Geography",
+        description: "Countries, capitals, and landmarks around the world",
+        owner: 1,
+        difficulty_level: 'ADVANCED',
+        target_audience: 'Geography Enthusiasts',
+        estimated_study_time: 240,
+        tags: [],
+        created_at: '2024-01-15T10:00:00Z',
+        updated_at: '2024-01-15T10:00:00Z',
+        flashcard_count: 50,
+        is_public: false,
+        study_stats: {
+            total_cards: 50,
+            due_cards: 12,
+            mastered_cards: 25,
+            learning_cards: 13,
+            review_cards: 25,
+            retention_rate: 0.92,
+            streak_days: 7,
+            next_review: '2024-01-10T10:00:00Z'
+        },
+        flashcards: [],
+        learning_objectives: [],
+        themes: []
+    }
+];
+function FlashcardDeckDemo() {
+    const [decks] = (0, _react.useState)(mockDecks);
+    const handleEdit = (deck)=>{
+        console.log('Edit deck:', deck.title);
+    };
+    const handleDelete = (deck)=>{
+        console.log('Delete deck:', deck.title);
+    };
+    const handleShare = (deck)=>{
+        console.log('Share deck:', deck.title);
+    };
+    const handleToggleFavorite = (deck)=>{
+        console.log('Toggle favorite:', deck.title);
+    };
+    return /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+        className: "p-6 bg-gray-50 min-h-screen",
+        children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+            className: "max-w-7xl mx-auto",
+            children: [
+                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "mb-8",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h1", {
+                            className: "text-3xl font-bold text-gray-900 mb-2",
+                            children: "Flashcard Deck Redesign Demo"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                            className: "text-gray-600",
+                            children: "New deck card design with sorting, layout options, and full accessibility support."
+                        })
+                    ]
+                }),
+                /*#__PURE__*/ (0, _jsxruntime.jsx)(_flashcards.DeckGrid, {
+                    decks: decks,
+                    onEdit: handleEdit,
+                    onDelete: handleDelete,
+                    onShare: handleShare,
+                    onToggleFavorite: handleToggleFavorite
+                })
+            ]
+        })
+    });
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvZmxhc2hjYXJkcy9jb21wb25lbnRzL2RlbW8udHN4Il0sInNvdXJjZXNDb250ZW50IjpbIlwidXNlIGNsaWVudFwiO1xuXG5pbXBvcnQgUmVhY3QsIHsgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7XG5pbXBvcnQgeyBEZWNrR3JpZCB9IGZyb20gJ0AvZmVhdHVyZXMvZmxhc2hjYXJkcyc7XG5pbXBvcnQgeyBGbGFzaGNhcmRTZXQgfSBmcm9tICdAL2ZlYXR1cmVzL2ZsYXNoY2FyZHMvdHlwZXMnO1xuXG4vLyBNb2NrIGRhdGEgZm9yIGRlbW9uc3RyYXRpb25cbmNvbnN0IG1vY2tEZWNrczogRmxhc2hjYXJkU2V0W10gPSBbXG4gIHtcbiAgICBpZDogMSxcbiAgICB0aXRsZTogXCJDbGFzc2ljIExpdGVyYXR1cmVcIixcbiAgICBkZXNjcmlwdGlvbjogXCJGYW1vdXMgd29ya3MgYW5kIGF1dGhvcnMgZnJvbSBsaXRlcmFyeSBoaXN0b3J5XCIsXG4gICAgb3duZXI6IDEsXG4gICAgZGlmZmljdWx0eV9sZXZlbDogJ0lOVEVSTUVESUFURScsXG4gICAgdGFyZ2V0X2F1ZGllbmNlOiAnTGl0ZXJhdHVyZSBTdHVkZW50cycsXG4gICAgZXN0aW1hdGVkX3N0dWR5X3RpbWU6IDEyMCxcbiAgICB0YWdzOiBbJ2Zhdm9yaXRlJ10sXG4gICAgY3JlYXRlZF9hdDogJzIwMjQtMDEtMjVUMTA6MDA6MDBaJyxcbiAgICB1cGRhdGVkX2F0OiAnMjAyNC0wMS0yNVQxMDowMDowMFonLFxuICAgIGZsYXNoY2FyZF9jb3VudDogMSxcbiAgICBpc19wdWJsaWM6IGZhbHNlLFxuICAgIHN0dWR5X3N0YXRzOiB7XG4gICAgICB0b3RhbF9jYXJkczogMSxcbiAgICAgIGR1ZV9jYXJkczogMyxcbiAgICAgIG1hc3RlcmVkX2NhcmRzOiA4LFxuICAgICAgbGVhcm5pbmdfY2FyZHM6IDQsXG4gICAgICByZXZpZXdfY2FyZHM6IDgsXG4gICAgICByZXRlbnRpb25fcmF0ZTogMC44NSxcbiAgICAgIHN0cmVha19kYXlzOiA1LFxuICAgICAgbmV4dF9yZXZpZXc6ICcyMDI0LTAxLTIwVDEwOjAwOjAwWicsXG4gICAgfSxcbiAgICBmbGFzaGNhcmRzOiBbXSxcbiAgICBsZWFybmluZ19vYmplY3RpdmVzOiBbXSxcbiAgICB0aGVtZXM6IFtdLFxuICB9LFxuICB7XG4gICAgaWQ6IDIsXG4gICAgdGl0bGU6IFwiQmFzaWMgU2NpZW5jZVwiLFxuICAgIGRlc2NyaXB0aW9uOiBcIkZ1bmRhbWVudGFsIGNvbmNlcHRzIGluIGJpb2xvZ3ksIGNoZW1pc3RyeSwgYW5kIHBoeXNpY3NcIixcbiAgICBvd25lcjogMSxcbiAgICBkaWZmaWN1bHR5X2xldmVsOiAnQkVHSU5ORVInLFxuICAgIHRhcmdldF9hdWRpZW5jZTogJ0hpZ2ggU2Nob29sIFN0dWRlbnRzJyxcbiAgICBlc3RpbWF0ZWRfc3R1ZHlfdGltZTogMTgwLFxuICAgIHRhZ3M6IFtdLFxuICAgIGNyZWF0ZWRfYXQ6ICcyMDI0LTAxLTIwVDEwOjAwOjAwWicsXG4gICAgdXBkYXRlZF9hdDogJzIwMjQtMDEtMjBUMTA6MDA6MDBaJyxcbiAgICBmbGFzaGNhcmRfY291bnQ6IDIsXG4gICAgaXNfcHVibGljOiBmYWxzZSxcbiAgICBzdHVkeV9zdGF0czoge1xuICAgICAgdG90YWxfY2FyZHM6IDIsXG4gICAgICBkdWVfY2FyZHM6IDcsXG4gICAgICBtYXN0ZXJlZF9jYXJkczogMTIsXG4gICAgICBsZWFybmluZ19jYXJkczogNixcbiAgICAgIHJldmlld19jYXJkczogMTIsXG4gICAgICByZXRlbnRpb25fcmF0ZTogMC43OCxcbiAgICAgIHN0cmVha19kYXlzOiAzLFxuICAgICAgbmV4dF9yZXZpZXc6ICcyMDI0LTAxLTE4VDEwOjAwOjAwWicsXG4gICAgfSxcbiAgICBmbGFzaGNhcmRzOiBbXSxcbiAgICBsZWFybmluZ19vYmplY3RpdmVzOiBbXSxcbiAgICB0aGVtZXM6IFtdLFxuICB9LFxuICB7XG4gICAgaWQ6IDMsXG4gICAgdGl0bGU6IFwiV29ybGQgR2VvZ3JhcGh5XCIsXG4gICAgZGVzY3JpcHRpb246IFwiQ291bnRyaWVzLCBjYXBpdGFscywgYW5kIGxhbmRtYXJrcyBhcm91bmQgdGhlIHdvcmxkXCIsXG4gICAgb3duZXI6IDEsXG4gICAgZGlmZmljdWx0eV9sZXZlbDogJ0FEVkFOQ0VEJyxcbiAgICB0YXJnZXRfYXVkaWVuY2U6ICdHZW9ncmFwaHkgRW50aHVzaWFzdHMnLFxuICAgIGVzdGltYXRlZF9zdHVkeV90aW1lOiAyNDAsXG4gICAgdGFnczogW10sXG4gICAgY3JlYXRlZF9hdDogJzIwMjQtMDEtMTVUMTA6MDA6MDBaJyxcbiAgICB1cGRhdGVkX2F0OiAnMjAyNC0wMS0xNVQxMDowMDowMFonLFxuICAgIGZsYXNoY2FyZF9jb3VudDogNTAsXG4gICAgaXNfcHVibGljOiBmYWxzZSxcbiAgICBzdHVkeV9zdGF0czoge1xuICAgICAgdG90YWxfY2FyZHM6IDUwLFxuICAgICAgZHVlX2NhcmRzOiAxMixcbiAgICAgIG1hc3RlcmVkX2NhcmRzOiAyNSxcbiAgICAgIGxlYXJuaW5nX2NhcmRzOiAxMyxcbiAgICAgIHJldmlld19jYXJkczogMjUsXG4gICAgICByZXRlbnRpb25fcmF0ZTogMC45MixcbiAgICAgIHN0cmVha19kYXlzOiA3LFxuICAgICAgbmV4dF9yZXZpZXc6ICcyMDI0LTAxLTEwVDEwOjAwOjAwWicsXG4gICAgfSxcbiAgICBmbGFzaGNhcmRzOiBbXSxcbiAgICBsZWFybmluZ19vYmplY3RpdmVzOiBbXSxcbiAgICB0aGVtZXM6IFtdLFxuICB9LFxuXTtcblxuZXhwb3J0IGZ1bmN0aW9uIEZsYXNoY2FyZERlY2tEZW1vKCkge1xuICBjb25zdCBbZGVja3NdID0gdXNlU3RhdGU8Rmxhc2hjYXJkU2V0W10+KG1vY2tEZWNrcyk7XG5cbiAgY29uc3QgaGFuZGxlRWRpdCA9IChkZWNrOiBGbGFzaGNhcmRTZXQpID0+IHtcbiAgICBjb25zb2xlLmxvZygnRWRpdCBkZWNrOicsIGRlY2sudGl0bGUpO1xuICB9O1xuXG4gIGNvbnN0IGhhbmRsZURlbGV0ZSA9IChkZWNrOiBGbGFzaGNhcmRTZXQpID0+IHtcbiAgICBjb25zb2xlLmxvZygnRGVsZXRlIGRlY2s6JywgZGVjay50aXRsZSk7XG4gIH07XG5cbiAgY29uc3QgaGFuZGxlU2hhcmUgPSAoZGVjazogRmxhc2hjYXJkU2V0KSA9PiB7XG4gICAgY29uc29sZS5sb2coJ1NoYXJlIGRlY2s6JywgZGVjay50aXRsZSk7XG4gIH07XG5cbiAgY29uc3QgaGFuZGxlVG9nZ2xlRmF2b3JpdGUgPSAoZGVjazogRmxhc2hjYXJkU2V0KSA9PiB7XG4gICAgY29uc29sZS5sb2coJ1RvZ2dsZSBmYXZvcml0ZTonLCBkZWNrLnRpdGxlKTtcbiAgfTtcblxuICByZXR1cm4gKFxuICAgIDxkaXYgY2xhc3NOYW1lPVwicC02IGJnLWdyYXktNTAgbWluLWgtc2NyZWVuXCI+XG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cIm1heC13LTd4bCBteC1hdXRvXCI+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibWItOFwiPlxuICAgICAgICAgIDxoMSBjbGFzc05hbWU9XCJ0ZXh0LTN4bCBmb250LWJvbGQgdGV4dC1ncmF5LTkwMCBtYi0yXCI+XG4gICAgICAgICAgICBGbGFzaGNhcmQgRGVjayBSZWRlc2lnbiBEZW1vXG4gICAgICAgICAgPC9oMT5cbiAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LWdyYXktNjAwXCI+XG4gICAgICAgICAgICBOZXcgZGVjayBjYXJkIGRlc2lnbiB3aXRoIHNvcnRpbmcsIGxheW91dCBvcHRpb25zLCBhbmQgZnVsbCBhY2Nlc3NpYmlsaXR5IHN1cHBvcnQuXG4gICAgICAgICAgPC9wPlxuICAgICAgICA8L2Rpdj5cblxuICAgICAgICA8RGVja0dyaWRcbiAgICAgICAgICBkZWNrcz17ZGVja3N9XG4gICAgICAgICAgb25FZGl0PXtoYW5kbGVFZGl0fVxuICAgICAgICAgIG9uRGVsZXRlPXtoYW5kbGVEZWxldGV9XG4gICAgICAgICAgb25TaGFyZT17aGFuZGxlU2hhcmV9XG4gICAgICAgICAgb25Ub2dnbGVGYXZvcml0ZT17aGFuZGxlVG9nZ2xlRmF2b3JpdGV9XG4gICAgICAgIC8+XG4gICAgICA8L2Rpdj5cbiAgICA8L2Rpdj5cbiAgKTtcbn1cbiJdLCJuYW1lcyI6WyJGbGFzaGNhcmREZWNrRGVtbyIsIm1vY2tEZWNrcyIsImlkIiwidGl0bGUiLCJkZXNjcmlwdGlvbiIsIm93bmVyIiwiZGlmZmljdWx0eV9sZXZlbCIsInRhcmdldF9hdWRpZW5jZSIsImVzdGltYXRlZF9zdHVkeV90aW1lIiwidGFncyIsImNyZWF0ZWRfYXQiLCJ1cGRhdGVkX2F0IiwiZmxhc2hjYXJkX2NvdW50IiwiaXNfcHVibGljIiwic3R1ZHlfc3RhdHMiLCJ0b3RhbF9jYXJkcyIsImR1ZV9jYXJkcyIsIm1hc3RlcmVkX2NhcmRzIiwibGVhcm5pbmdfY2FyZHMiLCJyZXZpZXdfY2FyZHMiLCJyZXRlbnRpb25fcmF0ZSIsInN0cmVha19kYXlzIiwibmV4dF9yZXZpZXciLCJmbGFzaGNhcmRzIiwibGVhcm5pbmdfb2JqZWN0aXZlcyIsInRoZW1lcyIsImRlY2tzIiwidXNlU3RhdGUiLCJoYW5kbGVFZGl0IiwiZGVjayIsImNvbnNvbGUiLCJsb2ciLCJoYW5kbGVEZWxldGUiLCJoYW5kbGVTaGFyZSIsImhhbmRsZVRvZ2dsZUZhdm9yaXRlIiwiZGl2IiwiY2xhc3NOYW1lIiwiaDEiLCJwIiwiRGVja0dyaWQiLCJvbkVkaXQiLCJvbkRlbGV0ZSIsIm9uU2hhcmUiLCJvblRvZ2dsZUZhdm9yaXRlIl0sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7K0JBMkZnQkE7OztlQUFBQTs7OzsrREF6RmdCOzRCQUNQOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFHekIsOEJBQThCO0FBQzlCLE1BQU1DLFlBQTRCO0lBQ2hDO1FBQ0VDLElBQUk7UUFD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

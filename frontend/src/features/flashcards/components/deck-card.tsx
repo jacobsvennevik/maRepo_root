@@ -273,7 +273,7 @@ export function DeckCard({
           asChild
           className={cn("w-full bg-gradient-to-r text-white font-medium rounded-lg py-3 text-base", getDeckColor(deck.id, 'button'))}
         >
-          <Link href={`/projects/${deck.owner}/flashcards/${deck.id}`}>
+          <Link href={`/projects/${projectId || deck.owner}/flashcards/${deck.id}`}>
             Study Deck
             <ChevronRight className="h-5 w-5 ml-2" />
           </Link>

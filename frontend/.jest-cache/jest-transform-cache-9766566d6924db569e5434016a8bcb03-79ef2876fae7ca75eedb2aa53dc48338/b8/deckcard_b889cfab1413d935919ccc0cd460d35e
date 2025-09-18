@@ -1,0 +1,334 @@
+795b583640e4325b726bba71458277e4
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "DeckCard", {
+    enumerable: true,
+    get: function() {
+        return DeckCard;
+    }
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_default(require("react"));
+const _link = /*#__PURE__*/ _interop_require_default(require("next/link"));
+const _card = require("../../../components/ui/card");
+const _button = require("../../../components/ui/button");
+const _badge = require("../../../components/ui/badge");
+const _dropdownmenu = require("../../../components/ui/dropdown-menu");
+const _lucidereact = require("lucide-react");
+const _utils = require("../../../lib/utils");
+const _utils1 = require("./utils");
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+function DeckCard({ deck, variant = 'default', layout = 'grid', projectId, onEdit, onDelete, onShare, onToggleFavorite, className }) {
+    const isCompact = variant === 'compact';
+    const isListLayout = layout === 'list';
+    const handleQuickAction = (action)=>{
+        switch(action){
+            case 'edit':
+                onEdit?.(deck);
+                break;
+            case 'delete':
+                onDelete?.(deck);
+                break;
+            case 'share':
+                onShare?.(deck);
+                break;
+            case 'favorite':
+                onToggleFavorite?.(deck);
+                break;
+        }
+    };
+    const handleKeyDown = (event)=>{
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            // Navigate to project-scoped deck carousel page
+            const targetProjectId = projectId || deck.owner;
+            window.location.href = `/projects/${targetProjectId}/flashcards/${deck.id}`;
+        }
+    };
+    if (isListLayout) {
+        return /*#__PURE__*/ (0, _jsxruntime.jsx)(_card.Card, {
+            className: (0, _utils.cn)('group hover:shadow-md transition-all duration-200', 'border-l-4 border-l-primary/20 hover:border-l-primary', className),
+            tabIndex: 0,
+            role: "button",
+            "aria-label": `Study deck: ${deck.title}. ${deck.study_stats?.total_cards || 0} cards, ${deck.study_stats?.due_cards || 0} due today`,
+            onKeyDown: handleKeyDown,
+            children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_card.CardContent, {
+                className: "p-4",
+                children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "flex items-center justify-between",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            className: "flex items-center space-x-4 flex-1 min-w-0",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                    className: "flex-shrink-0",
+                                    children: /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                        className: "w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center",
+                                        children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.BookOpen, {
+                                            className: "h-5 w-5 text-white"
+                                        })
+                                    })
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "flex-1 min-w-0",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                            className: "flex items-center space-x-2 mb-1",
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                                    className: "font-semibold text-gray-900 truncate",
+                                                    children: deck.title
+                                                }),
+                                                deck.tags?.includes('favorite') && /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Star, {
+                                                    className: "h-4 w-4 text-yellow-500 fill-current"
+                                                })
+                                            ]
+                                        }),
+                                        deck.description && /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "text-sm text-gray-600 line-clamp-1 mb-2",
+                                            children: deck.description
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                            className: "flex items-center space-x-4 text-xs text-gray-500",
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                                    className: "flex items-center space-x-1",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.BookOpen, {
+                                                            className: "h-3 w-3"
+                                                        }),
+                                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                                            children: [
+                                                                deck.study_stats?.total_cards || 0,
+                                                                " cards"
+                                                            ]
+                                                        })
+                                                    ]
+                                                }),
+                                                deck.study_stats?.due_cards > 0 && /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                                    className: (0, _utils.cn)('flex items-center space-x-1', (0, _utils1.getDueCardsColor)(deck.study_stats.due_cards)),
+                                                    children: [
+                                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Clock, {
+                                                            className: "h-3 w-3"
+                                                        }),
+                                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                                            children: [
+                                                                deck.study_stats.due_cards,
+                                                                " due"
+                                                            ]
+                                                        })
+                                                    ]
+                                                }),
+                                                deck.study_stats?.next_review && /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                                    className: "flex items-center space-x-1",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Calendar, {
+                                                            className: "h-3 w-3"
+                                                        }),
+                                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                                            children: [
+                                                                "Last: ",
+                                                                (0, _utils1.formatRelativeDate)(deck.study_stats.next_review)
+                                                            ]
+                                                        })
+                                                    ]
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            className: "flex items-center space-x-2",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_button.Button, {
+                                    asChild: true,
+                                    size: "sm",
+                                    className: "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700",
+                                    children: /*#__PURE__*/ (0, _jsxruntime.jsxs)(_link.default, {
+                                        href: `/projects/${projectId || deck.owner}/flashcards/${deck.id}`,
+                                        children: [
+                                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Play, {
+                                                className: "h-3 w-3 mr-1"
+                                            }),
+                                            "Study"
+                                        ]
+                                    })
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenu, {
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_dropdownmenu.DropdownMenuTrigger, {
+                                            asChild: true,
+                                            children: /*#__PURE__*/ (0, _jsxruntime.jsxs)(_button.Button, {
+                                                variant: "ghost",
+                                                size: "sm",
+                                                className: "h-8 w-8 p-0",
+                                                "aria-label": `More actions for ${deck.title}`,
+                                                children: [
+                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.MoreHorizontal, {
+                                                        className: "h-4 w-4"
+                                                    }),
+                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                        className: "sr-only",
+                                                        children: "Open menu"
+                                                    })
+                                                ]
+                                            })
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuContent, {
+                                            align: "end",
+                                            className: "w-48",
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuItem, {
+                                                    onClick: ()=>handleQuickAction('edit'),
+                                                    children: [
+                                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Edit3, {
+                                                            className: "h-4 w-4 mr-2"
+                                                        }),
+                                                        "Edit Deck"
+                                                    ]
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuItem, {
+                                                    onClick: ()=>handleQuickAction('share'),
+                                                    children: [
+                                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Share2, {
+                                                            className: "h-4 w-4 mr-2"
+                                                        }),
+                                                        "Share Deck"
+                                                    ]
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuItem, {
+                                                    onClick: ()=>handleQuickAction('favorite'),
+                                                    children: [
+                                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Star, {
+                                                            className: "h-4 w-4 mr-2"
+                                                        }),
+                                                        deck.tags?.includes('favorite') ? 'Remove from Favorites' : 'Add to Favorites'
+                                                    ]
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_dropdownmenu.DropdownMenuSeparator, {}),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuItem, {
+                                                    onClick: ()=>handleQuickAction('delete'),
+                                                    className: "text-red-600 focus:text-red-600",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Trash2, {
+                                                            className: "h-4 w-4 mr-2"
+                                                        }),
+                                                        "Delete Deck"
+                                                    ]
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                })
+            })
+        });
+    }
+    // Grid layout (default) - Simplified design matching the picture
+    return /*#__PURE__*/ (0, _jsxruntime.jsx)(_card.Card, {
+        className: (0, _utils.cn)('group hover:shadow-md transition-all duration-200', 'bg-white border border-gray-200', className),
+        tabIndex: 0,
+        role: "button",
+        "aria-label": `Study deck: ${deck.title}. ${deck.study_stats?.total_cards || 0} cards, ${deck.study_stats?.due_cards || 0} due today`,
+        onKeyDown: handleKeyDown,
+        children: /*#__PURE__*/ (0, _jsxruntime.jsxs)(_card.CardContent, {
+            className: "p-8",
+            children: [
+                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "flex items-start justify-between mb-6",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                            className: (0, _utils.cn)("w-16 h-16 rounded-lg bg-gradient-to-br flex items-center justify-center shadow-sm", (0, _utils1.getDeckColor)(deck.id, 'icon')),
+                            children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.BookOpen, {
+                                className: "h-8 w-8 text-white"
+                            })
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            className: "flex items-center space-x-2",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_button.Button, {
+                                    variant: "ghost",
+                                    size: "sm",
+                                    className: "h-10 w-10 p-0 hover:bg-gray-100",
+                                    onClick: (e)=>{
+                                        e.stopPropagation();
+                                        handleQuickAction('edit');
+                                    },
+                                    "aria-label": `Edit ${deck.title}`,
+                                    children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Edit3, {
+                                        className: "h-5 w-5 text-gray-700"
+                                    })
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_button.Button, {
+                                    variant: "ghost",
+                                    size: "sm",
+                                    className: "h-10 w-10 p-0 hover:bg-gray-100",
+                                    onClick: (e)=>{
+                                        e.stopPropagation();
+                                        handleQuickAction('delete');
+                                    },
+                                    "aria-label": `Delete ${deck.title}`,
+                                    children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Trash2, {
+                                        className: "h-5 w-5 text-red-500"
+                                    })
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                    className: "font-bold text-gray-900 text-2xl mb-3",
+                    children: deck.title
+                }),
+                deck.description && /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                    className: "text-gray-600 text-base mb-6 line-clamp-2",
+                    children: deck.description
+                }),
+                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "flex items-center justify-between mb-6",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)(_badge.Badge, {
+                            variant: "secondary",
+                            className: "text-sm bg-gray-100 text-gray-700 px-3 py-1",
+                            children: [
+                                deck.study_stats?.total_cards || 0,
+                                " cards"
+                            ]
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                            className: "text-sm text-gray-500",
+                            children: (0, _utils1.formatDate)(deck.updated_at)
+                        })
+                    ]
+                }),
+                /*#__PURE__*/ (0, _jsxruntime.jsx)(_button.Button, {
+                    asChild: true,
+                    className: (0, _utils.cn)("w-full bg-gradient-to-r text-white font-medium rounded-lg py-3 text-base", (0, _utils1.getDeckColor)(deck.id, 'button')),
+                    children: /*#__PURE__*/ (0, _jsxruntime.jsxs)(_link.default, {
+                        href: `/projects/${projectId || deck.owner}/flashcards/${deck.id}`,
+                        children: [
+                            "Study Deck",
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.ChevronRight, {
+                                className: "h-5 w-5 ml-2"
+                            })
+                        ]
+                    })
+                })
+            ]
+        })
+    });
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvZmxhc2hjYXJkcy9jb21wb25lbnRzL2RlY2stY2FyZC50c3giXSwic291cmNlc0NvbnRlbnQiOlsiXCJ1c2UgY2xpZW50XCI7XG5cbmltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XG5pbXBvcnQgTGluayBmcm9tICduZXh0L2xpbmsnO1xuaW1wb3J0IHsgQ2FyZCwgQ2FyZENvbnRlbnQgfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvY2FyZCc7XG5pbXBvcnQgeyBCdXR0b24gfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvYnV0dG9uJztcbmltcG9ydCB7IEJhZGdlIH0gZnJvbSAnQC9jb21wb25lbnRzL3VpL2JhZGdlJztcbmltcG9ydCB7XG4gIERyb3Bkb3duTWVudSxcbiAgRHJvcGRvd25NZW51Q29udGVudCxcbiAgRHJvcGRvd25NZW51SXRlbSxcbiAgRHJvcGRvd25NZW51U2VwYXJhdG9yLFxuICBEcm9wZG93bk1lbnVUcmlnZ2VyLFxufSBmcm9tICdAL2NvbXBvbmVudHMvdWkvZHJvcGRvd24tbWVudSc7XG5pbXBvcnQge1xuICBCb29rT3BlbixcbiAgQ2FsZW5kYXIsXG4gIENsb2NrLFxuICBFZGl0MyxcbiAgTW9yZUhvcml6b250YWwsXG4gIFBsYXksXG4gIFNoYXJlMixcbiAgU3RhcixcbiAgVHJhc2gyLFxuICBDaGV2cm9uUmlnaHQsXG59IGZyb20gJ2x1Y2lkZS1yZWFjdCc7XG5pbXBvcnQgeyBjbiB9IGZyb20gJ0AvbGliL3V0aWxzJztcbmltcG9ydCB7IEZsYXNoY2FyZFNldCB9IGZyb20gJ0AvZmVhdHVyZXMvZmxhc2hjYXJkcy90eXBlcyc7XG5pbXBvcnQgeyBnZXREZWNrQ29sb3IsIGZvcm1hdERhdGUsIGZvcm1hdFJlbGF0aXZlRGF0ZSwgZ2V0RHVlQ2FyZHNDb2xvciB9IGZyb20gJy4vdXRpbHMnO1xuaW1wb3J0IHR5cGUgeyBEZWNrQWN0aW9uSGFuZGxlcnMgfSBmcm9tICcuL3R5cGVzJztcblxuZXhwb3J0IGludGVyZmFjZSBEZWNrQ2FyZFByb3BzIGV4dGVuZHMgRGVja0FjdGlvbkhhbmRsZXJzIHtcbiAgZGVjazogRmxhc2hjYXJkU2V0O1xuICB2YXJpYW50PzogJ2RlZmF1bHQnIHwgJ2NvbXBhY3QnO1xuICBsYXlvdXQ/OiAnZ3JpZCcgfCAnbGlzdCc7XG4gIHByb2plY3RJZD86IHN0cmluZztcbiAgY2xhc3NOYW1lPzogc3RyaW5nO1xufVxuXG5leHBvcnQgZnVuY3Rpb24gRGVja0NhcmQoe1xuICBkZWNrLFxuICB2YXJpYW50ID0gJ2RlZmF1bHQnLFxuICBsYXlvdXQgPSAnZ3JpZCcsXG4gIHByb2plY3RJZCxcbiAgb25FZGl0LFxuICBvbkRlbGV0ZSxcbiAgb25TaGFyZSxcbiAgb25Ub2dnbGVGYXZvcml0ZSxcbiAgY2xhc3NOYW1lLFxufTogRGVja0NhcmRQcm9wcykge1xuICBjb25zdCBpc0NvbXBhY3QgPSB2YXJpYW50ID09PSAnY29tcGFjdCc7XG4gIGNvbnN0IGlzTGlzdExheW91dCA9IGxheW91dCA9PT0gJ2xpc3QnO1xuXG4gIGNvbnN0IGhhbmRsZVF1aWNrQWN0aW9uID0gKGFjdGlvbjogc3RyaW5nKSA9PiB7XG4gICAgc3dpdGNoIChhY3Rpb24pIHtcbiAgICAgIGNhc2UgJ2VkaXQnOlxuICAgICAgICBvbkVkaXQ/LihkZWNrKTtcbiAgICAgICAgYnJlYWs7XG4gICAgICBjYXNlICdkZWxldGUnOlxuICAgICAgICBvbkRlbGV0ZT8uKGRlY2spO1xuICAgICAgICBicmVhaztcbiAgICAgIGNhc2UgJ3NoYXJlJzpcbiAgICAgICAgb25TaGFyZT8uKGRlY2spO1xuICAgICAgICBicmVhaztcbiAgICAgIGNhc2UgJ2Zhdm9yaXRlJzpcbiAgICAgICAgb25Ub2dnbGVGYXZvcml0ZT8uKGRlY2spO1xuICAgICAgICBicmVhaztcbiAgICB9XG4gIH07XG5cbiAgY29uc3QgaGFuZGxlS2V5RG93biA9IChldmVudDogUmVhY3QuS2V5Ym9hcmRFdmVudCkgPT4ge1xuICAgIGlmIChldmVudC5rZXkgPT09ICdFbnRlcicgfHwgZXZlbnQua2V5ID09PSAnICcpIHtcbiAgICAgIGV2ZW50LnByZXZlbnREZWZhdWx0KCk7XG4gICAgICAvLyBOYXZpZ2F0ZSB0byBwcm9qZWN0LXNjb3BlZCBkZWNrIGNhcm91c2VsIHBhZ2VcbiAgICAgIGNvbnN0IHRhcmdldFByb2plY3RJZCA9IHByb2plY3RJZCB8fCBkZWNrLm93bmVyO1xuICAgICAgd2luZG93LmxvY2F0aW9uLmhyZWYgPSBgL3Byb2plY3RzLyR7dGFyZ2V0UHJvamVjdElkfS9mbGFzaGNhcmRzLyR7ZGVjay5pZH1gO1xuICAgIH1cbiAgfTtcblxuICBpZiAoaXNMaXN0TGF5b3V0KSB7XG4gICAgcmV0dXJuIChcbiAgICAgIDxDYXJkXG4gICAgICAgIGNsYXNzTmFtZT17Y24oXG4gICAgICAgICAgJ2dyb3VwIGhvdmVyOnNoYWRvdy1tZCB0cmFuc2l0aW9uLWFsbCBkdXJhdGlvbi0yMDAnLFxuICAgICAgICAgICdib3JkZXItbC00IGJvcmRlci1sLXByaW1hcnkvMjAgaG92ZXI6Ym9yZGVyLWwtcHJpbWFyeScsXG4gICAgICAgICAgY2xhc3NOYW1lXG4gICAgICAgICl9XG4gICAgICAgIHRhYkluZGV4PXswfVxuICAgICAgICByb2xlPVwiYnV0dG9uXCJcbiAgICAgICAgYXJpYS1sYWJlbD17YFN0dWR5IGRlY2s6ICR7ZGVjay50aXRsZX0uICR7ZGVjay5zdHVkeV9zdGF0cz8udG90YWxfY2FyZHMgfHwgMH0gY2FyZHMsICR7ZGVjay5zdHVkeV9zdGF0cz8uZHVlX2NhcmRzIHx8IDB9IGR1ZSB0b2RheWB9XG4gICAgICAgIG9uS2V5RG93bj17aGFuZGxlS2V5RG93bn1cbiAgICAgID5cbiAgICAgICAgPENhcmRDb250ZW50IGNsYXNzTmFtZT1cInAtNFwiPlxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBpdGVtcy1jZW50ZXIganVzdGlmeS1iZXR3ZWVuXCI+XG4gICAgICAgICAgICB7LyogTGVmdCBzaWRlIC0gTWFpbiBjb250ZW50ICovfVxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLWNlbnRlciBzcGFjZS14LTQgZmxleC0xIG1pbi13LTBcIj5cbiAgICAgICAgICAgICAgey8qIEljb24gKi99XG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleC1zaHJpbmstMFwiPlxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidy0xMCBoLTEwIHJvdW5kZWQtbGcgYmctZ3JhZGllbnQtdG8tYnIgZnJvbS1ibHVlLTUwMCB0by1wdXJwbGUtNjAwIGZsZXggaXRlbXMtY2VudGVyIGp1c3RpZnktY2VudGVyXCI+XG4gICAgICAgICAgICAgICAgICA8Qm9va09wZW4gY2xhc3NOYW1lPVwiaC01IHctNSB0ZXh0LXdoaXRlXCIgLz5cbiAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICAgICAgey8qIENvbnRlbnQgKi99XG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleC0xIG1pbi13LTBcIj5cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIHNwYWNlLXgtMiBtYi0xXCI+XG4gICAgICAgICAgICAgICAgICA8aDMgY2xhc3NOYW1lPVwiZm9udC1zZW1pYm9sZCB0ZXh0LWdyYXktOTAwIHRydW5jYXRlXCI+XG4gICAgICAgICAgICAgICAgICAgIHtkZWNrLnRpdGxlfVxuICAgICAgICAgICAgICAgICAgPC9oMz5cbiAgICAgICAgICAgICAgICAgIHtkZWNrLnRhZ3M/LmluY2x1ZGVzKCdmYXZvcml0ZScpICYmIChcbiAgICAgICAgICAgICAgICAgICAgPFN0YXIgY2xhc3NOYW1lPVwiaC00IHctNCB0ZXh0LXllbGxvdy01MDAgZmlsbC1jdXJyZW50XCIgLz5cbiAgICAgICAgICAgICAgICAgICl9XG4gICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgXG4gICAgICAgICAgICAgICAge2RlY2suZGVzY3JpcHRpb24gJiYgKFxuICAgICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwidGV4dC1zbSB0ZXh0LWdyYXktNjAwIGxpbmUtY2xhbXAtMSBtYi0yXCI+XG4gICAgICAgICAgICAgICAgICAgIHtkZWNrLmRlc2NyaXB0aW9ufVxuICAgICAgICAgICAgICAgICAgPC9wPlxuICAgICAgICAgICAgICAgICl9XG5cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIHNwYWNlLXgtNCB0ZXh0LXhzIHRleHQtZ3JheS01MDBcIj5cbiAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBpdGVtcy1jZW50ZXIgc3BhY2UteC0xXCI+XG4gICAgICAgICAgICAgICAgICAgIDxCb29rT3BlbiBjbGFzc05hbWU9XCJoLTMgdy0zXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgPHNwYW4+e2RlY2suc3R1ZHlfc3RhdHM/LnRvdGFsX2NhcmRzIHx8IDB9IGNhcmRzPC9zcGFuPlxuICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICBcbiAgICAgICAgICAgICAgICAgIHtkZWNrLnN0dWR5X3N0YXRzPy5kdWVfY2FyZHMgPiAwICYmIChcbiAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9e2NuKCdmbGV4IGl0ZW1zLWNlbnRlciBzcGFjZS14LTEnLCBnZXREdWVDYXJkc0NvbG9yKGRlY2suc3R1ZHlfc3RhdHMuZHVlX2NhcmRzKSl9PlxuICAgICAgICAgICAgICAgICAgICAgIDxDbG9jayBjbGFzc05hbWU9XCJoLTMgdy0zXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICA8c3Bhbj57ZGVjay5zdHVkeV9zdGF0cy5kdWVfY2FyZHN9IGR1ZTwvc3Bhbj5cbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICApfVxuXG4gICAgICAgICAgICAgICAgICB7ZGVjay5zdHVkeV9zdGF0cz8ubmV4dF9yZXZpZXcgJiYgKFxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIHNwYWNlLXgtMVwiPlxuICAgICAgICAgICAgICAgICAgICAgIDxDYWxlbmRhciBjbGFzc05hbWU9XCJoLTMgdy0zXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICA8c3Bhbj5MYXN0OiB7Zm9ybWF0UmVsYXRpdmVEYXRlKGRlY2suc3R1ZHlfc3RhdHMubmV4dF9yZXZpZXcpfTwvc3Bhbj5cbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICB7LyogUmlnaHQgc2lkZSAtIEFjdGlvbnMgKi99XG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIHNwYWNlLXgtMlwiPlxuICAgICAgICAgICAgICA8QnV0dG9uXG4gICAgICAgICAgICAgICAgYXNDaGlsZFxuICAgICAgICAgICAgICAgIHNpemU9XCJzbVwiXG4gICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiYmctZ3JhZGllbnQtdG8tciBmcm9tLWVtZXJhbGQtNTAwIHRvLWVtZXJhbGQtNjAwIGhvdmVyOmZyb20tZW1lcmFsZC02MDAgaG92ZXI6dG8tZW1lcmFsZC03MDBcIlxuICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgPExpbmsgaHJlZj17YC9wcm9qZWN0cy8ke3Byb2plY3RJZCB8fCBkZWNrLm93bmVyfS9mbGFzaGNhcmRzLyR7ZGVjay5pZH1gfT5cbiAgICAgICAgICAgICAgICAgIDxQbGF5IGNsYXNzTmFtZT1cImgtMyB3LTMgbXItMVwiIC8+XG4gICAgICAgICAgICAgICAgICBTdHVkeVxuICAgICAgICAgICAgICAgIDwvTGluaz5cbiAgICAgICAgICAgICAgPC9CdXR0b24+XG5cbiAgICAgICAgICAgICAgPERyb3Bkb3duTWVudT5cbiAgICAgICAgICAgICAgICA8RHJvcGRvd25NZW51VHJpZ2dlciBhc0NoaWxkPlxuICAgICAgICAgICAgICAgICAgPEJ1dHRvbiBcbiAgICAgICAgICAgICAgICAgICAgdmFyaWFudD1cImdob3N0XCIgXG4gICAgICAgICAgICAgICAgICAgIHNpemU9XCJzbVwiIFxuICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJoLTggdy04IHAtMFwiXG4gICAgICAgICAgICAgICAgICAgIGFyaWEtbGFiZWw9e2BNb3JlIGFjdGlvbnMgZm9yICR7ZGVjay50aXRsZX1gfVxuICAgICAgICAgICAgICAgICAgPlxuICAgICAgICAgICAgICAgICAgICA8TW9yZUhvcml6b250YWwgY2xhc3NOYW1lPVwiaC00IHctNFwiIC8+XG4gICAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cInNyLW9ubHlcIj5PcGVuIG1lbnU8L3NwYW4+XG4gICAgICAgICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICAgICAgICA8L0Ryb3Bkb3duTWVudVRyaWdnZXI+XG4gICAgICAgICAgICAgICAgPERyb3Bkb3duTWVudUNvbnRlbnQgYWxpZ249XCJlbmRcIiBjbGFzc05hbWU9XCJ3LTQ4XCI+XG4gICAgICAgICAgICAgICAgICA8RHJvcGRvd25NZW51SXRlbSBvbkNsaWNrPXsoKSA9PiBoYW5kbGVRdWlja0FjdGlvbignZWRpdCcpfT5cbiAgICAgICAgICAgICAgICAgICAgPEVkaXQzIGNsYXNzTmFtZT1cImgtNCB3LTQgbXItMlwiIC8+XG4gICAgICAgICAgICAgICAgICAgIEVkaXQgRGVja1xuICAgICAgICAgICAgICAgICAgPC9Ecm9wZG93bk1lbnVJdGVtPlxuICAgICAgICAgICAgICAgICAgPERyb3Bkb3duTWVudUl0ZW0gb25DbGljaz17KCkgPT4gaGFuZGxlUXVpY2tBY3Rpb24oJ3NoYXJlJyl9PlxuICAgICAgICAgICAgICAgICAgICA8U2hhcmUyIGNsYXNzTmFtZT1cImgtNCB3LTQgbXItMlwiIC8+XG4gICAgICAgICAgICAgICAgICAgIFNoYXJlIERlY2tcbiAgICAgICAgICAgICAgICAgIDwvRHJvcGRvd25NZW51SXRlbT5cbiAgICAgICAgICAgICAgICAgIDxEcm9wZG93bk1lbnVJdGVtIG9uQ2xpY2s9eygpID0+IGhhbmRsZVF1aWNrQWN0aW9uKCdmYXZvcml0ZScpfT5cbiAgICAgICAgICAgICAgICAgICAgPFN0YXIgY2xhc3NOYW1lPVwiaC00IHctNCBtci0yXCIgLz5cbiAgICAgICAgICAgICAgICAgICAge2RlY2sudGFncz8uaW5jbHVkZXMoJ2Zhdm9yaXRlJykgPyAnUmVtb3ZlIGZyb20gRmF2b3JpdGVzJyA6ICdBZGQgdG8gRmF2b3JpdGVzJ31cbiAgICAgICAgICAgICAgICAgIDwvRHJvcGRvd25NZW51SXRlbT5cbiAgICAgICAgICAgICAgICAgIDxEcm9wZG93bk1lbnVTZXBhcmF0b3IgLz5cbiAgICAgICAgICAgICAgICAgIDxEcm9wZG93bk1lbnVJdGVtIFxuICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBoYW5kbGVRdWlja0FjdGlvbignZGVsZXRlJyl9XG4gICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cInRleHQtcmVkLTYwMCBmb2N1czp0ZXh0LXJlZC02MDBcIlxuICAgICAgICAgICAgICAgICAgPlxuICAgICAgICAgICAgICAgICAgICA8VHJhc2gyIGNsYXNzTmFtZT1cImgtNCB3LTQgbXItMlwiIC8+XG4gICAgICAgICAgICAgICAgICAgIERlbGV0ZSBEZWNrXG4gICAgICAgICAgICAgICAgICA8L0Ryb3Bkb3duTWVudUl0ZW0+XG4gICAgICAgICAgICAgICAgPC9Ecm9wZG93bk1lbnVDb250ZW50PlxuICAgICAgICAgICAgICA8L0Ryb3Bkb3duTWVudT5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICA8L0NhcmRDb250ZW50PlxuICAgICAgPC9DYXJkPlxuICAgICk7XG4gIH1cblxuICAvLyBHcmlkIGxheW91dCAoZGVmYXVsdCkgLSBTaW1wbGlmaWVkIGRlc2lnbiBtYXRjaGluZyB0aGUgcGljdHVyZVxuICByZXR1cm4gKFxuICAgIDxDYXJkXG4gICAgICBjbGFzc05hbWU9e2NuKFxuICAgICAgICAnZ3JvdXAgaG92ZXI6c2hhZG93LW1kIHRyYW5zaXRpb24tYWxsIGR1cmF0aW9uLTIwMCcsXG4gICAgICAgICdiZy13aGl0ZSBib3JkZXIgYm9yZGVyLWdyYXktMjAwJyxcbiAgICAgICAgY2xhc3NOYW1lXG4gICAgICApfVxuICAgICAgdGFiSW5kZXg9ezB9XG4gICAgICByb2xlPVwiYnV0dG9uXCJcbiAgICAgIGFyaWEtbGFiZWw9e2BTdHVkeSBkZWNrOiAke2RlY2sudGl0bGV9LiAke2RlY2suc3R1ZHlfc3RhdHM/LnRvdGFsX2NhcmRzIHx8IDB9IGNhcmRzLCAke2RlY2suc3R1ZHlfc3RhdHM/LmR1ZV9jYXJkcyB8fCAwfSBkdWUgdG9kYXlgfVxuICAgICAgb25LZXlEb3duPXtoYW5kbGVLZXlEb3dufVxuICAgID5cbiAgICAgIDxDYXJkQ29udGVudCBjbGFzc05hbWU9XCJwLThcIj5cbiAgICAgICAgey8qIFRvcCBzZWN0aW9uIHdpdGggaWNvbiBhbmQgYWN0aW9ucyAqL31cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLXN0YXJ0IGp1c3RpZnktYmV0d2VlbiBtYi02XCI+XG4gICAgICAgICAgey8qIEljb24gKi99XG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9e2NuKFwidy0xNiBoLTE2IHJvdW5kZWQtbGcgYmctZ3JhZGllbnQtdG8tYnIgZmxleCBpdGVtcy1jZW50ZXIganVzdGlmeS1jZW50ZXIgc2hhZG93LXNtXCIsIGdldERlY2tDb2xvcihkZWNrLmlkLCAnaWNvbicpKX0+XG4gICAgICAgICAgICA8Qm9va09wZW4gY2xhc3NOYW1lPVwiaC04IHctOCB0ZXh0LXdoaXRlXCIgLz5cbiAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgIHsvKiBBY3Rpb24gYnV0dG9ucyAqL31cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIHNwYWNlLXgtMlwiPlxuICAgICAgICAgICAgPEJ1dHRvblxuICAgICAgICAgICAgICB2YXJpYW50PVwiZ2hvc3RcIlxuICAgICAgICAgICAgICBzaXplPVwic21cIlxuICAgICAgICAgICAgICBjbGFzc05hbWU9XCJoLTEwIHctMTAgcC0wIGhvdmVyOmJnLWdyYXktMTAwXCJcbiAgICAgICAgICAgICAgb25DbGljaz17KGUpID0+IHtcbiAgICAgICAgICAgICAgICBlLnN0b3BQcm9wYWdhdGlvbigpO1xuICAgICAgICAgICAgICAgIGhhbmRsZVF1aWNrQWN0aW9uKCdlZGl0Jyk7XG4gICAgICAgICAgICAgIH19XG4gICAgICAgICAgICAgIGFyaWEtbGFiZWw9e2BFZGl0ICR7ZGVjay50aXRsZX1gfVxuICAgICAgICAgICAgPlxuICAgICAgICAgICAgICA8RWRpdDMgY2xhc3NOYW1lPVwiaC01IHctNSB0ZXh0LWdyYXktNzAwXCIgLz5cbiAgICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICAgICAgPEJ1dHRvblxuICAgICAgICAgICAgICB2YXJpYW50PVwiZ2hvc3RcIlxuICAgICAgICAgICAgICBzaXplPVwic21cIlxuICAgICAgICAgICAgICBjbGFzc05hbWU9XCJoLTEwIHctMTAgcC0wIGhvdmVyOmJnLWdyYXktMTAwXCJcbiAgICAgICAgICAgICAgb25DbGljaz17KGUpID0+IHtcbiAgICAgICAgICAgICAgICBlLnN0b3BQcm9wYWdhdGlvbigpO1xuICAgICAgICAgICAgICAgIGhhbmRsZVF1aWNrQWN0aW9uKCdkZWxldGUnKTtcbiAgICAgICAgICAgICAgfX1cbiAgICAgICAgICAgICAgYXJpYS1sYWJlbD17YERlbGV0ZSAke2RlY2sudGl0bGV9YH1cbiAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgPFRyYXNoMiBjbGFzc05hbWU9XCJoLTUgdy01IHRleHQtcmVkLTUwMFwiIC8+XG4gICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgey8qIFRpdGxlICovfVxuICAgICAgICA8aDMgY2xhc3NOYW1lPVwiZm9udC1ib2xkIHRleHQtZ3JheS05MDAgdGV4dC0yeGwgbWItM1wiPlxuICAgICAgICAgIHtkZWNrLnRpdGxlfVxuICAgICAgICA8L2gzPlxuXG4gICAgICAgIHsvKiBEZXNjcmlwdGlvbiAqL31cbiAgICAgICAge2RlY2suZGVzY3JpcHRpb24gJiYgKFxuICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQtZ3JheS02MDAgdGV4dC1iYXNlIG1iLTYgbGluZS1jbGFtcC0yXCI+XG4gICAgICAgICAgICB7ZGVjay5kZXNjcmlwdGlvbn1cbiAgICAgICAgICA8L3A+XG4gICAgICAgICl9XG5cbiAgICAgICAgey8qIEJvdHRvbSBzZWN0aW9uIHdpdGggY2FyZCBjb3VudCBhbmQgZGF0ZSAqL31cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW4gbWItNlwiPlxuICAgICAgICAgIDxCYWRnZSB2YXJpYW50PVwic2Vjb25kYXJ5XCIgY2xhc3NOYW1lPVwidGV4dC1zbSBiZy1ncmF5LTEwMCB0ZXh0LWdyYXktNzAwIHB4LTMgcHktMVwiPlxuICAgICAgICAgICAge2RlY2suc3R1ZHlfc3RhdHM/LnRvdGFsX2NhcmRzIHx8IDB9IGNhcmRzXG4gICAgICAgICAgPC9CYWRnZT5cbiAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJ0ZXh0LXNtIHRleHQtZ3JheS01MDBcIj5cbiAgICAgICAgICAgIHtmb3JtYXREYXRlKGRlY2sudXBkYXRlZF9hdCl9XG4gICAgICAgICAgPC9zcGFuPlxuICAgICAgICA8L2Rpdj5cblxuICAgICAgICB7LyogQ1RBIEJ1dHRvbiAqL31cbiAgICAgICAgPEJ1dHRvblxuICAgICAgICAgIGFzQ2hpbGRcbiAgICAgICAgICBjbGFzc05hbWU9e2NuKFwidy1mdWxsIGJnLWdyYWRpZW50LXRvLXIgdGV4dC13aGl0ZSBmb250LW1lZGl1bSByb3VuZGVkLWxnIHB5LTMgdGV4dC1iYXNlXCIsIGdldERlY2tDb2xvcihkZWNrLmlkLCAnYnV0dG9uJykpfVxuICAgICAgICA+XG4gICAgICAgICAgPExpbmsgaHJlZj17YC9wcm9qZWN0cy8ke3Byb2plY3RJZCB8fCBkZWNrLm93bmVyfS9mbGFzaGNhcmRzLyR7ZGVjay5pZH1gfT5cbiAgICAgICAgICAgIFN0dWR5IERlY2tcbiAgICAgICAgICAgIDxDaGV2cm9uUmlnaHQgY2xhc3NOYW1lPVwiaC01IHctNSBtbC0yXCIgLz5cbiAgICAgICAgICA8L0xpbms+XG4gICAgICAgIDwvQnV0dG9uPlxuICAgICAgPC9DYXJkQ29udGVudD5cbiAgICA8L0NhcmQ+XG4gICk7XG59XG4iXSwibmFtZXMiOlsiRGVja0NhcmQiLCJkZWNrIiwidmFyaWFudCIsImxheW91dCIsInByb2plY3RJZCIsIm9uRWRpdCIsIm9uRGVsZXRlIiwib25TaGFyZSIsIm9uVG9nZ2xlRmF2b3JpdGUiLCJjbGFzc05hbWUiLCJpc0NvbXBhY3QiLCJpc0xpc3RMYXlvdXQiLCJoYW5kbGVRdWlja0FjdGlvbiIsImFjdGlvbiIsImhhbmRsZUtleURvd24iLCJldmVudCIsImtleSIsInByZXZlbnREZWZhdWx0IiwidGFyZ2V0UHJvamVjdElkIiwib3duZXIiLCJ3aW5kb3ciLCJsb2NhdGlvbiIsImhyZWYiLCJpZCIsIkNhcmQiLCJjbiIsInRhYkluZGV4Iiwicm9sZSIsImFyaWEtbGFiZWwiLCJ0aXRsZSIsInN0dWR5X3N0YXRzIiwidG90YWxfY2FyZHMiLCJkdWVfY2FyZHMiLCJvbktleURvd24iLCJDYXJkQ29udGVudCIsImRpdiIsIkJvb2tPcGVuIiwiaDMiLCJ0YWdzIiwiaW5jbHVkZXMiLCJTdGFyIiwiZGVzY3JpcHRpb24iLCJwIiwic3BhbiIsImdldER1ZUNhcmRzQ29sb3IiLCJDbG9jayIsIm5leHRfcmV2aWV3IiwiQ2FsZW5kYXIiLCJmb3JtYXRSZWxhdGl2ZURhdGUiLCJCdXR0b24iLCJhc0NoaWxkIiwic2l6ZSIsIkxpbmsiLCJQbGF5IiwiRHJvcGRvd25NZW51IiwiRHJvcGRvd25NZW51VHJpZ2dlciIsIk1vcmVIb3Jpem9udGFsIiwiRHJvcGRvd25NZW51Q29udGVudCIsImFsaWduIiwiRHJvcGRvd25NZW51SXRlbSIsIm9uQ2xpY2siLCJFZGl0MyIsIlNoYXJlMiIsIkRyb3Bkb3duTWVudVNlcGFyYXRvciIsIlRyYXNoMiIsImdldERlY2tDb2xvciIsImUiLCJzdG9wUHJvcGFnYXRpb24iLCJCYWRnZSIsImZvcm1hdERhdGUiLCJ1cGRhdGVkX2F0IiwiQ2hldnJvblJpZ2h0Il0sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7K0JBdUNnQkE7OztlQUFBQTs7Ozs4REFyQ0U7NkRBQ0Q7c0JBQ2lCO3dCQUNYO3VCQUNEOzhCQU9mOzZCQVlBO3VCQUNZO3dCQUU0RDs7Ozs7O0FBV3hFLFNBQVNBLFNBQVMsRUFDdkJDLElBQUksRUFDSkMsVUFBVSxTQUFTLEVBQ25CQyxTQUFTLE1BQU0sRUFDZkMsU0FBUyxFQUNUQyxNQUFNLEVBQ05DLFFBQVEsRUFDUkMsT0FBTyxFQUNQQyxnQkFBZ0IsRUFDaEJDLFNBQVMsRUFDSztJQUNkLE1BQU1DLFlBQVlSLFlBQVk7SUFDOUIsTUFBTVMsZUFBZVIsV0FBVztJQUVoQyxNQUFNUyxvQkFBb0IsQ0FBQ0M7UUFDekIsT0FBUUE7WUFDTixLQUFLO2dCQUNIUixTQUFTSjtnQkFDVDtZQUNGLEtBQUs7Z0JBQ0hLLFdBQVdMO2dCQUNYO1lBQ0YsS0FBSztnQkFDSE0sVUFBVU47Z0JBQ1Y7WUFDRixLQUFLO2dCQUNITyxtQkFBbUJQO2dCQUNuQjtRQUNKO0lBQ0Y7SUFFQSxNQUFNYSxnQkFBZ0IsQ0FBQ0M7UUFDckIsSUFBSUEsTUFBTUMs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

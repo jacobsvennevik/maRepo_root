@@ -1,0 +1,146 @@
+eb10130fe5f6486eed70f7d191688d77
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "DeckGrid", {
+    enumerable: true,
+    get: function() {
+        return DeckGrid;
+    }
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_wildcard(require("react"));
+const _deckcard = require("./deck-card");
+const _sortchips = require("./sort-chips");
+const _layouttoggle = require("./layout-toggle");
+const _statecomponents = require("./state-components");
+const _hooks = require("./hooks");
+const _constants = require("./constants");
+const _utils = require("../../../lib/utils");
+function _getRequireWildcardCache(nodeInterop) {
+    if (typeof WeakMap !== "function") return null;
+    var cacheBabelInterop = new WeakMap();
+    var cacheNodeInterop = new WeakMap();
+    return (_getRequireWildcardCache = function(nodeInterop) {
+        return nodeInterop ? cacheNodeInterop : cacheBabelInterop;
+    })(nodeInterop);
+}
+function _interop_require_wildcard(obj, nodeInterop) {
+    if (!nodeInterop && obj && obj.__esModule) {
+        return obj;
+    }
+    if (obj === null || typeof obj !== "object" && typeof obj !== "function") {
+        return {
+            default: obj
+        };
+    }
+    var cache = _getRequireWildcardCache(nodeInterop);
+    if (cache && cache.has(obj)) {
+        return cache.get(obj);
+    }
+    var newObj = {
+        __proto__: null
+    };
+    var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+    for(var key in obj){
+        if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) {
+            var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+            if (desc && (desc.get || desc.set)) {
+                Object.defineProperty(newObj, key, desc);
+            } else {
+                newObj[key] = obj[key];
+            }
+        }
+    }
+    newObj.default = obj;
+    if (cache) {
+        cache.set(obj, newObj);
+    }
+    return newObj;
+}
+function DeckGrid({ decks, isLoading = false, error = null, projectId, onEdit, onDelete, onShare, onToggleFavorite, className }) {
+    const [sortOption, setSortOption] = (0, _react.useState)('recent');
+    const [sortDirection, setSortDirection] = (0, _react.useState)('desc');
+    const [layoutMode, setLayoutMode] = (0, _react.useState)('grid');
+    const sortedDecks = (0, _hooks.useDeckSorting)(decks, sortOption, sortDirection);
+    // Loading state
+    if (isLoading) {
+        return /*#__PURE__*/ (0, _jsxruntime.jsx)(_statecomponents.LoadingState, {});
+    }
+    // Error state
+    if (error) {
+        return /*#__PURE__*/ (0, _jsxruntime.jsx)(_statecomponents.ErrorState, {
+            error: error
+        });
+    }
+    // Empty state
+    if (decks.length === 0) {
+        return /*#__PURE__*/ (0, _jsxruntime.jsx)(_statecomponents.EmptyState, {});
+    }
+    return /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+        className: (0, _utils.cn)('space-y-6', className),
+        children: [
+            /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                className: "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4",
+                children: [
+                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                        className: "flex items-center space-x-4",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)("h2", {
+                                className: "text-xl font-semibold text-gray-900",
+                                children: "All Decks"
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                className: "text-sm text-gray-500",
+                                children: [
+                                    decks.length,
+                                    " ",
+                                    decks.length === 1 ? 'deck' : 'decks'
+                                ]
+                            })
+                        ]
+                    }),
+                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                        className: "flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_sortchips.SortChips, {
+                                currentSort: sortOption,
+                                sortDirection: sortDirection,
+                                onSortChange: setSortOption,
+                                onDirectionChange: setSortDirection
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_layouttoggle.LayoutToggle, {
+                                currentLayout: layoutMode,
+                                onLayoutChange: setLayoutMode
+                            })
+                        ]
+                    })
+                ]
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                className: (0, _utils.cn)(layoutMode === 'grid' ? _constants.GRID_LAYOUT_CLASSES : _constants.LIST_LAYOUT_CLASSES),
+                role: "grid",
+                "aria-label": "Flashcard decks",
+                children: sortedDecks.map((deck, index)=>/*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                        role: "gridcell",
+                        "aria-rowindex": Math.floor(index / (layoutMode === 'grid' ? 3 : 1)) + 1,
+                        "aria-colindex": index % (layoutMode === 'grid' ? 3 : 1) + 1,
+                        children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_deckcard.DeckCard, {
+                            deck: deck,
+                            layout: layoutMode,
+                            projectId: projectId,
+                            onEdit: onEdit,
+                            onDelete: onDelete,
+                            onShare: onShare,
+                            onToggleFavorite: onToggleFavorite,
+                            className: "h-full"
+                        })
+                    }, deck.id))
+            })
+        ]
+    });
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvZmxhc2hjYXJkcy9jb21wb25lbnRzL2RlY2stZ3JpZC50c3giXSwic291cmNlc0NvbnRlbnQiOlsiXCJ1c2UgY2xpZW50XCI7XG5cbmltcG9ydCBSZWFjdCwgeyB1c2VTdGF0ZSB9IGZyb20gJ3JlYWN0JztcbmltcG9ydCB7IERlY2tDYXJkIH0gZnJvbSAnLi9kZWNrLWNhcmQnO1xuaW1wb3J0IHsgU29ydENoaXBzIH0gZnJvbSAnLi9zb3J0LWNoaXBzJztcbmltcG9ydCB7IExheW91dFRvZ2dsZSB9IGZyb20gJy4vbGF5b3V0LXRvZ2dsZSc7XG5pbXBvcnQgeyBMb2FkaW5nU3RhdGUsIEVycm9yU3RhdGUsIEVtcHR5U3RhdGUgfSBmcm9tICcuL3N0YXRlLWNvbXBvbmVudHMnO1xuaW1wb3J0IHsgdXNlRGVja1NvcnRpbmcgfSBmcm9tICcuL2hvb2tzJztcbmltcG9ydCB7IEdSSURfTEFZT1VUX0NMQVNTRVMsIExJU1RfTEFZT1VUX0NMQVNTRVMgfSBmcm9tICcuL2NvbnN0YW50cyc7XG5pbXBvcnQgeyBGbGFzaGNhcmRTZXQgfSBmcm9tICdAL2ZlYXR1cmVzL2ZsYXNoY2FyZHMvdHlwZXMnO1xuaW1wb3J0IHsgY24gfSBmcm9tICdAL2xpYi91dGlscyc7XG5pbXBvcnQgdHlwZSB7IFNvcnRPcHRpb24sIExheW91dE1vZGUsIERlY2tBY3Rpb25IYW5kbGVycyB9IGZyb20gJy4vdHlwZXMnO1xuXG5leHBvcnQgaW50ZXJmYWNlIERlY2tHcmlkUHJvcHMgZXh0ZW5kcyBEZWNrQWN0aW9uSGFuZGxlcnMge1xuICBkZWNrczogRmxhc2hjYXJkU2V0W107XG4gIGlzTG9hZGluZz86IGJvb2xlYW47XG4gIGVycm9yPzogc3RyaW5nIHwgbnVsbDtcbiAgcHJvamVjdElkPzogc3RyaW5nO1xuICBjbGFzc05hbWU/OiBzdHJpbmc7XG59XG5cbmV4cG9ydCBmdW5jdGlvbiBEZWNrR3JpZCh7XG4gIGRlY2tzLFxuICBpc0xvYWRpbmcgPSBmYWxzZSxcbiAgZXJyb3IgPSBudWxsLFxuICBwcm9qZWN0SWQsXG4gIG9uRWRpdCxcbiAgb25EZWxldGUsXG4gIG9uU2hhcmUsXG4gIG9uVG9nZ2xlRmF2b3JpdGUsXG4gIGNsYXNzTmFtZSxcbn06IERlY2tHcmlkUHJvcHMpIHtcbiAgY29uc3QgW3NvcnRPcHRpb24sIHNldFNvcnRPcHRpb25dID0gdXNlU3RhdGU8U29ydE9wdGlvbj4oJ3JlY2VudCcpO1xuICBjb25zdCBbc29ydERpcmVjdGlvbiwgc2V0U29ydERpcmVjdGlvbl0gPSB1c2VTdGF0ZTwnYXNjJyB8ICdkZXNjJz4oJ2Rlc2MnKTtcbiAgY29uc3QgW2xheW91dE1vZGUsIHNldExheW91dE1vZGVdID0gdXNlU3RhdGU8TGF5b3V0TW9kZT4oJ2dyaWQnKTtcblxuICBjb25zdCBzb3J0ZWREZWNrcyA9IHVzZURlY2tTb3J0aW5nKGRlY2tzLCBzb3J0T3B0aW9uLCBzb3J0RGlyZWN0aW9uKTtcblxuICAvLyBMb2FkaW5nIHN0YXRlXG4gIGlmIChpc0xvYWRpbmcpIHtcbiAgICByZXR1cm4gPExvYWRpbmdTdGF0ZSAvPjtcbiAgfVxuXG4gIC8vIEVycm9yIHN0YXRlXG4gIGlmIChlcnJvcikge1xuICAgIHJldHVybiA8RXJyb3JTdGF0ZSBlcnJvcj17ZXJyb3J9IC8+O1xuICB9XG5cbiAgLy8gRW1wdHkgc3RhdGVcbiAgaWYgKGRlY2tzLmxlbmd0aCA9PT0gMCkge1xuICAgIHJldHVybiA8RW1wdHlTdGF0ZSAvPjtcbiAgfVxuXG4gIHJldHVybiAoXG4gICAgPGRpdiBjbGFzc05hbWU9e2NuKCdzcGFjZS15LTYnLCBjbGFzc05hbWUpfT5cbiAgICAgIHsvKiBDb250cm9scyAqL31cbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBmbGV4LWNvbCBzbTpmbGV4LXJvdyBzbTppdGVtcy1jZW50ZXIgc206anVzdGlmeS1iZXR3ZWVuIGdhcC00XCI+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBpdGVtcy1jZW50ZXIgc3BhY2UteC00XCI+XG4gICAgICAgICAgPGgyIGNsYXNzTmFtZT1cInRleHQteGwgZm9udC1zZW1pYm9sZCB0ZXh0LWdyYXktOTAwXCI+XG4gICAgICAgICAgICBBbGwgRGVja3NcbiAgICAgICAgICA8L2gyPlxuICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cInRleHQtc20gdGV4dC1ncmF5LTUwMFwiPlxuICAgICAgICAgICAge2RlY2tzLmxlbmd0aH0ge2RlY2tzLmxlbmd0aCA9PT0gMSA/ICdkZWNrJyA6ICdkZWNrcyd9XG4gICAgICAgICAgPC9zcGFuPlxuICAgICAgICA8L2Rpdj5cblxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggZmxleC1jb2wgc206ZmxleC1yb3cgaXRlbXMtc3RhcnQgc206aXRlbXMtY2VudGVyIHNwYWNlLXktMiBzbTpzcGFjZS15LTAgc206c3BhY2UteC00XCI+XG4gICAgICAgICAgPFNvcnRDaGlwc1xuICAgICAgICAgICAgY3VycmVudFNvcnQ9e3NvcnRPcHRpb259XG4gICAgICAgICAgICBzb3J0RGlyZWN0aW9uPXtzb3J0RGlyZWN0aW9ufVxuICAgICAgICAgICAgb25Tb3J0Q2hhbmdlPXtzZXRTb3J0T3B0aW9ufVxuICAgICAgICAgICAgb25EaXJlY3Rpb25DaGFuZ2U9e3NldFNvcnREaXJlY3Rpb259XG4gICAgICAgICAgLz5cbiAgICAgICAgICBcbiAgICAgICAgICA8TGF5b3V0VG9nZ2xlXG4gICAgICAgICAgICBjdXJyZW50TGF5b3V0PXtsYXlvdXRNb2RlfVxuICAgICAgICAgICAgb25MYXlvdXRDaGFuZ2U9e3NldExheW91dE1vZGV9XG4gICAgICAgICAgLz5cbiAgICAgICAgPC9kaXY+XG4gICAgICA8L2Rpdj5cblxuICAgICAgey8qIERlY2sgR3JpZC9MaXN0ICovfVxuICAgICAgPGRpdlxuICAgICAgICBjbGFzc05hbWU9e2NuKFxuICAgICAgICAgIGxheW91dE1vZGUgPT09ICdncmlkJyA/IEdSSURfTEFZT1VUX0NMQVNTRVMgOiBMSVNUX0xBWU9VVF9DTEFTU0VTXG4gICAgICAgICl9XG4gICAgICAgIHJvbGU9XCJncmlkXCJcbiAgICAgICAgYXJpYS1sYWJlbD1cIkZsYXNoY2FyZCBkZWNrc1wiXG4gICAgICA+XG4gICAgICAgIHtzb3J0ZWREZWNrcy5tYXAoKGRlY2ssIGluZGV4KSA9PiAoXG4gICAgICAgICAgPGRpdlxuICAgICAgICAgICAga2V5PXtkZWNrLmlkfVxuICAgICAgICAgICAgcm9sZT1cImdyaWRjZWxsXCJcbiAgICAgICAgICAgIGFyaWEtcm93aW5kZXg9e01hdGguZmxvb3IoaW5kZXggLyAobGF5b3V0TW9kZSA9PT0gJ2dyaWQnID8gMyA6IDEpKSArIDF9XG4gICAgICAgICAgICBhcmlhLWNvbGluZGV4PXsoaW5kZXggJSAobGF5b3V0TW9kZSA9PT0gJ2dyaWQnID8gMyA6IDEpKSArIDF9XG4gICAgICAgICAgPlxuICAgICAgICAgICAgPERlY2tDYXJkXG4gICAgICAgICAgICAgIGRlY2s9e2RlY2t9XG4gICAgICAgICAgICAgIGxheW91dD17bGF5b3V0TW9kZX1cbiAgICAgICAgICAgICAgcHJvamVjdElkPXtwcm9qZWN0SWR9XG4gICAgICAgICAgICAgIG9uRWRpdD17b25FZGl0fVxuICAgICAgICAgICAgICBvbkRlbGV0ZT17b25EZWxldGV9XG4gICAgICAgICAgICAgIG9uU2hhcmU9e29uU2hhcmV9XG4gICAgICAgICAgICAgIG9uVG9nZ2xlRmF2b3JpdGU9e29uVG9nZ2xlRmF2b3JpdGV9XG4gICAgICAgICAgICAgIGNsYXNzTmFtZT1cImgtZnVsbFwiXG4gICAgICAgICAgICAvPlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICApKX1cbiAgICAgIDwvZGl2PlxuICAgIDwvZGl2PlxuICApO1xufVxuIl0sIm5hbWVzIjpbIkRlY2tHcmlkIiwiZGVja3MiLCJpc0xvYWRpbmciLCJlcnJvciIsInByb2plY3RJZCIsIm9uRWRpdCIsIm9uRGVsZXRlIiwib25TaGFyZSIsIm9uVG9nZ2xlRmF2b3JpdGUiLCJjbGFzc05hbWUiLCJzb3J0T3B0aW9uIiwic2V0U29ydE9wdGlvbiIsInVzZVN0YXRlIiwic29ydERpcmVjdGlvbiIsInNldFNvcnREaXJlY3Rpb24iLCJsYXlvdXRNb2RlIiwic2V0TGF5b3V0TW9kZSIsInNvcnRlZERlY2tzIiwidXNlRGVja1NvcnRpbmciLCJMb2FkaW5nU3RhdGUiLCJFcnJvclN0YXRlIiwibGVuZ3RoIiwiRW1wdHlTdGF0ZSIsImRpdiIsImNuIiwiaDIiLCJzcGFuIiwiU29ydENoaXBzIiwiY3VycmVudFNvcnQiLCJvblNvcnRDaGFuZ2UiLCJvbkRpcmVjdGlvbkNoYW5nZSIsIkxheW91dFRvZ2dsZSIsImN1cnJlbnRMYXlvdXQiLCJvbkxheW91dENoYW5nZSIsIkdSSURfTEFZT1VUX0NMQVNTRVMiLCJMSVNUX0xBWU9VVF9DTEFTU0VTIiwicm9sZSIsImFyaWEtbGFiZWwiLCJtYXAiLCJkZWNrIiwiaW5kZXgiLCJhcmlhLXJvd2luZGV4IiwiTWF0aCIsImZsb29yIiwiYXJpYS1jb2xpbmRleCIsIkRlY2tDYXJkIiwibGF5b3V0IiwiaWQiXSwibWFwcGluZ3MiOiJBQUFBOzs7OzsrQkFxQmdCQTs7O2VBQUFBOzs7OytEQW5CZ0I7MEJBQ1A7MkJBQ0M7OEJBQ0c7aUNBQ3dCO3VCQUN0QjsyQkFDMEI7dUJBRXRDOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFXWixTQUFTQSxTQUFTLEVBQ3ZCQyxLQUFLLEVBQ0xDLFlBQVksS0FBSyxFQUNqQkMsUUFBUSxJQUFJLEVBQ1pDLFNBQVMsRUFDVEMsTUFBTSxFQUNOQyxRQUFRLEVBQ1JDLE9BQU8sRUFDUEMsZ0JBQWdCLEVBQ2hCQyxTQUFTLEVBQ0s7SUFDZCxNQUFNLENBQUNDLFlBQVlDLGNBQWMsR0FBR0MsSUFBQUEsZUFBUSxFQUFhO0lBQ3pELE1BQU0sQ0FBQ0MsZUFBZUMsaUJBQWlCLEdBQUdGLElBQUFBLGVBQVEsRUFBaUI7SUFDbkUsTUFBTSxDQUFDRyxZQUFZQyxjQUFjLEdBQUdKLElBQUFBLGVBQVEsRUFBYTtJQUV6RCxNQUFNSyxjQUFjQyxJQUFBQSxxQkFBYyxFQUFDakIsT0FBT1MsWUFBWUc7SUFFdEQsZ0JBQWdCO0lBQ2hCLElBQUlYLFdBQVc7UUFDYixxQkFBTyxxQkFBQ2lCLDZCQUFZO0lBQ3RCO0lBRUEsY0FBYztJQUNkLElBQUloQixPQUFPO1FBQ1QscUJBQU8scUJBQUNpQiwyQkFBVTtZQUFDakIsT0FBT0E7O0lBQzVCO0lBRUEsY0FBYztJQUNkLElBQUlGLE1BQU1vQixNQUFNLEtBQUssR0FBRztRQUN0QixxQkFBTyxxQkFBQ0MsMkJBQVU7SUFDcEI7SUFFQSxxQkFDRSxzQkFBQ0M7UUFBSWQsV0FBV2UsSUFBQUEsU0FBRSxFQUFDLGFBQWFmOzswQkFFOUIsc0JBQUNjO2dCQUFJZCxXQUFVOztrQ0FDYixzQkFBQ2M7d0JBQUlkLFdBQVU7OzBDQUNiLHFCQUFDZ0I7Z0NBQUdoQixXQUFVOzBDQUFzQzs7MENBR3BELHNCQUFDaUI7Z0NBQUtqQixXQUFVOztvQ0FDYlIsTUFBTW9CLE1BQU07b0NBQUM7b0NBQUVwQixNQUFNb0IsTUFBTSxLQUFLLElBQUksU0FBUzs7Ozs7a0NBSWxELHNCQUFDRTt3QkFBSWQsV0FBVTs7MENBQ2IscUJBQUNrQixvQkFBUztnQ0FDUkMsYUFBYWxCO2dDQUNiRyxlQUFlQTtnQ0FDZmdCLGNBQWNsQjtnQ0FDZG1CLG1CQUFtQmhCOzswQ0FHckIscUJBQUNpQiwwQkFBWTtnQ0FDWEMsZUFBZWpCO2dDQUNma0IsZ0JBQWdCakI7Ozs7OzswQkFNdEIscUJBQUNPO2dCQUNDZCxXQUFXZSxJQUFBQSxTQUFFLEVBQ1hULGVBQWUsU0FBU21CLDhCQUFtQixHQUFHQyw4QkFBbUI7Z0JBRW5FQyxNQUFLO2dCQUNMQyxjQUFXOzBCQUVWcEIsWUFBWXFCLEdBQUcsQ0FBQyxDQUFDQyxNQUFNQyxzQkFDdEIscUJBQUNqQjt3QkFFQ2EsTUFBSzt3QkFDTEssaUJBQWVDLEtBQUtDLEtBQUssQ0FBQ0gsUUFBU3pCLENBQUFBLGVBQWUsU0FBUyxJQUFJLENBQUEsS0FBTTt3QkFDckU2QixpQkFBZSxBQUFDSixRQUFTekIsQ0FBQUEsZUFBZSxTQUFTLElBQUksQ0FBQSxJQUFNO2tDQUUzRCxjQUFBLHFCQUFDOEIsa0JBQVE7NEJBQ1BOLE1BQU1BOzRCQUNOTyxRQUFRL0I7NEJBQ1JYLFdBQVdBOzRCQUNYQyxRQUFRQTs0QkFDUkMsVUFBVUE7NEJBQ1ZDLFNBQVNBOzRCQUNUQyxrQkFBa0JBOzRCQUNsQkMsV0FBVTs7dUJBYlA4QixLQUFLUSxFQUFFOzs7O0FBb0J4QiJ9

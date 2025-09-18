@@ -1,5 +1,5 @@
 // Data transformation utilities for flashcard hooks
-import { axiosApi } from "@/lib/axios-api";
+import { axiosGeneration } from "@/lib/axios";
 import type { Paginated } from "@/lib/api/pagination";
 
 export interface FlashcardSetApi {
@@ -14,6 +14,26 @@ export interface FlashcardSetApi {
   created_at: string;
 }
 
+function normalizeProjectId(raw: string): string {
+  const val = String(raw || "");
+  const looksLikeUuid = val.includes("-") && val.length >= 32;
+  if (looksLikeUuid) return val;
+  // Test/SSR hint
+  try {
+    const hinted = (globalThis as any)?.__activeProjectId as string | undefined;
+    if (hinted && hinted.includes('-')) return hinted;
+  } catch {}
+  // Fallback: try to read active project id stored by projects overview
+  try {
+    const ls: Storage | undefined = (globalThis as any)?.localStorage;
+    if (ls) {
+      const stored = ls.getItem("activeProjectId") || ls.getItem("currentProjectId");
+      if (stored) return stored;
+    }
+  } catch {}
+  return val; // last resort
+}
+
 export function unwrapFlashcardSets(payload: any): FlashcardSetApi[] {
   return Array.isArray(payload)
     ? payload
@@ -23,8 +43,9 @@ export function unwrapFlashcardSets(payload: any): FlashcardSetApi[] {
 }
 
 export async function refreshFlashcardSets(projectId: string): Promise<FlashcardSetApi[]> {
-  const response = await axiosApi.get<FlashcardSetApi[] | Paginated<FlashcardSetApi>>(
-    `projects/${projectId}/flashcard-sets/`
+  const effectiveProjectId = normalizeProjectId(projectId);
+  const response = await axiosGeneration.get<FlashcardSetApi[] | Paginated<FlashcardSetApi>>(
+    `projects/${effectiveProjectId}/flashcard-sets/`
   );
   return unwrapFlashcardSets(response.data);
 }

@@ -1,0 +1,76 @@
+db3ce5fe0696c82cb74bcfc481fc01e3
+// Shared utilities for flashcard components
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    DECK_COLORS: function() {
+        return DECK_COLORS;
+    },
+    formatDate: function() {
+        return formatDate;
+    },
+    formatRelativeDate: function() {
+        return formatRelativeDate;
+    },
+    getDeckColor: function() {
+        return getDeckColor;
+    },
+    getDueCardsColor: function() {
+        return getDueCardsColor;
+    }
+});
+const DECK_COLORS = {
+    icon: [
+        'from-purple-500 to-purple-600',
+        'from-green-500 to-green-600',
+        'from-blue-500 to-blue-600',
+        'from-orange-500 to-orange-600',
+        'from-pink-500 to-pink-600',
+        'from-indigo-500 to-indigo-600'
+    ],
+    button: [
+        'from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700',
+        'from-green-500 to-green-600 hover:from-green-600 hover:to-green-700',
+        'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700',
+        'from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700',
+        'from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700',
+        'from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700'
+    ]
+};
+const getDeckColor = (deckId, type)=>{
+    const colors = DECK_COLORS[type];
+    return colors[deckId % colors.length];
+};
+const formatDate = (dateString)=>{
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+};
+const formatRelativeDate = (dateString)=>{
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return formatDate(dateString);
+};
+const getDueCardsColor = (dueCards)=>{
+    if (dueCards === 0) return 'text-gray-500';
+    if (dueCards <= 3) return 'text-orange-600';
+    return 'text-red-600';
+};
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvZmxhc2hjYXJkcy9jb21wb25lbnRzL3V0aWxzLnRzIl0sInNvdXJjZXNDb250ZW50IjpbIi8vIFNoYXJlZCB1dGlsaXRpZXMgZm9yIGZsYXNoY2FyZCBjb21wb25lbnRzXG5leHBvcnQgY29uc3QgREVDS19DT0xPUlMgPSB7XG4gIGljb246IFtcbiAgICAnZnJvbS1wdXJwbGUtNTAwIHRvLXB1cnBsZS02MDAnLFxuICAgICdmcm9tLWdyZWVuLTUwMCB0by1ncmVlbi02MDAnLCBcbiAgICAnZnJvbS1ibHVlLTUwMCB0by1ibHVlLTYwMCcsXG4gICAgJ2Zyb20tb3JhbmdlLTUwMCB0by1vcmFuZ2UtNjAwJyxcbiAgICAnZnJvbS1waW5rLTUwMCB0by1waW5rLTYwMCcsXG4gICAgJ2Zyb20taW5kaWdvLTUwMCB0by1pbmRpZ28tNjAwJyxcbiAgXSxcbiAgYnV0dG9uOiBbXG4gICAgJ2Zyb20tcHVycGxlLTUwMCB0by1wdXJwbGUtNjAwIGhvdmVyOmZyb20tcHVycGxlLTYwMCBob3Zlcjp0by1wdXJwbGUtNzAwJyxcbiAgICAnZnJvbS1ncmVlbi01MDAgdG8tZ3JlZW4tNjAwIGhvdmVyOmZyb20tZ3JlZW4tNjAwIGhvdmVyOnRvLWdyZWVuLTcwMCcsXG4gICAgJ2Zyb20tYmx1ZS01MDAgdG8tYmx1ZS02MDAgaG92ZXI6ZnJvbS1ibHVlLTYwMCBob3Zlcjp0by1ibHVlLTcwMCcsXG4gICAgJ2Zyb20tb3JhbmdlLTUwMCB0by1vcmFuZ2UtNjAwIGhvdmVyOmZyb20tb3JhbmdlLTYwMCBob3Zlcjp0by1vcmFuZ2UtNzAwJyxcbiAgICAnZnJvbS1waW5rLTUwMCB0by1waW5rLTYwMCBob3Zlcjpmcm9tLXBpbmstNjAwIGhvdmVyOnRvLXBpbmstNzAwJyxcbiAgICAnZnJvbS1pbmRpZ28tNTAwIHRvLWluZGlnby02MDAgaG92ZXI6ZnJvbS1pbmRpZ28tNjAwIGhvdmVyOnRvLWluZGlnby03MDAnLFxuICBdLFxufSBhcyBjb25zdDtcblxuZXhwb3J0IGNvbnN0IGdldERlY2tDb2xvciA9IChkZWNrSWQ6IG51bWJlciwgdHlwZTogJ2ljb24nIHwgJ2J1dHRvbicpID0+IHtcbiAgY29uc3QgY29sb3JzID0gREVDS19DT0xPUlNbdHlwZV07XG4gIHJldHVybiBjb2xvcnNbZGVja0lkICUgY29sb3JzLmxlbmd0aF07XG59O1xuXG5leHBvcnQgY29uc3QgZm9ybWF0RGF0ZSA9IChkYXRlU3RyaW5nOiBzdHJpbmcpID0+IHtcbiAgY29uc3QgZGF0ZSA9IG5ldyBEYXRlKGRhdGVTdHJpbmcpO1xuICByZXR1cm4gZGF0ZS50b0xvY2FsZURhdGVTdHJpbmcoJ2VuLVVTJywge1xuICAgIG1vbnRoOiAnc2hvcnQnLFxuICAgIGRheTogJ251bWVyaWMnLFxuICAgIHllYXI6ICdudW1lcmljJyxcbiAgfSk7XG59O1xuXG5leHBvcnQgY29uc3QgZm9ybWF0UmVsYXRpdmVEYXRlID0gKGRhdGVTdHJpbmc6IHN0cmluZykgPT4ge1xuICBjb25zdCBkYXRlID0gbmV3IERhdGUoZGF0ZVN0cmluZyk7XG4gIGNvbnN0IG5vdyA9IG5ldyBEYXRlKCk7XG4gIGNvbnN0IGRpZmZUaW1lID0gTWF0aC5hYnMobm93LmdldFRpbWUoKSAtIGRhdGUuZ2V0VGltZSgpKTtcbiAgY29uc3QgZGlmZkRheXMgPSBNYXRoLmNlaWwoZGlmZlRpbWUgLyAoMTAwMCAqIDYwICogNjAgKiAyNCkpO1xuICBcbiAgaWYgKGRpZmZEYXlzID09PSAwKSByZXR1cm4gJ1RvZGF5JztcbiAgaWYgKGRpZmZEYXlzID09PSAxKSByZXR1cm4gJ1llc3RlcmRheSc7XG4gIGlmIChkaWZmRGF5cyA8IDcpIHJldHVybiBgJHtkaWZmRGF5c30gZGF5cyBhZ29gO1xuICByZXR1cm4gZm9ybWF0RGF0ZShkYXRlU3RyaW5nKTtcbn07XG5cbmV4cG9ydCBjb25zdCBnZXREdWVDYXJkc0NvbG9yID0gKGR1ZUNhcmRzOiBudW1iZXIpID0+IHtcbiAgaWYgKGR1ZUNhcmRzID09PSAwKSByZXR1cm4gJ3RleHQtZ3JheS01MDAnO1xuICBpZiAoZHVlQ2FyZHMgPD0gMykgcmV0dXJuICd0ZXh0LW9yYW5nZS02MDAnO1xuICByZXR1cm4gJ3RleHQtcmVkLTYwMCc7XG59O1xuIl0sIm5hbWVzIjpbIkRFQ0tfQ09MT1JTIiwiZm9ybWF0RGF0ZSIsImZvcm1hdFJlbGF0aXZlRGF0ZSIsImdldERlY2tDb2xvciIsImdldER1ZUNhcmRzQ29sb3IiLCJpY29uIiwiYnV0dG9uIiwiZGVja0lkIiwidHlwZSIsImNvbG9ycyIsImxlbmd0aCIsImRhdGVTdHJpbmciLCJkYXRlIiwiRGF0ZSIsInRvTG9jYWxlRGF0ZVN0cmluZyIsIm1vbnRoIiwiZGF5IiwieWVhciIsIm5vdyIsImRpZmZUaW1lIiwiTWF0aCIsImFicyIsImdldFRpbWUiLCJkaWZmRGF5cyIsImNlaWwiLCJkdWVDYXJkcyJdLCJtYXBwaW5ncyI6IkFBQUEsNENBQTRDOzs7Ozs7Ozs7Ozs7SUFDL0JBLFdBQVc7ZUFBWEE7O0lBd0JBQyxVQUFVO2VBQVZBOztJQVNBQyxrQkFBa0I7ZUFBbEJBOztJQWRBQyxZQUFZO2VBQVpBOztJQTBCQUMsZ0JBQWdCO2VBQWhCQTs7O0FBN0NOLE1BQU1KLGNBQWM7SUFDekJLLE1BQU07UUFDSjtRQUNBO1FBQ0E7UUFDQTtRQUNBO1FBQ0E7S0FDRDtJQUNEQyxRQUFRO1FBQ047UUFDQTtRQUNBO1FBQ0E7UUFDQTtRQUNBO0tBQ0Q7QUFDSDtBQUVPLE1BQU1ILGVBQWUsQ0FBQ0ksUUFBZ0JDO0lBQzNDLE1BQU1DLFNBQVNULFdBQVcsQ0FBQ1EsS0FBSztJQUNoQyxPQUFPQyxNQUFNLENBQUNGLFNBQVNFLE9BQU9DLE1BQU0sQ0FBQztBQUN2QztBQUVPLE1BQU1ULGFBQWEsQ0FBQ1U7SUFDekIsTUFBTUMsT0FBTyxJQUFJQyxLQUFLRjtJQUN0QixPQUFPQyxLQUFLRSxrQkFBa0IsQ0FBQyxTQUFTO1FBQ3RDQyxPQUFPO1FBQ1BDLEtBQUs7UUFDTEMsTUFBTTtJQUNSO0FBQ0Y7QUFFTyxNQUFNZixxQkFBcUIsQ0FBQ1M7SUFDakMsTUFBTUMsT0FBTyxJQUFJQyxLQUFLRjtJQUN0QixNQUFNTyxNQUFNLElBQUlMO0lBQ2hCLE1BQU1NLFdBQVdDLEtBQUtDLEdBQUcsQ0FBQ0gsSUFBSUksT0FBTyxLQUFLVixLQUFLVSxPQUFPO0lBQ3RELE1BQU1DLFdBQVdILEtBQUtJLElBQUksQ0FBQ0wsV0FBWSxDQUFBLE9BQU8sS0FBSyxLQUFLLEVBQUM7SUFFekQsSUFBSUksYUFBYSxHQUFHLE9BQU87SUFDM0IsSUFBSUEsYUFBYSxHQUFHLE9BQU87SUFDM0IsSUFBSUEsV0FBVyxHQUFHLE9BQU8sR0FBR0EsU0FBUyxTQUFTLENBQUM7SUFDL0MsT0FBT3RCLFdBQVdVO0FBQ3BCO0FBRU8sTUFBTVAsbUJBQW1CLENBQUNxQjtJQUMvQixJQUFJQSxhQUFhLEdBQUcsT0FBTztJQUMzQixJQUFJQSxZQUFZLEdBQUcsT0FBTztJQUMxQixPQUFPO0FBQ1QifQ==

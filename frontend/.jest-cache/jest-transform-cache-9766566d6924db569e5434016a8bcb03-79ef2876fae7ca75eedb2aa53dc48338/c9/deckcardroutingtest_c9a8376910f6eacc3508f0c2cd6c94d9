@@ -1,0 +1,63 @@
+94fc3ecaad34c766b4ca7f9d7755c733
+"use strict";
+jest.mock('next/link', ()=>{
+    return ({ href, children })=>/*#__PURE__*/ (0, _jsxruntime.jsx)("a", {
+            href: href,
+            "data-testid": "link",
+            children: children
+        });
+});
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = require("@testing-library/react");
+const _react1 = /*#__PURE__*/ _interop_require_default(require("react"));
+const _deckcard = require("../deck-card");
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+describe('DeckCard routing', ()=>{
+    const deck = {
+        id: 9,
+        title: 'Test Set',
+        description: 'desc',
+        owner: 1,
+        difficulty_level: 'INTERMEDIATE',
+        target_audience: '',
+        estimated_study_time: 10,
+        tags: [],
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-01T00:00:00Z',
+        flashcard_count: 0,
+        is_public: false,
+        study_stats: {
+            total_cards: 0,
+            due_cards: 0,
+            mastered_cards: 0,
+            learning_cards: 0,
+            review_cards: 0,
+            retention_rate: 0,
+            streak_days: 0,
+            next_review: '2024-01-01T00:00:00Z'
+        },
+        flashcards: [],
+        learning_objectives: [],
+        themes: []
+    };
+    it('uses provided projectId for link, not deck.owner', ()=>{
+        const projectId = '203062be-58d0-4f98-bbd4-33b4ce081276';
+        (0, _react.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_deckcard.DeckCard, {
+            deck: deck,
+            projectId: projectId
+        }));
+        const links = _react.screen.getAllByTestId('link');
+        const studyLink = links.find((a)=>a.href.includes('/flashcards/'));
+        expect(studyLink).toBeTruthy();
+        expect(studyLink.getAttribute('href')).toBe(`/projects/${projectId}/flashcards/${deck.id}`);
+    });
+});
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvZmxhc2hjYXJkcy9jb21wb25lbnRzL19fdGVzdHNfXy9kZWNrLWNhcmQtcm91dGluZy50ZXN0LnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyByZW5kZXIsIHNjcmVlbiB9IGZyb20gJ0B0ZXN0aW5nLWxpYnJhcnkvcmVhY3QnXG5pbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnXG5pbXBvcnQgeyBEZWNrQ2FyZCB9IGZyb20gJy4uLy4uL2NvbXBvbmVudHMvZGVjay1jYXJkJ1xuaW1wb3J0IHR5cGUgeyBGbGFzaGNhcmRTZXQgfSBmcm9tICcuLi8uLi90eXBlcydcblxuamVzdC5tb2NrKCduZXh0L2xpbmsnLCAoKSA9PiB7XG4gIHJldHVybiAoeyBocmVmLCBjaGlsZHJlbiB9OiBhbnkpID0+IDxhIGhyZWY9e2hyZWZ9IGRhdGEtdGVzdGlkPVwibGlua1wiPntjaGlsZHJlbn08L2E+XG59KVxuXG5kZXNjcmliZSgnRGVja0NhcmQgcm91dGluZycsICgpID0+IHtcbiAgY29uc3QgZGVjazogRmxhc2hjYXJkU2V0ID0ge1xuICAgIGlkOiA5LFxuICAgIHRpdGxlOiAnVGVzdCBTZXQnLFxuICAgIGRlc2NyaXB0aW9uOiAnZGVzYycsXG4gICAgb3duZXI6IDEsIC8vIHVzZXIgaWQsIG5vdCBhIHByb2plY3QgaWRcbiAgICBkaWZmaWN1bHR5X2xldmVsOiAnSU5URVJNRURJQVRFJyxcbiAgICB0YXJnZXRfYXVkaWVuY2U6ICcnLFxuICAgIGVzdGltYXRlZF9zdHVkeV90aW1lOiAxMCxcbiAgICB0YWdzOiBbXSxcbiAgICBjcmVhdGVkX2F0OiAnMjAyNC0wMS0wMVQwMDowMDowMFonLFxuICAgIHVwZGF0ZWRfYXQ6ICcyMDI0LTAxLTAxVDAwOjAwOjAwWicsXG4gICAgZmxhc2hjYXJkX2NvdW50OiAwLFxuICAgIGlzX3B1YmxpYzogZmFsc2UsXG4gICAgc3R1ZHlfc3RhdHM6IHsgdG90YWxfY2FyZHM6IDAsIGR1ZV9jYXJkczogMCwgbWFzdGVyZWRfY2FyZHM6IDAsIGxlYXJuaW5nX2NhcmRzOiAwLCByZXZpZXdfY2FyZHM6IDAsIHJldGVudGlvbl9yYXRlOiAwLCBzdHJlYWtfZGF5czogMCwgbmV4dF9yZXZpZXc6ICcyMDI0LTAxLTAxVDAwOjAwOjAwWicgfSxcbiAgICBmbGFzaGNhcmRzOiBbXSxcbiAgICBsZWFybmluZ19vYmplY3RpdmVzOiBbXSxcbiAgICB0aGVtZXM6IFtdLFxuICB9XG5cbiAgaXQoJ3VzZXMgcHJvdmlkZWQgcHJvamVjdElkIGZvciBsaW5rLCBub3QgZGVjay5vd25lcicsICgpID0+IHtcbiAgICBjb25zdCBwcm9qZWN0SWQgPSAnMjAzMDYyYmUtNThkMC00Zjk4LWJiZDQtMzNiNGNlMDgxMjc2J1xuICAgIHJlbmRlcig8RGVja0NhcmQgZGVjaz17ZGVja30gcHJvamVjdElkPXtwcm9qZWN0SWR9IC8+KVxuXG4gICAgY29uc3QgbGlua3MgPSBzY3JlZW4uZ2V0QWxsQnlUZXN0SWQoJ2xpbmsnKVxuICAgIGNvbnN0IHN0dWR5TGluayA9IGxpbmtzLmZpbmQoYSA9PiAoYSBhcyBIVE1MQW5jaG9yRWxlbWVudCkuaHJlZi5pbmNsdWRlcygnL2ZsYXNoY2FyZHMvJykpIGFzIEhUTUxBbmNob3JFbGVtZW50XG5cbiAgICBleHBlY3Qoc3R1ZHlMaW5rKS50b0JlVHJ1dGh5KClcbiAgICBleHBlY3Qoc3R1ZHlMaW5rLmdldEF0dHJpYnV0ZSgnaHJlZicpKS50b0JlKGAvcHJvamVjdHMvJHtwcm9qZWN0SWR9L2ZsYXNoY2FyZHMvJHtkZWNrLmlkfWApXG4gIH0pXG59KVxuIl0sIm5hbWVzIjpbImplc3QiLCJtb2NrIiwiaHJlZiIsImNoaWxkcmVuIiwiYSIsImRhdGEtdGVzdGlkIiwiZGVzY3JpYmUiLCJkZWNrIiwiaWQiLCJ0aXRsZSIsImRlc2NyaXB0aW9uIiwib3duZXIiLCJkaWZmaWN1bHR5X2xldmVsIiwidGFyZ2V0X2F1ZGllbmNlIiwiZXN0aW1hdGVkX3N0dWR5X3RpbWUiLCJ0YWdzIiwiY3JlYXRlZF9hdCIsInVwZGF0ZWRfYXQiLCJmbGFzaGNhcmRfY291bnQiLCJpc19wdWJsaWMiLCJzdHVkeV9zdGF0cyIsInRvdGFsX2NhcmRzIiwiZHVlX2NhcmRzIiwibWFzdGVyZWRfY2FyZHMiLCJsZWFybmluZ19jYXJkcyIsInJldmlld19jYXJkcyIsInJldGVudGlvbl9yYXRlIiwic3RyZWFrX2RheXMiLCJuZXh0X3JldmlldyIsImZsYXNoY2FyZHMiLCJsZWFybmluZ19vYmplY3RpdmVzIiwidGhlbWVzIiwiaXQiLCJwcm9qZWN0SWQiLCJyZW5kZXIiLCJEZWNrQ2FyZCIsImxpbmtzIiwic2NyZWVuIiwiZ2V0QWxsQnlUZXN0SWQiLCJzdHVkeUxpbmsiLCJmaW5kIiwiaW5jbHVkZXMiLCJleHBlY3QiLCJ0b0JlVHJ1dGh5IiwiZ2V0QXR0cmlidXRlIiwidG9CZSJdLCJtYXBwaW5ncyI6IjtBQUtBQSxLQUFLQyxJQUFJLENBQUMsYUFBYTtJQUNyQixPQUFPLENBQUMsRUFBRUMsSUFBSSxFQUFFQyxRQUFRLEVBQU8saUJBQUsscUJBQUNDO1lBQUVGLE1BQU1BO1lBQU1HLGVBQVk7c0JBQVFGOztBQUN6RTs7Ozs7dUJBUCtCOytEQUNiOzBCQUNPOzs7Ozs7QUFPekJHLFNBQVMsb0JBQW9CO0lBQzNCLE1BQU1DLE9BQXFCO1FBQ3pCQyxJQUFJO1FBQ0pDLE9BQU87UUFDUEMsYUFBYTtRQUNiQyxPQUFPO1FBQ1BDLGtCQUFrQjtRQUNsQkMsaUJBQWlCO1FBQ2pCQyxzQkFBc0I7UUFDdEJDLE1BQU0sRUFBRTtRQUNSQyxZQUFZO1FBQ1pDLFlBQVk7UUFDWkMsaUJBQWlCO1FBQ2pCQyxXQUFXO1FBQ1hDLGFBQWE7WUFBRUMsYUFBYTtZQUFHQyxXQUFXO1lBQUdDLGdCQUFnQjtZQUFHQyxnQkFBZ0I7WUFBR0MsY0FBYztZQUFHQyxnQkFBZ0I7WUFBR0MsYUFBYTtZQUFHQyxhQUFhO1FBQXVCO1FBQzNLQyxZQUFZLEVBQUU7UUFDZEMscUJBQXFCLEVBQUU7UUFDdkJDLFFBQVEsRUFBRTtJQUNaO0lBRUFDLEdBQUcsb0RBQW9EO1FBQ3JELE1BQU1DLFlBQVk7UUFDbEJDLElBQUFBLGFBQU0sZ0JBQUMscUJBQUNDLGtCQUFRO1lBQUM1QixNQUFNQTtZQUFNMEIsV0FBV0E7O1FBRXhDLE1BQU1HLFFBQVFDLGFBQU0sQ0FBQ0MsY0FBYyxDQUFDO1FBQ3BDLE1BQU1DLFlBQVlILE1BQU1JLElBQUksQ0FBQ3BDLENBQUFBLElBQUssQUFBQ0EsRUFBd0JGLElBQUksQ0FBQ3VDLFFBQVEsQ0FBQztRQUV6RUMsT0FBT0gsV0FBV0ksVUFBVTtRQUM1QkQsT0FBT0gsVUFBVUssWUFBWSxDQUFDLFNBQVNDLElBQUksQ0FBQyxDQUFDLFVBQVUsRUFBRVosVUFBVSxZQUFZLEVBQUUxQixLQUFLQyxFQUFFLEVBQUU7SUFDNUY7QUFDRiJ9

@@ -9,10 +9,19 @@ import { ProjectFlashcardStats } from "./components/project-flashcard-stats";
 import { QuickActions } from "./components/quick-actions";
 import { DeckGrid } from "@/features/flashcards";
 import { FlashcardSet } from "@/features/flashcards/types";
+import { useEffect } from "react";
 
 export default function ProjectFlashcards() {
   const params = useParams();
   const projectId = params.projectId as string;
+
+  useEffect(() => {
+    try {
+      if (projectId && typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('activeProjectId', projectId);
+      }
+    } catch {}
+  }, [projectId]);
 
   const { flashcardSets, stats, isLoading, error } =
     useProjectFlashcards(projectId);
@@ -48,22 +57,18 @@ export default function ProjectFlashcards() {
 
   const handleEdit = (deck: FlashcardSet) => {
     console.log('Edit deck:', deck);
-    // TODO: Implement edit functionality
   };
 
   const handleDelete = (deck: FlashcardSet) => {
     console.log('Delete deck:', deck);
-    // TODO: Implement delete functionality
   };
 
   const handleShare = (deck: FlashcardSet) => {
     console.log('Share deck:', deck);
-    // TODO: Implement share functionality
   };
 
   const handleToggleFavorite = (deck: FlashcardSet) => {
     console.log('Toggle favorite:', deck);
-    // TODO: Implement favorite functionality
   };
 
   return (
