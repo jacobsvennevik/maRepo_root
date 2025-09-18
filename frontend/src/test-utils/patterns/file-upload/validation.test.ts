@@ -236,11 +236,11 @@ export const createUploadProgressTest = (config: FileUploadTestConfig) => {
       const files = [testFactories.createTestFile("test1.pdf")];
 
       renderWithProviders(
-        <config.component
-          {...config.props}
-          files={files}
-          uploadProgress={{ "test1.pdf": 50 }}
-        />
+        React.createElement(config.component, {
+          ...config.props,
+          files: files,
+          uploadProgress: { "test1.pdf": 50 }
+        })
       );
 
       const progressBar = screen.getByLabelText(/upload progress for test1.pdf/i);
@@ -256,14 +256,14 @@ export const createUploadProgressTest = (config: FileUploadTestConfig) => {
       ];
 
       renderWithProviders(
-        <config.component
-          {...config.props}
-          files={files}
-          uploadProgress={{ 
+        React.createElement(config.component, {
+          ...config.props,
+          files: files,
+          uploadProgress: { 
             "test1.pdf": 25, 
             "test2.pdf": 75 
-          }}
-        />
+          }
+        })
       );
 
       const progress1 = screen.getByLabelText(/upload progress for test1.pdf/i);
@@ -277,11 +277,11 @@ export const createUploadProgressTest = (config: FileUploadTestConfig) => {
       const files = [testFactories.createTestFile("test1.pdf")];
 
       renderWithProviders(
-        <config.component
-          {...config.props}
-          files={files}
-          uploadProgress={{ "test1.pdf": 100 }}
-        />
+        React.createElement(config.component, {
+          ...config.props,
+          files: files,
+          uploadProgress: { "test1.pdf": 100 }
+        })
       );
 
       expect(screen.getByText(/upload complete/i)).toBeInTheDocument();
@@ -302,10 +302,10 @@ export const createFileListTest = (config: FileUploadTestConfig) => {
       ];
 
       renderWithProviders(
-        <config.component
-          {...config.props}
-          files={files}
-        />
+        React.createElement(config.component, {
+          ...config.props,
+          files: files
+        })
       );
 
       expect(screen.getByText("test1.pdf")).toBeInTheDocument();
@@ -320,11 +320,11 @@ export const createFileListTest = (config: FileUploadTestConfig) => {
       ];
 
       renderWithProviders(
-        <config.component
-          {...config.props}
-          files={files}
-          onRemove={mockOnRemove}
-        />
+        React.createElement(config.component, {
+          ...config.props,
+          files: files,
+          onRemove: mockOnRemove
+        })
       );
 
       const removeButtons = screen.getAllByLabelText(/remove file/i);
@@ -341,10 +341,10 @@ export const createFileListTest = (config: FileUploadTestConfig) => {
       ];
 
       renderWithProviders(
-        <config.component
-          {...config.props}
-          files={files}
-        />
+        React.createElement(config.component, {
+          ...config.props,
+          files: files
+        })
       );
 
       expect(screen.getByText("3 files selected")).toBeInTheDocument();
@@ -357,10 +357,10 @@ export const createFileListTest = (config: FileUploadTestConfig) => {
       ];
 
       renderWithProviders(
-        <config.component
-          {...config.props}
-          files={files}
-        />
+        React.createElement(config.component, {
+          ...config.props,
+          files: files
+        })
       );
 
       expect(screen.getByText(/small\.pdf/)).toBeInTheDocument();
@@ -378,10 +378,10 @@ export const createFileUploadErrorTest = (config: FileUploadTestConfig) => {
     async testUploadErrors() {
       const mockOnUploadError = jest.fn();
       renderWithProviders(
-        <config.component 
-          {...config.props}
-          onUploadError={mockOnUploadError}
-        />
+        React.createElement(config.component, {
+          ...config.props,
+          onUploadError: mockOnUploadError
+        })
       );
 
       const file = testFactories.createTestFile("test.pdf");

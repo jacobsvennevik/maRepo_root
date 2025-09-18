@@ -340,7 +340,7 @@ export const createFormAccessibilityTest = (config: FormTestConfig) => {
       });
     },
 
-    testErrorAnnouncements() {
+    async testErrorAnnouncements() {
       const user = userEvent.setup();
       renderWithProviders(React.createElement(config.component, config.props));
 

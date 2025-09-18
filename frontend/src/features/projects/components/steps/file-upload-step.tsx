@@ -99,6 +99,7 @@ export function FileUploadStep({ onUploadComplete }: SyllabusUploadStepProps) {
       const errorMessage = handleUploadError(error, null);
       actions.setError(errorMessage);
     }
+  };
 
   return (
     <div className="space-y-6">
@@ -118,5 +119,4 @@ export function FileUploadStep({ onUploadComplete }: SyllabusUploadStepProps) {
       />
     </div>
   );
-}
 }

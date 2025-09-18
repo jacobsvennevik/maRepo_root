@@ -1,5 +1,6 @@
 import { beforeAll, beforeEach, afterEach, afterAll } from '@jest/globals';
-import { cleanup } from '@testing-library/react';
+import { cleanup, render, RenderOptions } from '@testing-library/react';
+import React from 'react';
 import { standardMocks } from '../mocks';
 import { testFactories } from '../factories';
 
@@ -283,5 +284,15 @@ export const setupPerformanceTest = () => {
     endMeasurement,
     getTotalTime
   };
+};
+
+/**
+ * Simple render function for testing components
+ */
+export const renderWithProviders = (
+  component: React.ReactElement,
+  options?: RenderOptions
+) => {
+  return render(component, options);
 };
 

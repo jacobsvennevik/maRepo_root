@@ -221,7 +221,7 @@ export const authTestUtils = {
 
       async testFormValidation() {
         const user = userEvent.setup();
-        renderWithProviders(<component {...props} />);
+        renderWithProviders(React.createElement(component, props));
         
         await user.click(screen.getByRole('button', { name: /^sign in$/i }));
         await authHelpers.verifyFormValidation();
@@ -239,7 +239,7 @@ export const authTestUtils = {
       },
 
       async testAccessibility() {
-        renderWithProviders(<component {...props} />);
+        renderWithProviders(React.createElement(component, props));
         
         const emailInput = screen.getByLabelText(/email/i);
         const passwordInput = screen.getByLabelText(/password/i);
@@ -252,7 +252,7 @@ export const authTestUtils = {
 
       async testPerformance() {
         const startTime = performance.now();
-        renderWithProviders(<component {...props} />);
+        renderWithProviders(React.createElement(component, props));
         const endTime = performance.now();
         
         expect(endTime - startTime).toBeLessThan(100);

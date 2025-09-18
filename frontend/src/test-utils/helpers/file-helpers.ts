@@ -269,11 +269,11 @@ export const fileUploadTestUtils = {
         const files = fileUploadHelpers.createTestFiles([fileUploadScenarios.validFiles[0]]);
         
         renderWithProviders(
-          <component 
-            {...props} 
-            files={files}
-            uploadProgress={{ [files[0].name]: 50 }}
-          />
+          React.createElement(component, {
+            ...props,
+            files: files,
+            uploadProgress: { [files[0].name]: 50 }
+          })
         );
 
         fileUploadHelpers.verifyUploadProgress(files[0].name, 50);
@@ -288,7 +288,7 @@ export const fileUploadTestUtils = {
       },
 
       async testAccessibility() {
-        renderWithProviders(<component {...props} />);
+        renderWithProviders(React.createElement(component, props));
         
         const fileInput = screen.getByTestId('file-input');
         expect(fileInput).toHaveAttribute('type', 'file');
@@ -297,7 +297,7 @@ export const fileUploadTestUtils = {
 
       async testPerformance() {
         const startTime = performance.now();
-        renderWithProviders(<component {...props} />);
+        renderWithProviders(React.createElement(component, props));
         const endTime = performance.now();
         
         expect(endTime - startTime).toBeLessThan(100);

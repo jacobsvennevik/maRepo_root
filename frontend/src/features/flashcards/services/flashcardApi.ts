@@ -1,4 +1,4 @@
-import { axiosApi } from '@/lib/axios-api';
+import { axiosGeneration } from '@/lib/axios';
 import type { 
   Flashcard, 
   FlashcardSet, 
@@ -16,7 +16,7 @@ class FlashcardApiService {
     console.log('→ GET /projects/${projectId}/flashcard-sets/');
 
     try {
-      const response = await axiosApi.get<FlashcardSetApiResponse | FlashcardSet[]>(`/projects/${projectId}/flashcard-sets/`);
+      const response = await axiosGeneration.get<FlashcardSetApiResponse | FlashcardSet[]>(`/projects/${projectId}/flashcard-sets/`);
       const data = response.data;
       console.log('✅ Payload:', data);
       
@@ -40,7 +40,7 @@ class FlashcardApiService {
 
     try {
       // Create flashcard set for the specific project
-      const response = await axiosApi.post<FlashcardSet>(`/projects/${projectId}/flashcard-sets/`, { title: form.title });
+      const response = await axiosGeneration.post<FlashcardSet>(`/projects/${projectId}/flashcard-sets/`, { title: form.title });
       const data = response.data;
       console.log('✅ Created set:', data);
       
@@ -58,7 +58,7 @@ class FlashcardApiService {
     console.log('→ DELETE /flashcard-sets/${setId}/');
 
     try {
-      await axiosApi.delete(`flashcard-sets/${setId}/`);
+      await axiosGeneration.delete(`flashcard-sets/${setId}/`);
       console.log('✅ Set deleted successfully');
     } catch (err) {
       console.error('❌ Delete failure:', err);
@@ -80,7 +80,7 @@ class FlashcardApiService {
     console.log('→ GET', endpoint);
 
     try {
-      const response = await axiosApi.get<FlashcardApiResponse | Flashcard[]>(endpoint);
+      const response = await axiosGeneration.get<FlashcardApiResponse | Flashcard[]>(endpoint);
       console.log('✅ Response:', response);
       
       // Extract data from axios response
@@ -113,7 +113,7 @@ class FlashcardApiService {
         flashcard_set: setId
       };
 
-      const response = await axiosApi.post<Flashcard>(`/flashcards/`, payload);
+      const response = await axiosGeneration.post<Flashcard>(`/flashcards/`, payload);
       console.log('✅ Created flashcard:', response.data);
       return response.data;
     } catch (err) {
@@ -130,7 +130,7 @@ class FlashcardApiService {
     console.log('→ Payload:', form);
 
     try {
-      const response = await axiosApi.put<Flashcard>(`/flashcards/${cardId}/`, form);
+      const response = await axiosGeneration.put<Flashcard>(`/flashcards/${cardId}/`, form);
       console.log('✅ Updated flashcard:', response.data);
       return response.data;
     } catch (err) {
@@ -146,7 +146,7 @@ class FlashcardApiService {
     console.log('→ DELETE /api/flashcards/${cardId}/');
 
     try {
-      await axiosApi.delete(`flashcards/${cardId}/`);
+      await axiosGeneration.delete(`flashcards/${cardId}/`);
       console.log('✅ Flashcard deleted successfully');
     } catch (err) {
       console.error('❌ Delete failure:', err);
@@ -163,7 +163,7 @@ class FlashcardApiService {
     console.log('→ Was correct:', wasCorrect);
 
     try {
-      await axiosApi.post(`flashcards/${cardId}/review/`, { was_correct: wasCorrect });
+      await axiosGeneration.post(`flashcards/${cardId}/review/`, { was_correct: wasCorrect });
       console.log('✅ Card review recorded');
     } catch (err) {
       console.error('❌ Review failure:', err);

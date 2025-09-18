@@ -1,0 +1,268 @@
+1defbe47cbdfdc198cedaa00b10d732d
+"use client";
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "FileListView", {
+    enumerable: true,
+    get: function() {
+        return FileListView;
+    }
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_default(require("react"));
+const _checkbox = require("../../../../components/ui/checkbox");
+const _button = require("../../../../components/ui/button");
+const _badge = require("../../../../components/ui/badge");
+const _table = require("../../../../components/ui/table");
+const _dropdownmenu = require("../../../../components/ui/dropdown-menu");
+const _lucidereact = require("lucide-react");
+const _fileutils = require("../../../../lib/file-utils");
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+function FileListView({ files, selectedFiles, onSelectFile, onSelectAll, onToggleFavorite, onFileAction }) {
+    const allSelected = files.length > 0 && selectedFiles.size === files.length;
+    const someSelected = selectedFiles.size > 0 && selectedFiles.size < files.length;
+    return /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+        className: "border border-gray-200 rounded-lg overflow-hidden",
+        children: /*#__PURE__*/ (0, _jsxruntime.jsxs)(_table.Table, {
+            children: [
+                /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableHeader, {
+                    children: /*#__PURE__*/ (0, _jsxruntime.jsxs)(_table.TableRow, {
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableHead, {
+                                className: "w-12",
+                                children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_checkbox.Checkbox, {
+                                    checked: allSelected,
+                                    ref: (el)=>{
+                                        if (el) el.indeterminate = someSelected;
+                                    },
+                                    onCheckedChange: onSelectAll
+                                })
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableHead, {
+                                children: "Name"
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableHead, {
+                                children: "Size"
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableHead, {
+                                children: "Date modified"
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableHead, {
+                                className: "w-12"
+                            })
+                        ]
+                    })
+                }),
+                /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableBody, {
+                    children: files.map((file)=>/*#__PURE__*/ (0, _jsxruntime.jsxs)(_table.TableRow, {
+                            className: "hover:bg-gray-50",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableCell, {
+                                    children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_checkbox.Checkbox, {
+                                        checked: selectedFiles.has(file.id),
+                                        onCheckedChange: ()=>onSelectFile(file.id)
+                                    })
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableCell, {
+                                    children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                        className: "flex items-center gap-3",
+                                        children: [
+                                            /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                                className: `p-2 rounded-lg bg-gradient-to-r ${file.color}`,
+                                                children: (0, _fileutils.getFileIcon)(file.type)
+                                            }),
+                                            /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                                className: "flex-1 min-w-0",
+                                                children: [
+                                                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                                        className: "flex items-center gap-2",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                                className: "font-medium text-gray-900 truncate",
+                                                                children: file.name
+                                                            }),
+                                                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_badge.Badge, {
+                                                                className: `${(0, _fileutils.getFileTypeColor)(file.type)} text-xs`,
+                                                                children: file.type.toUpperCase()
+                                                            }),
+                                                            file.tags && file.tags.length > 0 && /*#__PURE__*/ (0, _jsxruntime.jsx)(_badge.Badge, {
+                                                                variant: "secondary",
+                                                                className: "text-xs",
+                                                                children: file.tags[0]
+                                                            })
+                                                        ]
+                                                    }),
+                                                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                                        className: "flex items-center gap-3 text-xs text-gray-500 mt-1",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                                className: "capitalize",
+                                                                children: file.visibility
+                                                            }),
+                                                            file.versionCount && file.versionCount > 1 && /*#__PURE__*/ (0, _jsxruntime.jsxs)(_jsxruntime.Fragment, {
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                                        children: "•"
+                                                                    }),
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                                                        children: [
+                                                                            file.versionCount,
+                                                                            " versions"
+                                                                        ]
+                                                                    })
+                                                                ]
+                                                            }),
+                                                            file.sharedWith && file.sharedWith.length > 0 && /*#__PURE__*/ (0, _jsxruntime.jsxs)(_jsxruntime.Fragment, {
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                                        children: "•"
+                                                                    }),
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                                                        children: [
+                                                                            "Shared with ",
+                                                                            file.sharedWith.length
+                                                                        ]
+                                                                    })
+                                                                ]
+                                                            })
+                                                        ]
+                                                    })
+                                                ]
+                                            })
+                                        ]
+                                    })
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableCell, {
+                                    children: /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                        className: "text-sm text-gray-600",
+                                        children: (0, _fileutils.formatFileSize)(file.size)
+                                    })
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableCell, {
+                                    children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                        className: "flex items-center gap-1 text-sm text-gray-600",
+                                        children: [
+                                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Clock, {
+                                                className: "h-4 w-4"
+                                            }),
+                                            /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                children: file.lastModified
+                                            })
+                                        ]
+                                    })
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_table.TableCell, {
+                                    children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                        className: "flex items-center gap-1",
+                                        children: [
+                                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_button.Button, {
+                                                variant: "ghost",
+                                                size: "sm",
+                                                onClick: ()=>onToggleFavorite(file.id),
+                                                className: "p-1 h-8 w-8",
+                                                children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Star, {
+                                                    className: `h-4 w-4 ${file.isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`
+                                                })
+                                            }),
+                                            /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenu, {
+                                                children: [
+                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)(_dropdownmenu.DropdownMenuTrigger, {
+                                                        asChild: true,
+                                                        children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_button.Button, {
+                                                            variant: "ghost",
+                                                            size: "sm",
+                                                            className: "p-1 h-8 w-8",
+                                                            children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.MoreVertical, {
+                                                                className: "h-4 w-4"
+                                                            })
+                                                        })
+                                                    }),
+                                                    /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuContent, {
+                                                        align: "end",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuItem, {
+                                                                onClick: ()=>onFileAction('preview', file.id),
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Eye, {
+                                                                        className: "h-4 w-4 mr-2"
+                                                                    }),
+                                                                    "Open/Preview"
+                                                                ]
+                                                            }),
+                                                            /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuItem, {
+                                                                onClick: ()=>onFileAction('download', file.id),
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Download, {
+                                                                        className: "h-4 w-4 mr-2"
+                                                                    }),
+                                                                    "Download"
+                                                                ]
+                                                            }),
+                                                            /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuItem, {
+                                                                onClick: ()=>onFileAction('share', file.id),
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Share2, {
+                                                                        className: "h-4 w-4 mr-2"
+                                                                    }),
+                                                                    "Share/Get link"
+                                                                ]
+                                                            }),
+                                                            /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuItem, {
+                                                                onClick: ()=>onFileAction('rename', file.id),
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Edit3, {
+                                                                        className: "h-4 w-4 mr-2"
+                                                                    }),
+                                                                    "Rename"
+                                                                ]
+                                                            }),
+                                                            /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuItem, {
+                                                                onClick: ()=>onFileAction('move', file.id),
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Edit3, {
+                                                                        className: "h-4 w-4 mr-2"
+                                                                    }),
+                                                                    "Move"
+                                                                ]
+                                                            }),
+                                                            /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuItem, {
+                                                                onClick: ()=>onFileAction('versions', file.id),
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Clock, {
+                                                                        className: "h-4 w-4 mr-2"
+                                                                    }),
+                                                                    "Version History"
+                                                                ]
+                                                            }),
+                                                            /*#__PURE__*/ (0, _jsxruntime.jsxs)(_dropdownmenu.DropdownMenuItem, {
+                                                                className: "text-red-600",
+                                                                onClick: ()=>onFileAction('delete', file.id),
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Trash2, {
+                                                                        className: "h-4 w-4 mr-2"
+                                                                    }),
+                                                                    "Delete"
+                                                                ]
+                                                            })
+                                                        ]
+                                                    })
+                                                ]
+                                            })
+                                        ]
+                                    })
+                                })
+                            ]
+                        }, file.id))
+                })
+            ]
+        })
+    });
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvcHJvamVjdHMvY29tcG9uZW50cy9maWxlcy9maWxlLWxpc3Qtdmlldy50c3giXSwic291cmNlc0NvbnRlbnQiOlsiXCJ1c2UgY2xpZW50XCI7XG5cbmltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XG5pbXBvcnQgeyBDaGVja2JveCB9IGZyb20gXCJAL2NvbXBvbmVudHMvdWkvY2hlY2tib3hcIjtcbmltcG9ydCB7IEJ1dHRvbiB9IGZyb20gXCJAL2NvbXBvbmVudHMvdWkvYnV0dG9uXCI7XG5pbXBvcnQgeyBCYWRnZSB9IGZyb20gXCJAL2NvbXBvbmVudHMvdWkvYmFkZ2VcIjtcbmltcG9ydCB7IFByb2dyZXNzIH0gZnJvbSBcIkAvY29tcG9uZW50cy91aS9wcm9ncmVzc1wiO1xuaW1wb3J0IHsgXG4gIFRhYmxlLCBcbiAgVGFibGVCb2R5LCBcbiAgVGFibGVDZWxsLCBcbiAgVGFibGVIZWFkLCBcbiAgVGFibGVIZWFkZXIsIFxuICBUYWJsZVJvdyBcbn0gZnJvbSBcIkAvY29tcG9uZW50cy91aS90YWJsZVwiO1xuaW1wb3J0IHtcbiAgRHJvcGRvd25NZW51LFxuICBEcm9wZG93bk1lbnVDb250ZW50LFxuICBEcm9wZG93bk1lbnVJdGVtLFxuICBEcm9wZG93bk1lbnVUcmlnZ2VyLFxufSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL2Ryb3Bkb3duLW1lbnVcIjtcbmltcG9ydCB7IFxuICBNb3JlVmVydGljYWwsXG4gIFN0YXIsXG4gIERvd25sb2FkLFxuICBTaGFyZTIsXG4gIEVkaXQzLFxuICBUcmFzaDIsXG4gIEV5ZSxcbiAgQ2xvY2tcbn0gZnJvbSBcImx1Y2lkZS1yZWFjdFwiO1xuaW1wb3J0IHsgRmlsZUl0ZW0gfSBmcm9tICdAL2xpYi9maWxlLXV0aWxzJztcbmltcG9ydCB7IGdldEZpbGVJY29uLCBnZXRGaWxlVHlwZUNvbG9yLCBmb3JtYXRGaWxlU2l6ZSB9IGZyb20gJ0AvbGliL2ZpbGUtdXRpbHMnO1xuXG5pbnRlcmZhY2UgRmlsZUxpc3RWaWV3UHJvcHMge1xuICBmaWxlczogRmlsZUl0ZW1bXTtcbiAgc2VsZWN0ZWRGaWxlczogU2V0PHN0cmluZz47XG4gIG9uU2VsZWN0RmlsZTogKGZpbGVJZDogc3RyaW5nKSA9PiB2b2lkO1xuICBvblNlbGVjdEFsbDogKCkgPT4gdm9pZDtcbiAgb25Ub2dnbGVGYXZvcml0ZTogKGZpbGVJZDogc3RyaW5nKSA9PiB2b2lkO1xuICBvbkZpbGVBY3Rpb246IChhY3Rpb246IHN0cmluZywgZmlsZUlkOiBzdHJpbmcpID0+IHZvaWQ7XG59XG5cbmV4cG9ydCBmdW5jdGlvbiBGaWxlTGlzdFZpZXcoe1xuICBmaWxlcyxcbiAgc2VsZWN0ZWRGaWxlcyxcbiAgb25TZWxlY3RGaWxlLFxuICBvblNlbGVjdEFsbCxcbiAgb25Ub2dnbGVGYXZvcml0ZSxcbiAgb25GaWxlQWN0aW9uLFxufTogRmlsZUxpc3RWaWV3UHJvcHMpIHtcbiAgY29uc3QgYWxsU2VsZWN0ZWQgPSBmaWxlcy5sZW5ndGggPiAwICYmIHNlbGVjdGVkRmlsZXMuc2l6ZSA9PT0gZmlsZXMubGVuZ3RoO1xuICBjb25zdCBzb21lU2VsZWN0ZWQgPSBzZWxlY3RlZEZpbGVzLnNpemUgPiAwICYmIHNlbGVjdGVkRmlsZXMuc2l6ZSA8IGZpbGVzLmxlbmd0aDtcblxuICByZXR1cm4gKFxuICAgIDxkaXYgY2xhc3NOYW1lPVwiYm9yZGVyIGJvcmRlci1ncmF5LTIwMCByb3VuZGVkLWxnIG92ZXJmbG93LWhpZGRlblwiPlxuICAgICAgPFRhYmxlPlxuICAgICAgICA8VGFibGVIZWFkZXI+XG4gICAgICAgICAgPFRhYmxlUm93PlxuICAgICAgICAgICAgPFRhYmxlSGVhZCBjbGFzc05hbWU9XCJ3LTEyXCI+XG4gICAgICAgICAgICAgIDxDaGVja2JveFxuICAgICAgICAgICAgICAgIGNoZWNrZWQ9e2FsbFNlbGVjdGVkfVxuICAgICAgICAgICAgICAgIHJlZj17KGVsKSA9PiB7XG4gICAgICAgICAgICAgICAgICBpZiAoZWwpIGVsLmluZGV0ZXJtaW5hdGUgPSBzb21lU2VsZWN0ZWQ7XG4gICAgICAgICAgICAgICAgfX1cbiAgICAgICAgICAgICAgICBvbkNoZWNrZWRDaGFuZ2U9e29uU2VsZWN0QWxsfVxuICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgPC9UYWJsZUhlYWQ+XG4gICAgICAgICAgICA8VGFibGVIZWFkPk5hbWU8L1RhYmxlSGVhZD5cbiAgICAgICAgICAgIDxUYWJsZUhlYWQ+U2l6ZTwvVGFibGVIZWFkPlxuICAgICAgICAgICAgPFRhYmxlSGVhZD5EYXRlIG1vZGlmaWVkPC9UYWJsZUhlYWQ+XG4gICAgICAgICAgICA8VGFibGVIZWFkIGNsYXNzTmFtZT1cInctMTJcIj48L1RhYmxlSGVhZD5cbiAgICAgICAgICA8L1RhYmxlUm93PlxuICAgICAgICA8L1RhYmxlSGVhZGVyPlxuICAgICAgICA8VGFibGVCb2R5PlxuICAgICAgICAgIHtmaWxlcy5tYXAoKGZpbGUpID0+IChcbiAgICAgICAgICAgIDxUYWJsZVJvdyBrZXk9e2ZpbGUuaWR9IGNsYXNzTmFtZT1cImhvdmVyOmJnLWdyYXktNTBcIj5cbiAgICAgICAgICAgICAgPFRhYmxlQ2VsbD5cbiAgICAgICAgICAgICAgICA8Q2hlY2tib3hcbiAgICAgICAgICAgICAgICAgIGNoZWNrZWQ9e3NlbGVjdGVkRmlsZXMuaGFzKGZpbGUuaWQpfVxuICAgICAgICAgICAgICAgICAgb25DaGVja2VkQ2hhbmdlPXsoKSA9PiBvblNlbGVjdEZpbGUoZmlsZS5pZCl9XG4gICAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgICAgPC9UYWJsZUNlbGw+XG4gICAgICAgICAgICAgIDxUYWJsZUNlbGw+XG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLWNlbnRlciBnYXAtM1wiPlxuICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9e2BwLTIgcm91bmRlZC1sZyBiZy1ncmFkaWVudC10by1yICR7ZmlsZS5jb2xvcn1gfT5cbiAgICAgICAgICAgICAgICAgICAge2dldEZpbGVJY29uKGZpbGUudHlwZSl9XG4gICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleC0xIG1pbi13LTBcIj5cbiAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLWNlbnRlciBnYXAtMlwiPlxuICAgICAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImZvbnQtbWVkaXVtIHRleHQtZ3JheS05MDAgdHJ1bmNhdGVcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgIHtmaWxlLm5hbWV9XG4gICAgICAgICAgICAgICAgICAgICAgPC9zcGFuPlxuICAgICAgICAgICAgICAgICAgICAgIDxCYWRnZSBjbGFzc05hbWU9e2Ake2dldEZpbGVUeXBlQ29sb3IoZmlsZS50eXBlKX0gdGV4dC14c2B9PlxuICAgICAgICAgICAgICAgICAgICAgICAge2ZpbGUudHlwZS50b1VwcGVyQ2FzZSgpfVxuICAgICAgICAgICAgICAgICAgICAgIDwvQmFkZ2U+XG4gICAgICAgICAgICAgICAgICAgICAge2ZpbGUudGFncyAmJiBmaWxlLnRhZ3MubGVuZ3RoID4gMCAmJiAoXG4gICAgICAgICAgICAgICAgICAgICAgICA8QmFkZ2UgdmFyaWFudD1cInNlY29uZGFyeVwiIGNsYXNzTmFtZT1cInRleHQteHNcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAge2ZpbGUudGFnc1swXX1cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvQmFkZ2U+XG4gICAgICAgICAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTMgdGV4dC14cyB0ZXh0LWdyYXktNTAwIG10LTFcIj5cbiAgICAgICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJjYXBpdGFsaXplXCI+e2ZpbGUudmlzaWJpbGl0eX08L3NwYW4+XG4gICAgICAgICAgICAgICAgICAgICAge2ZpbGUudmVyc2lvbkNvdW50ICYmIGZpbGUudmVyc2lvbkNvdW50ID4gMSAmJiAoXG4gICAgICAgICAgICAgICAgICAgICAgICA8PlxuICAgICAgICAgICAgICAgICAgICAgICAgICA8c3Bhbj7igKI8L3NwYW4+XG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxzcGFuPntmaWxlLnZlcnNpb25Db3VudH0gdmVyc2lvbnM8L3NwYW4+XG4gICAgICAgICAgICAgICAgICAgICAgICA8Lz5cbiAgICAgICAgICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgICAgICAgICAgIHtmaWxlLnNoYXJlZFdpdGggJiYgZmlsZS5zaGFyZWRXaXRoLmxlbmd0aCA+IDAgJiYgKFxuICAgICAgICAgICAgICAgICAgICAgICAgPD5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgPHNwYW4+4oCiPC9zcGFuPlxuICAgICAgICAgICAgICAgICAgICAgICAgICA8c3Bhbj5TaGFyZWQgd2l0aCB7ZmlsZS5zaGFyZWRXaXRoLmxlbmd0aH08L3NwYW4+XG4gICAgICAgICAgICAgICAgICAgICAgICA8Lz5cbiAgICAgICAgICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICA8L1RhYmxlQ2VsbD5cbiAgICAgICAgICAgICAgPFRhYmxlQ2VsbD5cbiAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJ0ZXh0LXNtIHRleHQtZ3JheS02MDBcIj57Zm9ybWF0RmlsZVNpemUoZmlsZS5zaXplKX08L3NwYW4+XG4gICAgICAgICAgICAgIDwvVGFibGVDZWxsPlxuICAgICAgICAgICAgICA8VGFibGVDZWxsPlxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTEgdGV4dC1zbSB0ZXh0LWdyYXktNjAwXCI+XG4gICAgICAgICAgICAgICAgICA8Q2xvY2sgY2xhc3NOYW1lPVwiaC00IHctNFwiIC8+XG4gICAgICAgICAgICAgICAgICA8c3Bhbj57ZmlsZS5sYXN0TW9kaWZpZWR9PC9zcGFuPlxuICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICA8L1RhYmxlQ2VsbD5cbiAgICAgICAgICAgICAgPFRhYmxlQ2VsbD5cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIGdhcC0xXCI+XG4gICAgICAgICAgICAgICAgICA8QnV0dG9uXG4gICAgICAgICAgICAgICAgICAgIHZhcmlhbnQ9XCJnaG9zdFwiXG4gICAgICAgICAgICAgICAgICAgIHNpemU9XCJzbVwiXG4gICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IG9uVG9nZ2xlRmF2b3JpdGUoZmlsZS5pZCl9XG4gICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cInAtMSBoLTggdy04XCJcbiAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgPFN0YXIgXG4gICAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPXtgaC00IHctNCAke1xuICAgICAgICAgICAgICAgICAgICAgICAgZmlsZS5pc0Zhdm9yaXRlID8gJ2ZpbGwteWVsbG93LTQwMCB0ZXh0LXllbGxvdy00MDAnIDogJ3RleHQtZ3JheS00MDAnXG4gICAgICAgICAgICAgICAgICAgICAgfWB9IFxuICAgICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICA8RHJvcGRvd25NZW51PlxuICAgICAgICAgICAgICAgICAgICA8RHJvcGRvd25NZW51VHJpZ2dlciBhc0NoaWxkPlxuICAgICAgICAgICAgICAgICAgICAgIDxCdXR0b24gdmFyaWFudD1cImdob3N0XCIgc2l6ZT1cInNtXCIgY2xhc3NOYW1lPVwicC0xIGgtOCB3LThcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxNb3JlVmVydGljYWwgY2xhc3NOYW1lPVwiaC00IHctNFwiIC8+XG4gICAgICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICAgIDwvRHJvcGRvd25NZW51VHJpZ2dlcj5cbiAgICAgICAgICAgICAgICAgICAgPERyb3Bkb3duTWVudUNvbnRlbnQgYWxpZ249XCJlbmRcIj5cbiAgICAgICAgICAgICAgICAgICAgICA8RHJvcGRvd25NZW51SXRlbSBvbkNsaWNrPXsoKSA9PiBvbkZpbGVBY3Rpb24oJ3ByZXZpZXcnLCBmaWxlLmlkKX0+XG4gICAgICAgICAgICAgICAgICAgICAgICA8RXllIGNsYXNzTmFtZT1cImgtNCB3LTQgbXItMlwiIC8+XG4gICAgICAgICAgICAgICAgICAgICAgICBPcGVuL1ByZXZpZXdcbiAgICAgICAgICAgICAgICAgICAgICA8L0Ryb3Bkb3duTWVudUl0ZW0+XG4gICAgICAgICAgICAgICAgICAgICAgPERyb3Bkb3duTWVudUl0ZW0gb25DbGljaz17KCkgPT4gb25GaWxlQWN0aW9uKCdkb3dubG9hZCcsIGZpbGUuaWQpfT5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxEb3dubG9hZCBjbGFzc05hbWU9XCJoLTQgdy00IG1yLTJcIiAvPlxuICAgICAgICAgICAgICAgICAgICAgICAgRG93bmxvYWRcbiAgICAgICAgICAgICAgICAgICAgICA8L0Ryb3Bkb3duTWVudUl0ZW0+XG4gICAgICAgICAgICAgICAgICAgICAgPERyb3Bkb3duTWVudUl0ZW0gb25DbGljaz17KCkgPT4gb25GaWxlQWN0aW9uKCdzaGFyZScsIGZpbGUuaWQpfT5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxTaGFyZTIgY2xhc3NOYW1lPVwiaC00IHctNCBtci0yXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICAgIFNoYXJlL0dldCBsaW5rXG4gICAgICAgICAgICAgICAgICAgICAgPC9Ecm9wZG93bk1lbnVJdGVtPlxuICAgICAgICAgICAgICAgICAgICAgIDxEcm9wZG93bk1lbnVJdGVtIG9uQ2xpY2s9eygpID0+IG9uRmlsZUFjdGlvbigncmVuYW1lJywgZmlsZS5pZCl9PlxuICAgICAgICAgICAgICAgICAgICAgICAgPEVkaXQzIGNsYXNzTmFtZT1cImgtNCB3LTQgbXItMlwiIC8+XG4gICAgICAgICAgICAgICAgICAgICAgICBSZW5hbWVcbiAgICAgICAgICAgICAgICAgICAgICA8L0Ryb3Bkb3duTWVudUl0ZW0+XG4gICAgICAgICAgICAgICAgICAgICAgPERyb3Bkb3duTWVudUl0ZW0gb25DbGljaz17KCkgPT4gb25GaWxlQWN0aW9uKCdtb3ZlJywgZmlsZS5pZCl9PlxuICAgICAgICAgICAgICAgICAgICAgICAgPEVkaXQzIGNsYXNzTmFtZT1cImgtNCB3LTQgbXItMlwiIC8+XG4gICAgICAgICAgICAgICAgICAgICAgICBNb3ZlXG4gICAgICAgICAgICAgICAgICAgICAgPC9Ecm9wZG93bk1lbnVJdGVtPlxuICAgICAgICAgICAgICAgICAgICAgIDxEcm9wZG93bk1lbnVJdGVtIG9uQ2xpY2s9eygpID0+IG9uRmlsZUFjdGlvbigndmVyc2lvbnMnLCBmaWxlLmlkKX0+XG4gICAgICAgICAgICAgICAgICAgICAgICA8Q2xvY2sgY2xhc3NOYW1lPVwiaC00IHctNCBtci0yXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICAgIFZlcnNpb24gSGlzdG9yeVxuICAgICAgICAgICAgICAgICAgICAgIDwvRHJvcGRvd25NZW51SXRlbT5cbiAgICAgICAgICAgICAgICAgICAgICA8RHJvcGRvd25NZW51SXRlbSBcbiAgICAgICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cInRleHQtcmVkLTYwMFwiXG4gICAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBvbkZpbGVBY3Rpb24oJ2RlbGV0ZScsIGZpbGUuaWQpfVxuICAgICAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxUcmFzaDIgY2xhc3NOYW1lPVwiaC00IHctNCBtci0yXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICAgIERlbGV0ZVxuICAgICAgICAgICAgICAgICAgICAgIDwvRHJvcGRvd25NZW51SXRlbT5cbiAgICAgICAgICAgICAgICAgICAgPC9Ecm9wZG93bk1lbnVDb250ZW50PlxuICAgICAgICAgICAgICAgICAgPC9Ecm9wZG93bk1lbnU+XG4gICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDwvVGFibGVDZWxsPlxuICAgICAgICAgICAgPC9UYWJsZVJvdz5cbiAgICAgICAgICApKX1cbiAgICAgICAgPC9UYWJsZUJvZHk+XG4gICAgICA8L1RhYmxlPlxuICAgIDwvZGl2PlxuICApO1xufVxuIl0sIm5hbWVzIjpbIkZpbGVMaXN0VmlldyIsImZpbGVzIiwic2VsZWN0ZWRGaWxlcyIsIm9uU2VsZWN0RmlsZSIsIm9uU2VsZWN0QWxsIiwib25Ub2dnbGVGYXZvcml0ZSIsIm9uRmlsZUFjdGlvbiIsImFsbFNlbGVjdGVkIiwibGVuZ3RoIiwic2l6ZSIsInNvbWVTZWxlY3RlZCIsImRpdiIsImNsYXNzTmFtZSIsIlRhYmxlIiwiVGFibGVIZWFkZXIiLCJUYWJsZVJvdyIsIlRhYmxlSGVhZCIsIkNoZWNrYm94IiwiY2hlY2tlZCIsInJlZiIsImVsIiwiaW5kZXRlcm1pbmF0ZSIsIm9uQ2hlY2tlZENoYW5nZSIsIlRhYmxlQm9keSIsIm1hcCIsImZpbGUiLCJUYWJsZUNlbGwiLCJoYXMiLCJpZCIsImNvbG9yIiwiZ2V0RmlsZUljb24iLCJ0eXBlIiwic3BhbiIsIm5hbWUiLCJCYWRnZSIsImdldEZpbGVUeXBlQ29sb3IiLCJ0b1VwcGVyQ2FzZSIsInRhZ3MiLCJ2YXJpYW50IiwidmlzaWJpbGl0eSIsInZlcnNpb25Db3VudCIsInNoYXJlZFdpdGgiLCJmb3JtYXRGaWxlU2l6ZSIsIkNsb2NrIiwibGFzdE1vZGlmaWVkIiwiQnV0dG9uIiwib25DbGljayIsIlN0YXIiLCJpc0Zhdm9yaXRlIiwiRHJvcGRvd25NZW51IiwiRHJvcGRvd25NZW51VHJpZ2dlciIsImFzQ2hpbGQiLCJNb3JlVmVydGljYWwiLCJEcm9wZG93bk1lbnVDb250ZW50IiwiYWxpZ24iLCJEcm9wZG93bk1lbnVJdGVtIiwiRXllIiwiRG93bmxvYWQiLCJTaGFyZTIiLCJFZGl0MyIsIlRyYXNoMiJdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7OytCQTJDZ0JBOzs7ZUFBQUE7Ozs7OERBekNFOzBCQUNPO3dCQUNGO3VCQUNEO3VCQVNmOzhCQU1BOzZCQVVBOzJCQUV1RDs7Ozs7O0FBV3ZELFNBQVNBLGFBQWEsRUFDM0JDLEtBQUssRUFDTEMsYUFBYSxFQUNiQyxZQUFZLEVBQ1pDLFdBQVcsRUFDWEMsZ0JBQWdCLEVBQ2hCQyxZQUFZLEVBQ007SUFDbEIsTUFBTUMsY0FBY04sTUFBTU8sTUFBTSxHQUFHLEtBQUtOLGNBQWNPLElBQUksS0FBS1IsTUFBTU8sTUFBTTtJQUMzRSxNQUFNRSxlQUFlUixjQUFjTyxJQUFJLEdBQUcsS0FBS1AsY0FBY08sSUFBSSxHQUFHUixNQUFNTyxNQUFNO0lBRWhGLHFCQUNFLHFCQUFDRztRQUFJQyxXQUFVO2tCQUNiLGNBQUEsc0JBQUNDLFlBQUs7OzhCQUNKLHFCQUFDQyxrQkFBVzs4QkFDVixjQUFBLHNCQUFDQyxlQUFROzswQ0FDUCxxQkFBQ0MsZ0JBQVM7Z0NBQUNKLFdBQVU7MENBQ25CLGNBQUEscUJBQUNLLGtCQUFRO29DQUNQQyxTQUFTWDtvQ0FDVFksS0FBSyxDQUFDQzt3Q0FDSixJQUFJQSxJQUFJQSxHQUFHQyxhQUFhLEdBQUdYO29DQUM3QjtvQ0FDQVksaUJBQWlCbEI7OzswQ0FHckIscUJBQUNZLGdCQUFTOzBDQUFDOzswQ0FDWCxxQkFBQ0EsZ0JBQVM7MENBQUM7OzBDQUNYLHFC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

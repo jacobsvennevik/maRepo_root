@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { axiosApi } from "@/lib/axios-api";
-import { axiosGeneration } from "@/lib/axios-generation";
+import { axiosApi, axiosGeneration } from "@/lib/axios";
 import axios from "axios";
 import { 
   unwrapFlashcardSets, 
@@ -84,7 +83,7 @@ export function useProjectFlashcards(projectId: string) {
 
   const createFlashcardSet = async (title: string) => {
     try {
-      const response = await axiosApi.post(
+      const response = await axiosGeneration.post(
         `/projects/${projectId}/flashcard-sets/`,
         { title },
       );

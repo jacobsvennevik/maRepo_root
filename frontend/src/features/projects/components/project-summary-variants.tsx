@@ -37,27 +37,9 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
   const handleCreateProject = async () => {
     setIsSubmitting(true);
     try {
-      // TEST MODE: Skip API calls and use mock data
-      if (isTestMode()) {
-        console.log('🧪 TEST MODE: Creating project with mock data');
-        
-        // Simulate a short delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Create mock project data
-        const mockProject = {
-          id: 'mock123',
-          name: setup.projectName,
-          project_type: 'school',
-          ...setup
-        };
-        
-        console.log('🧪 TEST MODE: Mock project created:', mockProject);
-        
-        // Navigate to the mock project's overview page
-        router.push(`/projects/${mockProject.id}/overview`);
-        return;
-      }
+      // Always create real projects, even in test mode
+      // Test mode only affects AI calls, not project creation
+      console.log('Creating project with data:', setup);
 
       // Real API calls for production
       // 1. Upload files and get their URLs
@@ -78,7 +60,7 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
         course_files: courseFileUrls,
         test_files: testFileUrls,
         // Mock mode flags for backend AI mocking
-        mock_mode: true,
+        mock_mode: isTestMode(), // Only mock AI calls
         seed_syllabus: true,
         seed_tests: true,
         seed_content: true,
@@ -449,27 +431,9 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
   const handleCreateProject = async () => {
     setIsSubmitting(true);
     try {
-      // TEST MODE: Skip API calls and use mock data
-      if (isTestMode()) {
-        console.log('🧪 TEST MODE: Creating project with mock data');
-        
-        // Simulate a short delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Create mock project data
-        const mockProject = {
-          id: 'mock123',
-          name: setup.projectName,
-          project_type: 'school',
-          ...setup
-        };
-        
-        console.log('🧪 TEST MODE: Mock project created:', mockProject);
-        
-        // Navigate to the mock project's overview page
-        router.push(`/projects/${mockProject.id}/overview`);
-        return;
-      }
+      // Always create real projects, even in test mode
+      // Test mode only affects AI calls, not project creation
+      console.log('Creating project with data:', setup);
 
       // Real API calls for production
       // 1. Upload files and get their URLs
@@ -490,7 +454,7 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
         course_files: courseFileUrls,
         test_files: testFileUrls,
         // Mock mode flags for backend AI mocking
-        mock_mode: true,
+        mock_mode: isTestMode(), // Only mock AI calls
         seed_syllabus: true,
         seed_tests: true,
         seed_content: true,
@@ -708,27 +672,9 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
   const handleCreateProject = async () => {
     setIsSubmitting(true);
     try {
-      // TEST MODE: Skip API calls and use mock data
-      if (isTestMode()) {
-        console.log('🧪 TEST MODE: Creating project with mock data');
-        
-        // Simulate a short delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Create mock project data
-        const mockProject = {
-          id: 'mock123',
-          name: setup.projectName,
-          project_type: 'school',
-          ...setup
-        };
-        
-        console.log('🧪 TEST MODE: Mock project created:', mockProject);
-        
-        // Navigate to the mock project's overview page
-        router.push(`/projects/${mockProject.id}/overview`);
-        return;
-      }
+      // Always create real projects, even in test mode
+      // Test mode only affects AI calls, not project creation
+      console.log('Creating project with data:', setup);
 
       // Real API calls for production
       // 1. Upload files and get their URLs
@@ -749,7 +695,7 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
         course_files: courseFileUrls,
         test_files: testFileUrls,
         // Mock mode flags for backend AI mocking
-        mock_mode: true,
+        mock_mode: isTestMode(), // Only mock AI calls
         seed_syllabus: true,
         seed_tests: true,
         seed_content: true,
