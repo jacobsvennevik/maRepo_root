@@ -1,5 +1,6 @@
 // Shared test utilities for upload step tests
-import { jest } from '@jest/globals';
+import { jest, expect } from '@jest/globals';
+import '@testing-library/jest-dom';
 
 /**
  * Environment setup utilities
@@ -27,7 +28,9 @@ export const mockWindow = (isTestMode: boolean) => {
  * API mocking utilities
  */
 export const createAPIErrorMock = () => {
-  return jest.fn().mockImplementation((message: string, status: number) => {
+  return jest.fn().mockImplementation((...args: unknown[]) => {
+    const message = args[0] as string;
+    const status = args[1] as number;
     const error = new Error(message) as Error & { status: number; statusCode: number };
     error.status = status;
     error.statusCode = status;
@@ -38,11 +41,7 @@ export const createAPIErrorMock = () => {
 export const createAPIServiceMock = () => ({
   uploadFileWithProgress: jest.fn(),
   APIError: createAPIErrorMock(),
-  createProject: jest.fn().mockResolvedValue({
-    id: 'project-123',
-    name: 'Test Project',
-    project_type: 'school'
-  })
+  createProject: jest.fn()
 });
 
 /**
@@ -217,7 +216,9 @@ export const createUploadProgressMock = (
   responses: Array<{ id: number; status: string; metadata?: any; original_text?: string }>,
   progressSteps: number[] = [0, 50, 100]
 ) => {
-  return jest.fn().mockImplementation(async (file: File, onProgress: (progress: number) => void) => {
+  return jest.fn().mockImplementation(async (...args: unknown[]) => {
+    const file = args[0] as File;
+    const onProgress = args[1] as (progress: number) => void;
     // Simulate progress
     for (const step of progressSteps) {
       onProgress(step);
@@ -238,7 +239,9 @@ export const createUploadProgressMock = (
  * Upload failure mock utilities
  */
 export const createUploadFailureMock = (errorMessage: string, delay: number = 100) => {
-  return jest.fn().mockImplementation(async (file: File, onProgress: (progress: number) => void) => {
+  return jest.fn().mockImplementation(async (...args: unknown[]) => {
+    const file = args[0] as File;
+    const onProgress = args[1] as (progress: number) => void;
     onProgress(0);
     await new Promise(resolve => setTimeout(resolve, delay));
     onProgress(50);
@@ -276,9 +279,9 @@ export const expectUploadComplete = (
 export const expectTestModeBanner = (shouldExist: boolean = true) => {
   const banner = document.querySelector('[data-testid="test-mode-banner"]');
   if (shouldExist) {
-    expect(banner).toBeInTheDocument();
-    expect(banner).toHaveTextContent(/Test Mode Active/i);
+    expect(banner).not.toBeNull();
+    expect(banner?.textContent).toMatch(/Test Mode Active/i);
   } else {
-    expect(banner).not.toBeInTheDocument();
+    expect(banner).toBeNull();
   }
 };

@@ -184,7 +184,7 @@ export type QuizAdvancedConfigForm = z.infer<typeof QuizAdvancedConfigSchema>;
 // Default Values
 // ============================================================================
 
-export const DEFAULT_QUIZ_CONFIG: Partial<QuizCreationForm> = {
+export const DEFAULT_QUIZ_FORM_CONFIG: Partial<QuizCreationForm> = {
   difficulty: 'INTERMEDIATE',
   delivery_mode: 'IMMEDIATE',
   max_questions: 10,
@@ -223,21 +223,21 @@ export const validateQuizConfig = (config: Partial<QuizCreationForm>): { valid: 
   }
 };
 
-export const getQuestionMixTotal = (mix: QuizCreationForm['question_mix']): number => {
+export const getQuizQuestionMixTotal = (mix: QuizCreationForm['question_mix']): number => {
   if (!mix) return 0;
   return mix.MCQ + mix.SHORT_ANSWER + mix.PRINCIPLE;
 };
 
-export const validateQuestionMix = (mix: QuizCreationForm['question_mix'], maxQuestions: number): boolean => {
+export const validateQuizQuestionMix = (mix: QuizCreationForm['question_mix'], maxQuestions: number): boolean => {
   if (!mix) return true;
-  return getQuestionMixTotal(mix) === maxQuestions;
+  return getQuizQuestionMixTotal(mix) === maxQuestions;
 };
 
 // ============================================================================
 // Smart Defaults and Suggestions
 // ============================================================================
 
-export const getDifficultySuggestions = (topic: string): QuizCreationForm['difficulty'] => {
+export const getQuizDifficultySuggestions = (topic: string): QuizCreationForm['difficulty'] => {
   const topicLower = topic.toLowerCase();
   
   if (topicLower.includes('basic') || topicLower.includes('intro') || topicLower.includes('fundamental')) {
@@ -255,7 +255,7 @@ export const getDifficultySuggestions = (topic: string): QuizCreationForm['diffi
   return 'INTERMEDIATE';
 };
 
-export const getSuggestedTimeLimit = (maxQuestions: number, difficulty: QuizCreationForm['difficulty']): number => {
+export const getQuizSuggestedTimeLimit = (maxQuestions: number, difficulty: QuizCreationForm['difficulty']): number => {
   const baseTimePerQuestion = {
     'BEGINNER': 60,    // 1 minute per question
     'INTERMEDIATE': 90, // 1.5 minutes per question
@@ -266,7 +266,7 @@ export const getSuggestedTimeLimit = (maxQuestions: number, difficulty: QuizCrea
   return maxQuestions * baseTimePerQuestion[difficulty];
 };
 
-export const getSuggestedQuestionMix = (maxQuestions: number, difficulty: QuizCreationForm['difficulty']) => {
+export const getQuizSuggestedQuestionMix = (maxQuestions: number, difficulty: QuizCreationForm['difficulty']) => {
   const ratios = {
     'BEGINNER': { MCQ: 0.6, SHORT_ANSWER: 0.3, PRINCIPLE: 0.1 },
     'INTERMEDIATE': { MCQ: 0.4, SHORT_ANSWER: 0.4, PRINCIPLE: 0.2 },
@@ -287,19 +287,19 @@ export const getSuggestedQuestionMix = (maxQuestions: number, difficulty: QuizCr
 // Form Field Configuration
 // ============================================================================
 
-export const DIFFICULTY_OPTIONS = [
+export const QUIZ_DIFFICULTY_OPTIONS = [
   { value: 'BEGINNER', label: 'Beginner', description: 'Basic concepts and recall' },
   { value: 'INTERMEDIATE', label: 'Intermediate', description: 'Application and understanding' },
   { value: 'ADVANCED', label: 'Advanced', description: 'Analysis and synthesis' },
   { value: 'EXPERT', label: 'Expert', description: 'Evaluation and creation' },
 ] as const;
 
-export const DELIVERY_MODE_OPTIONS = [
+export const QUIZ_DELIVERY_MODE_OPTIONS = [
   { value: 'IMMEDIATE', label: 'Immediate Feedback', description: 'Show results after each question' },
   { value: 'DEFERRED', label: 'Deferred Feedback', description: 'Show results after completing the quiz' },
 ] as const;
 
-export const LANGUAGE_OPTIONS = [
+export const QUIZ_LANGUAGE_OPTIONS = [
   { value: 'en', label: 'English' },
   { value: 'es', label: 'Spanish' },
   { value: 'fr', label: 'French' },

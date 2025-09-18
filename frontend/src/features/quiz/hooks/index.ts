@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 // ============================================================================
@@ -46,8 +46,8 @@ export const useFileManagement = ({
 
   const handleFileUpload = useCallback((files: File[]) => {
     setUploadedFiles(prev => [...prev, ...files]);
-    onFilesChange?.(prev => [...prev, ...files]);
-  }, [onFilesChange]);
+    onFilesChange?.([...uploadedFiles, ...files]);
+  }, [onFilesChange, uploadedFiles]);
 
   const removeUploadedFile = useCallback((index: number) => {
     setUploadedFiles(prev => {
@@ -197,7 +197,7 @@ interface UseFormValidationOptions<T> {
 interface UseFormValidationReturn<T> {
   form: any;
   isValid: boolean;
-  errors: Record<string, string>;
+  errors: any;
   validateField: (fieldName: keyof T) => Promise<boolean>;
   validateForm: () => Promise<boolean>;
   resetForm: () => void;
@@ -205,7 +205,7 @@ interface UseFormValidationReturn<T> {
   getFormValue: (fieldName: keyof T) => any;
 }
 
-export const useFormValidation = <T>({
+export const useFormValidation = <T extends FieldValues>({
   schema,
   defaultValues,
   onValidationChange,
@@ -218,7 +218,7 @@ export const useFormValidation = <T>({
   const { handleSubmit, trigger, watch, setValue, getValues, formState } = form;
 
   const isValid = formState.isValid;
-  const errors = formState.errors as Record<string, string>;
+  const errors = formState.errors as any;
 
   useEffect(() => {
     onValidationChange?.(isValid);

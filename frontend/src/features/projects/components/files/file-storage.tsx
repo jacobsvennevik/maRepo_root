@@ -78,7 +78,7 @@ import { StorageUsageSidebar } from './storage-usage-sidebar';
 import { FileDetailsPanel } from './file-details-panel';
 
 // File types and interfaces
-export interface FileItem {
+interface FileItem {
   id: string;
   name: string;
   type: 'pdf' | 'docx' | 'pptx' | 'txt' | 'png' | 'jpg' | 'jpeg' | 'csv' | 'md' | 'zip' | 'mp4' | 'mp3' | 'wav';

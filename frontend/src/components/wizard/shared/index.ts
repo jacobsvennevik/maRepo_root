@@ -17,9 +17,6 @@ export {
   generateMetadata,
   generateQuickTitle,
   validateTitle,
-  extractTopic,
-  extractConcepts,
-  determineDomain,
 } from './titleGeneration';
 
 // Types

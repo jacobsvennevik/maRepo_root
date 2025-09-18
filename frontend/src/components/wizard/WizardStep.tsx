@@ -66,26 +66,20 @@ export function WizardStep({ step, currentStep }: WizardStepProps) {
       case "test":
         return (
           <div className="space-y-6">
-            <div className="space-y-4">
+            <RadioGroup
+              value={hasTest ? "yes" : "no"}
+              onValueChange={(value) => setValue("hasTest", value === "yes")}
+              className="space-y-4"
+            >
               <div className="flex items-center space-x-3">
-                <RadioGroupItem
-                  value="yes"
-                  id="hasTest-yes"
-                  checked={hasTest}
-                  onCheckedChange={(checked) => setValue("hasTest", checked)}
-                />
+                <RadioGroupItem value="yes" id="hasTest-yes" />
                 <Label htmlFor="hasTest-yes">Yes</Label>
               </div>
               <div className="flex items-center space-x-3">
-                <RadioGroupItem
-                  value="no"
-                  id="hasTest-no"
-                  checked={!hasTest}
-                  onCheckedChange={(checked) => setValue("hasTest", !checked)}
-                />
+                <RadioGroupItem value="no" id="hasTest-no" />
                 <Label htmlFor="hasTest-no">No</Label>
               </div>
-            </div>
+            </RadioGroup>
 
             {hasTest && (
               <div className="space-y-4">

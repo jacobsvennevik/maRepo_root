@@ -113,9 +113,9 @@ class FlashcardApiService {
         flashcard_set: setId
       };
 
-      const data = await axiosApi.post<Flashcard>(`/flashcards/`, payload);
-      console.log('✅ Created flashcard:', data);
-      return data;
+      const response = await axiosApi.post<Flashcard>(`/flashcards/`, payload);
+      console.log('✅ Created flashcard:', response.data);
+      return response.data;
     } catch (err) {
       console.error('❌ Create failure:', err);
       throw err;
@@ -130,9 +130,9 @@ class FlashcardApiService {
     console.log('→ Payload:', form);
 
     try {
-      const data = await axiosApi.put<Flashcard>(`/flashcards/${cardId}/`, form);
-      console.log('✅ Updated flashcard:', data);
-      return data;
+      const response = await axiosApi.put<Flashcard>(`/flashcards/${cardId}/`, form);
+      console.log('✅ Updated flashcard:', response.data);
+      return response.data;
     } catch (err) {
       console.error('❌ Update failure:', err);
       throw err;

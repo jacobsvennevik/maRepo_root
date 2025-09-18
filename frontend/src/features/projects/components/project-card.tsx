@@ -18,8 +18,8 @@ interface ProjectCardProps {
  */
 export function ProjectCard({ project }: ProjectCardProps) {
   const displayName = getProjectDisplayName(project);
-  const icon = projectIcons[project.type] || projectIcons.default;
-  const colorClasses = projectColors[project.type] || projectColors.default;
+  const icon = projectIcons[project.type as keyof typeof projectIcons] || projectIcons.default;
+  const colorClasses = projectColors[project.type as keyof typeof projectColors] || projectColors.default;
 
   // Determine project type display
   let displayType: string;

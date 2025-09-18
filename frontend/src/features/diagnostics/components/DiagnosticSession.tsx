@@ -257,7 +257,7 @@ export default function DiagnosticSession({ sessionId }: { sessionId: string }) 
                     question.type === 'MCQ' 
                       ? response.selected_choice_index === question.correct_choice_index
                       : response.answer_text && question.acceptable_answers?.some(
-                          pattern => new RegExp(pattern, 'i').test(response.answer_text)
+                          pattern => new RegExp(pattern, 'i').test(response.answer_text || '')
                         )
                   );
 

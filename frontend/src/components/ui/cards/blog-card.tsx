@@ -79,7 +79,7 @@ export function BlogCard({ post }: BlogCardProps) {
           <span>{post.readTime}</span>
         </div>
         <Link
-          href={`/blog/${post.id}`}
+          href={`/blog/${post.id}` as any}
           className="inline-flex items-center text-[#06b6d4] hover:text-ocean-deep font-medium"
         >
           Read more

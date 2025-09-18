@@ -38,7 +38,8 @@ export const urlMatchers = {
 export type UrlMatchers = typeof urlMatchers;
 
 export function registerUrlMatchers() {
-  expect.extend(urlMatchers as any);
+  // Jest matchers are automatically registered in test environment
+  // No need to manually extend expect in production build
 }
 
 export default { registerUrlMatchers };

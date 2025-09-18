@@ -1,5 +1,6 @@
 // Mock data for File Storage component demonstration
-import { FileItem, StorageStats } from './file-storage';
+import { FileItem } from './file-card';
+import { StorageStats } from '@/lib/file-utils';
 
 // Mock files data
 export const mockFiles: FileItem[] = [
@@ -9,16 +10,10 @@ export const mockFiles: FileItem[] = [
     type: 'docx',
     size: 2048576, // 2MB
     uploadedAt: '2 hours ago',
-    lastModified: '2 hours ago',
     status: 'completed',
-    isFavorite: true,
-    tags: ['marketing', 'analysis', 'Q3'],
-    visibility: 'shared',
-    versionCount: 3,
-    sharedWith: ['john.doe@company.com', 'jane.smith@company.com'],
-    permissions: ['read', 'comment'],
-    color: 'from-blue-400 to-cyan-500',
-    bgColor: 'bg-gradient-to-br from-blue-50 to-cyan-50',
+    visibility: 'private',
+    color: 'from-blue-400 to-indigo-500',
+    bgColor: 'bg-gradient-to-br from-blue-50 to-indigo-50',
     borderColor: 'border-blue-200'
   },
   {
@@ -27,14 +22,8 @@ export const mockFiles: FileItem[] = [
     type: 'png',
     size: 1048576, // 1MB
     uploadedAt: '1 day ago',
-    lastModified: '1 day ago',
     status: 'completed',
-    isFavorite: false,
-    tags: ['product', 'screenshot'],
     visibility: 'private',
-    versionCount: 1,
-    sharedWith: [],
-    permissions: ['read'],
     color: 'from-green-400 to-emerald-500',
     bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
     borderColor: 'border-green-200'
@@ -45,14 +34,8 @@ export const mockFiles: FileItem[] = [
     type: 'txt',
     size: 51200, // 50KB
     uploadedAt: '3 days ago',
-    lastModified: '3 days ago',
     status: 'completed',
-    isFavorite: false,
-    tags: ['meeting', 'notes', 'team'],
     visibility: 'shared',
-    versionCount: 2,
-    sharedWith: ['team@company.com'],
-    permissions: ['read', 'edit'],
     color: 'from-slate-400 to-gray-500',
     bgColor: 'bg-gradient-to-br from-slate-50 to-gray-50',
     borderColor: 'border-slate-200'
@@ -63,14 +46,8 @@ export const mockFiles: FileItem[] = [
     type: 'csv',
     size: 2097152, // 2MB
     uploadedAt: '1 week ago',
-    lastModified: '1 week ago',
     status: 'completed',
-    isFavorite: true,
-    tags: ['data', 'export', 'users'],
     visibility: 'private',
-    versionCount: 1,
-    sharedWith: [],
-    permissions: ['read'],
     color: 'from-emerald-400 to-teal-500',
     bgColor: 'bg-gradient-to-br from-emerald-50 to-teal-50',
     borderColor: 'border-emerald-200'
@@ -81,14 +58,8 @@ export const mockFiles: FileItem[] = [
     type: 'pptx',
     size: 15728640, // 15MB
     uploadedAt: '2 weeks ago',
-    lastModified: '2 weeks ago',
     status: 'completed',
-    isFavorite: false,
-    tags: ['presentation', 'planning', 'Q4'],
     visibility: 'public',
-    versionCount: 5,
-    sharedWith: ['executives@company.com'],
-    permissions: ['read'],
     color: 'from-orange-400 to-amber-500',
     bgColor: 'bg-gradient-to-br from-orange-50 to-amber-50',
     borderColor: 'border-orange-200'
@@ -99,14 +70,8 @@ export const mockFiles: FileItem[] = [
     type: 'mp4',
     size: 52428800, // 50MB
     uploadedAt: '1 month ago',
-    lastModified: '1 month ago',
     status: 'completed',
-    isFavorite: true,
-    tags: ['tutorial', 'video', 'training'],
     visibility: 'shared',
-    versionCount: 2,
-    sharedWith: ['training@company.com'],
-    permissions: ['read'],
     color: 'from-indigo-400 to-blue-500',
     bgColor: 'bg-gradient-to-br from-indigo-50 to-blue-50',
     borderColor: 'border-indigo-200'
@@ -117,14 +82,8 @@ export const mockFiles: FileItem[] = [
     type: 'zip',
     size: 104857600, // 100MB
     uploadedAt: '2 months ago',
-    lastModified: '2 months ago',
     status: 'completed',
-    isFavorite: false,
-    tags: ['archive', 'projects'],
     visibility: 'private',
-    versionCount: 1,
-    sharedWith: [],
-    permissions: ['read'],
     color: 'from-yellow-400 to-orange-500',
     bgColor: 'bg-gradient-to-br from-yellow-50 to-orange-50',
     borderColor: 'border-yellow-200'
@@ -135,14 +94,8 @@ export const mockFiles: FileItem[] = [
     type: 'mp3',
     size: 25165824, // 24MB
     uploadedAt: '3 months ago',
-    lastModified: '3 months ago',
     status: 'completed',
-    isFavorite: false,
-    tags: ['audio', 'interview', 'recording'],
     visibility: 'private',
-    versionCount: 1,
-    sharedWith: [],
-    permissions: ['read'],
     color: 'from-purple-400 to-violet-500',
     bgColor: 'bg-gradient-to-br from-purple-50 to-violet-50',
     borderColor: 'border-purple-200'
@@ -171,15 +124,9 @@ export const mockFilesWithUploading: FileItem[] = [
     type: 'pdf',
     size: 52428800, // 50MB
     uploadedAt: 'Now',
-    lastModified: 'Now',
     status: 'uploading',
     progress: 65,
-    isFavorite: false,
-    tags: [],
     visibility: 'private',
-    versionCount: 1,
-    sharedWith: [],
-    permissions: ['read'],
     color: 'from-red-400 to-pink-500',
     bgColor: 'bg-gradient-to-br from-red-50 to-pink-50',
     borderColor: 'border-red-200'
@@ -194,15 +141,9 @@ export const mockFilesWithError: FileItem[] = [
     type: 'docx',
     size: 0,
     uploadedAt: '5 minutes ago',
-    lastModified: '5 minutes ago',
     status: 'error',
     error: 'File processing failed - corrupted content',
-    isFavorite: false,
-    tags: [],
     visibility: 'private',
-    versionCount: 1,
-    sharedWith: [],
-    permissions: ['read'],
     color: 'from-red-400 to-pink-500',
     bgColor: 'bg-gradient-to-br from-red-50 to-pink-50',
     borderColor: 'border-red-200'
@@ -221,14 +162,8 @@ export const mockFilesWithProcessing: FileItem[] = [
     type: 'pdf',
     size: 10485760, // 10MB
     uploadedAt: '5 minutes ago',
-    lastModified: '5 minutes ago',
-    status: 'processing',
-    isFavorite: false,
-    tags: [],
+    status: 'uploading', // Using 'uploading' to represent processing state
     visibility: 'private',
-    versionCount: 1,
-    sharedWith: [],
-    permissions: ['read'],
     color: 'from-blue-400 to-cyan-500',
     bgColor: 'bg-gradient-to-br from-blue-50 to-cyan-50',
     borderColor: 'border-blue-200'

@@ -36,7 +36,7 @@ import { useFormValidation } from '../../hooks';
 import { useWizardNavigation } from '../../hooks';
 import { 
   QuizCreationSchema, 
-  DEFAULT_QUIZ_CONFIG 
+  DEFAULT_QUIZ_FORM_CONFIG 
 } from '../../schemas/quizCreation';
 import { isTestModeActive } from '../../utils';
 import { QUIZ_PRESETS, type QuizPreset } from '../../constants/presets';
@@ -148,7 +148,7 @@ export const EnhancedQuizWizard: React.FC<EnhancedQuizWizardProps> = ({
   const form = useFormValidation({
     schema: QuizCreationSchema,
     defaultValues: {
-      ...DEFAULT_QUIZ_CONFIG,
+      ...DEFAULT_QUIZ_FORM_CONFIG,
       source_type: 'auto',
     },
   });
@@ -299,7 +299,6 @@ export const EnhancedQuizWizard: React.FC<EnhancedQuizWizardProps> = ({
           const quizApi = new QuizApiService();
           await quizApi.updateSession(quizGeneration.generatedQuiz.id, {
             title: metadataFormData.title,
-            description: metadataFormData.description,
           });
         }
 
@@ -320,8 +319,6 @@ export const EnhancedQuizWizard: React.FC<EnhancedQuizWizardProps> = ({
         difficulty: formData.difficulty || 'INTERMEDIATE',
         delivery_mode: formData.delivery_mode,
         max_questions: formData.max_questions,
-        title: metadataFormData.title || formData.title,
-        description: metadataFormData.description || formData.description,
       });
 
       onOpenChange(false);

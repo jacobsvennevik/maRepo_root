@@ -47,7 +47,7 @@ interface UseFileStorageReturn {
   handleBulkAction: (action: string) => void;
   
   // Refs
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
 }
 
 export function useFileStorage(): UseFileStorageReturn {

@@ -59,10 +59,9 @@ export function StepIndicator({
                     "text-xs font-medium transition-colors",
                     {
                       "text-green-600": isCompleted,
-                      "text-gray-400": isSkipped,
+                      "text-gray-400": isSkipped || index > currentStepIndex,
                       "text-blue-600": isCurrent,
                       "text-gray-600": isPast && !isCompleted && !isSkipped,
-                      "text-gray-400": index > currentStepIndex,
                     }
                   )}>
                     {step.title}

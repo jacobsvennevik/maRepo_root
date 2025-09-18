@@ -77,26 +77,6 @@ export function DashboardHeader() {
               >
                 Projects
               </Link>
-              <Link
-                href="/analytics"
-                className={
-                  isActive("/analytics")
-                    ? "text-[#47B5FF] hover:text-[#3da5ec] font-medium"
-                    : "text-slate-600 hover:text-slate-900 transition-colors"
-                }
-              >
-                Analytics
-              </Link>
-              <Link
-                href="/resources"
-                className={
-                  isActive("/resources")
-                    ? "text-[#47B5FF] hover:text-[#3da5ec] font-medium"
-                    : "text-slate-600 hover:text-slate-900 transition-colors"
-                }
-              >
-                Resources
-              </Link>
             </nav>
           </div>
 
@@ -115,9 +95,9 @@ export function DashboardHeader() {
                 alt="User avatar"
                 className="h-full w-full object-cover"
                 onError={(e) => {
-                  // @ts-ignore
-                  if (e.target && e.target.style) {
-                    e.target.style.display = "none";
+                  const target = e.target as HTMLImageElement;
+                  if (target && target.style) {
+                    target.style.display = "none";
                   }
                 }}
               />

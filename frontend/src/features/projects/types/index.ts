@@ -106,6 +106,9 @@ export interface ProjectV2 {
   kind?: "school" | "self_study";
   school_meta?: SchoolMeta;
   self_study_meta?: SelfStudyMeta;
+  meta?: {
+    ai_generated_tags?: string[];
+  };
 }
 
 // API Response types for project creation and fetching

@@ -30,24 +30,7 @@ import {
 import { AIPreview, AILoading } from "../ai";
 import { analyzeUploadedFiles, DetectedDate } from "../../services/ai-analysis";
 import { createDragHandlers, formatFileSize } from "../../services/file-helpers";
-
-export interface EducationLevelOption {
-  value: string;
-  label: string;
-  description: string;
-}
-
-export interface GradeLevelOption {
-  value: string;
-  label: string;
-}
-
-export interface EvaluationTypeOption {
-  value: string;
-  label: string;
-  description: string;
-  icon: any;
-}
+import { EducationLevelOption, EvaluationTypeOption, GradeLevelOption } from "../../types";
 
 interface CourseDetailsStepProps {
   testLevel: string;

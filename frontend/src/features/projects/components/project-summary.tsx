@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Check, FileText, ChevronLeft, Calendar, Clock, Users, Target, 
@@ -28,7 +28,7 @@ import {
 } from '../services/options';
 import { formatFileSize, formatDate } from '../services/formatters';
 
-export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }) {
+export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }): React.ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
@@ -40,10 +40,10 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
     try {
       // 1. Upload files and get their URLs
       const courseFileUrls = await Promise.all(
-        setup.courseFiles.map(file => uploadFile(file, 'course-files', authToken))
+        setup.courseFiles.map(file => uploadFile(file, 'course-files'))
       );
       const testFileUrls = await Promise.all(
-        setup.testFiles.map(file => uploadFile(file, 'test-files', authToken))
+        setup.testFiles.map(file => uploadFile(file, 'test-files'))
       );
 
       // 2. Prepare project data
@@ -61,7 +61,7 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
       };
 
       // 3. Create project
-      const newProject = await createProject(projectData, authToken);
+      const newProject = await createProject(projectData);
 
       // 4. Finalize project (set is_draft to false)
       await finalizeProject(newProject.id);
@@ -83,6 +83,7 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
     } finally {
       setIsSubmitting(false);
     }
+  };
 
   // Helper functions to get labels from constants
   const getPurposeLabel = (value: string) => {
@@ -160,7 +161,7 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
                     </div>
                     <div>
                       <h1 className="text-2xl font-bold">{setup.projectName}</h1>
-                      <p className="text-blue-100">{getPurposeLabel(setup.purpose)}</p>
+                      <p className="text-blue-100">{getPurposeLabel(setup.purpose || '')}</p>
                     </div>
                   </div>
                 </div>
@@ -185,7 +186,7 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
                 <div className="bg-white/10 rounded-lg p-3 text-center">
                   <Users className="h-5 w-5 mx-auto mb-1" />
                   <div className="text-xs text-blue-100">Collaboration</div>
-                  <div className="font-semibold">{getCollaborationLabel(setup.collaboration)}</div>
+                  <div className="font-semibold">{getCollaborationLabel(setup.collaboration || '')}</div>
                 </div>
                 <div className="bg-white/10 rounded-lg p-3 text-center">
                   <Trophy className="h-5 w-5 mx-auto mb-1" />
@@ -225,29 +226,11 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
                       </div>
                     )}
                   </div>
-                  
-                  {setup.evaluationTypes.length > 0 && (
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Evaluation Methods</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {setup.evaluationTypes.map(type => (
-                          <Badge key={type} variant="secondary" className="flex items-center">
-                            {EVALUATION_TYPE_OPTIONS.find(opt => opt.value === type)?.icon && (
-                              <span className="mr-1">
-                                {/* Icon would be rendered here */}
-                              </span>
-                            )}
-                            {getEvaluationTypeLabel(type)}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
               {/* Learning Preferences */}
-              {(setup.learningStyle || setup.studyPreference || setup.courseType || setup.assessmentType) && (
+              {(setup.learningStyle || setup.studyPreference) && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center">
@@ -293,12 +276,6 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
                         </div>
                       )}
                     </div>
-                    {setup.learningDifficulties && (
-                      <div>
-                        <h4 className="font-medium text-gray-900 mb-1">Learning Considerations</h4>
-                        <p className="text-gray-600 text-sm">{setup.learningDifficulties}</p>
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               )}
@@ -486,4 +463,4 @@ export function ProjectSummary({ setup, onBack }: { setup: ProjectSetup; onBack:
       </div>
     </div>
   );
-} }
+}

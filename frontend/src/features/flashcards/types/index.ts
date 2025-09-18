@@ -70,7 +70,7 @@ export interface StudyStats {
   next_review: string;
 }
 
-export interface FlashcardReview {
+export interface FlashcardReviewData {
   quality: number; // 0-5 quality rating
   response_time_seconds?: number;
   notes?: string;

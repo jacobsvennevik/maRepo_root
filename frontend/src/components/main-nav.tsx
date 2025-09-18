@@ -14,19 +14,9 @@ export function MainNav() {
       active: pathname === "/dashboard",
     },
     {
-      href: "/dashboard/materials",
-      label: "Study Materials",
-      active: pathname === "/dashboard/materials",
-    },
-    {
-      href: "/dashboard/ai-tools",
-      label: "AI Tools",
-      active: pathname === "/dashboard/ai-tools",
-    },
-    {
-      href: "/dashboard/settings",
-      label: "Settings",
-      active: pathname === "/dashboard/settings",
+      href: "/projects",
+      label: "Projects",
+      active: pathname.startsWith("/projects"),
     },
   ];
 
@@ -35,7 +25,7 @@ export function MainNav() {
       {routes.map((route) => (
         <Link
           key={route.href}
-          href={route.href}
+          href={route.href as any}
           className={cn(
             "text-sm font-medium transition-colors hover:text-primary",
             route.active

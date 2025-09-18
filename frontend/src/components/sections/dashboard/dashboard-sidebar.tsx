@@ -21,33 +21,9 @@ export function DashboardSidebar() {
       current: true,
     },
     {
-      name: "Courses",
-      href: "/courses",
+      name: "Projects",
+      href: "/projects",
       icon: Book,
-      current: false,
-    },
-    {
-      name: "Progress",
-      href: "/progress",
-      icon: Activity,
-      current: false,
-    },
-    {
-      name: "Community",
-      href: "/community",
-      icon: Users,
-      current: false,
-    },
-    {
-      name: "Documents",
-      href: "/documents",
-      icon: FileText,
-      current: false,
-    },
-    {
-      name: "Bookmarks",
-      href: "/bookmarks",
-      icon: Bookmark,
       current: false,
     },
   ];
@@ -58,7 +34,7 @@ export function DashboardSidebar() {
         {navigation.map((item) => (
           <Link
             key={item.name}
-            href={item.href}
+            href={item.href as any}
             className={`
               flex items-center px-2 py-2 text-sm font-medium rounded-md
               ${

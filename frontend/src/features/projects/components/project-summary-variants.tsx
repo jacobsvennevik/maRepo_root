@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Check, FileText, ChevronLeft, Calendar, Clock, Users, Target, 
@@ -26,7 +26,7 @@ import { validateProjectCreateInput, type ProjectCreateInput } from '../types';
 import { isTestMode } from '../services/mock-data';
 
 // Variant 1: Colorful Dashboard Style
-export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }) {
+export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }): React.ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const authToken = '203e2ee2825aaf19fbd5a9a5c4768c243944058c';
@@ -439,7 +439,7 @@ export function ProjectSummaryColorful({ setup, onBack }: { setup: ProjectSetup;
 }
 
 // Variant 2: Glass Morphism Style
-export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }) {
+export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }): React.ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const authToken = '203e2ee2825aaf19fbd5a9a5c4768c243944058c';
@@ -474,10 +474,10 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
       // Real API calls for production
       // 1. Upload files and get their URLs
       const courseFileUrls = await Promise.all(
-        setup.courseFiles.map(file => uploadFile(file, 'course-files', authToken))
+        setup.courseFiles.map(file => uploadFile(file, 'course-files'))
       );
       const testFileUrls = await Promise.all(
-        setup.testFiles.map(file => uploadFile(file, 'test-files', authToken))
+        setup.testFiles.map(file => uploadFile(file, 'test-files'))
       );
 
       // 2. Prepare project data
@@ -694,7 +694,7 @@ export function ProjectSummaryGlass({ setup, onBack }: { setup: ProjectSetup; on
 }
 
 // Variant 3: Gamified Style
-export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }) {
+export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup; onBack: () => void }): React.ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const authToken = '203e2ee2825aaf19fbd5a9a5c4768c243944058c';
@@ -733,10 +733,10 @@ export function ProjectSummaryGameified({ setup, onBack }: { setup: ProjectSetup
       // Real API calls for production
       // 1. Upload files and get their URLs
       const courseFileUrls = await Promise.all(
-        setup.courseFiles.map(file => uploadFile(file, 'course-files', authToken))
+        setup.courseFiles.map(file => uploadFile(file, 'course-files'))
       );
       const testFileUrls = await Promise.all(
-        setup.testFiles.map(file => uploadFile(file, 'test-files', authToken))
+        setup.testFiles.map(file => uploadFile(file, 'test-files'))
       );
 
       // 2. Prepare project data

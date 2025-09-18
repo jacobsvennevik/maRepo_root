@@ -15,16 +15,6 @@ export const useProjectSetup = (initialSetup: ProjectSetup) => {
     setHasUnsavedChanges(true);
   };
 
-  const handleEvaluationTypeToggle = (evaluationType: string) => {
-    setSetup((prev) => ({
-      ...prev,
-      evaluationTypes: prev.evaluationTypes.includes(evaluationType)
-        ? prev.evaluationTypes.filter((type) => type !== evaluationType)
-        : [...prev.evaluationTypes, evaluationType],
-    }));
-    setHasUnsavedChanges(true);
-  };
-
   const handleAddDate = (newDate: {
     date: string;
     description: string;
@@ -142,12 +132,8 @@ export const useProjectSetup = (initialSetup: ProjectSetup) => {
       })
       .filter((type, index, self) => self.indexOf(type) === index);
 
-    setSetup((prev) => ({
-      ...prev,
-      evaluationTypes: [
-        ...new Set([...prev.evaluationTypes, ...convertedTypes]),
-      ],
-    }));
+    // Note: evaluationTypes is not part of ProjectSetup interface
+    // This function is kept for compatibility but doesn't modify setup
     setHasUnsavedChanges(true);
   };
 
@@ -195,7 +181,6 @@ export const useProjectSetup = (initialSetup: ProjectSetup) => {
     hasUnsavedChanges,
     setHasUnsavedChanges,
     handleOptionSelect,
-    handleEvaluationTypeToggle,
     handleAddDate,
     handleRemoveDate,
     handleFileUpload,

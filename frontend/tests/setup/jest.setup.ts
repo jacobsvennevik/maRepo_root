@@ -1,4 +1,3 @@
-import type { ExpectExtendMap } from '@jest/expect';
 import { registerUrlMatchers, urlMatchers } from '../matchers/urlMatchers';
 
 // Register custom matchers

@@ -8,14 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Sparkles, 
   Calendar, 
-  FileText, 
   CheckCircle, 
-  Clock,
   BookOpen,
-  Target,
   Zap,
-  Brain,
-  TrendingUp
+  Brain
 } from "lucide-react";
 import { formatDate } from '../../services/formatters';
 
@@ -53,7 +49,7 @@ interface AIPreviewProps {
   detectedTestTypes: DetectedTestType[];
   onApplyTopics: (topics: string[]) => void;
   onApplyDates: (dates: DetectedDate[]) => void;
-  onApplyTestTypes: (types: string[]) => void;
+  onApplyTestTypes: (testTypes: string[]) => void;
   onApplyRecommendations: (recommendations: SmartRecommendation[]) => void;
   onDismiss: () => void;
 }
@@ -72,7 +68,6 @@ export function AIPreview({
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
   const [selectedTestTypes, setSelectedTestTypes] = useState<string[]>([]);
   const [selectedRecommendations, setSelectedRecommendations] = useState<string[]>([]);
-  const [showRecommendations, setShowRecommendations] = useState(false);
   const [smartRecommendations, setSmartRecommendations] = useState<SmartRecommendation[]>([]);
 
   // Auto-select high-confidence items
@@ -114,35 +109,22 @@ export function AIPreview({
       recommendations.push({
         id: 'material-1',
         type: 'material',
-        title: 'Study Material Suggestions',
-        description: `For ${detectedTopics.slice(0, 2).map(t => t.label).join(' and ')}, we recommend practice problems and concept maps.`,
+        title: 'Focused Study Materials',
+        description: `Create flashcards and practice tests for the ${detectedTopics.length} detected topics with highest confidence scores.`,
         confidence: 88,
-        action: 'Add practice materials'
+        action: 'Generate study materials'
       });
     }
 
     // Strategy recommendations
     if (detectedTestTypes.length > 0) {
-      const testTypes = detectedTestTypes.map(t => t.type).join(', ');
       recommendations.push({
         id: 'strategy-1',
         type: 'strategy',
         title: 'Test Preparation Strategy',
-        description: `For ${testTypes} formats, we recommend mock exams and timed practice sessions.`,
+        description: `Based on detected test types, we recommend a mix of practice tests and concept review sessions.`,
         confidence: 85,
-        action: 'Set up practice tests'
-      });
-    }
-
-    // Timeline recommendations
-    if (detectedDates.length >= 2) {
-      recommendations.push({
-        id: 'timeline-1',
-        type: 'timeline',
-        title: 'Smart Timeline',
-        description: 'We detected multiple deadlines. Let\'s create a balanced study timeline with buffer periods.',
-        confidence: 90,
-        action: 'Create balanced timeline'
+        action: 'Apply test strategy'
       });
     }
 
@@ -155,6 +137,7 @@ export function AIPreview({
         ? prev.filter(id => id !== topicId)
         : [...prev, topicId]
     );
+  };
 
   const handleDateToggle = (dateId: string) => {
     setSelectedDates(prev => 
@@ -162,43 +145,36 @@ export function AIPreview({
         ? prev.filter(id => id !== dateId)
         : [...prev, dateId]
     );
+  };
 
-  const handleTestTypeToggle = (typeId: string) => {
+  const handleTestTypeToggle = (testTypeId: string) => {
     setSelectedTestTypes(prev => 
-      prev.includes(typeId) 
-        ? prev.filter(id => id !== typeId)
-        : [...prev, typeId]
+      prev.includes(testTypeId) 
+        ? prev.filter(id => id !== testTypeId)
+        : [...prev, testTypeId]
     );
+  };
 
-  const handleRecommendationToggle = (recId: string) => {
+  const handleRecommendationToggle = (recommendationId: string) => {
     setSelectedRecommendations(prev => 
-      prev.includes(recId) 
-        ? prev.filter(id => id !== recId)
-        : [...prev, recId]
+      prev.includes(recommendationId) 
+        ? prev.filter(id => id !== recommendationId)
+        : [...prev, recommendationId]
     );
+  };
 
   const handleApplyAll = () => {
-    // Apply selected topics
-    const topicLabels = detectedTopics
-      .filter(topic => selectedTopics.includes(topic.id))
-      .map(topic => topic.label);
-    onApplyTopics(topicLabels);
+    const selectedTopicObjects = detectedTopics.filter(topic => selectedTopics.includes(topic.id));
+    const selectedDateObjects = detectedDates.filter(date => selectedDates.includes(date.id));
+    const selectedTestTypeObjects = detectedTestTypes.filter(testType => selectedTestTypes.includes(testType.id));
+    const selectedRecommendationObjects = smartRecommendations.filter(rec => selectedRecommendations.includes(rec.id));
 
-    // Apply selected dates
-    const datesToApply = detectedDates.filter(date => selectedDates.includes(date.id));
-    onApplyDates(datesToApply);
-
-    // Apply selected test types
-    const testTypeLabels = detectedTestTypes
-      .filter(type => selectedTestTypes.includes(type.id))
-      .map(type => type.type);
-    onApplyTestTypes(testTypeLabels);
-
-    // Apply selected recommendations
-    const recommendationsToApply = smartRecommendations.filter(rec => selectedRecommendations.includes(rec.id));
-    onApplyRecommendations(recommendationsToApply);
-
+    onApplyTopics(selectedTopics);
+    onApplyDates(selectedDateObjects);
+    onApplyTestTypes(selectedTestTypes);
+    onApplyRecommendations(selectedRecommendationObjects);
     onDismiss();
+  };
 
   const handleOneClickSetup = () => {
     // Auto-select all high-confidence items
@@ -216,6 +192,7 @@ export function AIPreview({
     setTimeout(() => {
       handleApplyAll();
     }, 500);
+  };
 
   const totalDetections = detectedTopics.length + detectedDates.length + detectedTestTypes.length;
   const totalSelected = selectedTopics.length + selectedDates.length + selectedTestTypes.length + selectedRecommendations.length;
@@ -277,34 +254,29 @@ export function AIPreview({
         {detectedDates.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-blue-600" />
-              <h4 className="font-medium text-blue-900">Detected Important Dates ({detectedDates.length})</h4>
+              <Calendar className="h-4 w-4 text-green-600" />
+              <h4 className="font-medium text-green-900">Detected Dates ({detectedDates.length})</h4>
               <Badge variant="outline" className="text-xs">
                 {selectedDates.length} selected
               </Badge>
             </div>
             <div className="space-y-2">
               {detectedDates.map((date) => (
-                <div key={date.id} className="flex items-center gap-3 p-2 bg-white rounded-lg border border-blue-200">
+                <div key={date.id} className="flex items-center gap-3 p-2 bg-white rounded-lg border border-green-200">
                   <Checkbox
                     id={date.id}
                     checked={selectedDates.includes(date.id)}
                     onCheckedChange={() => handleDateToggle(date.id)}
                   />
                   <label htmlFor={date.id} className="flex-1 cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-900">{date.description}</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {formatDate(date.date)}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs capitalize">
-                        {date.type}
-                      </Badge>
-                      {(date.type === 'exam' || date.type === 'assignment') && (
-                        <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                          Auto-selected
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-gray-900">{date.description}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {date.type}
                         </Badge>
-                      )}
+                      </div>
+                      <p className="text-xs text-gray-600">{formatDate(date.date)}</p>
                     </div>
                   </label>
                 </div>
@@ -317,32 +289,25 @@ export function AIPreview({
         {detectedTestTypes.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-blue-600" />
-              <h4 className="font-medium text-blue-900">Detected Test Types ({detectedTestTypes.length})</h4>
+              <CheckCircle className="h-4 w-4 text-orange-600" />
+              <h4 className="font-medium text-orange-900">Detected Test Types ({detectedTestTypes.length})</h4>
               <Badge variant="outline" className="text-xs">
                 {selectedTestTypes.length} selected
               </Badge>
             </div>
             <div className="space-y-2">
               {detectedTestTypes.map((testType) => (
-                <div key={testType.id} className="flex items-center gap-3 p-2 bg-white rounded-lg border border-blue-200">
+                <div key={testType.id} className="flex items-center gap-3 p-2 bg-white rounded-lg border border-orange-200">
                   <Checkbox
                     id={testType.id}
                     checked={selectedTestTypes.includes(testType.id)}
                     onCheckedChange={() => handleTestTypeToggle(testType.id)}
                   />
                   <label htmlFor={testType.id} className="flex-1 cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-900">{testType.type}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {testType.confidence}% confidence
-                      </Badge>
-                      {testType.confidence >= 85 && (
-                        <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-                          Auto-selected
-                        </Badge>
-                      )}
-                    </div>
+                    <span className="text-sm font-medium text-gray-900">{testType.type}</span>
+                    <Badge variant="outline" className="ml-2 text-xs">
+                      {testType.confidence}% confidence
+                    </Badge>
                   </label>
                 </div>
               ))}
@@ -416,9 +381,4 @@ export function AIPreview({
       </CardContent>
     </Card>
   );
-} }
-}
-}
-}
-}
 }

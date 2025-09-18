@@ -227,8 +227,6 @@ export function CourseContentUploadStep({
             onUpload={handleFileUpload}
             accept=".pdf,.doc,.docx,.ppt,.pptx"
             maxSize={25 * 1024 * 1024} // 25MB
-            multiple={true}
-            disabled={isAnalyzing}
             data-testid="file-input"
           />
 

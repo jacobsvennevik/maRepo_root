@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useGuidedSetupState, GuidedProjectSetup } from './hooks/useGuidedSetupState';
 import { useStepNavigation } from './hooks/useStepNavigation';
 import { ProjectSummaryColorful } from '@/features/projects';
+import { ProjectSetup } from '../../types';
 import { StepIndicator } from './components/StepIndicator';
 import { STEP_CONFIG } from './constants';
 
@@ -232,5 +233,3 @@ export default function GuidedSetup({ onBack }: GuidedSetupProps) {
     </div>
   );
 }
-
-export default GuidedSetup;

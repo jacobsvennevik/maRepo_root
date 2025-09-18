@@ -5,6 +5,7 @@ import { axiosApi } from "@/lib/axios-api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CreateDiagnosticWizard } from './CreateDiagnosticWizard';
 import { Calendar, Clock, Users, Target, Plus, BarChart3, Play, Edit, Trash2 } from 'lucide-react';

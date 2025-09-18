@@ -20,7 +20,7 @@ import type {
   QuizSessionListResponse,
   QuizError,
   QuizErrorType
-} from './types';
+} from '../types';
 
 export class QuizApiService {
   private baseUrl = 'diagnostic-sessions/';
@@ -55,8 +55,8 @@ export class QuizApiService {
       console.error('❌ Failed to fetch quiz sessions:', error);
       
       // If it's a 404 or empty response, return empty array instead of throwing
-      if (error.response?.status === 404 || 
-          (error.response?.data && Object.keys(error.response.data).length === 0)) {
+      if ((error as any)?.response?.status === 404 || 
+          ((error as any)?.response?.data && Object.keys((error as any).response.data).length === 0)) {
         console.log(`ℹ️ No quiz sessions endpoint found for project ${projectId} - returning empty array`);
         return [];
       }

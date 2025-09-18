@@ -409,7 +409,7 @@ export function useQuizCenter({
       if (isMountedRef.current) {
         setState(prev => ({
           ...prev,
-          currentQuestions: transformQuestions(response.questions),
+          currentQuestions: response.questions,
           sessionStarted: true,
           sessionCompleted: false,
           currentQuestionIndex: 0

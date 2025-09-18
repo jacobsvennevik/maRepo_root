@@ -125,7 +125,7 @@ export const transformDates = (datesData: any): Array<{ id: string; date: string
         weight: dateItem.weight || ''
       };
     })
-    .filter(Boolean);
+    .filter((item): item is NonNullable<typeof item> => item !== null);
 };
 
 export const transformTestTypes = (evaluationData: any): Array<{ id: string; type: string; confidence: number }> => {

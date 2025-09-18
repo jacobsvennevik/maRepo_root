@@ -12,7 +12,14 @@ import {
 export function isSchoolProject(
   project: unknown,
 ): project is ProjectV2 & { kind: "school" } {
-  return project.kind === "school" && project.school_meta;
+  return (
+    typeof project === "object" &&
+    project !== null &&
+    "kind" in project &&
+    "school_meta" in project &&
+    (project as any).kind === "school" &&
+    (project as any).school_meta
+  );
 }
 
 /**
@@ -21,16 +28,23 @@ export function isSchoolProject(
 export function isSelfStudyProject(
   project: unknown,
 ): project is ProjectV2 & { kind: "self_study" } {
-  return project.kind === "self_study" && project.self_study_meta;
+  return (
+    typeof project === "object" &&
+    project !== null &&
+    "kind" in project &&
+    "self_study_meta" in project &&
+    (project as any).kind === "self_study" &&
+    (project as any).self_study_meta
+  );
 }
 
 /**
  * Determine project type from course name or other metadata
  */
 function determineProjectType(apiResponse: ProjectApiResponse): ProjectType {
-  const courseName = apiResponse.course_name?.toLowerCase() || "";
-  const projectName = apiResponse.name?.toLowerCase() || "";
-  const goalDescription = apiResponse.goal_description?.toLowerCase() || "";
+  const courseName = ""; // course_name not available in ProjectApiResponse
+  const projectName = apiResponse.title?.toLowerCase() || "";
+  const goalDescription = apiResponse.description?.toLowerCase() || "";
 
   // Check for specific keywords in course names
   if (courseName.includes("math") || courseName.includes("mathematics") || courseName.includes("calculus")) {
@@ -124,23 +138,19 @@ export function mapApiResponseToProjectV2(
   
   const baseProject = {
     id: apiResponse.id,
-    title: apiResponse.name, // Use name as title
-    description: apiResponse.name, // Use name as description for now
+    title: apiResponse.title, // Use title as title
+    description: apiResponse.description || apiResponse.title, // Use description or title as fallback
     lastUpdated: new Date(apiResponse.updated_at).toLocaleDateString(),
     type: projectType,
     progress: 0,
     collaborators: 0,
   };
 
-  if (apiResponse.project_type === "school") {
-    const schoolMeta: SchoolMeta = {
-      course_name:
-        apiResponse.school_data?.course_name || apiResponse.course_name || "",
-      course_code:
-        apiResponse.school_data?.course_code || apiResponse.course_code || "",
-      teacher_name:
-        apiResponse.school_data?.teacher_name || apiResponse.teacher_name || "",
-    };
+  if (apiResponse.type === "school") {
+      const schoolMeta: SchoolMeta = {
+        course_name: "", // school_data not available in ProjectApiResponse
+        instructor: "", // school_data not available in ProjectApiResponse
+      };
 
     return {
       ...baseProject,
@@ -149,14 +159,8 @@ export function mapApiResponseToProjectV2(
     };
   } else {
     const selfStudyMeta: SelfStudyMeta = {
-      goal_description:
-        apiResponse.self_study_data?.goal_description ||
-        apiResponse.goal_description ||
-        "",
-      study_frequency:
-        apiResponse.self_study_data?.study_frequency ||
-        apiResponse.study_frequency ||
-        "",
+      goals: [], // self_study_data not available in ProjectApiResponse
+      learning_style: "", // self_study_data not available in ProjectApiResponse
     };
 
     return {
@@ -172,10 +176,10 @@ export function mapApiResponseToProjectV2(
  */
 export function getProjectDisplayName(project: ProjectV2): string {
   if (isSchoolProject(project)) {
-    return project.school_meta.course_name || project.title || project.description;
+    return project.school_meta?.course_name || project.title || project.description;
   }
   if (isSelfStudyProject(project)) {
-    return project.self_study_meta.goal_description || project.title || project.description;
+    return project.self_study_meta?.goals?.[0] || project.title || project.description;
   }
   // Fallback to title or description if type guards fail
   return project.title || project.description || "Unknown Project";

@@ -39,19 +39,9 @@ export function DashboardNav() {
       active: pathname === "/dashboard",
     },
     {
-      href: "/dashboard/projects",
+      href: "/projects",
       label: "Projects",
-      active: pathname === "/dashboard/projects",
-    },
-    {
-      href: "/dashboard/analytics",
-      label: "Analytics",
-      active: pathname === "/dashboard/analytics",
-    },
-    {
-      href: "/dashboard/resources",
-      label: "Resources",
-      active: pathname === "/dashboard/resources",
+      active: pathname.startsWith("/projects"),
     },
   ];
 
@@ -113,13 +103,13 @@ export function DashboardNav() {
                 <div className="absolute right-0 mt-2 w-56 rounded-md border border-cyan-300 bg-white p-2 shadow-lg dropdown-menu">
                   <div className="py-1">
                     <Link
-                      href="/dashboard/profile" as any
+                      href="/dashboard"
                       className="block px-4 py-2 text-sm text-slate-700 hover:bg-cyan-100 hover:text-cyan-700 rounded-md"
                     >
                       Your Profile
                     </Link>
                     <Link
-                      href="/dashboard/settings" as any
+                      href="/dashboard"
                       className="block px-4 py-2 text-sm text-slate-700 hover:bg-cyan-100 hover:text-cyan-700 rounded-md"
                     >
                       Settings

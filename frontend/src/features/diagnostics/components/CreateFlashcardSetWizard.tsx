@@ -13,7 +13,6 @@ import { postGenerateFlashcards } from '@/lib/api/flashcards';
 import { FlashcardDeckSchema, type FlashcardDeckForm } from './schemas/flashcardDeck';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { axiosApi } from '@/lib/axios-api';
 import { axiosGeneration, axiosApi } from '@/lib/axios';
 // Test mode detection - check dynamically to respond to environment variable changes during tests
 const isTestMode = (): boolean => {
@@ -85,6 +84,7 @@ interface FlashcardDeck {
     themes: string[];
   };
   flashcards: Flashcard[];
+  flashcardSetId?: string | number | null;
 }
 
 export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCreated }: CreateFlashcardSetWizardProps) {
@@ -447,17 +447,14 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
       });
 
       // Convert to expected format for the wizard
-      const normalizedResult = {
-        deck: {
-          suggested_title: suggestedTitle,
-          suggested_description: suggestedDescription,
+      const normalizedResult: FlashcardDeck = {
+        deck_metadata: {
+          description: suggestedDescription,
+          learning_objectives: [],
+          themes: [],
         },
-        // Keep original cards for API submission
-        cards: cards,
-        // Use normalized preview cards for UI
-        previewCards,
-        // Include the flashcard set ID if the API created it
-        flashcardSetId: result.id || null
+        flashcards: cards,
+        flashcardSetId: result.id || null,
       };
 
       setGeneratedDeck(normalizedResult);
@@ -516,7 +513,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
         target_audience: '',
         estimated_study_time: 30,
         tags: [],
-        flashcards: generatedDeck.cards
+        flashcards: generatedDeck.flashcards
       });
 
       const createdSet = response.data;
@@ -1012,7 +1009,12 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
 
           {step === 4 && generatedDeck && (
             <FlashcardReviewStep
-              cards={generatedDeck.previewCards || generatedDeck.cards}
+              cards={generatedDeck.flashcards.map((card, idx) => ({
+                id: String(card.concept_id || idx + 1),
+                front: card.question,
+                back: card.answer,
+                tags: card.related_concepts || [],
+              }))}
               form={form}
               mockMode={isTestMode()}
               suggestedTitle={suggestedTitle}
@@ -1029,7 +1031,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900">Ready to Create!</h2>
                   <p className="text-sm text-gray-600 mt-1">
-                    Your flashcard set is ready to be created with {generatedDeck.cards.length} cards
+                    Your flashcard set is ready to be created with {generatedDeck.flashcards.length} cards
                   </p>
                 </div>
               </div>
@@ -1050,7 +1052,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
                     </div>
                     <div>
                       <span className="text-sm font-medium">Cards:</span>
-                      <p className="text-sm text-gray-700">{generatedDeck.cards.length} flashcards</p>
+                      <p className="text-sm text-gray-700">{generatedDeck.flashcards.length} flashcards</p>
                     </div>
                   </div>
                 </CardContent>

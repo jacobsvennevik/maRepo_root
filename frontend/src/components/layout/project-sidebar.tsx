@@ -75,7 +75,7 @@ export function ProjectSidebar({
           return (
             <Link
               key={item.href}
-              href={href}
+              href={href as any}
               className={`flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                 isActive
                   ? "bg-blue-50 text-blue-600"

@@ -289,7 +289,7 @@ export function validateQuestion(question: Partial<QuizQuestion>): string[] {
 /**
  * Format time duration for display
  */
-export function formatDuration(seconds: number): string {
+export function formatQuizDuration(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
@@ -306,14 +306,14 @@ export function formatDuration(seconds: number): string {
 /**
  * Format percentage for display
  */
-export function formatPercentage(value: number, decimals: number = 1): string {
+export function formatQuizPercentage(value: number, decimals: number = 1): string {
   return `${value.toFixed(decimals)}%`;
 }
 
 /**
  * Get status color for UI display
  */
-export function getStatusColor(status: QuizSessionStatus): string {
+export function getQuizStatusColor(status: QuizSessionStatus): string {
   const colorMap: Record<QuizSessionStatus, string> = {
     draft: 'gray',
     active: 'blue',
@@ -327,7 +327,7 @@ export function getStatusColor(status: QuizSessionStatus): string {
 /**
  * Get difficulty color for UI display
  */
-export function getDifficultyColor(difficulty: number): string {
+export function getQuizDifficultyColor(difficulty: number): string {
   if (difficulty <= 2) return 'green';
   if (difficulty <= 3) return 'yellow';
   if (difficulty <= 4) return 'orange';
@@ -337,7 +337,7 @@ export function getDifficultyColor(difficulty: number): string {
 /**
  * Get bloom level description
  */
-export function getBloomLevelDescription(level: BloomLevel): string {
+export function getQuizBloomLevelDescription(level: BloomLevel): string {
   const descriptions: Record<BloomLevel, string> = {
     Remember: 'Recall facts and basic concepts',
     Understand: 'Explain ideas or concepts',

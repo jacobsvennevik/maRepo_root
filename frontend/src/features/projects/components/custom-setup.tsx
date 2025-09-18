@@ -255,7 +255,9 @@ export function CustomSetup({ onBack }: CustomSetupProps) {
                           }`}
                           onClick={() => handleInputChange('type', type)}
                         >
-                          <Icon className={`h-5 w-5 sm:h-6 sm:w-6 mb-1 sm:mb-2 ${projectColors[type].split(' ')[1]}`} />
+                          <span className={`text-2xl sm:text-3xl mb-1 sm:mb-2 ${(projectColors[type as keyof typeof projectColors] || projectColors.default).split(' ')[1]}`}>
+                            {projectIcons[type as keyof typeof projectIcons] || projectIcons.default}
+                          </span>
                           <span className="text-xs sm:text-sm font-medium text-center">
                             {type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                           </span>

@@ -23,7 +23,7 @@ interface FlashcardCarouselProps {
   onViewAll?: () => void;
 }
 
-interface CarouselCardProps {
+interface FlashcardCarouselCardProps {
   card: Flashcard;
   isActive: boolean;
   isLeft: boolean;
@@ -35,7 +35,7 @@ interface CarouselCardProps {
   showHint: boolean;
 }
 
-const CarouselCard: React.FC<CarouselCardProps> = ({
+const FlashcardCarouselCard: React.FC<FlashcardCarouselCardProps> = ({
   card,
   isActive,
   isLeft,
@@ -418,7 +418,7 @@ export const FlashcardCarousel: React.FC<FlashcardCarouselProps> = ({
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {Array.isArray(flashcards) && flashcards.map((card, index) => (
-              <CarouselCard
+              <FlashcardCarouselCard
                 key={card.id}
                 card={card}
                 isActive={index === currentIndex}

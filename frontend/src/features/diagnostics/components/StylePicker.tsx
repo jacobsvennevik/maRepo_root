@@ -166,11 +166,27 @@ export function StylePicker({ value, onChange, onNext, onBack }: StylePickerProp
     const preset = presets[presetId];
     if (!preset) return;
     
+    // Ensure timing config has required properties and item_mix has correct structure
+    const configWithRequiredTiming = {
+      ...preset.config,
+      timing: preset.config.timing ? {
+        total_minutes: preset.config.timing.total_minutes ?? 30,
+        per_item_seconds: preset.config.timing.per_item_seconds ?? 60
+      } : undefined,
+      item_mix: preset.config.item_mix ? {
+        single_select: preset.config.item_mix.single_select ?? 0,
+        cloze: preset.config.item_mix.cloze ?? 0,
+        short_answer: preset.config.item_mix.short_answer ?? 0,
+        numeric: preset.config.item_mix.numeric ?? 0,
+        multi_step: preset.config.item_mix.multi_step ?? 0
+      } : undefined
+    };
+    
     const newConfig = {
       test_style: presetId as any,
-      style_config_override: preset.config
+      style_config_override: configWithRequiredTiming
     };
-    setEffectiveConfig(preset.config);
+    setEffectiveConfig(configWithRequiredTiming);
     onChange(newConfig);
     
     // Track preset selection
@@ -179,14 +195,56 @@ export function StylePicker({ value, onChange, onNext, onBack }: StylePickerProp
 
   const handleOverrideChange = (key: string, newValue: any) => {
     const oldValue = effectiveConfig[key as keyof StyleConfig];
-    const updatedOverrides = {
+    
+    // Create base overrides with the new value
+    // eslint-disable-next-line prefer-const
+    let updatedOverrides = {
       ...effectiveConfig,
       [key]: newValue
     };
+    
+    // Ensure timing config has required properties if it's being updated
+    if (key === 'timing' && newValue) {
+      updatedOverrides.timing = {
+        total_minutes: newValue.total_minutes ?? 30,
+        per_item_seconds: newValue.per_item_seconds ?? 60
+      };
+    }
+    
+    // Ensure item_mix has correct structure if it's being updated
+    if (key === 'item_mix' && newValue) {
+      updatedOverrides.item_mix = {
+        single_select: newValue.single_select ?? 0,
+        cloze: newValue.cloze ?? 0,
+        short_answer: newValue.short_answer ?? 0,
+        numeric: newValue.numeric ?? 0,
+        multi_step: newValue.multi_step ?? 0
+      };
+    }
+    
     setEffectiveConfig(updatedOverrides);
+    
+    // Create a properly typed config for onChange that matches TestStyleConfig
+    const configForOnChange = {
+      ...updatedOverrides,
+      // Ensure timing has required properties if it exists
+      timing: updatedOverrides.timing ? {
+        total_minutes: updatedOverrides.timing.total_minutes ?? 30,
+        per_item_seconds: updatedOverrides.timing.per_item_seconds ?? 60
+      } : undefined,
+      // Ensure item_mix has correct structure if it exists
+      item_mix: updatedOverrides.item_mix ? {
+        single_select: updatedOverrides.item_mix.single_select ?? 0,
+        cloze: updatedOverrides.item_mix.cloze ?? 0,
+        short_answer: updatedOverrides.item_mix.short_answer ?? 0,
+        numeric: updatedOverrides.item_mix.numeric ?? 0,
+        multi_step: updatedOverrides.item_mix.multi_step ?? 0
+      } : undefined
+    } as TestStyleConfig['style_config_override'];
+    
     onChange({
       test_style: value.test_style,
-      style_config_override: updatedOverrides
+      style_config_override: configForOnChange
     });
     
     // Track customization
@@ -204,9 +262,28 @@ export function StylePicker({ value, onChange, onNext, onBack }: StylePickerProp
     if (validation.fixes.length > 0) {
       const fixedConfig = applyFixes(effectiveConfig, validation.fixes);
       setEffectiveConfig(fixedConfig);
+      
+      // Create a properly typed config for onChange that matches TestStyleConfig
+      const configForOnChange = {
+        ...fixedConfig,
+        // Ensure timing has required properties if it exists
+        timing: fixedConfig.timing ? {
+          total_minutes: fixedConfig.timing.total_minutes ?? 30,
+          per_item_seconds: fixedConfig.timing.per_item_seconds ?? 60
+        } : undefined,
+        // Ensure item_mix has correct structure if it exists
+        item_mix: fixedConfig.item_mix ? {
+          single_select: fixedConfig.item_mix.single_select ?? 0,
+          cloze: fixedConfig.item_mix.cloze ?? 0,
+          short_answer: fixedConfig.item_mix.short_answer ?? 0,
+          numeric: fixedConfig.item_mix.numeric ?? 0,
+          multi_step: fixedConfig.item_mix.multi_step ?? 0
+        } : undefined
+      } as TestStyleConfig['style_config_override'];
+      
       onChange({
         test_style: value.test_style,
-        style_config_override: fixedConfig
+        style_config_override: configForOnChange
       });
       
       // Track autofix application
@@ -261,9 +338,28 @@ export function StylePicker({ value, onChange, onNext, onBack }: StylePickerProp
                     onClick={() => {
                       const fixedConfig = applyFixes(effectiveConfig, [issue.fix!]);
                       setEffectiveConfig(fixedConfig);
+                      
+                      // Create a properly typed config for onChange that matches TestStyleConfig
+                      const configForOnChange = {
+                        ...fixedConfig,
+                        // Ensure timing has required properties if it exists
+                        timing: fixedConfig.timing ? {
+                          total_minutes: fixedConfig.timing.total_minutes ?? 30,
+                          per_item_seconds: fixedConfig.timing.per_item_seconds ?? 60
+                        } : undefined,
+                        // Ensure item_mix has correct structure if it exists
+                        item_mix: fixedConfig.item_mix ? {
+                          single_select: fixedConfig.item_mix.single_select ?? 0,
+                          cloze: fixedConfig.item_mix.cloze ?? 0,
+                          short_answer: fixedConfig.item_mix.short_answer ?? 0,
+                          numeric: fixedConfig.item_mix.numeric ?? 0,
+                          multi_step: fixedConfig.item_mix.multi_step ?? 0
+                        } : undefined
+                      } as TestStyleConfig['style_config_override'];
+                      
                       onChange({
                         test_style: value.test_style,
-                        style_config_override: fixedConfig
+                        style_config_override: configForOnChange
                       });
                     }}
                   >
@@ -287,9 +383,28 @@ export function StylePicker({ value, onChange, onNext, onBack }: StylePickerProp
                     onClick={() => {
                       const fixedConfig = applyFixes(effectiveConfig, [issue.fix!]);
                       setEffectiveConfig(fixedConfig);
+                      
+                      // Create a properly typed config for onChange that matches TestStyleConfig
+                      const configForOnChange = {
+                        ...fixedConfig,
+                        // Ensure timing has required properties if it exists
+                        timing: fixedConfig.timing ? {
+                          total_minutes: fixedConfig.timing.total_minutes ?? 30,
+                          per_item_seconds: fixedConfig.timing.per_item_seconds ?? 60
+                        } : undefined,
+                        // Ensure item_mix has correct structure if it exists
+                        item_mix: fixedConfig.item_mix ? {
+                          single_select: fixedConfig.item_mix.single_select ?? 0,
+                          cloze: fixedConfig.item_mix.cloze ?? 0,
+                          short_answer: fixedConfig.item_mix.short_answer ?? 0,
+                          numeric: fixedConfig.item_mix.numeric ?? 0,
+                          multi_step: fixedConfig.item_mix.multi_step ?? 0
+                        } : undefined
+                      } as TestStyleConfig['style_config_override'];
+                      
                       onChange({
                         test_style: value.test_style,
-                        style_config_override: fixedConfig
+                        style_config_override: configForOnChange
                       });
                     }}
                   >

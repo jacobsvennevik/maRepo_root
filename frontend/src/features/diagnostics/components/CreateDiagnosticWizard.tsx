@@ -134,7 +134,6 @@ export function CreateDiagnosticWizard({
               <div>
                 <Label id="label-delivery_mode" htmlFor="delivery_mode">Feedback Mode</Label>
                 <Select
-                  id="delivery_mode"
                   value={formData.delivery_mode}
                   onValueChange={(value: string) => 
                     setFormData(prev => ({ ...prev, delivery_mode: value as 'IMMEDIATE_FEEDBACK' | 'DEFERRED_FEEDBACK' }))
@@ -152,7 +151,6 @@ export function CreateDiagnosticWizard({
               <div>
                 <Label id="label-max_questions" htmlFor="max_questions">Questions</Label>
                 <Select
-                  id="max_questions"
                   value={formData.max_questions.toString()}
                   onValueChange={(value) => 
                     setFormData(prev => ({ ...prev, max_questions: parseInt(value) }))

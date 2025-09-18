@@ -13,6 +13,10 @@ export interface StylePreset {
   tags: string[];
 }
 
+export interface StylePresetRecommendation extends StylePreset {
+  score: number;
+}
+
 export interface PresetRegistry {
   [key: string]: StylePreset;
 }
@@ -298,7 +302,7 @@ export function getPresetRecommendations(context: {
   feedbackPreference?: string;
 }): StylePreset[] {
   const allPresets = getAllPresets();
-  const recommendations: StylePreset[] = [];
+  const recommendations: StylePresetRecommendation[] = [];
 
   Object.values(allPresets).forEach(preset => {
     let score = 0;
@@ -328,16 +332,16 @@ export function getPresetRecommendations(context: {
     }
 
     if (score > 0) {
-      recommendations.push({ ...preset, score });
+      recommendations.push({ ...preset, score } as StylePresetRecommendation);
     }
   });
 
   // Sort by score and return top recommendations
   return recommendations
-    .sort((a, b) => (b as any).score - (a as any).score)
+    .sort((a, b) => b.score - a.score)
     .slice(0, 3)
     .map(preset => {
-      const { score, ...presetWithoutScore } = preset as any;
+      const { score, ...presetWithoutScore } = preset;
       return presetWithoutScore;
     });
 }

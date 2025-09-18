@@ -36,7 +36,8 @@ export interface FileItem {
     | "csv"
     | "md"
     | "zip"
-    | "mp4";
+    | "mp4"
+    | "mp3";
   size: number;
   uploadedAt: string;
   status: "uploading" | "completed" | "error";

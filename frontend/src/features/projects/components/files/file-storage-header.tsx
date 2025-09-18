@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ViewMode, SortOption, FilterOption } from '../hooks/useFileStorage';
+import { ViewMode, SortOption, FilterOption } from '../../hooks/useFileStorage';
 
 interface FileStorageHeaderProps {
   viewMode: ViewMode;
