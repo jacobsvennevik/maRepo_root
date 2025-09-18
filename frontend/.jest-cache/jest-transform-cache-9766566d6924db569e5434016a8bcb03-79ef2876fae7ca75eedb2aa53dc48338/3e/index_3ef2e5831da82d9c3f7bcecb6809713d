@@ -1,0 +1,72 @@
+7e506e265a694399d7c8dd5c88c1a128
+/**
+ * Centralized test utilities - Main entry point
+ * 
+ * This module provides a comprehensive set of testing utilities including:
+ * - Test factories for creating consistent test data
+ * - Standardized mock patterns
+ * - Shared setup/teardown utilities
+ * - Custom render functions with providers
+ * - Performance testing utilities
+ */ // Export factories
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    createTestData: function() {
+        return createTestData;
+    },
+    setupMocks: function() {
+        return setupMocks;
+    },
+    setupTest: function() {
+        return setupTest;
+    },
+    standardMocks: function() {
+        return _mocks.standardMocks;
+    },
+    testFactories: function() {
+        return _factories.testFactories;
+    }
+});
+const _factories = _export_star(require("./factories"), exports);
+const _mocks = _export_star(require("./mocks"), exports);
+_export_star(require("./setup/shared-setup"), exports);
+_export_star(require("./render"), exports);
+_export_star(require("./test-helpers"), exports);
+_export_star(require("./upload-test-helpers"), exports);
+function _export_star(from, to) {
+    Object.keys(from).forEach(function(k) {
+        if (k !== "default" && !Object.prototype.hasOwnProperty.call(to, k)) {
+            Object.defineProperty(to, k, {
+                enumerable: true,
+                get: function() {
+                    return from[k];
+                }
+            });
+        }
+    });
+    return from;
+}
+const setupTest = (options = {})=>{
+    const { setupFullTestEnvironment } = require('./setup/shared-setup');
+    return setupFullTestEnvironment(options);
+};
+const setupMocks = ()=>{
+    const { standardMocks } = require('./mocks');
+    standardMocks.setupAll();
+    return standardMocks;
+};
+const createTestData = ()=>{
+    const { testFactories } = require('./factories');
+    return testFactories;
+};
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvdGVzdC11dGlscy9pbmRleC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIENlbnRyYWxpemVkIHRlc3QgdXRpbGl0aWVzIC0gTWFpbiBlbnRyeSBwb2ludFxuICogXG4gKiBUaGlzIG1vZHVsZSBwcm92aWRlcyBhIGNvbXByZWhlbnNpdmUgc2V0IG9mIHRlc3RpbmcgdXRpbGl0aWVzIGluY2x1ZGluZzpcbiAqIC0gVGVzdCBmYWN0b3JpZXMgZm9yIGNyZWF0aW5nIGNvbnNpc3RlbnQgdGVzdCBkYXRhXG4gKiAtIFN0YW5kYXJkaXplZCBtb2NrIHBhdHRlcm5zXG4gKiAtIFNoYXJlZCBzZXR1cC90ZWFyZG93biB1dGlsaXRpZXNcbiAqIC0gQ3VzdG9tIHJlbmRlciBmdW5jdGlvbnMgd2l0aCBwcm92aWRlcnNcbiAqIC0gUGVyZm9ybWFuY2UgdGVzdGluZyB1dGlsaXRpZXNcbiAqL1xuXG4vLyBFeHBvcnQgZmFjdG9yaWVzXG5leHBvcnQgKiBmcm9tICcuL2ZhY3Rvcmllcyc7XG5cbi8vIEV4cG9ydCBtb2Nrc1xuZXhwb3J0ICogZnJvbSAnLi9tb2Nrcyc7XG5cbi8vIEV4cG9ydCBzZXR1cCB1dGlsaXRpZXNcbmV4cG9ydCAqIGZyb20gJy4vc2V0dXAvc2hhcmVkLXNldHVwJztcblxuLy8gRXhwb3J0IHJlbmRlciB1dGlsaXRpZXNcbmV4cG9ydCAqIGZyb20gJy4vcmVuZGVyJztcblxuLy8gUmUtZXhwb3J0IGV4aXN0aW5nIHV0aWxpdGllcyBmb3IgYmFja3dhcmQgY29tcGF0aWJpbGl0eVxuZXhwb3J0ICogZnJvbSAnLi90ZXN0LWhlbHBlcnMnO1xuZXhwb3J0ICogZnJvbSAnLi91cGxvYWQtdGVzdC1oZWxwZXJzJztcblxuLy8gTWFpbiBmYWN0b3J5IGluc3RhbmNlcyBmb3IgY29udmVuaWVuY2VcbmV4cG9ydCB7IHRlc3RGYWN0b3JpZXMgfSBmcm9tICcuL2ZhY3Rvcmllcyc7XG5leHBvcnQgeyBzdGFuZGFyZE1vY2tzIH0gZnJvbSAnLi9tb2Nrcyc7XG5cbi8qKlxuICogUXVpY2sgc2V0dXAgZnVuY3Rpb24gZm9yIG1vc3QgY29tbW9uIHRlc3Qgc2NlbmFyaW9zXG4gKi9cbmV4cG9ydCBjb25zdCBzZXR1cFRlc3QgPSAob3B0aW9uczoge1xuICBpbmNsdWRlQVBJPzogYm9vbGVhbjtcbiAgaW5jbHVkZUZpbGVTeXN0ZW0/OiBib29sZWFuO1xuICBpbmNsdWRlTmF2aWdhdGlvbj86IGJvb2xlYW47XG4gIHRpbWVvdXQ/OiBudW1iZXI7XG59ID0ge30pID0+IHtcbiAgY29uc3QgeyBzZXR1cEZ1bGxUZXN0RW52aXJvbm1lbnQgfSA9IHJlcXVpcmUoJy4vc2V0dXAvc2hhcmVkLXNldHVwJyk7XG4gIHJldHVybiBzZXR1cEZ1bGxUZXN0RW52aXJvbm1lbnQob3B0aW9ucyk7XG59O1xuXG4vKipcbiAqIFF1aWNrIG1vY2sgc2V0dXAgZm9yIGNvbW1vbiBzY2VuYXJpb3NcbiAqL1xuZXhwb3J0IGNvbnN0IHNldHVwTW9ja3MgPSAoKSA9PiB7XG4gIGNvbnN0IHsgc3RhbmRhcmRNb2NrcyB9ID0gcmVxdWlyZSgnLi9tb2NrcycpO1xuICBzdGFuZGFyZE1vY2tzLnNldHVwQWxsKCk7XG4gIHJldHVybiBzdGFuZGFyZE1vY2tzO1xufTtcblxuLyoqXG4gKiBRdWljayBmYWN0b3J5IGFjY2Vzc1xuICovXG5leHBvcnQgY29uc3QgY3JlYXRlVGVzdERhdGEgPSAoKSA9PiB7XG4gIGNvbnN0IHsgdGVzdEZhY3RvcmllcyB9ID0gcmVxdWlyZSgnLi9mYWN0b3JpZXMnKTtcbiAgcmV0dXJuIHRlc3RGYWN0b3JpZXM7XG59O1xuIl0sIm5hbWVzIjpbImNyZWF0ZVRlc3REYXRhIiwic2V0dXBNb2NrcyIsInNldHVwVGVzdCIsInN0YW5kYXJkTW9ja3MiLCJ0ZXN0RmFjdG9yaWVzIiwib3B0aW9ucyIsInNldHVwRnVsbFRlc3RFbnZpcm9ubWVudCIsInJlcXVpcmUiLCJzZXR1cEFsbCJdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7Ozs7OztDQVNDLEdBRUQsbUJBQW1COzs7Ozs7Ozs7Ozs7SUE2Q05BLGNBQWM7ZUFBZEE7O0lBVEFDLFVBQVU7ZUFBVkE7O0lBYkFDLFNBQVM7ZUFBVEE7O0lBTEpDLGFBQWE7ZUFBYkEsb0JBQWE7O0lBRGJDLGFBQWE7ZUFBYkEsd0JBQWE7Ozt3Q0FoQlI7b0NBR0E7cUJBR0E7cUJBR0E7cUJBR0E7cUJBQ0E7Ozs7Ozs7Ozs7Ozs7O0FBU1AsTUFBTUYsWUFBWSxDQUFDRyxVQUt0QixDQUFDLENBQUM7SUFDSixNQUFNLEVBQUVDLHdCQUF3QixFQUFFLEdBQUdDLFFBQVE7SUFDN0MsT0FBT0QseUJBQXlCRDtBQUNsQztBQUtPLE1BQU1KLGFBQWE7SUFDeEIsTUFBTSxFQUFFRSxhQUFhLEVBQUUsR0FBR0ksUUFBUTtJQUNsQ0osY0FBY0ssUUFBUTtJQUN0QixPQUFPTDtBQUNUO0FBS08sTUFBTUgsaUJBQWlCO0lBQzVCLE1BQU0sRUFBRUksYUFBYSxFQUFFLEdBQUdHLFFBQVE7SUFDbEMsT0FBT0g7QUFDVCJ9
