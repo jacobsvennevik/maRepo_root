@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { AuthService } from "../services/auth";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { axiosApi } from "@/lib/axios-api";
+import { axiosApi } from '@/lib/axios';
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),

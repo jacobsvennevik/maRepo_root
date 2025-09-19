@@ -91,7 +91,7 @@ export function CreateDiagnosticWizard({
       setIsLoading(true);
       
       // Use axiosApi directly to align with unit tests
-      const { axiosApi } = await import('@/lib/axios-api');
+      const { axiosApi } = await import('@/lib/axios');
 
       const payload = {
         project: projectId,
@@ -104,7 +104,7 @@ export function CreateDiagnosticWizard({
         style_config_override: styleConfig.style_config_override
       };
 
-      const response = await axiosApi.post('/diagnostics/generate/', payload);
+      const response = await axiosGeneration.post('/diagnostics/generate/', payload);
       const newSession = response?.data ?? {};
       onCreated(newSession);
       onOpenChange(false);

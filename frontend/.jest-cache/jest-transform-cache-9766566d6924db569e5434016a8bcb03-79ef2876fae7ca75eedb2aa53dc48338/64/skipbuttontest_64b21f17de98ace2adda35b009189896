@@ -1,0 +1,59 @@
+883ca364ba3af512d90306b8ece27178
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_default(require("react"));
+const _react1 = require("@testing-library/react");
+const _skipbutton = require("../skip-button");
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+describe('SkipButton', ()=>{
+    const mockOnSkip = jest.fn();
+    beforeEach(()=>{
+        mockOnSkip.mockClear();
+    });
+    it('renders with default text', ()=>{
+        (0, _react1.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_skipbutton.SkipButton, {
+            onSkip: mockOnSkip
+        }));
+        expect(_react1.screen.getByText('Skip')).toBeInTheDocument();
+    });
+    it('renders with custom text', ()=>{
+        const customText = "Skip - I don't have materials";
+        (0, _react1.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_skipbutton.SkipButton, {
+            onSkip: mockOnSkip,
+            text: customText
+        }));
+        expect(_react1.screen.getByText(customText)).toBeInTheDocument();
+    });
+    it('calls onSkip when clicked', ()=>{
+        (0, _react1.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_skipbutton.SkipButton, {
+            onSkip: mockOnSkip
+        }));
+        _react1.fireEvent.click(_react1.screen.getByTestId('skip-button'));
+        expect(mockOnSkip).toHaveBeenCalledTimes(1);
+    });
+    it('is disabled when disabled prop is true', ()=>{
+        (0, _react1.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_skipbutton.SkipButton, {
+            onSkip: mockOnSkip,
+            disabled: true
+        }));
+        const button = _react1.screen.getByTestId('skip-button');
+        expect(button).toBeDisabled();
+    });
+    it('has red styling', ()=>{
+        (0, _react1.render)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_skipbutton.SkipButton, {
+            onSkip: mockOnSkip
+        }));
+        const button = _react1.screen.getByTestId('skip-button');
+        expect(button).toHaveClass('text-red-600');
+        expect(button).toHaveClass('border-red-200');
+    });
+});
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvcHJvamVjdHMvY29tcG9uZW50cy9zdGVwcy9zaGFyZWQvX190ZXN0c19fL3NraXAtYnV0dG9uLnRlc3QudHN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XG5pbXBvcnQgeyByZW5kZXIsIHNjcmVlbiwgZmlyZUV2ZW50IH0gZnJvbSAnQHRlc3RpbmctbGlicmFyeS9yZWFjdCc7XG5pbXBvcnQgeyBTa2lwQnV0dG9uIH0gZnJvbSAnLi4vc2tpcC1idXR0b24nO1xuXG5kZXNjcmliZSgnU2tpcEJ1dHRvbicsICgpID0+IHtcbiAgY29uc3QgbW9ja09uU2tpcCA9IGplc3QuZm4oKTtcblxuICBiZWZvcmVFYWNoKCgpID0+IHtcbiAgICBtb2NrT25Ta2lwLm1vY2tDbGVhcigpO1xuICB9KTtcblxuICBpdCgncmVuZGVycyB3aXRoIGRlZmF1bHQgdGV4dCcsICgpID0+IHtcbiAgICByZW5kZXIoPFNraXBCdXR0b24gb25Ta2lwPXttb2NrT25Ta2lwfSAvPik7XG4gICAgZXhwZWN0KHNjcmVlbi5nZXRCeVRleHQoJ1NraXAnKSkudG9CZUluVGhlRG9jdW1lbnQoKTtcbiAgfSk7XG5cbiAgaXQoJ3JlbmRlcnMgd2l0aCBjdXN0b20gdGV4dCcsICgpID0+IHtcbiAgICBjb25zdCBjdXN0b21UZXh0ID0gXCJTa2lwIC0gSSBkb24ndCBoYXZlIG1hdGVyaWFsc1wiO1xuICAgIHJlbmRlcig8U2tpcEJ1dHRvbiBvblNraXA9e21vY2tPblNraXB9IHRleHQ9e2N1c3RvbVRleHR9IC8+KTtcbiAgICBleHBlY3Qoc2NyZWVuLmdldEJ5VGV4dChjdXN0b21UZXh0KSkudG9CZUluVGhlRG9jdW1lbnQoKTtcbiAgfSk7XG5cbiAgaXQoJ2NhbGxzIG9uU2tpcCB3aGVuIGNsaWNrZWQnLCAoKSA9PiB7XG4gICAgcmVuZGVyKDxTa2lwQnV0dG9uIG9uU2tpcD17bW9ja09uU2tpcH0gLz4pO1xuICAgIGZpcmVFdmVudC5jbGljayhzY3JlZW4uZ2V0QnlUZXN0SWQoJ3NraXAtYnV0dG9uJykpO1xuICAgIGV4cGVjdChtb2NrT25Ta2lwKS50b0hhdmVCZWVuQ2FsbGVkVGltZXMoMSk7XG4gIH0pO1xuXG4gIGl0KCdpcyBkaXNhYmxlZCB3aGVuIGRpc2FibGVkIHByb3AgaXMgdHJ1ZScsICgpID0+IHtcbiAgICByZW5kZXIoPFNraXBCdXR0b24gb25Ta2lwPXttb2NrT25Ta2lwfSBkaXNhYmxlZD17dHJ1ZX0gLz4pO1xuICAgIGNvbnN0IGJ1dHRvbiA9IHNjcmVlbi5nZXRCeVRlc3RJZCgnc2tpcC1idXR0b24nKTtcbiAgICBleHBlY3QoYnV0dG9uKS50b0JlRGlzYWJsZWQoKTtcbiAgfSk7XG5cbiAgaXQoJ2hhcyByZWQgc3R5bGluZycsICgpID0+IHtcbiAgICByZW5kZXIoPFNraXBCdXR0b24gb25Ta2lwPXttb2NrT25Ta2lwfSAvPik7XG4gICAgY29uc3QgYnV0dG9uID0gc2NyZWVuLmdldEJ5VGVzdElkKCdza2lwLWJ1dHRvbicpO1xuICAgIGV4cGVjdChidXR0b24pLnRvSGF2ZUNsYXNzKCd0ZXh0LXJlZC02MDAnKTtcbiAgICBleHBlY3QoYnV0dG9uKS50b0hhdmVDbGFzcygnYm9yZGVyLXJlZC0yMDAnKTtcbiAgfSk7XG59KTsgIl0sIm5hbWVzIjpbImRlc2NyaWJlIiwibW9ja09uU2tpcCIsImplc3QiLCJmbiIsImJlZm9yZUVhY2giLCJtb2NrQ2xlYXIiLCJpdCIsInJlbmRlciIsIlNraXBCdXR0b24iLCJvblNraXAiLCJleHBlY3QiLCJzY3JlZW4iLCJnZXRCeVRleHQiLCJ0b0JlSW5UaGVEb2N1bWVudCIsImN1c3RvbVRleHQiLCJ0ZXh0IiwiZmlyZUV2ZW50IiwiY2xpY2siLCJnZXRCeVRlc3RJZCIsInRvSGF2ZUJlZW5DYWxsZWRUaW1lcyIsImRpc2FibGVkIiwiYnV0dG9uIiwidG9CZURpc2FibGVkIiwidG9IYXZlQ2xhc3MiXSwibWFwcGluZ3MiOiI7Ozs7OzhEQUFrQjt3QkFDd0I7NEJBQ2Y7Ozs7OztBQUUzQkEsU0FBUyxjQUFjO0lBQ3JCLE1BQU1DLGFBQWFDLEtBQUtDLEVBQUU7SUFFMUJDLFdBQVc7UUFDVEgsV0FBV0ksU0FBUztJQUN0QjtJQUVBQyxHQUFHLDZCQUE2QjtRQUM5QkMsSUFBQUEsY0FBTSxnQkFBQyxxQkFBQ0Msc0JBQVU7WUFBQ0MsUUFBUVI7O1FBQzNCUyxPQUFPQyxjQUFNLENBQUNDLFNBQVMsQ0FBQyxTQUFTQyxpQkFBaUI7SUFDcEQ7SUFFQVAsR0FBRyw0QkFBNEI7UUFDN0IsTUFBTVEsYUFBYTtRQUNuQlAsSUFBQUEsY0FBTSxnQkFBQyxxQkFBQ0Msc0JBQVU7WUFBQ0MsUUFBUVI7WUFBWWMsTUFBTUQ7O1FBQzdDSixPQUFPQyxjQUFNLENBQUNDLFNBQVMsQ0FBQ0UsYUFBYUQsaUJBQWlCO0lBQ3hEO0lBRUFQLEdBQUcsNkJBQTZCO1FBQzlCQyxJQUFBQSxjQUFNLGdCQUFDLHFCQUFDQyxzQkFBVTtZQUFDQyxRQUFRUjs7UUFDM0JlLGlCQUFTLENBQUNDLEtBQUssQ0FBQ04sY0FBTSxDQUFDTyxXQUFXLENBQUM7UUFDbkNSLE9BQU9ULFlBQVlrQixxQkFBcUIsQ0FBQztJQUMzQztJQUVBYixHQUFHLDBDQUEwQztRQUMzQ0MsSUFBQUEsY0FBTSxnQkFBQyxxQkFBQ0Msc0JBQVU7WUFBQ0MsUUFBUVI7WUFBWW1CLFVBQVU7O1FBQ2pELE1BQU1DLFNBQVNWLGNBQU0sQ0FBQ08sV0FBVyxDQUFDO1FBQ2xDUixPQUFPVyxRQUFRQyxZQUFZO0lBQzdCO0lBRUFoQixHQUFHLG1CQUFtQjtRQUNwQkMsSUFBQUEsY0FBTSxnQkFBQyxxQkFBQ0Msc0JBQVU7WUFBQ0MsUUFBUVI7O1FBQzNCLE1BQU1vQixTQUFTVixjQUFNLENBQUNPLFdBQVcsQ0FBQztRQUNsQ1IsT0FBT1csUUFBUUUsV0FBVyxDQUFDO1FBQzNCYixPQUFPVyxRQUFRRSxXQUFXLENBQUM7SUFDN0I7QUFDRiJ9

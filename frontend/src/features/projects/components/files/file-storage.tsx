@@ -64,7 +64,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { axiosApi } from "@/lib/axios-api";
+import { axiosApi } from '@/lib/axios';
 
 // Import sub-components
 import { FileStorageLoading } from './file-storage-loading';

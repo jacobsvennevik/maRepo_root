@@ -139,7 +139,7 @@ export function useQuizCenter({
     if (autoLoad && projectId) {
       loadSessions();
     }
-  }, [projectId, autoLoad]);
+  }, [projectId, autoLoad, loadSessions]);
 
   // Set up refresh interval
   useEffect(() => {

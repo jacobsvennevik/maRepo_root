@@ -14,6 +14,7 @@ import { FlashcardDeckSchema, type FlashcardDeckForm } from './schemas/flashcard
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { axiosGeneration, axiosApi } from '@/lib/axios';
+import { getProjectScoped, postProjectScoped } from '@/lib/projectApi';
 // Test mode detection - check dynamically to respond to environment variable changes during tests
 const isTestMode = (): boolean => {
   // Check if running in test environment
@@ -195,39 +196,35 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
       }
       
       // Try to load real project files from API
-      const apiUrl = `/projects/${projectId}/`;
-      console.log('🔍 DEBUG: Fetching from URL:', apiUrl);
-      
-      const response = await axiosApi.get(apiUrl, {
-        headers: {
-          'X-Test-Mode': testMode ? 'true' : 'false',
-        }
-      });
+      const project = await getProjectScoped('', projectId);
 
-      console.log('🔍 DEBUG: Response status:', response.status);
-      console.log('🔍 DEBUG: Response data:', response.data);
+      console.log('🔍 DEBUG: Project data:', project);
       
-      const project = response.data;
-      console.log('🔍 DEBUG: Project data received:', project);
-      
-      // Extract uploaded files from project response
-      const files = project.uploaded_files || [];
-      console.log('🔍 DEBUG: Extracted files array:', files);
-      
-      // Transform the response to match our ProjectFile interface
-      const projectFiles: ProjectFile[] = files.map((file: any) => {
-        const transformedFile = {
-          id: file.id,
-          name: file.original_name || file.file?.split('/').pop() || 'Unknown file',
-          file_type: file.content_type?.split('/')[1] || file.file?.split('.').pop()?.toLowerCase() || 'unknown',
-          uploaded_at: file.uploaded_at,
-          file_size: file.file_size || file.file?.size || 0
-        };
-        return transformedFile;
-      });
-      
-      console.log('🔍 DEBUG: Final projectFiles array:', projectFiles);
-      setProjectFiles(projectFiles);
+      if (project && project.files) {
+        console.log('🔍 DEBUG: Project data received:', project);
+        
+        // Extract uploaded files from project response
+        const files = project.uploaded_files || [];
+        console.log('🔍 DEBUG: Extracted files array:', files);
+        
+        // Transform the response to match our ProjectFile interface
+        const projectFiles: ProjectFile[] = files.map((file: any) => {
+          const transformedFile = {
+            id: file.id,
+            name: file.original_name || file.file?.split('/').pop() || 'Unknown file',
+            file_type: file.content_type?.split('/')[1] || file.file?.split('.').pop()?.toLowerCase() || 'unknown',
+            uploaded_at: file.uploaded_at,
+            file_size: file.file_size || file.file?.size || 0
+          };
+          return transformedFile;
+        });
+        
+        console.log('🔍 DEBUG: Final projectFiles array:', projectFiles);
+        setProjectFiles(projectFiles);
+      } else {
+        console.log('🔍 DEBUG: No project files found, setting empty array');
+        setProjectFiles([]);
+      }
       
     } catch (error) {
       console.error('🔍 DEBUG: Error fetching project files:', error);
@@ -486,7 +483,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
         try {
           if (desiredTitle || desiredDescription) {
             // Generated sets are managed via the generation service
-            await axiosApi.patch(`projects/${projectId}/flashcard-sets/${generatedDeck.flashcardSetId}/`, {
+            await axiosGeneration.patch(`flashcard-sets/${generatedDeck.flashcardSetId}/`, {
               ...(desiredTitle ? { title: desiredTitle } : {}),
               ...(desiredDescription ? { description: desiredDescription } : {}),
             });
@@ -506,7 +503,7 @@ export function CreateFlashcardSetWizard({ projectId, open, onOpenChange, onCrea
       // Fallback: Create the flashcard set if it wasn't created during generation
       console.log('🔍 DEBUG: Creating new flashcard set from generated cards');
       
-      const response = await axiosApi.post(`projects/${projectId}/flashcard-sets/`, {
+      const response = await postProjectScoped(`flashcard-sets/`, projectId, {
         title: form.getValues('title') || deriveTitleFromSource(),
         description: form.getValues('description') || `Generated from ${method === 'files' ? 'uploaded files' : 'manual entry'}`,
         difficulty_level: 'INTERMEDIATE',

@@ -7,7 +7,10 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { axiosApi } from '@/lib/axios-api';
+import axiosInstance, { axiosApi } from '@/lib/axios';
+import { normalizeProjectId } from '@/lib/projectId';
+import { getProjectScoped } from '@/lib/projectApi';
+import { isTestMode } from '@/features/projects/services/upload-utils';
 
 // ============================================================================
 // Types and Interfaces
@@ -83,21 +86,18 @@ const DEFAULT_SELECTED_SOURCES: SelectedSources = {
   studyMaterials: { ids: [], groundOnly: false },
 };
 
+const DEFAULT_SUPPORTED_TYPES: Array<'flashcards' | 'files' | 'studyMaterials'> = ['flashcards', 'files', 'studyMaterials']
+
 // ============================================================================
 // Hook Implementation
 // ============================================================================
 
 export const useMultiSourceManagement = ({
   projectId,
-  supportedTypes = ['flashcards', 'files', 'studyMaterials'],
+  supportedTypes = DEFAULT_SUPPORTED_TYPES,
   onSourcesChange,
   autoLoad = true,
 }: UseMultiSourceManagementOptions): UseMultiSourceManagementReturn => {
-  
-  // ============================================================================
-  // State Management
-  // ============================================================================
-  
   const [flashcards, setFlashcards] = useState<SourceItem[]>([]);
   const [files, setFiles] = useState<SourceItem[]>([]);
   const [studyMaterials, setStudyMaterials] = useState<SourceItem[]>([]);
@@ -106,21 +106,19 @@ export const useMultiSourceManagement = ({
   const [isLoadingFlashcards, setIsLoadingFlashcards] = useState(false);
   const [isLoadingFiles, setIsLoadingFiles] = useState(false);
   const [isLoadingStudyMaterials, setIsLoadingStudyMaterials] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const [selectedSources, setSelectedSourcesState] = useState<SelectedSources>(DEFAULT_SELECTED_SOURCES);
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // ============================================================================
-  // API Functions
-  // ============================================================================
-  
+
   const loadFlashcards = useCallback(async () => {
     if (!supportedTypes.includes('flashcards')) return;
-    
+    if (isLoadingFlashcards) return;
     setIsLoadingFlashcards(true);
     try {
-      const response = await axiosApi.get(`projects/${projectId}/flashcard-decks/`);
-      const flashcardData = response.data.map((deck: any) => ({
+      const response: any = await getProjectScoped(`flashcard-sets/`, projectId);
+      const raw = response?.data ?? response ?? []
+      const flashcardData = (Array.isArray(raw) ? raw : raw?.results || []).map((deck: any) => ({
         id: deck.id,
         title: deck.title,
         description: deck.description,
@@ -130,137 +128,139 @@ export const useMultiSourceManagement = ({
         type: 'flashcard' as const,
       }));
       setFlashcards(flashcardData);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load flashcards:', error);
-      setFlashcards([]);
+      if (isTestMode() && (error?.code === 'ERR_NETWORK' || !error?.response)) {
+        setFlashcards([]);
+      } else {
+        setFlashcards([]);
+      }
     } finally {
       setIsLoadingFlashcards(false);
     }
-  }, [projectId, supportedTypes]);
+  }, [projectId, supportedTypes, isLoadingFlashcards]);
   
   const loadFiles = useCallback(async () => {
     if (!supportedTypes.includes('files')) return;
-    
+    if (isLoadingFiles) return;
     setIsLoadingFiles(true);
     try {
-      const response = await axiosApi.get(`projects/${projectId}/files/`);
-      const fileData = response.data.map((file: any) => ({
+      // Project detail includes uploaded_files
+      const res = await (axiosApi as any).get(`projects/${projectId}/`);
+      const project = res?.data || {};
+      const uploaded = Array.isArray(project.uploaded_files) ? project.uploaded_files : [];
+      const fileData = uploaded.map((file: any) => ({
         id: file.id,
-        name: file.name,
-        description: file.description,
+        name: file.original_name || (file.file ? String(file.file).split('/').pop() : ''),
+        description: '',
         size: file.file_size,
-        file_type: file.file_type,
-        created_at: file.created_at || file.uploaded_at,
+        file_type: file.content_type,
+        created_at: file.uploaded_at,
         type: 'file' as const,
       }));
       setFiles(fileData);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load files:', error);
-      setFiles([]);
+      if (isTestMode() && (error?.code === 'ERR_NETWORK' || !error?.response)) {
+        setFiles([]);
+      } else {
+        setFiles([]);
+      }
     } finally {
       setIsLoadingFiles(false);
     }
-  }, [projectId, supportedTypes]);
+  }, [projectId, supportedTypes, isLoadingFiles]);
   
   const loadStudyMaterials = useCallback(async () => {
     if (!supportedTypes.includes('studyMaterials')) return;
-    
+    if (isLoadingStudyMaterials) return;
     setIsLoadingStudyMaterials(true);
     try {
-      const response = await axiosApi.get(`projects/${projectId}/study-materials/`);
-      const materialData = response.data.map((material: any) => ({
+      // Study materials live under non-API prefix
+      const pid = normalizeProjectId(projectId);
+      const res = await (axiosInstance as any).get(`/study_materials/study_materials/`, {
+        params: { project: pid }
+      });
+      const raw = res?.data ?? [];
+      const list = Array.isArray(raw) ? raw : raw?.results || [];
+      // Filter by project if backend ignores query param
+      const filtered = list.filter((m: any) => !m.project || String(m.project) === String(pid));
+      const materialData = filtered.map((material: any) => ({
         id: material.id,
         title: material.title,
-        name: material.name,
+        name: material.title,
         description: material.description,
         created_at: material.created_at,
         updated_at: material.updated_at,
         type: 'study_material' as const,
       }));
       setStudyMaterials(materialData);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load study materials:', error);
-      setStudyMaterials([]);
+      if (isTestMode() && (error?.code === 'ERR_NETWORK' || !error?.response)) {
+        setStudyMaterials([]);
+      } else {
+        setStudyMaterials([]);
+      }
     } finally {
       setIsLoadingStudyMaterials(false);
     }
-  }, [projectId, supportedTypes]);
-  
-  // ============================================================================
-  // File Upload Handling
-  // ============================================================================
-  
+  }, [projectId, supportedTypes, isLoadingStudyMaterials]);
+
   const handleFileUpload = useCallback(async (files: File[]) => {
     setUploadedFiles(prev => [...prev, ...files]);
-    
     try {
       for (const file of files) {
         const formData = new FormData();
         formData.append('file', file);
-        
-        const response = await axiosApi.post(`projects/${projectId}/upload_file/`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          }
+        const response = await (axiosApi as any).post(`projects/${projectId}/upload_file/`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
-        
         if (response.status === 200 || response.status === 201) {
           console.log('✅ File uploaded successfully:', file.name);
         }
       }
-      
-      // Refresh files after upload
-      setTimeout(() => {
-        loadFiles();
-      }, 1000);
-      
+      setTimeout(() => { loadFiles(); }, 1000);
     } catch (error) {
       console.error('❌ File upload failed:', error);
     }
   }, [projectId, loadFiles]);
-  
+
   const removeUploadedFile = useCallback((index: number) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   }, []);
-  
-  // ============================================================================
-  // Selection Management
-  // ============================================================================
-  
+
   const setSelectedSources = useCallback((sources: SelectedSources) => {
     setSelectedSourcesState(sources);
     onSourcesChange?.(sources);
   }, [onSourcesChange]);
-  
+
   const clearSelection = useCallback(() => {
     setSelectedSources(DEFAULT_SELECTED_SOURCES);
     setUploadedFiles([]);
     setSearchTerm('');
   }, [setSelectedSources]);
-  
-  // ============================================================================
-  // Data Loading
-  // ============================================================================
-  
+
   const refreshSources = useCallback(async () => {
-    await Promise.all([
-      loadFlashcards(),
-      loadFiles(),
-      loadStudyMaterials(),
-    ]);
-  }, [loadFlashcards, loadFiles, loadStudyMaterials]);
-  
-  // Auto-load on mount
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      await Promise.all([
+        loadFlashcards(),
+        loadFiles(),
+        loadStudyMaterials(),
+      ]);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [isRefreshing, loadFlashcards, loadFiles, loadStudyMaterials]);
+
   useEffect(() => {
     if (autoLoad && projectId) {
       refreshSources();
     }
   }, [autoLoad, projectId, refreshSources]);
-  
-  // ============================================================================
-  // Computed Values
-  // ============================================================================
-  
+
   const totalSelectedCount = 
     selectedSources.flashcards.ids.length +
     selectedSources.files.ids.length +
@@ -268,38 +268,24 @@ export const useMultiSourceManagement = ({
     uploadedFiles.length;
   
   const hasMinimumSelection = totalSelectedCount >= 1;
-  
   const isAnyLoading = isLoadingFlashcards || isLoadingFiles || isLoadingStudyMaterials;
   
-  // ============================================================================
-  // Return Interface
-  // ============================================================================
-  
   return {
-    // Source data
     flashcards,
     files,
     studyMaterials,
     uploadedFiles,
-    
-    // Loading states
     isLoadingFlashcards,
     isLoadingFiles,
     isLoadingStudyMaterials,
-    
-    // Selection state
     selectedSources,
     searchTerm,
-    
-    // Actions
     setSelectedSources,
     setSearchTerm,
     handleFileUpload,
     removeUploadedFile,
     refreshSources,
     clearSelection,
-    
-    // Computed values
     totalSelectedCount,
     hasMinimumSelection,
     isAnyLoading,

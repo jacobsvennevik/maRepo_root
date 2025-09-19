@@ -70,8 +70,13 @@ class DiagnosticGenerator:
                 mock_mode=mock_mode
             )
             
-            # Parse and validate AI response
-            data = json.loads(raw_response)
+            # Parse and validate AI response (accept str or dict)
+            if isinstance(raw_response, (dict, list)):
+                data = raw_response
+            elif isinstance(raw_response, (bytes, bytearray)):
+                data = json.loads(raw_response.decode('utf-8', errors='ignore'))
+            else:
+                data = json.loads(raw_response)
             validated_data = self._validate_and_normalize_quiz(data, max_questions, quiz_type)
             
             # Create diagnostic session
@@ -132,8 +137,13 @@ class DiagnosticGenerator:
                 mock_mode=mock_mode
             )
             
-            # Parse and validate AI response
-            data = json.loads(raw_response)
+            # Parse and validate AI response (accept str or dict)
+            if isinstance(raw_response, (dict, list)):
+                data = raw_response
+            elif isinstance(raw_response, (bytes, bytearray)):
+                data = json.loads(raw_response.decode('utf-8', errors='ignore'))
+            else:
+                data = json.loads(raw_response)
             validated_data = self._validate_and_normalize(data, max_questions)
             
             # Create diagnostic session

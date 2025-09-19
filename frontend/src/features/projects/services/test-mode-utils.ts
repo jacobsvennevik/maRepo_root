@@ -1,5 +1,5 @@
 // Test mode utilities for realistic backend processing
-import { axiosApi } from '@/lib/axios-api';
+import { axiosApi } from '@/lib/axios';
 
 export interface TestFile {
   name: string;

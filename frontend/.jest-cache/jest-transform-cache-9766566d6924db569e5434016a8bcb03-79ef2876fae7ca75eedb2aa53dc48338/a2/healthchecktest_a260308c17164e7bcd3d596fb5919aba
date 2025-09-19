@@ -1,0 +1,39 @@
+1698c7a07525b48b23676b76d3111fb8
+/**
+ * Health Check Tests - Run these FIRST to ensure backend is available
+ * These would have caught the "backend not running" issue immediately
+ */ "use strict";
+describe('Application Health Checks', ()=>{
+    it('backend should be running and accessible', async ()=>{
+        const response = await fetch('http://localhost:8000/api/');
+        expect([
+            200,
+            401
+        ]).toContain(response.status); // 200 = working, 401 = auth required
+    }, 10000);
+    it('generation API should be available', async ()=>{
+        const response = await fetch('http://localhost:8000/generation/api/');
+        expect([
+            200,
+            401
+        ]).toContain(response.status); // Should get success or auth error, not connection error  
+    }, 10000);
+    it('all required services should be running', async ()=>{
+        // This test would fail immediately if backend is down
+        const checks = await Promise.allSettled([
+            fetch('http://localhost:8000/api/'),
+            fetch('http://localhost:8000/generation/api/'),
+            fetch('http://localhost:3000/_next/static/')
+        ]);
+        const failures = checks.filter((result)=>result.status === 'rejected');
+        if (failures.length > 0) {
+            console.error('❌ Service health check failures:');
+            failures.forEach((failure, i)=>{
+                console.error(`Service ${i}: ${failure.reason}`);
+            });
+        }
+        expect(failures).toHaveLength(0);
+    });
+});
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvdGVzdC11dGlscy9oZWFsdGgtY2hlY2sudGVzdC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEhlYWx0aCBDaGVjayBUZXN0cyAtIFJ1biB0aGVzZSBGSVJTVCB0byBlbnN1cmUgYmFja2VuZCBpcyBhdmFpbGFibGVcbiAqIFRoZXNlIHdvdWxkIGhhdmUgY2F1Z2h0IHRoZSBcImJhY2tlbmQgbm90IHJ1bm5pbmdcIiBpc3N1ZSBpbW1lZGlhdGVseVxuICovXG5cbmRlc2NyaWJlKCdBcHBsaWNhdGlvbiBIZWFsdGggQ2hlY2tzJywgKCkgPT4ge1xuICBpdCgnYmFja2VuZCBzaG91bGQgYmUgcnVubmluZyBhbmQgYWNjZXNzaWJsZScsIGFzeW5jICgpID0+IHtcbiAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IGZldGNoKCdodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpLycpO1xuICAgIGV4cGVjdChbMjAwLCA0MDFdKS50b0NvbnRhaW4ocmVzcG9uc2Uuc3RhdHVzKTsgLy8gMjAwID0gd29ya2luZywgNDAxID0gYXV0aCByZXF1aXJlZFxuICB9LCAxMDAwMCk7XG5cbiAgaXQoJ2dlbmVyYXRpb24gQVBJIHNob3VsZCBiZSBhdmFpbGFibGUnLCBhc3luYyAoKSA9PiB7XG4gICAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBmZXRjaCgnaHR0cDovL2xvY2FsaG9zdDo4MDAwL2dlbmVyYXRpb24vYXBpLycpO1xuICAgIGV4cGVjdChbMjAwLCA0MDFdKS50b0NvbnRhaW4ocmVzcG9uc2Uuc3RhdHVzKTsgLy8gU2hvdWxkIGdldCBzdWNjZXNzIG9yIGF1dGggZXJyb3IsIG5vdCBjb25uZWN0aW9uIGVycm9yICBcbiAgfSwgMTAwMDApO1xuXG4gIGl0KCdhbGwgcmVxdWlyZWQgc2VydmljZXMgc2hvdWxkIGJlIHJ1bm5pbmcnLCBhc3luYyAoKSA9PiB7XG4gICAgLy8gVGhpcyB0ZXN0IHdvdWxkIGZhaWwgaW1tZWRpYXRlbHkgaWYgYmFja2VuZCBpcyBkb3duXG4gICAgY29uc3QgY2hlY2tzID0gYXdhaXQgUHJvbWlzZS5hbGxTZXR0bGVkKFtcbiAgICAgIGZldGNoKCdodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpLycpLFxuICAgICAgZmV0Y2goJ2h0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9nZW5lcmF0aW9uL2FwaS8nKSxcbiAgICAgIGZldGNoKCdodHRwOi8vbG9jYWxob3N0OjMwMDAvX25leHQvc3RhdGljLycpXG4gICAgXSk7XG5cbiAgICBjb25zdCBmYWlsdXJlcyA9IGNoZWNrcy5maWx0ZXIocmVzdWx0ID0+IHJlc3VsdC5zdGF0dXMgPT09ICdyZWplY3RlZCcpO1xuICAgIGlmIChmYWlsdXJlcy5sZW5ndGggPiAwKSB7XG4gICAgICBjb25zb2xlLmVycm9yKCfinYwgU2VydmljZSBoZWFsdGggY2hlY2sgZmFpbHVyZXM6Jyk7XG4gICAgICBmYWlsdXJlcy5mb3JFYWNoKChmYWlsdXJlLCBpKSA9PiB7XG4gICAgICAgIGNvbnNvbGUuZXJyb3IoYFNlcnZpY2UgJHtpfTogJHsoZmFpbHVyZSBhcyBhbnkpLnJlYXNvbn1gKTtcbiAgICAgIH0pO1xuICAgIH1cblxuICAgIGV4cGVjdChmYWlsdXJlcykudG9IYXZlTGVuZ3RoKDApO1xuICB9KTtcbn0pO1xuIl0sIm5hbWVzIjpbImRlc2NyaWJlIiwiaXQiLCJyZXNwb25zZSIsImZldGNoIiwiZXhwZWN0IiwidG9Db250YWluIiwic3RhdHVzIiwiY2hlY2tzIiwiUHJvbWlzZSIsImFsbFNldHRsZWQiLCJmYWlsdXJlcyIsImZpbHRlciIsInJlc3VsdCIsImxlbmd0aCIsImNvbnNvbGUiLCJlcnJvciIsImZvckVhY2giLCJmYWlsdXJlIiwiaSIsInJlYXNvbiIsInRvSGF2ZUxlbmd0aCJdLCJtYXBwaW5ncyI6IkFBQUE7OztDQUdDO0FBRURBLFNBQVMsNkJBQTZCO0lBQ3BDQyxHQUFHLDRDQUE0QztRQUM3QyxNQUFNQyxXQUFXLE1BQU1DLE1BQU07UUFDN0JDLE9BQU87WUFBQztZQUFLO1NBQUksRUFBRUMsU0FBUyxDQUFDSCxTQUFTSSxNQUFNLEdBQUcscUNBQXFDO0lBQ3RGLEdBQUc7SUFFSEwsR0FBRyxzQ0FBc0M7UUFDdkMsTUFBTUMsV0FBVyxNQUFNQyxNQUFNO1FBQzdCQyxPQUFPO1lBQUM7WUFBSztTQUFJLEVBQUVDLFNBQVMsQ0FBQ0gsU0FBU0ksTUFBTSxHQUFHLDJEQUEyRDtJQUM1RyxHQUFHO0lBRUhMLEdBQUcsMkNBQTJDO1FBQzVDLHNEQUFzRDtRQUN0RCxNQUFNTSxTQUFTLE1BQU1DLFFBQVFDLFVBQVUsQ0FBQztZQUN0Q04sTUFBTTtZQUNOQSxNQUFNO1lBQ05BLE1BQU07U0FDUDtRQUVELE1BQU1PLFdBQVdILE9BQU9JLE1BQU0sQ0FBQ0MsQ0FBQUEsU0FBVUEsT0FBT04sTUFBTSxLQUFLO1FBQzNELElBQUlJLFNBQVNHLE1BQU0sR0FBRyxHQUFHO1lBQ3ZCQyxRQUFRQyxLQUFLLENBQUM7WUFDZEwsU0FBU00sT0FBTyxDQUFDLENBQUNDLFNBQVNDO2dCQUN6QkosUUFBUUMsS0FBSyxDQUFDLENBQUMsUUFBUSxFQUFFRyxFQUFFLEVBQUUsRUFBRSxBQUFDRCxRQUFnQkUsTUFBTSxFQUFFO1lBQzFEO1FBQ0Y7UUFFQWYsT0FBT00sVUFBVVUsWUFBWSxDQUFDO0lBQ2hDO0FBQ0YifQ==

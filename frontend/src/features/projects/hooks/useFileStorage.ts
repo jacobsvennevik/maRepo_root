@@ -3,7 +3,7 @@
 // Custom hook for file storage state management
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
-import { axiosApi } from '@/lib/axios-api';
+import { axiosApi } from '@/lib/axios';
 import { FileItem, StorageStats, formatDate, generateFileColors } from '@/lib/file-utils';
 
 export type ViewMode = 'list' | 'grid';

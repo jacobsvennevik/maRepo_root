@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { urlMatchers } from '../../../tests/matchers/urlMatchers';
 
 // Setup MSW server (optional)
 let server: any = null;
@@ -12,6 +13,9 @@ try {
 
 // Global test setup
 beforeAll(() => {
+  // Register custom Jest matchers
+  expect.extend(urlMatchers);
+  
   // Start MSW server if available
   if (server) {
     server.listen({ onUnhandledRequest: 'error' });

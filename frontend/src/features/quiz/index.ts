@@ -16,6 +16,7 @@ export * from './hooks';
 
 // Legacy exports for backward compatibility
 import { axiosGeneration } from "@/lib/axios";
+import { normalizeProjectId } from "@/lib/projectId";
 import { isTestMode } from "@/features/projects/services/upload-utils";
 
 // Types aligned with backend diagnostic endpoints
@@ -48,17 +49,15 @@ export interface StartSessionResponse {
 // Legacy API functions (deprecated - use quizApi instead)
 export const quizApi = {
   async listSessions(params: { project: string }) {
-    const res = await axiosGeneration.get(`diagnostic-sessions/`, {
-      params,
-    });
-    return res.data as DiagnosticSession[];
+    const pid = normalizeProjectId(params.project);
+    const res = await axiosGeneration.get(`diagnostic-sessions/`, { params: { project: pid } });
+    return Array.isArray(res.data) ? res.data : (res.data?.results || []);
   },
 
   async listToday(params: { project: string }) {
-    const res = await axiosGeneration.get(`diagnostic-sessions/today/`, {
-      params,
-    });
-    return res.data as DiagnosticSession[];
+    const pid = normalizeProjectId(params.project);
+    const res = await axiosGeneration.get(`diagnostic-sessions/today/`, { params: { project: pid } });
+    return Array.isArray(res.data) ? res.data : (res.data?.results || []);
   },
 
   async generate(req: GenerateDiagnosticRequest) {
@@ -70,7 +69,30 @@ export const quizApi = {
       console.log('🧪 Test mode: Adding X-Test-Mode header for backend AI mocking');
     }
 
-    const res = await axiosGeneration.post(`diagnostics/generate/`, req, {
+    const difficultyMap: any = { BEGINNER: 1, INTERMEDIATE: 3, ADVANCED: 4, EXPERT: 5 }
+    const deliveryMap: any = { IMMEDIATE: 'IMMEDIATE', DEFERRED: 'DEFERRED_FEEDBACK' }
+    const pid = normalizeProjectId(req.project)
+    const max = Math.max(1, req.max_questions || 3)
+    let question_mix = req.question_mix as any
+    if (!question_mix) {
+      const base = Math.floor(max / 3)
+      const remainder = max % 3
+      question_mix = { MCQ: base, SHORT_ANSWER: base, PRINCIPLE: base }
+      if (remainder >= 1) question_mix.MCQ += 1
+      if (remainder === 2) question_mix.SHORT_ANSWER += 1
+    }
+
+    const payload = {
+      project: pid,
+      topic: req.topic,
+      source_ids: req.source_ids,
+      question_mix,
+      difficulty: difficultyMap[req.difficulty] ?? 2,
+      delivery_mode: deliveryMap[req.delivery_mode] ?? 'DEFERRED_FEEDBACK',
+      max_questions: max,
+    }
+
+    const res = await axiosGeneration.post(`diagnostics/generate/`, payload, {
       headers
     });
     return res.data as DiagnosticSession;

@@ -8,6 +8,7 @@ import {
   type FlashcardSetApi 
 } from "../utils/data-transformation";
 import { isTestMode } from "@/features/projects/services/upload-utils";
+import { postProjectScoped, getProjectScoped } from "@/lib/projectApi";
 
 export interface FlashcardSet extends FlashcardSetApi {}
 
@@ -49,20 +50,14 @@ export function useProjectFlashcards(projectId: string) {
   };
 
   useEffect(() => {
-    // Removed AbortController signal to avoid XHR network errors on some browsers during fast route changes
-    
     const fetchFlashcards = async () => {
       try {
         setIsLoading(true);
         setError(null);
         await refreshData();
       } catch (err: any) {
-        // Don't set error if request was aborted or canceled
         if (err.name === 'AbortError' || axios.isCancel?.(err) || err?.name === "CanceledError" || err?.code === "ERR_CANCELED") return;
-        
         console.error("Failed to fetch project flashcards:", err);
-        
-        // Check if it's a network/connection error
         if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error') || !err.response) {
           setError("Cannot connect to server. Please check your connection.");
         } else {
@@ -77,18 +72,14 @@ export function useProjectFlashcards(projectId: string) {
       fetchFlashcards();
     }
 
-    // No cleanup needed for simple GET without an abort signal
     return () => {};
   }, [projectId]);
 
   const createFlashcardSet = async (title: string) => {
     try {
-      const response = await axiosGeneration.post(
-        `/projects/${projectId}/flashcard-sets/`,
-        { title },
-      );
+      const data = await postProjectScoped<FlashcardSet>(`flashcard-sets/`, projectId, { title });
       await refreshData();
-      return response.data;
+      return data;
     } catch (err: any) {
       console.error("Failed to create flashcard set:", err);
       throw new Error(err.response?.data?.error || "Failed to create flashcard set");
@@ -102,23 +93,15 @@ export function useProjectFlashcards(projectId: string) {
   ) => {
     try {
       const headers: any = {};
-      
-      // Add test mode header if in development mode (backend will handle mocking)
-      if (isTestMode()) {
-        headers['X-Test-Mode'] = 'true';
-      }
-
-      const response = await axiosGeneration.post(
-        `/projects/${projectId}/flashcards/generate`,
-        {
-          source_type: sourceType,
-          num_cards: numCards,
-          difficulty: difficulty,
-        },
-        { headers }
+      if (isTestMode()) headers['X-Test-Mode'] = 'true';
+      const data = await postProjectScoped(
+        `flashcards/generate`,
+        projectId,
+        { source_type: sourceType, num_cards: numCards, difficulty: difficulty },
+        axiosGeneration
       );
       await refreshData();
-      return response.data;
+      return data;
     } catch (err: any) {
       console.error("Failed to generate flashcards:", err);
       throw new Error(err.response?.data?.error || "Failed to generate flashcards");
@@ -132,14 +115,9 @@ export function useProjectFlashcards(projectId: string) {
     try {
       const params = new URLSearchParams();
       params.append("limit", limit.toString());
-      if (algorithm) {
-        params.append("algorithm", algorithm);
-      }
-
-      const response = await axiosGeneration.get(
-        `/projects/${projectId}/flashcards/due/?${params}`,
-      );
-      return response.data;
+      if (algorithm) params.append("algorithm", algorithm);
+      const res = await getProjectScoped<DueCardsResponse>(`flashcards/due/?${params}`, projectId, axiosGeneration);
+      return res;
     } catch (err: any) {
       console.error("Failed to get due cards:", err);
       throw new Error(err.response?.data?.error || "Failed to get due cards");
@@ -180,7 +158,6 @@ export function useProjectFlashcards(projectId: string) {
         quality: review.quality,
         response_time_seconds: review.responseTimeSeconds || 0,
       }));
-
       const response = await axiosApi.post(
         `/flashcards/reviews/`,
         { reviews: reviewsData },

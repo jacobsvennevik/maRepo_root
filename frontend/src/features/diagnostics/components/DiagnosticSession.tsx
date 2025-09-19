@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { axiosApi } from '@/lib/axios-api';
+import React, { useState, useEffect, useRef } from 'react';
+import { axiosApi } from '@/lib/axios';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,6 +52,7 @@ export default function DiagnosticSession({ sessionId }: { sessionId: string }) 
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState<any>(null);
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
+  const handleSubmitRef = useRef<() => void>();
 
   useEffect(() => {
     fetchSession();
@@ -69,7 +70,8 @@ export default function DiagnosticSession({ sessionId }: { sessionId: string }) 
         setTimeRemaining(prev => {
           if (prev === null || prev <= 1) {
             clearInterval(timer);
-            handleSubmit();
+            // Use the ref to call the latest version of handleSubmit
+            handleSubmitRef.current?.();
             return 0;
           }
           return prev - 1;
@@ -84,10 +86,15 @@ export default function DiagnosticSession({ sessionId }: { sessionId: string }) 
     setQuestionStartTime(Date.now());
   }, [currentQuestionIndex]);
 
+  // Update the ref whenever handleSubmit changes
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmit;
+  }, [handleSubmit]);
+
   const fetchSession = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosApi.get(`diagnostic-sessions/${sessionId}/`);
+      const response = await axiosGeneration.get(`diagnostic-sessions/${sessionId}/`);
       setSession(response.data);
     } catch (error) {
       console.error('Failed to fetch session:', error);
@@ -171,7 +178,7 @@ export default function DiagnosticSession({ sessionId }: { sessionId: string }) 
           latency_ms: r.latency_ms,
         })),
       };
-      const response = await axiosApi.post(`diagnostic-responses/`, payload);
+      const response = await axiosGeneration.post(`diagnostic-responses/`, payload);
       setResults(response.data);
       setShowResults(true);
     } catch (error) {

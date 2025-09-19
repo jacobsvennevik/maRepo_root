@@ -1,0 +1,252 @@
+a5cf8152ab7dccf5c62f5219e5399ee9
+/**
+ * BasicConfigStep
+ */ "use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    BasicConfigStep: function() {
+        return BasicConfigStep;
+    },
+    default: function() {
+        return _default;
+    }
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_default(require("react"));
+const _reacthookform = require("react-hook-form");
+const _input = require("../../../../../components/ui/input");
+const _label = require("../../../../../components/ui/label");
+const _select = require("../../../../../components/ui/select");
+const _textarea = require("../../../../../components/ui/textarea");
+const _constants = require("../../../constants");
+const _utils = require("../../../utils");
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+const BasicConfigStep = ({ form, suggestedDifficulty })=>{
+    const { register, watch, setValue, formState } = form;
+    return /*#__PURE__*/ (0, _jsxruntime.jsx)(_reacthookform.FormProvider, {
+        ...form,
+        children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+            className: "space-y-4",
+            children: [
+                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "text-center space-y-2",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("h2", {
+                            className: "text-xl font-semibold text-slate-900",
+                            children: "Basic Quiz Settings"
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                            className: "text-sm text-slate-600",
+                            children: "Configure the basic parameters for your quiz"
+                        })
+                    ]
+                }),
+                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                    className: "grid grid-cols-1 gap-4",
+                    children: [
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_label.Label, {
+                                    htmlFor: "title",
+                                    children: "Quiz Title *"
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_input.Input, {
+                                    id: "title",
+                                    ...register('title'),
+                                    placeholder: "e.g., Week 3 Knowledge Check"
+                                }),
+                                formState.errors.title && /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                    className: "text-sm text-red-600 mt-1",
+                                    children: formState.errors.title.message
+                                })
+                            ]
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_label.Label, {
+                                    htmlFor: "topic",
+                                    children: "Topic/Subject *"
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_input.Input, {
+                                    id: "topic",
+                                    ...register('topic'),
+                                    placeholder: "e.g., Machine Learning Fundamentals"
+                                }),
+                                formState.errors.topic && /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                    className: "text-sm text-red-600 mt-1",
+                                    children: formState.errors.topic.message
+                                }),
+                                suggestedDifficulty && /*#__PURE__*/ (0, _jsxruntime.jsxs)("p", {
+                                    className: "text-sm text-blue-600 mt-1",
+                                    children: [
+                                        "\uD83D\uDCA1 Suggested difficulty: ",
+                                        suggestedDifficulty
+                                    ]
+                                })
+                            ]
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_label.Label, {
+                                    htmlFor: "description",
+                                    children: "Description"
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_textarea.Textarea, {
+                                    id: "description",
+                                    ...register('description'),
+                                    placeholder: "Optional description of the quiz content...",
+                                    rows: 3
+                                })
+                            ]
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            className: "grid grid-cols-2 gap-4",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_label.Label, {
+                                            htmlFor: "quiz_type",
+                                            children: "Quiz Type"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)(_select.Select, {
+                                            value: watch('quiz_type'),
+                                            onValueChange: (value)=>setValue('quiz_type', value),
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_select.SelectTrigger, {
+                                                    children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_select.SelectValue, {
+                                                        placeholder: "Select quiz type"
+                                                    })
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_select.SelectContent, {
+                                                    children: _constants.QUIZ_TYPE_OPTIONS.map((option)=>/*#__PURE__*/ (0, _jsxruntime.jsx)(_select.SelectItem, {
+                                                            value: option.value,
+                                                            children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                                                        className: "font-medium",
+                                                                        children: option.label
+                                                                    }),
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                                                        className: "text-xs text-slate-500",
+                                                                        children: option.description
+                                                                    })
+                                                                ]
+                                                            })
+                                                        }, option.value))
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_label.Label, {
+                                            htmlFor: "difficulty",
+                                            children: "Difficulty Level"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)(_select.Select, {
+                                            value: watch('difficulty'),
+                                            onValueChange: (value)=>setValue('difficulty', value),
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_select.SelectTrigger, {
+                                                    children: /*#__PURE__*/ (0, _jsxruntime.jsx)(_select.SelectValue, {
+                                                        placeholder: "Select difficulty"
+                                                    })
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)(_select.SelectContent, {
+                                                    children: _constants.DIFFICULTY_OPTIONS.map((option)=>/*#__PURE__*/ (0, _jsxruntime.jsx)(_select.SelectItem, {
+                                                            value: option.value,
+                                                            children: /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                                                children: [
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                                                        className: "font-medium",
+                                                                        children: option.label
+                                                                    }),
+                                                                    /*#__PURE__*/ (0, _jsxruntime.jsx)("div", {
+                                                                        className: "text-xs text-slate-500",
+                                                                        children: option.description
+                                                                    })
+                                                                ]
+                                                            })
+                                                        }, option.value))
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                            className: "grid grid-cols-2 gap-4",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_label.Label, {
+                                            htmlFor: "max_questions",
+                                            children: "Number of Questions"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_input.Input, {
+                                            id: "max_questions",
+                                            type: "number",
+                                            ...register('max_questions', {
+                                                valueAsNumber: true
+                                            }),
+                                            placeholder: "10",
+                                            min: 1,
+                                            max: 50
+                                        }),
+                                        formState.errors.max_questions && /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                            className: "text-sm text-red-600 mt-1",
+                                            children: formState.errors.max_questions.message
+                                        }),
+                                        watch('max_questions') && /*#__PURE__*/ (0, _jsxruntime.jsxs)("p", {
+                                            className: "text-sm text-blue-600 mt-1",
+                                            children: [
+                                                "\uD83D\uDCA1 Suggested: ",
+                                                Math.round((0, _utils.getSuggestedTimeLimit)(watch('max_questions') || 10, watch('difficulty') || 'INTERMEDIATE') / 60),
+                                                " minutes"
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_label.Label, {
+                                            htmlFor: "time_limit_sec",
+                                            children: "Time Limit (minutes)"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_input.Input, {
+                                            id: "time_limit_sec",
+                                            type: "number",
+                                            ...register('time_limit_sec', {
+                                                valueAsNumber: true
+                                            }),
+                                            placeholder: "20",
+                                            min: 1,
+                                            max: 120
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                })
+            ]
+        })
+    });
+};
+const _default = BasicConfigStep;
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvcXVpei9jb21wb25lbnRzL1F1aXpXaXphcmQvc3RlcHMvQmFzaWNDb25maWdTdGVwLnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEJhc2ljQ29uZmlnU3RlcFxuICovXG5cbmltcG9ydCBSZWFjdCBmcm9tICdyZWFjdCc7XG5pbXBvcnQgeyBGb3JtUHJvdmlkZXIgfSBmcm9tICdyZWFjdC1ob29rLWZvcm0nO1xuaW1wb3J0IHsgSW5wdXQgfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvaW5wdXQnO1xuaW1wb3J0IHsgTGFiZWwgfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvbGFiZWwnO1xuaW1wb3J0IHsgU2VsZWN0LCBTZWxlY3RDb250ZW50LCBTZWxlY3RJdGVtLCBTZWxlY3RUcmlnZ2VyLCBTZWxlY3RWYWx1ZSB9IGZyb20gJ0AvY29tcG9uZW50cy91aS9zZWxlY3QnO1xuaW1wb3J0IHsgVGV4dGFyZWEgfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvdGV4dGFyZWEnO1xuaW1wb3J0IHsgXG4gIERJRkZJQ1VMVFlfT1BUSU9OUyxcbiAgUVVJWl9UWVBFX09QVElPTlMsXG59IGZyb20gJy4uLy4uLy4uL2NvbnN0YW50cyc7XG5pbXBvcnQgeyBcbiAgZ2V0U3VnZ2VzdGVkVGltZUxpbWl0LFxufSBmcm9tICcuLi8uLi8uLi91dGlscyc7XG5cbmludGVyZmFjZSBCYXNpY0NvbmZpZ1N0ZXBQcm9wcyB7XG4gIGZvcm06IGFueTtcbiAgc3VnZ2VzdGVkRGlmZmljdWx0eT86IHN0cmluZztcbn1cblxuZXhwb3J0IGNvbnN0IEJhc2ljQ29uZmlnU3RlcDogUmVhY3QuRkM8QmFzaWNDb25maWdTdGVwUHJvcHM+ID0gKHtcbiAgZm9ybSxcbiAgc3VnZ2VzdGVkRGlmZmljdWx0eSxcbn0pID0+IHtcbiAgY29uc3QgeyByZWdpc3Rlciwgd2F0Y2gsIHNldFZhbHVlLCBmb3JtU3RhdGUgfSA9IGZvcm07XG5cbiAgcmV0dXJuIChcbiAgICA8Rm9ybVByb3ZpZGVyIHsuLi5mb3JtfT5cbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS00XCI+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGV4dC1jZW50ZXIgc3BhY2UteS0yXCI+XG4gICAgICAgICAgPGgyIGNsYXNzTmFtZT1cInRleHQteGwgZm9udC1zZW1pYm9sZCB0ZXh0LXNsYXRlLTkwMFwiPkJhc2ljIFF1aXogU2V0dGluZ3M8L2gyPlxuICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQtc20gdGV4dC1zbGF0ZS02MDBcIj5Db25maWd1cmUgdGhlIGJhc2ljIHBhcmFtZXRlcnMgZm9yIHlvdXIgcXVpejwvcD5cbiAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdyaWQtY29scy0xIGdhcC00XCI+XG4gICAgICAgICAgPGRpdj5cbiAgICAgICAgICAgIDxMYWJlbCBodG1sRm9yPVwidGl0bGVcIj5RdWl6IFRpdGxlICo8L0xhYmVsPlxuICAgICAgICAgICAgPElucHV0IFxuICAgICAgICAgICAgICBpZD1cInRpdGxlXCIgXG4gICAgICAgICAgICAgIHsuLi5yZWdpc3RlcigndGl0bGUnKX1cbiAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCJlLmcuLCBXZWVrIDMgS25vd2xlZGdlIENoZWNrXCJcbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgICB7Zm9ybVN0YXRlLmVycm9ycy50aXRsZSAmJiAoXG4gICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQtc20gdGV4dC1yZWQtNjAwIG10LTFcIj57Zm9ybVN0YXRlLmVycm9ycy50aXRsZS5tZXNzYWdlfTwvcD5cbiAgICAgICAgICAgICl9XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgPExhYmVsIGh0bWxGb3I9XCJ0b3BpY1wiPlRvcGljL1N1YmplY3QgKjwvTGFiZWw+XG4gICAgICAgICAgICA8SW5wdXQgXG4gICAgICAgICAgICAgIGlkPVwidG9waWNcIiBcbiAgICAgICAgICAgICAgey4uLnJlZ2lzdGVyKCd0b3BpYycpfVxuICAgICAgICAgICAgICBwbGFjZWhvbGRlcj1cImUuZy4sIE1hY2hpbmUgTGVhcm5pbmcgRnVuZGFtZW50YWxzXCJcbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgICB7Zm9ybVN0YXRlLmVycm9ycy50b3BpYyAmJiAoXG4gICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQtc20gdGV4dC1yZWQtNjAwIG10LTFcIj57Zm9ybVN0YXRlLmVycm9ycy50b3BpYy5tZXNzYWdlfTwvcD5cbiAgICAgICAgICAgICl9XG4gICAgICAgICAgICB7c3VnZ2VzdGVkRGlmZmljdWx0eSAmJiAoXG4gICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQtc20gdGV4dC1ibHVlLTYwMCBtdC0xXCI+XG4gICAgICAgICAgICAgICAg8J+SoSBTdWdnZXN0ZWQgZGlmZmljdWx0eToge3N1Z2dlc3RlZERpZmZpY3VsdHl9XG4gICAgICAgICAgICAgIDwvcD5cbiAgICAgICAgICAgICl9XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgPExhYmVsIGh0bWxGb3I9XCJkZXNjcmlwdGlvblwiPkRlc2NyaXB0aW9uPC9MYWJlbD5cbiAgICAgICAgICAgIDxUZXh0YXJlYSBcbiAgICAgICAgICAgICAgaWQ9XCJkZXNjcmlwdGlvblwiIFxuICAgICAgICAgICAgICB7Li4ucmVnaXN0ZXIoJ2Rlc2NyaXB0aW9uJyl9XG4gICAgICAgICAgICAgIHBsYWNlaG9sZGVyPVwiT3B0aW9uYWwgZGVzY3JpcHRpb24gb2YgdGhlIHF1aXogY29udGVudC4uLlwiXG4gICAgICAgICAgICAgIHJvd3M9ezN9XG4gICAgICAgICAgICAvPlxuICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdyaWQtY29scy0yIGdhcC00XCI+XG4gICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cInF1aXpfdHlwZVwiPlF1aXogVHlwZTwvTGFiZWw+XG4gICAgICAgICAgICAgIDxTZWxlY3QgXG4gICAgICAgICAgICAgICAgdmFsdWU9e3dhdGNoKCdxdWl6X3R5cGUnKX0gXG4gICAgICAgICAgICAgICAgb25WYWx1ZUNoYW5nZT17KHZhbHVlKSA9PiBzZXRWYWx1ZSgncXVpel90eXBlJywgdmFsdWUpfVxuICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgPFNlbGVjdFRyaWdnZXI+XG4gICAgICAgICAgICAgICAgICA8U2VsZWN0VmFsdWUgcGxhY2Vob2xkZXI9XCJTZWxlY3QgcXVpeiB0eXBlXCIgLz5cbiAgICAgICAgICAgICAgICA8L1NlbGVjdFRyaWdnZXI+XG4gICAgICAgICAgICAgICAgPFNlbGVjdENvbnRlbnQ+XG4gICAgICAgICAgICAgICAgICB7UVVJWl9UWVBFX09QVElPTlMubWFwKChvcHRpb246IGFueSkgPT4gKFxuICAgICAgICAgICAgICAgICAgICA8U2VsZWN0SXRlbSBrZXk9e29wdGlvbi52YWx1ZX0gdmFsdWU9e29wdGlvbi52YWx1ZX0+XG4gICAgICAgICAgICAgICAgICAgICAgPGRpdj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZm9udC1tZWRpdW1cIj57b3B0aW9uLmxhYmVsfTwvZGl2PlxuICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LXhzIHRleHQtc2xhdGUtNTAwXCI+e29wdGlvbi5kZXNjcmlwdGlvbn08L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgPC9TZWxlY3RJdGVtPlxuICAgICAgICAgICAgICAgICAgKSl9XG4gICAgICAgICAgICAgICAgPC9TZWxlY3RDb250ZW50PlxuICAgICAgICAgICAgICA8L1NlbGVjdD5cbiAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cImRpZmZpY3VsdHlcIj5EaWZmaWN1bHR5IExldmVsPC9MYWJlbD5cbiAgICAgICAgICAgICAgPFNlbGVjdCBcbiAgICAgICAgICAgICAgICB2YWx1ZT17d2F0Y2goJ2RpZmZpY3VsdHknKX0gXG4gICAgICAgICAgICAgICAgb25WYWx1ZUNoYW5nZT17KHZhbHVlKSA9PiBzZXRWYWx1ZSgnZGlmZmljdWx0eScsIHZhbHVlKX1cbiAgICAgICAgICAgICAgPlxuICAgICAgICAgICAgICAgIDxTZWxlY3RUcmlnZ2VyPlxuICAgICAgICAgICAgICAgICAgPFNlbGVjdFZhbHVlIHBsYWNlaG9sZGVyPVwiU2VsZWN0IGRpZmZpY3VsdHlcIiAvPlxuICAgICAgICAgICAgICAgIDwvU2VsZWN0VHJpZ2dlcj5cbiAgICAgICAgICAgICAgICA8U2VsZWN0Q29udGVudD5cbiAgICAgICAgICAgICAgICAgIHtESUZGSUNVTFRZX09QVElPTlMubWFwKChvcHRpb246IGFueSkgPT4gKFxuICAgICAgICAgICAgICAgICAgICA8U2VsZWN0SXRlbSBrZXk9e29wdGlvbi52YWx1ZX0gdmFsdWU9e29wdGlvbi52YWx1ZX0+XG4gICAgICAgICAgICAgICAgICAgICAgPGRpdj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZm9udC1tZWRpdW1cIj57b3B0aW9uLmxhYmVsfTwvZGl2PlxuICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LXhzIHRleHQtc2xhdGUtNTAwXCI+e29wdGlvbi5kZXNjcmlwdGlvbn08L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgPC9TZWxlY3RJdGVtPlxuICAgICAgICAgICAgICAgICAgKSl9XG4gICAgICAgICAgICAgICAgPC9TZWxlY3RDb250ZW50PlxuICAgICAgICAgICAgICA8L1NlbGVjdD5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdyaWQtY29scy0yIGdhcC00XCI+XG4gICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cIm1heF9xdWVzdGlvbnNcIj5OdW1iZXIgb2YgUXVlc3Rpb25zPC9MYWJlbD5cbiAgICAgICAgICAgICAgPElucHV0IFxuICAgICAgICAgICAgICAgIGlkPVwibWF4X3F1ZXN0aW9uc1wiIFxuICAgICAgICAgICAgICAgIHR5cGU9XCJudW1iZXJcIlxuICAgICAgICAgICAgICAgIHsuLi5yZWdpc3RlcignbWF4X3F1ZXN0aW9ucycsIHsgdmFsdWVBc051bWJlcjogdHJ1ZSB9KX1cbiAgICAgICAgICAgICAgICBwbGFjZWhvbGRlcj1cIjEwXCJcbiAgICAgICAgICAgICAgICBtaW49ezF9XG4gICAgICAgICAgICAgICAgbWF4PXs1MH1cbiAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgICAge2Zvcm1TdGF0ZS5lcnJvcnMubWF4X3F1ZXN0aW9ucyAmJiAoXG4gICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwidGV4dC1zbSB0ZXh0LXJlZC02MDAgbXQtMVwiPntmb3JtU3RhdGUuZXJyb3JzLm1heF9xdWVzdGlvbnMubWVzc2FnZX08L3A+XG4gICAgICAgICAgICAgICl9XG4gICAgICAgICAgICAgIHt3YXRjaCgnbWF4X3F1ZXN0aW9ucycpICYmIChcbiAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LXNtIHRleHQtYmx1ZS02MDAgbXQtMVwiPlxuICAgICAgICAgICAgICAgICAg8J+SoSBTdWdnZXN0ZWQ6IHtNYXRoLnJvdW5kKChnZXRTdWdnZXN0ZWRUaW1lTGltaXQod2F0Y2goJ21heF9xdWVzdGlvbnMnKSB8fCAxMCwgd2F0Y2goJ2RpZmZpY3VsdHknKSB8fCAnSU5URVJNRURJQVRFJykpIC8gNjApfSBtaW51dGVzXG4gICAgICAgICAgICAgICAgPC9wPlxuICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICAgIDxkaXY+XG4gICAgICAgICAgICAgIDxMYWJlbCBodG1sRm9yPVwidGltZV9saW1pdF9zZWNcIj5UaW1lIExpbWl0IChtaW51dGVzKTwvTGFiZWw+XG4gICAgICAgICAgICAgIDxJbnB1dCBcbiAgICAgICAgICAgICAgICBpZD1cInRpbWVfbGltaXRfc2VjXCIgXG4gICAgICAgICAgICAgICAgdHlwZT1cIm51bWJlclwiXG4gICAgICAgICAgICAgICAgey4uLnJlZ2lzdGVyKCd0aW1lX2xpbWl0X3NlYycsIHsgdmFsdWVBc051bWJlcjogdHJ1ZSB9KX1cbiAgICAgICAgICAgICAgICBwbGFjZWhvbGRlcj1cIjIwXCJcbiAgICAgICAgICAgICAgICBtaW49ezF9XG4gICAgICAgICAgICAgICAgbWF4PXsxMjB9XG4gICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgPC9kaXY+XG4gICAgICA8L2Rpdj5cbiAgICA8L0Zvcm1Qcm92aWRlcj5cbiAgKTtcbn07XG5cbmV4cG9ydCBkZWZhdWx0IEJhc2ljQ29uZmlnU3RlcDtcblxuXG4iXSwibmFtZXMiOlsiQmFzaWNDb25maWdTdGVwIiwiZm9ybSIsInN1Z2dlc3RlZERpZmZpY3VsdHkiLCJyZWdpc3RlciIsIndhdGNoIiwic2V0VmFsdWUiLCJmb3JtU3RhdGUiLCJGb3JtUHJvdmlkZXIiLCJkaXYiLCJjbGFzc05hbWUiLCJoMiIsInAiLCJMYWJlbCIsImh0bWxGb3IiLCJJbnB1dCIsImlkIiwicGxhY2Vob2xkZXIiLCJlcnJvcnMiLCJ0aXRsZSIsIm1lc3NhZ2UiLCJ0b3BpYyIsIlRleHRhcmVhIiwicm93cyIsIlNlbGVjdCIsInZhbHVlIiwib25WYWx1ZUNoYW5nZSIsIlNlbGVjdFRyaWdnZXIiLCJTZWxlY3RWYWx1ZSIsIlNlbGVjdENvbnRlbnQiLCJRVUlaX1RZUEVfT1BUSU9OUyIsIm1hcCIsIm9wdGlvbiIsIlNlbGVjdEl0ZW0iLCJsYWJlbCIsImRlc2NyaXB0aW9uIiwiRElGRklDVUxUWV9PUFRJT05TIiwidHlwZSIsInZhbHVlQXNOdW1iZXIiLCJtaW4iLCJtYXgiLCJtYXhfcXVlc3Rpb25zIiwiTWF0aCIsInJvdW5kIiwiZ2V0U3VnZ2VzdGVkVGltZUxpbWl0Il0sIm1hcHBpbmdzIjoiQUFBQTs7Q0FFQzs7Ozs7Ozs7Ozs7SUFxQllBLGVBQWU7ZUFBZkE7O0lBMkliLE9BQStCO2VBQS9COzs7OzhEQTlKa0I7K0JBQ1c7dUJBQ1A7dUJBQ0E7d0JBQ3dEOzBCQUNyRDsyQkFJbEI7dUJBR0E7Ozs7OztBQU9BLE1BQU1BLGtCQUFrRCxDQUFDLEVBQzlEQyxJQUFJLEVBQ0pDLG1CQUFtQixFQUNwQjtJQUNDLE1BQU0sRUFBRUMsUUFBUSxFQUFFQyxLQUFLLEVBQUVDLFFBQVEsRUFBRUMsU0FBUyxFQUFFLEdBQUdMO0lBRWpELHFCQUNFLHFCQUFDTSwyQkFBWTtRQUFFLEdBQUdOLElBQUk7a0JBQ3BCLGNBQUEsc0JBQUNPO1lBQUlDLFdBQVU7OzhCQUNiLHNCQUFDRDtvQkFBSUMsV0FBVTs7c0NBQ2IscUJBQUNDOzRCQUFHRCxXQUFVO3NDQUF1Qzs7c0NBQ3JELHFCQUFDRTs0QkFBRUYsV0FBVTtzQ0FBeUI7Ozs7OEJBR3hDLHNCQUFDRDtvQkFBSUMsV0FBVTs7c0NBQ2Isc0JBQUNEOzs4Q0FDQyxxQkFBQ0ksWUFBSztvQ0FBQ0MsU0FBUTs4Q0FBUTs7OENBQ3ZCLHFCQUFDQyxZQUFLO29DQUNKQyxJQUFHO29DQUNGLEdBQUdaLFNBQVMsUUFBUTtvQ0FDckJhLGFBQVk7O2dDQUViVixVQUFVVyxNQUFNLENBQUNDLEtBQUssa0JBQ3JCLHFCQUFDUDtvQ0FBRUYsV0FBVTs4Q0FBNkJILFVBQVVXLE1BQU0sQ0FBQ0MsS0FBSyxDQUFDQyxPQUFPOzs7O3NDQUk1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

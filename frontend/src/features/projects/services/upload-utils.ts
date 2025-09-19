@@ -1,5 +1,5 @@
 import { registerUpload } from "./cleanup-utils";
-import { axiosApi } from "@/lib/axios-api";
+import { axiosApi } from '@/lib/axios';
 
 // Shared upload utilities for project creation steps
 export const API_BASE_URL =

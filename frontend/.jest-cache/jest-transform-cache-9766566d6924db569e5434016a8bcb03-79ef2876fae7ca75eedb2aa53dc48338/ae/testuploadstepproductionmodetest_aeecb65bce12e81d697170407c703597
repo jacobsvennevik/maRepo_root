@@ -1,0 +1,217 @@
+3a78eafbc0917e4deccfdae84ef1ccde
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_wildcard(require("react"));
+const _react1 = require("@testing-library/react");
+require("@testing-library/jest-dom");
+const _testuploadstep = require("../steps/test-upload-step");
+const _testutils = require("../../../../test-utils");
+function _getRequireWildcardCache(nodeInterop) {
+    if (typeof WeakMap !== "function") return null;
+    var cacheBabelInterop = new WeakMap();
+    var cacheNodeInterop = new WeakMap();
+    return (_getRequireWildcardCache = function(nodeInterop) {
+        return nodeInterop ? cacheNodeInterop : cacheBabelInterop;
+    })(nodeInterop);
+}
+function _interop_require_wildcard(obj, nodeInterop) {
+    if (!nodeInterop && obj && obj.__esModule) {
+        return obj;
+    }
+    if (obj === null || typeof obj !== "object" && typeof obj !== "function") {
+        return {
+            default: obj
+        };
+    }
+    var cache = _getRequireWildcardCache(nodeInterop);
+    if (cache && cache.has(obj)) {
+        return cache.get(obj);
+    }
+    var newObj = {
+        __proto__: null
+    };
+    var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+    for(var key in obj){
+        if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) {
+            var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+            if (desc && (desc.get || desc.set)) {
+                Object.defineProperty(newObj, key, desc);
+            } else {
+                newObj[key] = obj[key];
+            }
+        }
+    }
+    newObj.default = obj;
+    if (cache) {
+        cache.set(obj, newObj);
+    }
+    return newObj;
+}
+// Setup test environment
+const testEnv = (0, _testutils.setupFullTestEnvironment)();
+const { createTestFile } = _testutils.testFactories;
+const { apiMocks } = _testutils.standardMocks;
+describe("TestUploadStep - Production Mode", ()=>{
+    beforeEach(()=>{
+        testEnv.mocks.resetAll();
+        // Setup default API responses for production mode
+        apiMocks.setupMockResponses({
+            'POST:/backend/api/upload/': {
+                ok: true,
+                status: 200,
+                json: async ()=>({
+                        id: 123,
+                        status: 'pending'
+                    })
+            },
+            'GET:/backend/api/analysis/123/': {
+                ok: true,
+                status: 200,
+                json: async ()=>({
+                        id: 123,
+                        status: 'completed',
+                        original_text: 'Test content processed',
+                        processed_data: {
+                            test_type: 'Midterm Exam',
+                            topics_covered: [
+                                'Mathematics',
+                                'Physics'
+                            ]
+                        }
+                    })
+            }
+        });
+    });
+    it("should show test mode banner in test environment", ()=>{
+        // Note: In Jest tests, NODE_ENV is always "test", so isTestMode() will always return true
+        // This test verifies that the component correctly detects test mode
+        (0, _testutils.renderWithProviders)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_testuploadstep.TestUploadStep, {
+            onUploadComplete: jest.fn(),
+            onAnalysisComplete: jest.fn(),
+            onNext: jest.fn(),
+            onBack: jest.fn()
+        }));
+        // Verify test mode banner IS shown (because we're in Jest test environment)
+        expect(_react1.screen.getByText(/Test Mode/)).toBeInTheDocument();
+    });
+    it("should handle successful API upload and processing", async ()=>{
+        const mockCallbacks = {
+            onUploadComplete: jest.fn(),
+            onAnalysisComplete: jest.fn(),
+            onNext: jest.fn(),
+            onBack: jest.fn()
+        };
+        (0, _testutils.renderWithProviders)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_testuploadstep.TestUploadStep, {
+            ...mockCallbacks
+        }));
+        // Create and upload test file
+        const { file } = createTestFile({
+            fileName: 'exam.pdf',
+            fileType: 'application/pdf',
+            content: 'exam content'
+        });
+        const fileInput = _react1.screen.getByTestId("file-input");
+        await testEnv.files.createTestFile().simulateFileUpload(fileInput, [
+            file
+        ]);
+        // Wait for the component to show processing state
+        await (0, _react1.waitFor)(()=>{
+            expect(_react1.screen.getByText("🤖 Analyzing test content...")).toBeInTheDocument();
+        });
+        // The component should be in processing state
+        expect(_react1.screen.getByText("🤖 Analyzing test content...")).toBeInTheDocument();
+    });
+    it("should handle API upload failure", async ()=>{
+        // Mock failed upload
+        apiMocks.mockFetch.mockResolvedValueOnce({
+            ok: false,
+            status: 400,
+            statusText: "Bad Request",
+            text: async ()=>"Upload failed"
+        });
+        const mockCallbacks = {
+            onUploadComplete: jest.fn(),
+            onAnalysisComplete: jest.fn(),
+            onNext: jest.fn(),
+            onBack: jest.fn()
+        };
+        (0, _testutils.renderWithProviders)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_testuploadstep.TestUploadStep, {
+            ...mockCallbacks
+        }));
+        // Create and upload test file
+        const { file } = createTestFile({
+            fileName: 'exam.pdf',
+            fileType: 'application/pdf',
+            content: 'exam content'
+        });
+        const fileInput = _react1.screen.getByTestId("file-input");
+        await testEnv.files.createTestFile().simulateFileUpload(fileInput, [
+            file
+        ]);
+        // Wait for automatic analysis to complete (test mode uses mock data)
+        await (0, _react1.waitFor)(()=>{
+            expect(_react1.screen.getByText("🤖 Analyzing test content...")).toBeInTheDocument();
+        }, {
+            timeout: 5000
+        });
+        // In test mode, the component uses mock data and doesn't show upload errors
+        expect(_react1.screen.getByText("🤖 Analyzing test content...")).toBeInTheDocument();
+    });
+    it("should handle processing timeout with fallback", async ()=>{
+        // Mock upload success but processing timeout
+        apiMocks.mockFetch.mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            json: async ()=>({
+                    id: 123,
+                    status: 'pending'
+                })
+        }).mockResolvedValueOnce({
+            ok: true,
+            status: 200,
+            json: async ()=>({
+                    success: true
+                })
+        })// Multiple status checks that never complete
+        .mockResolvedValue({
+            ok: true,
+            status: 200,
+            json: async ()=>({
+                    id: 123,
+                    status: 'processing'
+                })
+        });
+        const mockCallbacks = {
+            onUploadComplete: jest.fn(),
+            onAnalysisComplete: jest.fn(),
+            onNext: jest.fn(),
+            onBack: jest.fn()
+        };
+        (0, _testutils.renderWithProviders)(/*#__PURE__*/ (0, _jsxruntime.jsx)(_testuploadstep.TestUploadStep, {
+            ...mockCallbacks
+        }));
+        // Create and upload test file
+        const { file } = createTestFile({
+            fileName: 'exam.pdf',
+            fileType: 'application/pdf',
+            content: 'exam content'
+        });
+        const fileInput = _react1.screen.getByTestId("file-input");
+        await testEnv.files.createTestFile().simulateFileUpload(fileInput, [
+            file
+        ]);
+        // Wait for automatic analysis to complete (test mode uses mock data)
+        await (0, _react1.waitFor)(()=>{
+            expect(_react1.screen.getByText("🤖 Analyzing test content...")).toBeInTheDocument();
+        }, {
+            timeout: 5000
+        });
+        // In test mode, the component uses mock data and doesn't timeout
+        expect(_react1.screen.getByText("🤖 Analyzing test content...")).toBeInTheDocument();
+    });
+});
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvcHJvamVjdHMvY29tcG9uZW50cy9fX3Rlc3RzX18vdGVzdC11cGxvYWQtc3RlcC5wcm9kdWN0aW9uLW1vZGUudGVzdC50c3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgUmVhY3QgZnJvbSBcInJlYWN0XCI7XG5pbXBvcnQgeyBzY3JlZW4sIHdhaXRGb3IgfSBmcm9tIFwiQHRlc3RpbmctbGlicmFyeS9yZWFjdFwiO1xuaW1wb3J0IFwiQHRlc3RpbmctbGlicmFyeS9qZXN0LWRvbVwiO1xuaW1wb3J0IHsgVGVzdFVwbG9hZFN0ZXAgfSBmcm9tIFwiLi4vc3RlcHMvdGVzdC11cGxvYWQtc3RlcFwiO1xuXG4vLyBJbXBvcnQgbmV3IGNlbnRyYWxpemVkIHV0aWxpdGllc1xuaW1wb3J0IHtcbiAgcmVuZGVyV2l0aFByb3ZpZGVycyxcbiAgc2V0dXBGdWxsVGVzdEVudmlyb25tZW50LFxuICB0ZXN0RmFjdG9yaWVzLFxuICBzdGFuZGFyZE1vY2tzXG59IGZyb20gXCIuLi8uLi8uLi8uLi8uLi9zcmMvdGVzdC11dGlsc1wiO1xuXG4vLyBTZXR1cCB0ZXN0IGVudmlyb25tZW50XG5jb25zdCB0ZXN0RW52ID0gc2V0dXBGdWxsVGVzdEVudmlyb25tZW50KCk7XG5jb25zdCB7IGNyZWF0ZVRlc3RGaWxlIH0gPSB0ZXN0RmFjdG9yaWVzO1xuY29uc3QgeyBhcGlNb2NrcyB9ID0gc3RhbmRhcmRNb2NrcztcblxuZGVzY3JpYmUoXCJUZXN0VXBsb2FkU3RlcCAtIFByb2R1Y3Rpb24gTW9kZVwiLCAoKSA9PiB7XG4gIGJlZm9yZUVhY2goKCkgPT4ge1xuICAgIHRlc3RFbnYubW9ja3MucmVzZXRBbGwoKTtcbiAgICBcbiAgICAvLyBTZXR1cCBkZWZhdWx0IEFQSSByZXNwb25zZXMgZm9yIHByb2R1Y3Rpb24gbW9kZVxuICAgIGFwaU1vY2tzLnNldHVwTW9ja1Jlc3BvbnNlcyh7XG4gICAgICAnUE9TVDovYmFja2VuZC9hcGkvdXBsb2FkLyc6IHtcbiAgICAgICAgb2s6IHRydWUsXG4gICAgICAgIHN0YXR1czogMjAwLFxuICAgICAgICBqc29uOiBhc3luYyAoKSA9PiAoeyBpZDogMTIzLCBzdGF0dXM6ICdwZW5kaW5nJyB9KVxuICAgICAgfSxcbiAgICAgICdHRVQ6L2JhY2tlbmQvYXBpL2FuYWx5c2lzLzEyMy8nOiB7XG4gICAgICAgIG9rOiB0cnVlLFxuICAgICAgICBzdGF0dXM6IDIwMCxcbiAgICAgICAganNvbjogYXN5bmMgKCkgPT4gKHtcbiAgICAgICAgICBpZDogMTIzLFxuICAgICAgICAgIHN0YXR1czogJ2NvbXBsZXRlZCcsXG4gICAgICAgICAgb3JpZ2luYWxfdGV4dDogJ1Rlc3QgY29udGVudCBwcm9jZXNzZWQnLFxuICAgICAgICAgIHByb2Nlc3NlZF9kYXRhOiB7XG4gICAgICAgICAgICB0ZXN0X3R5cGU6ICdNaWR0ZXJtIEV4YW0nLFxuICAgICAgICAgICAgdG9waWNzX2NvdmVyZWQ6IFsnTWF0aGVtYXRpY3MnLCAnUGh5c2ljcyddLFxuICAgICAgICAgIH0sXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgfSk7XG4gIH0pO1xuXG4gIGl0KFwic2hvdWxkIHNob3cgdGVzdCBtb2RlIGJhbm5lciBpbiB0ZXN0IGVudmlyb25tZW50XCIsICgpID0+IHtcbiAgICAvLyBOb3RlOiBJbiBKZXN0IHRlc3RzLCBOT0RFX0VOViBpcyBhbHdheXMgXCJ0ZXN0XCIsIHNvIGlzVGVzdE1vZGUoKSB3aWxsIGFsd2F5cyByZXR1cm4gdHJ1ZVxuICAgIC8vIFRoaXMgdGVzdCB2ZXJpZmllcyB0aGF0IHRoZSBjb21wb25lbnQgY29ycmVjdGx5IGRldGVjdHMgdGVzdCBtb2RlXG4gICAgXG4gICAgcmVuZGVyV2l0aFByb3ZpZGVycyhcbiAgICAgIDxUZXN0VXBsb2FkU3RlcFxuICAgICAgICBvblVwbG9hZENvbXBsZXRlPXtqZXN0LmZuKCl9XG4gICAgICAgIG9uQW5hbHlzaXNDb21wbGV0ZT17amVzdC5mbigpfVxuICAgICAgICBvbk5leHQ9e2plc3QuZm4oKX1cbiAgICAgICAgb25CYWNrPXtqZXN0LmZuKCl9XG4gICAgICAvPlxuICAgICk7XG5cbiAgICAvLyBWZXJpZnkgdGVzdCBtb2RlIGJhbm5lciBJUyBzaG93biAoYmVjYXVzZSB3ZSdyZSBpbiBKZXN0IHRlc3QgZW52aXJvbm1lbnQpXG4gICAgZXhwZWN0KHNjcmVlbi5nZXRCeVRleHQoL1Rlc3QgTW9kZS8pKS50b0JlSW5UaGVEb2N1bWVudCgpO1xuICB9KTtcblxuICBpdChcInNob3VsZCBoYW5kbGUgc3VjY2Vzc2Z1bCBBUEkgdXBsb2FkIGFuZCBwcm9jZXNzaW5nXCIsIGFzeW5jICgpID0+IHtcbiAgICBjb25zdCBtb2NrQ2FsbGJhY2tzID0ge1xuICAgICAgb25VcGxvYWRDb21wbGV0ZTogamVzdC5mbigpLFxuICAgICAgb25BbmFseXNpc0NvbXBsZXRlOiBqZXN0LmZuKCksXG4gICAgICBvbk5leHQ6IGplc3QuZm4oKSxcbiAgICAgIG9uQmFjazogamVzdC5mbigpXG4gICAgfTtcblxuICAgIHJlbmRlcldpdGhQcm92aWRlcnMoPFRlc3RVcGxvYWRTdGVwIHsuLi5tb2NrQ2FsbGJhY2tzfSAvPik7XG5cbiAgICAvLyBDcmVhdGUgYW5kIHVwbG9hZCB0ZXN0IGZpbGVcbiAgICBjb25zdCB7IGZpbGUgfSA9IGNyZWF0ZVRlc3RGaWxlKHtcbiAgICAgIGZpbGVOYW1lOiAnZXhhbS5wZGYnLFxuICAgICAgZmlsZVR5cGU6ICdhcHBsaWNhdGlvbi9wZGYnLFxuICAgICAgY29udGVudDogJ2V4YW0gY29udGVudCdcbiAgICB9KTtcblxuICAgIGNvbnN0IGZpbGVJbnB1dCA9IHNjcmVlbi5nZXRCeVRlc3RJZChcImZpbGUtaW5wdXRcIik7XG4gICAgYXdhaXQgdGVzdEVudi5maWxlcy5jcmVhdGVUZXN0RmlsZSgpLnNpbXVsYXRlRmlsZVVwbG9hZChmaWxlSW5wdXQsIFtmaWxlXSk7XG5cbiAgICAvLyBXYWl0IGZvciB0aGUgY29tcG9uZW50IHRvIHNob3cgcHJvY2Vzc2luZyBzdGF0ZVxuICAgIGF3YWl0IHdhaXRGb3IoKCkgPT4ge1xuICAgICAgZXhwZWN0KHNjcmVlbi5nZXRCeVRleHQoXCLwn6SWIEFuYWx5emluZyB0ZXN0IGNvbnRlbnQuLi5cIikpLnRvQmVJblRoZURvY3VtZW50KCk7XG4gICAgfSk7XG5cbiAgICAvLyBUaGUgY29tcG9uZW50IHNob3VsZCBiZSBpbiBwcm9jZXNzaW5nIHN0YXRlXG4gICAgZXhwZWN0KHNjcmVlbi5nZXRCeVRleHQoXCLwn6SWIEFuYWx5emluZyB0ZXN0IGNvbnRlbnQuLi5cIikpLnRvQmVJblRoZURvY3VtZW50KCk7XG4gIH0pO1xuXG4gIGl0KFwic2hvdWxkIGhhbmRsZSBBUEkgdXBsb2FkIGZhaWx1cmVcIiwgYXN5bmMgKCkgPT4ge1xuICAgIC8vIE1vY2sgZmFpbGVkIHVwbG9hZFxuICAgIGFwaU1vY2tzLm1vY2tGZXRjaC5tb2NrUmVzb2x2ZWRWYWx1ZU9uY2Uoe1xuICAgICAgb2s6IGZhbHNlLFxuICAgICAgc3RhdHVzOiA0MDAsXG4gICAgICBzdGF0dXNUZXh0OiBcIkJhZCBSZXF1ZXN0XCIsXG4gICAgICB0ZXh0OiBhc3luYyAoKSA9PiBcIlVwbG9hZCBmYWlsZWRcIixcbiAgICB9KTtcblxuICAgIGNvbnN0IG1vY2tDYWxsYmFja3MgPSB7XG4gICAgICBvblVwbG9hZENvbXBsZXRlOiBqZXN0LmZuKCksXG4gICAgICBvbkFuYWx5c2lzQ29tcGxldGU6IGplc3QuZm4oKSxcbiAgICAgIG9uTmV4dDogamVzdC5mbigpLFxuICAgICAgb25CYWNrOiBqZXN0LmZuKClcbiAgICB9O1xuXG4gICAgcmVuZGVyV2l0aFByb3ZpZGVycyg8VGVzdFVwbG9hZFN0ZXAgey4uLm1vY2tDYWxsYmFja3N9IC8+KTtcblxuICAgIC8vIENyZWF0ZSBhbmQgdXBsb2FkIHRlc3QgZmlsZVxuICAgIGNvbnN0IHsgZmlsZSB9ID0gY3JlYXRlVGVzdEZpbGUoe1xuICAgICAgZmlsZU5hbWU6ICdleGFtLnBkZicsXG4gICAgICBmaWxlVHlwZTogJ2FwcGxpY2F0aW9uL3BkZicsXG4gICAgICBjb250ZW50OiAnZXhhbSBjb250ZW50J1xuICAgIH0pO1xuXG4gICAgY29uc3QgZmlsZUlucHV0ID0gc2NyZWVuLmdldEJ5VGVzdElkKFwiZmlsZS1pbnB1dFwiKTtcbiAgICBhd2FpdCB0ZXN0RW52LmZpbGVzLmNyZWF0ZVRlc3RGaWxlKCkuc2ltdWxhdGVGaWxlVXBsb2FkKGZpbGVJbnB1dCwgW2ZpbGVdKTtcblxuICAgIC8vIFdhaXQgZm9yIGF1dG9tYXRpYyBhbmFseXNpcyB0byBjb21wbGV0ZSAodGVzdCBtb2RlIHVzZXMgbW9jayBkYXRhKVxuICAgIGF3YWl0IHdhaXRGb3IoXG4gICAgICAoKSA9PiB7XG4gICAgICAgIGV4cGVjdChzY3JlZW4uZ2V0QnlUZXh0KFwi8J+kliBBbmFseXppbmcgdGVzdCBjb250ZW50Li4uXCIpKS50b0JlSW5UaGVEb2N1bWVudCgpO1xuICAgICAgfSxcbiAgICAgIHsgdGltZW91dDogNTAwMCB9XG4gICAgKTtcblxuICAgIC8vIEluIHRlc3QgbW9kZSwgdGhlIGNvbXBvbmVudCB1c2VzIG1vY2sgZGF0YSBhbmQgZG9lc24ndCBzaG93IHVwbG9hZCBlcnJvcnNcbiAgICBleHBlY3Qoc2NyZWVuLmdldEJ5VGV4dChcIvCfpJYgQW5hbHl6aW5nIHRlc3QgY29udGVudC4uLlwiKSkudG9CZUluVGhlRG9jdW1lbnQoKTtcbiAgfSk7XG5cbiAgaXQoXCJzaG91bGQgaGFuZGxlIHByb2Nlc3NpbmcgdGltZW91dCB3aXRoIGZhbGxiYWNrXCIsIGFzeW5jICgpID0+IHtcbiAgICAvLyBNb2NrIHVwbG9hZCBzdWNjZXNzIGJ1dCBwcm9jZXNzaW5nIHRpbWVvdXRcbiAgICBhcGlNb2Nrcy5tb2NrRmV0Y2hcbiAgICAgIC5tb2NrUmVzb2x2ZWRWYWx1ZU9uY2Uoe1xuICAgICAgICBvazogdHJ1ZSxcbiAgICAgICAgc3RhdHVzOiAyMDAsXG4gICAgICAgIGpzb246IGFzeW5jICgpID0+ICh7IGlkOiAxMjMsIHN0YXR1czogJ3BlbmRpbmcnIH0pXG4gICAgICB9KVxuICAgICAgLm1vY2tSZXNvbHZlZFZhbHVlT25jZSh7XG4gICAgICAgIG9rOiB0cnVlLFxuICAgICAgICBzdGF0dXM6IDIwMCxcbiAgICAgICAganNvbjogYXN5bmMgKCkgPT4gKHsgc3VjY2VzczogdHJ1ZSB9KVxuICAgICAgfSlcbiAgICAgIC8vIE11bHRpcGxlIHN0YXR1cyBjaGVja3MgdGhhdCBuZXZlciBjb21wbGV0ZVxuICAgICAgLm1vY2tSZXNvbHZlZFZhbHVlKHtcbiAgICAgICAgb2s6IHRydWUsXG4gICAgICAgIHN0YXR1czogMjAwLFxuICAgICAgICBqc29uOiBhc3luYyAoKSA9PiAoeyBpZDogMTIzLCBzdGF0dXM6ICdwcm9jZXNzaW5nJyB9KVxuICAgICAgfSk7XG5cbiAgICBjb25zdCBtb2NrQ2FsbGJhY2tzID0ge1xuICAgICAgb25VcGxvYWRDb21wbGV0ZTogamVzdC5mbigpLFxuICAgICAgb25BbmFseXNpc0NvbXBsZXRlOiBqZXN0LmZuKCksXG4gICAgICBvbk5leHQ6IGplc3QuZm4oKSxcbiAgICAgIG9uQmFjazogamVzdC5mbigpXG4gICAgfTtcblxuICAgIHJlbmRlcldpdGhQcm92aWRlcnMoPFRlc3RVcGxvYWRTdGVwIHsuLi5tb2NrQ2FsbGJhY2tzfSAvPik7XG5cbiAgICAvLyBDcmVhdGUgYW5kIHVwbG9hZCB0ZXN0IGZpbGVcbiAgICBjb25zdCB7IGZpbGUgfSA9IGNyZWF0ZVRlc3RGaWxlKHtcbiAgICAgIGZpbGVOYW1lOiAnZXhhbS5wZGYnLFxuICAgICAgZmlsZVR5cGU6ICdhcHBsaWNhdGlvbi9wZGYnLFxuICAgICAgY29udGVudDogJ2V4YW0gY29udGVudCdcbiAgICB9KTtcblxuICAgIGNvbnN0IGZpbGVJbnB1dCA9IHNjcmVlbi5nZXRCeVRlc3RJZChcImZpbGUtaW5wdXRcIik7XG4gICAgYXdhaXQgdGVzdEVudi5maWxlcy5jcmVhdGVUZXN0RmlsZSgpLnNpbXVsYXRlRmlsZVVwbG9hZChmaWxlSW5wdXQsIFtmaWxlXSk7XG5cbiAgICAvLyBXYWl0IGZvciBhdXRvbWF0aWMgYW5hbHlzaXMgdG8gY29tcGxldGUgKHRlc3QgbW9kZSB1c2VzIG1vY2sgZGF0YSlcbiAgICBhd2FpdCB3YWl0Rm9yKFxuICAgICAgKCkgPT4ge1xuICAgICAgICBleHBlY3Qoc2NyZWVuLmdldEJ5VGV4dChcIvCfpJYgQW5hbHl6aW5nIHRlc3QgY29udGVudC4uLlwiKSkudG9CZUluVGhlRG9jdW1lbnQoKTtcbiAgICAgIH0sXG4gICAgICB7IHRpbWVvdXQ6IDUwMDAgfVxuICAgICk7XG5cbiAgICAvLyBJbiB0ZXN0IG1vZGUsIHRoZSBjb21wb25lbnQgdXNlcyBtb2NrIGRhdGEgYW5kIGRvZXNuJ3QgdGltZW91dFxuICAgIGV4cGVjdChzY3JlZW4uZ2V0QnlUZXh0KFwi8J+kliBBbmFseXppbmcgdGVzdCBjb250ZW50Li4uXCIpKS50b0JlSW5UaGVEb2N1bWVudCgpO1xuICB9KTtcbn0pO1xuIl0sIm5hbWVzIjpbInRlc3RFbnYiLCJzZXR1cEZ1bGxUZXN0RW52aXJvbm1lbnQiLCJjcmVhdGVUZXN0RmlsZSIsInRlc3RGYWN0b3JpZXMiLCJhcGlNb2NrcyIsInN0YW5kYXJkTW9ja3MiLCJkZXNjcmliZSIsImJlZm9yZUVhY2giLCJtb2NrcyIsInJlc2V0QWxsIiwic2V0dXBNb2NrUmVzcG9uc2VzIiwib2siLCJzdGF0dXMiLCJqc29uIiwiaWQiLCJvcmlnaW5hbF90ZXh0IiwicHJvY2Vzc2VkX2RhdGEiLCJ0ZXN0X3R5cGUiLCJ0b3BpY3NfY292ZXJlZCIsIml0IiwicmVuZGVyV2l0aFByb3ZpZGVycyIsIlRlc3RVcGxvYWRTdGVwIiwib25VcGxvYWRDb21wbGV0ZSIsImplc3QiLCJmbiIsIm9uQW5hbHlzaXNDb21wbGV0ZSIsIm9uTmV4dCIsIm9uQmFjayIsImV4cGVjdCIsInNjcmVlbiIsImdldEJ5VGV4dCIsInRvQmVJblRoZURvY3VtZW50IiwibW9ja0NhbGxiYWNrcyIsImZpbGUiLCJmaWxlTmFtZSIsImZpbGVUeXBlIiwiY29udGVudCIsImZpbGVJbnB1dCIsImdldEJ5VGVzdElkIiwiZmlsZXMiLCJzaW11bGF0ZUZpbGVVcGxvYWQiLCJ3YWl0Rm9yIiwibW9ja0ZldGNoIiwibW9ja1Jlc29sdmVkVmFsdWVPbmNlIiwic3RhdHVzVGV4dCIsInRleHQiLCJ0aW1lb3V0Iiwic3VjY2VzcyIsIm1vY2tSZXNvbHZlZFZhbHVlIl0sIm1hcHBpbmdzIjoiOzs7OzsrREFBdUI7d0JBQ1M7UUFDekI7Z0NBQ3dCOzJCQVF4Qjs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBRVAseUJBQXlCO0FBQ3pCLE1BQU1BLFVBQVVDLElBQUFBLG1DQUF3QjtBQUN4QyxNQUFNLEVBQUVDLGNBQWMsRUFBRSxHQUFHQyx3QkFBYTtBQUN4QyxNQUFNLEVBQUVDLFFBQVEsRUFBRSxHQUFHQyx3QkFBYTtBQUVsQ0MsU0FBUyxvQ0FBb0M7SUFDM0NDLFdBQVc7UUFDVFAsUUFBUVEsS0FBSyxDQUFDQyxRQUFRO1FBRXRCLGtEQUFrRDtRQUNsREwsU0FBU00sa0JBQWtCLENBQUM7WUFDMUIsNkJBQTZCO2dCQUMzQkMsSUFBSTtnQkFDSkMsUUFBUTtnQkFDUkMsTUFBTSxVQUFhLENBQUE7d0JBQUVDLElBQUk7d0JBQUtGLFFBQVE7b0JBQVUsQ0FBQTtZQUNsRDtZQUNBLGtDQUFrQztnQkFDaENELElBQUk7Z0JBQ0pDLFFBQVE7Z0JBQ1JDLE1BQU0sVUFBYSxDQUFBO3dCQUNqQkMsSUFBSTt3QkFDSkYsUUFBUTt3QkFDUkcsZUFBZTt3QkFDZkMsZ0JBQWdCOzRCQUNkQyxXQUFXOzRCQUNYQyxnQkFBZ0I7Z0NBQUM7Z0NBQWU7NkJBQVU7d0JBQzVDO29CQUNGLENBQUE7WUFDRjtRQUNGO0lBQ0Y7SUFFQUMsR0FBRyxvREFBb0Q7UUFDckQsMEZBQTBGO1FBQzFGLG9FQUFvRTtRQUVwRUMsSUFBQUEsOEJBQW1CLGdCQUNqQixxQkFBQ0MsOEJBQWM7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

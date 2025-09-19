@@ -1,4 +1,4 @@
-import { axiosApi } from '@/lib/axios-api';
+import { axiosApi } from '@/lib/axios';
 
 export interface FlashcardSetTest {
   id: number;

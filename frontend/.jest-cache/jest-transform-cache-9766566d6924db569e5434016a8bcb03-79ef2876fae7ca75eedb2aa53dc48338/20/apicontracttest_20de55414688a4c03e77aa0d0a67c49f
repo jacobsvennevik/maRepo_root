@@ -1,0 +1,38 @@
+88b8da6df55c99f07ca347a668bdb5b5
+/**
+ * API Contract Tests - Verify the real endpoints exist and return expected shapes
+ * These catch when backend routes change or are missing
+ */ "use strict";
+describe('API Contract Tests', ()=>{
+    const projectId = '203062be-58d0-4f98-bbd4-33b4ce081276';
+    it('flashcard sets endpoint should exist and return expected format', async ()=>{
+        // This would have caught if the endpoint didn't exist
+        const response = await fetch(`http://localhost:8000/generation/api/projects/${projectId}/flashcard-sets/`);
+        // Should get 401 (auth required) not 404 (endpoint missing)  
+        expect([
+            200,
+            401
+        ]).toContain(response.status);
+        if (response.status === 200) {
+            const data = await response.json();
+            expect(Array.isArray(data) || data.results).toBeTruthy();
+        }
+    });
+    it('project details endpoint should exist', async ()=>{
+        const response = await fetch(`http://localhost:8000/api/projects/${projectId}/`);
+        expect([
+            200,
+            401,
+            403
+        ]).toContain(response.status);
+    });
+    it('diagnostic sessions endpoint should exist', async ()=>{
+        const response = await fetch(`http://localhost:8000/generation/api/diagnostic-sessions/?project=${projectId}`);
+        expect([
+            200,
+            401
+        ]).toContain(response.status);
+    });
+});
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvdGVzdC11dGlscy9jb250cmFjdC9hcGktY29udHJhY3QudGVzdC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEFQSSBDb250cmFjdCBUZXN0cyAtIFZlcmlmeSB0aGUgcmVhbCBlbmRwb2ludHMgZXhpc3QgYW5kIHJldHVybiBleHBlY3RlZCBzaGFwZXNcbiAqIFRoZXNlIGNhdGNoIHdoZW4gYmFja2VuZCByb3V0ZXMgY2hhbmdlIG9yIGFyZSBtaXNzaW5nXG4gKi9cblxuZGVzY3JpYmUoJ0FQSSBDb250cmFjdCBUZXN0cycsICgpID0+IHtcbiAgY29uc3QgcHJvamVjdElkID0gJzIwMzA2MmJlLTU4ZDAtNGY5OC1iYmQ0LTMzYjRjZTA4MTI3Nic7XG5cbiAgaXQoJ2ZsYXNoY2FyZCBzZXRzIGVuZHBvaW50IHNob3VsZCBleGlzdCBhbmQgcmV0dXJuIGV4cGVjdGVkIGZvcm1hdCcsIGFzeW5jICgpID0+IHtcbiAgICAvLyBUaGlzIHdvdWxkIGhhdmUgY2F1Z2h0IGlmIHRoZSBlbmRwb2ludCBkaWRuJ3QgZXhpc3RcbiAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IGZldGNoKGBodHRwOi8vbG9jYWxob3N0OjgwMDAvZ2VuZXJhdGlvbi9hcGkvcHJvamVjdHMvJHtwcm9qZWN0SWR9L2ZsYXNoY2FyZC1zZXRzL2ApO1xuICAgIFxuICAgIC8vIFNob3VsZCBnZXQgNDAxIChhdXRoIHJlcXVpcmVkKSBub3QgNDA0IChlbmRwb2ludCBtaXNzaW5nKSAgXG4gICAgZXhwZWN0KFsyMDAsIDQwMV0pLnRvQ29udGFpbihyZXNwb25zZS5zdGF0dXMpO1xuICAgIFxuICAgIGlmIChyZXNwb25zZS5zdGF0dXMgPT09IDIwMCkge1xuICAgICAgY29uc3QgZGF0YSA9IGF3YWl0IHJlc3BvbnNlLmpzb24oKTtcbiAgICAgIGV4cGVjdChBcnJheS5pc0FycmF5KGRhdGEpIHx8IGRhdGEucmVzdWx0cykudG9CZVRydXRoeSgpO1xuICAgIH1cbiAgfSk7XG5cbiAgaXQoJ3Byb2plY3QgZGV0YWlscyBlbmRwb2ludCBzaG91bGQgZXhpc3QnLCBhc3luYyAoKSA9PiB7XG4gICAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBmZXRjaChgaHR0cDovL2xvY2FsaG9zdDo4MDAwL2FwaS9wcm9qZWN0cy8ke3Byb2plY3RJZH0vYCk7XG4gICAgZXhwZWN0KFsyMDAsIDQwMSwgNDAzXSkudG9Db250YWluKHJlc3BvbnNlLnN0YXR1cyk7XG4gIH0pO1xuXG4gIGl0KCdkaWFnbm9zdGljIHNlc3Npb25zIGVuZHBvaW50IHNob3VsZCBleGlzdCcsIGFzeW5jICgpID0+IHsgIFxuICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goYGh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9nZW5lcmF0aW9uL2FwaS9kaWFnbm9zdGljLXNlc3Npb25zLz9wcm9qZWN0PSR7cHJvamVjdElkfWApO1xuICAgIGV4cGVjdChbMjAwLCA0MDFdKS50b0NvbnRhaW4ocmVzcG9uc2Uuc3RhdHVzKTtcbiAgfSk7XG59KTtcbiJdLCJuYW1lcyI6WyJkZXNjcmliZSIsInByb2plY3RJZCIsIml0IiwicmVzcG9uc2UiLCJmZXRjaCIsImV4cGVjdCIsInRvQ29udGFpbiIsInN0YXR1cyIsImRhdGEiLCJqc29uIiwiQXJyYXkiLCJpc0FycmF5IiwicmVzdWx0cyIsInRvQmVUcnV0aHkiXSwibWFwcGluZ3MiOiJBQUFBOzs7Q0FHQztBQUVEQSxTQUFTLHNCQUFzQjtJQUM3QixNQUFNQyxZQUFZO0lBRWxCQyxHQUFHLG1FQUFtRTtRQUNwRSxzREFBc0Q7UUFDdEQsTUFBTUMsV0FBVyxNQUFNQyxNQUFNLENBQUMsOENBQThDLEVBQUVILFVBQVUsZ0JBQWdCLENBQUM7UUFFekcsOERBQThEO1FBQzlESSxPQUFPO1lBQUM7WUFBSztTQUFJLEVBQUVDLFNBQVMsQ0FBQ0gsU0FBU0ksTUFBTTtRQUU1QyxJQUFJSixTQUFTSSxNQUFNLEtBQUssS0FBSztZQUMzQixNQUFNQyxPQUFPLE1BQU1MLFNBQVNNLElBQUk7WUFDaENKLE9BQU9LLE1BQU1DLE9BQU8sQ0FBQ0gsU0FBU0EsS0FBS0ksT0FBTyxFQUFFQyxVQUFVO1FBQ3hEO0lBQ0Y7SUFFQVgsR0FBRyx5Q0FBeUM7UUFDMUMsTUFBTUMsV0FBVyxNQUFNQyxNQUFNLENBQUMsbUNBQW1DLEVBQUVILFVBQVUsQ0FBQyxDQUFDO1FBQy9FSSxPQUFPO1lBQUM7WUFBSztZQUFLO1NBQUksRUFBRUMsU0FBUyxDQUFDSCxTQUFTSSxNQUFNO0lBQ25EO0lBRUFMLEdBQUcsNkNBQTZDO1FBQzlDLE1BQU1DLFdBQVcsTUFBTUMsTUFBTSxDQUFDLGtFQUFrRSxFQUFFSCxXQUFXO1FBQzdHSSxPQUFPO1lBQUM7WUFBSztTQUFJLEVBQUVDLFNBQVMsQ0FBQ0gsU0FBU0ksTUFBTTtJQUM5QztBQUNGIn0=

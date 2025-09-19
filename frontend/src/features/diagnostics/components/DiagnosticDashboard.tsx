@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { axiosApi } from "@/lib/axios-api";
+import { axiosApi, axiosGeneration } from '@/lib/axios';
+import { getProjectScoped } from '@/lib/projectApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -44,9 +45,8 @@ export default function DiagnosticDashboard({ projectId }: { projectId: string }
   const fetchDiagnosticSessions = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosApi.get(`diagnostic-sessions/?project=${projectId}`);
-      const data = response.data;
-      setSessions(data.results || data || []);
+      const sessions = await getProjectScoped(`diagnostic-sessions/`, projectId);
+      setSessions(Array.isArray(sessions) ? sessions : []);
     } catch (error) {
       console.error('Failed to fetch diagnostic sessions:', error);
     } finally {
@@ -209,7 +209,7 @@ function DiagnosticSessionCard({
 
   const handleStatusChange = async (newStatus: string) => {
     try {
-      await axiosApi.patch(`diagnostic-sessions/${session.id}/`, { status: newStatus });
+      await axiosGeneration.patch(`diagnostic-sessions/${session.id}/`, { status: newStatus });
       onRefresh();
     } catch (error) {
       console.error('Failed to update status:', error);
@@ -220,7 +220,7 @@ function DiagnosticSessionCard({
     if (!confirm('Are you sure you want to delete this diagnostic session?')) return;
     
     try {
-      await axiosApi.delete(`diagnostic-sessions/${session.id}/`);
+      await axiosGeneration.delete(`diagnostic-sessions/${session.id}/`);
       onRefresh();
     } catch (error) {
       console.error('Failed to delete session:', error);

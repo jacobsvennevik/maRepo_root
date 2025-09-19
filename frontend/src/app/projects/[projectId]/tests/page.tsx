@@ -175,6 +175,66 @@ export default function ProjectTests() {
     }
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="relative min-h-screen space-y-6">
+        <Breadcrumbs />
+        <OceanCenteredPageHeader
+          title="Project Quizzes"
+          subtitle="Assess your knowledge with auto-generated quizzes"
+          icon={<Target className="h-8 w-8 text-white" />}
+          gradientClassName="from-blue-400 to-purple-600"
+        />
+        <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-white/60">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+          <div className="text-lg font-semibold text-slate-900 mb-1">Loading quizzes...</div>
+          <div className="text-slate-600">Please wait while we load your quiz sessions.</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="relative min-h-screen space-y-6">
+        <Breadcrumbs />
+        <OceanCenteredPageHeader
+          title="Project Quizzes"
+          subtitle="Assess your knowledge with auto-generated quizzes"
+          icon={<Target className="h-8 w-8 text-white" />}
+          gradientClassName="from-blue-400 to-purple-600"
+        />
+        <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-red-50 border-red-200">
+          <div className="text-4xl mb-2">⚠️</div>
+          <div className="text-lg font-semibold text-red-900 mb-1">Error loading quizzes</div>
+          <div className="text-red-700 mb-4 text-center max-w-md">{error}</div>
+          <Button 
+            onClick={() => {
+              setError(null);
+              setLoading(true);
+              // Retry the fetch
+              setTimeout(async () => {
+                try {
+                  const data = await quizApi.listSessions({ project: projectId });
+                  setSessions(data);
+                } catch (e: any) {
+                  setError(e?.message || 'Failed to load quizzes');
+                } finally {
+                  setLoading(false);
+                }
+              }, 100);
+            }}
+            variant="outline"
+          >
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen space-y-6">
       <Breadcrumbs />

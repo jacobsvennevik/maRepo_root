@@ -1,0 +1,248 @@
+c84e0f6d3a3f3eaba00c378cef932ff3
+/**
+ * GenerateQuizStep
+ */ "use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    GenerateQuizStep: function() {
+        return GenerateQuizStep;
+    },
+    default: function() {
+        return _default;
+    }
+});
+const _jsxruntime = require("react/jsx-runtime");
+const _react = /*#__PURE__*/ _interop_require_default(require("react"));
+const _card = require("../../../../../components/ui/card");
+const _button = require("../../../../../components/ui/button");
+const _alert = require("../../../../../components/ui/alert");
+const _progress = require("../../../../../components/ui/progress");
+const _lucidereact = require("lucide-react");
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+const GenerateQuizStep = ({ form, method, uploadedFiles, selectedExistingFileIds, projectFiles, isGenerating, generatedQuiz, error, onGenerate })=>{
+    const { getValues } = form;
+    return /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+        className: "space-y-4",
+        children: [
+            /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                className: "text-center space-y-2",
+                children: [
+                    /*#__PURE__*/ (0, _jsxruntime.jsx)("h2", {
+                        className: "text-xl font-semibold text-slate-900",
+                        children: "Generate Quiz"
+                    }),
+                    /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                        className: "text-sm text-slate-600",
+                        children: "Review your settings and generate the quiz"
+                    })
+                ]
+            }),
+            /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                className: "space-y-4",
+                children: [
+                    /*#__PURE__*/ (0, _jsxruntime.jsx)(_card.Card, {
+                        children: /*#__PURE__*/ (0, _jsxruntime.jsxs)(_card.CardContent, {
+                            className: "p-4",
+                            children: [
+                                /*#__PURE__*/ (0, _jsxruntime.jsx)("h3", {
+                                    className: "text-lg font-semibold mb-3",
+                                    children: "Configuration Summary"
+                                }),
+                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "grid grid-cols-2 gap-4 text-sm",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                    className: "font-medium",
+                                                    children: "Title:"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                    className: "ml-2",
+                                                    children: getValues('title') || 'Untitled Quiz'
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                    className: "font-medium",
+                                                    children: "Topic:"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                    className: "ml-2",
+                                                    children: getValues('topic') || 'General'
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                    className: "font-medium",
+                                                    children: "Difficulty:"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                    className: "ml-2",
+                                                    children: getValues('difficulty')
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                    className: "font-medium",
+                                                    children: "Questions:"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                    className: "ml-2",
+                                                    children: getValues('max_questions')
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                    className: "font-medium",
+                                                    children: "Time Limit:"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsxs)("span", {
+                                                    className: "ml-2",
+                                                    children: [
+                                                        getValues('time_limit_sec') ? Math.round(getValues('time_limit_sec') / 60) : 'No limit',
+                                                        " min"
+                                                    ]
+                                                })
+                                            ]
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                    className: "font-medium",
+                                                    children: "Method:"
+                                                }),
+                                                /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                                    className: "ml-2 capitalize",
+                                                    children: method
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                method === 'files' && /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                    className: "mt-3",
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)("span", {
+                                            className: "font-medium text-sm",
+                                            children: "Source Files:"
+                                        }),
+                                        /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                            className: "mt-1 space-y-1",
+                                            children: [
+                                                uploadedFiles.map((file, index)=>/*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                                        className: "text-xs text-slate-600",
+                                                        children: [
+                                                            "\uD83D\uDCC4 ",
+                                                            file.name
+                                                        ]
+                                                    }, index)),
+                                                selectedExistingFileIds.map((fileId)=>{
+                                                    const file = projectFiles.find((f)=>f.id === fileId);
+                                                    return file ? /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                                        className: "text-xs text-slate-600",
+                                                        children: [
+                                                            "\uD83D\uDCC4 ",
+                                                            file.name
+                                                        ]
+                                                    }, fileId) : null;
+                                                })
+                                            ]
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    }),
+                    /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                        className: "text-center",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_button.Button, {
+                                onClick: onGenerate,
+                                disabled: isGenerating,
+                                size: "lg",
+                                className: "w-full",
+                                children: isGenerating ? /*#__PURE__*/ (0, _jsxruntime.jsxs)(_jsxruntime.Fragment, {
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Loader2, {
+                                            className: "h-4 w-4 animate-spin mr-2"
+                                        }),
+                                        "Generating Quiz..."
+                                    ]
+                                }) : /*#__PURE__*/ (0, _jsxruntime.jsxs)(_jsxruntime.Fragment, {
+                                    children: [
+                                        /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.Sparkles, {
+                                            className: "h-4 w-4 mr-2"
+                                        }),
+                                        "Generate Quiz"
+                                    ]
+                                })
+                            }),
+                            isGenerating && /*#__PURE__*/ (0, _jsxruntime.jsxs)("div", {
+                                className: "mt-4",
+                                children: [
+                                    /*#__PURE__*/ (0, _jsxruntime.jsx)(_progress.Progress, {
+                                        value: 33,
+                                        className: "w-full"
+                                    }),
+                                    /*#__PURE__*/ (0, _jsxruntime.jsx)("p", {
+                                        className: "text-sm text-slate-600 mt-2",
+                                        children: "AI is analyzing your content and creating questions..."
+                                    })
+                                ]
+                            })
+                        ]
+                    }),
+                    error && /*#__PURE__*/ (0, _jsxruntime.jsxs)(_alert.Alert, {
+                        variant: "destructive",
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.AlertCircle, {
+                                className: "h-4 w-4"
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_alert.AlertDescription, {
+                                children: error
+                            })
+                        ]
+                    }),
+                    generatedQuiz && /*#__PURE__*/ (0, _jsxruntime.jsxs)(_alert.Alert, {
+                        children: [
+                            /*#__PURE__*/ (0, _jsxruntime.jsx)(_lucidereact.CheckCircle2, {
+                                className: "h-4 w-4"
+                            }),
+                            /*#__PURE__*/ (0, _jsxruntime.jsxs)(_alert.AlertDescription, {
+                                children: [
+                                    "✅ Quiz generated successfully! ",
+                                    generatedQuiz.questions?.length || 0,
+                                    " questions created."
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            })
+        ]
+    });
+};
+const _default = GenerateQuizStep;
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvcXVpei9jb21wb25lbnRzL1F1aXpXaXphcmQvc3RlcHMvR2VuZXJhdGVRdWl6U3RlcC50c3giXSwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZVF1aXpTdGVwXG4gKi9cblxuaW1wb3J0IFJlYWN0IGZyb20gJ3JlYWN0JztcbmltcG9ydCB7IENhcmQsIENhcmRDb250ZW50IH0gZnJvbSAnQC9jb21wb25lbnRzL3VpL2NhcmQnO1xuaW1wb3J0IHsgQnV0dG9uIH0gZnJvbSAnQC9jb21wb25lbnRzL3VpL2J1dHRvbic7XG5pbXBvcnQgeyBBbGVydCwgQWxlcnREZXNjcmlwdGlvbiB9IGZyb20gJ0AvY29tcG9uZW50cy91aS9hbGVydCc7XG5pbXBvcnQgeyBQcm9ncmVzcyB9IGZyb20gJ0AvY29tcG9uZW50cy91aS9wcm9ncmVzcyc7XG5pbXBvcnQgeyBcbiAgQnJhaW4sXG4gIENoZWNrQ2lyY2xlMixcbiAgQWxlcnRDaXJjbGUsXG4gIExvYWRlcjIsXG4gIFNwYXJrbGVzLFxuICBGaWxlLFxufSBmcm9tICdsdWNpZGUtcmVhY3QnO1xuXG5pbnRlcmZhY2UgR2VuZXJhdGVRdWl6U3RlcFByb3BzIHtcbiAgZm9ybTogYW55O1xuICBtZXRob2Q6ICdhdXRvJyB8ICdmaWxlcycgfCAnbWFudWFsJztcbiAgdXBsb2FkZWRGaWxlczogRmlsZVtdO1xuICBzZWxlY3RlZEV4aXN0aW5nRmlsZUlkczogKHN0cmluZyB8IG51bWJlcilbXTtcbiAgcHJvamVjdEZpbGVzOiBhbnlbXTtcbiAgaXNHZW5lcmF0aW5nOiBib29sZWFuO1xuICBnZW5lcmF0ZWRRdWl6OiBhbnk7XG4gIGVycm9yOiBzdHJpbmcgfCBudWxsO1xuICBvbkdlbmVyYXRlOiAoKSA9PiB2b2lkO1xufVxuXG5leHBvcnQgY29uc3QgR2VuZXJhdGVRdWl6U3RlcDogUmVhY3QuRkM8R2VuZXJhdGVRdWl6U3RlcFByb3BzPiA9ICh7XG4gIGZvcm0sXG4gIG1ldGhvZCxcbiAgdXBsb2FkZWRGaWxlcyxcbiAgc2VsZWN0ZWRFeGlzdGluZ0ZpbGVJZHMsXG4gIHByb2plY3RGaWxlcyxcbiAgaXNHZW5lcmF0aW5nLFxuICBnZW5lcmF0ZWRRdWl6LFxuICBlcnJvcixcbiAgb25HZW5lcmF0ZSxcbn0pID0+IHtcbiAgY29uc3QgeyBnZXRWYWx1ZXMgfSA9IGZvcm07XG5cbiAgcmV0dXJuIChcbiAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktNFwiPlxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LWNlbnRlciBzcGFjZS15LTJcIj5cbiAgICAgICAgPGgyIGNsYXNzTmFtZT1cInRleHQteGwgZm9udC1zZW1pYm9sZCB0ZXh0LXNsYXRlLTkwMFwiPkdlbmVyYXRlIFF1aXo8L2gyPlxuICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LXNtIHRleHQtc2xhdGUtNjAwXCI+UmV2aWV3IHlvdXIgc2V0dGluZ3MgYW5kIGdlbmVyYXRlIHRoZSBxdWl6PC9wPlxuICAgICAgPC9kaXY+XG5cbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS00XCI+XG4gICAgICAgIDxDYXJkPlxuICAgICAgICAgIDxDYXJkQ29udGVudCBjbGFzc05hbWU9XCJwLTRcIj5cbiAgICAgICAgICAgIDxoMyBjbGFzc05hbWU9XCJ0ZXh0LWxnIGZvbnQtc2VtaWJvbGQgbWItM1wiPkNvbmZpZ3VyYXRpb24gU3VtbWFyeTwvaDM+XG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ3JpZC1jb2xzLTIgZ2FwLTQgdGV4dC1zbVwiPlxuICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImZvbnQtbWVkaXVtXCI+VGl0bGU6PC9zcGFuPlxuICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cIm1sLTJcIj57Z2V0VmFsdWVzKCd0aXRsZScpIHx8ICdVbnRpdGxlZCBRdWl6J308L3NwYW4+XG4gICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImZvbnQtbWVkaXVtXCI+VG9waWM6PC9zcGFuPlxuICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cIm1sLTJcIj57Z2V0VmFsdWVzKCd0b3BpYycpIHx8ICdHZW5lcmFsJ308L3NwYW4+XG4gICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImZvbnQtbWVkaXVtXCI+RGlmZmljdWx0eTo8L3NwYW4+XG4gICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwibWwtMlwiPntnZXRWYWx1ZXMoJ2RpZmZpY3VsdHknKX08L3NwYW4+XG4gICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImZvbnQtbWVkaXVtXCI+UXVlc3Rpb25zOjwvc3Bhbj5cbiAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJtbC0yXCI+e2dldFZhbHVlcygnbWF4X3F1ZXN0aW9ucycpfTwvc3Bhbj5cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDxkaXY+XG4gICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwiZm9udC1tZWRpdW1cIj5UaW1lIExpbWl0Ojwvc3Bhbj5cbiAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJtbC0yXCI+e2dldFZhbHVlcygndGltZV9saW1pdF9zZWMnKSA/IE1hdGgucm91bmQoZ2V0VmFsdWVzKCd0aW1lX2xpbWl0X3NlYycpISAvIDYwKSA6ICdObyBsaW1pdCd9IG1pbjwvc3Bhbj5cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDxkaXY+XG4gICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwiZm9udC1tZWRpdW1cIj5NZXRob2Q6PC9zcGFuPlxuICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cIm1sLTIgY2FwaXRhbGl6ZVwiPnttZXRob2R9PC9zcGFuPlxuICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgXG4gICAgICAgICAgICB7bWV0aG9kID09PSAnZmlsZXMnICYmIChcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJtdC0zXCI+XG4gICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwiZm9udC1tZWRpdW0gdGV4dC1zbVwiPlNvdXJjZSBGaWxlczo8L3NwYW4+XG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJtdC0xIHNwYWNlLXktMVwiPlxuICAgICAgICAgICAgICAgICAge3VwbG9hZGVkRmlsZXMubWFwKChmaWxlLCBpbmRleCkgPT4gKFxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGtleT17aW5kZXh9IGNsYXNzTmFtZT1cInRleHQteHMgdGV4dC1zbGF0ZS02MDBcIj5cbiAgICAgICAgICAgICAgICAgICAgICDwn5OEIHtmaWxlLm5hbWV9XG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgKSl9XG4gICAgICAgICAgICAgICAgICB7c2VsZWN0ZWRFeGlzdGluZ0ZpbGVJZHMubWFwKGZpbGVJZCA9PiB7XG4gICAgICAgICAgICAgICAgICAgIGNvbnN0IGZpbGUgPSBwcm9qZWN0RmlsZXMuZmluZCgoZjogYW55KSA9PiBmLmlkID09PSBmaWxlSWQpO1xuICAgICAgICAgICAgICAgICAgICByZXR1cm4gZmlsZSA/IChcbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGtleT17ZmlsZUlkfSBjbGFzc05hbWU9XCJ0ZXh0LXhzIHRleHQtc2xhdGUtNjAwXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICDwn5OEIHtmaWxlLm5hbWV9XG4gICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICAgICkgOiBudWxsO1xuICAgICAgICAgICAgICAgICAgfSl9XG4gICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgKX1cbiAgICAgICAgICA8L0NhcmRDb250ZW50PlxuICAgICAgICA8L0NhcmQ+XG5cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LWNlbnRlclwiPlxuICAgICAgICAgIDxCdXR0b24gXG4gICAgICAgICAgICBvbkNsaWNrPXtvbkdlbmVyYXRlfVxuICAgICAgICAgICAgZGlzYWJsZWQ9e2lzR2VuZXJhdGluZ31cbiAgICAgICAgICAgIHNpemU9XCJsZ1wiXG4gICAgICAgICAgICBjbGFzc05hbWU9XCJ3LWZ1bGxcIlxuICAgICAgICAgID5cbiAgICAgICAgICAgIHtpc0dlbmVyYXRpbmcgPyAoXG4gICAgICAgICAgICAgIDw+XG4gICAgICAgICAgICAgICAgPExvYWRlcjIgY2xhc3NOYW1lPVwiaC00IHctNCBhbmltYXRlLXNwaW4gbXItMlwiIC8+XG4gICAgICAgICAgICAgICAgR2VuZXJhdGluZyBRdWl6Li4uXG4gICAgICAgICAgICAgIDwvPlxuICAgICAgICAgICAgKSA6IChcbiAgICAgICAgICAgICAgPD5cbiAgICAgICAgICAgICAgICA8U3BhcmtsZXMgY2xhc3NOYW1lPVwiaC00IHctNCBtci0yXCIgLz5cbiAgICAgICAgICAgICAgICBHZW5lcmF0ZSBRdWl6XG4gICAgICAgICAgICAgIDwvPlxuICAgICAgICAgICAgKX1cbiAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICBcbiAgICAgICAgICB7aXNHZW5lcmF0aW5nICYmIChcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibXQtNFwiPlxuICAgICAgICAgICAgICA8UHJvZ3Jlc3MgdmFsdWU9ezMzfSBjbGFzc05hbWU9XCJ3LWZ1bGxcIiAvPlxuICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LXNtIHRleHQtc2xhdGUtNjAwIG10LTJcIj5cbiAgICAgICAgICAgICAgICBBSSBpcyBhbmFseXppbmcgeW91ciBjb250ZW50IGFuZCBjcmVhdGluZyBxdWVzdGlvbnMuLi5cbiAgICAgICAgICAgICAgPC9wPlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgKX1cbiAgICAgICAgPC9kaXY+XG5cbiAgICAgICAge2Vycm9yICYmIChcbiAgICAgICAgICA8QWxlcnQgdmFyaWFudD1cImRlc3RydWN0aXZlXCI+XG4gICAgICAgICAgICA8QWxlcnRDaXJjbGUgY2xhc3NOYW1lPVwiaC00IHctNFwiIC8+XG4gICAgICAgICAgICA8QWxlcnREZXNjcmlwdGlvbj57ZXJyb3J9PC9BbGVydERlc2NyaXB0aW9uPlxuICAgICAgICAgIDwvQWxlcnQ+XG4gICAgICAgICl9XG5cbiAgICAgICAge2dlbmVyYXRlZFF1aXogJiYgKFxuICAgICAgICAgIDxBbGVydD5cbiAgICAgICAgICAgIDxDaGVja0NpcmNsZTIgY2xhc3NOYW1lPVwiaC00IHctNFwiIC8+XG4gICAgICAgICAgICA8QWxlcnREZXNjcmlwdGlvbj5cbiAgICAgICAgICAgICAg4pyFIFF1aXogZ2VuZXJhdGVkIHN1Y2Nlc3NmdWxseSEge2dlbmVyYXRlZFF1aXoucXVlc3Rpb25zPy5sZW5ndGggfHwgMH0gcXVlc3Rpb25zIGNyZWF0ZWQuXG4gICAgICAgICAgICA8L0FsZXJ0RGVzY3JpcHRpb24+XG4gICAgICAgICAgPC9BbGVydD5cbiAgICAgICAgKX1cbiAgICAgIDwvZGl2PlxuICAgIDwvZGl2PlxuICApO1xufTtcblxuZXhwb3J0IGRlZmF1bHQgR2VuZXJhdGVRdWl6U3RlcDtcblxuXG4iXSwibmFtZXMiOlsiR2VuZXJhdGVRdWl6U3RlcCIsImZvcm0iLCJtZXRob2QiLCJ1cGxvYWRlZEZpbGVzIiwic2VsZWN0ZWRFeGlzdGluZ0ZpbGVJZHMiLCJwcm9qZWN0RmlsZXMiLCJpc0dlbmVyYXRpbmciLCJnZW5lcmF0ZWRRdWl6IiwiZXJyb3IiLCJvbkdlbmVyYXRlIiwiZ2V0VmFsdWVzIiwiZGl2IiwiY2xhc3NOYW1lIiwiaDIiLCJwIiwiQ2FyZCIsIkNhcmRDb250ZW50IiwiaDMiLCJzcGFuIiwiTWF0aCIsInJvdW5kIiwibWFwIiwiZmlsZSIsImluZGV4IiwibmFtZSIsImZpbGVJZCIsImZpbmQiLCJmIiwiaWQiLCJCdXR0b24iLCJvbkNsaWNrIiwiZGlzYWJsZWQiLCJzaXplIiwiTG9hZGVyMiIsIlNwYXJrbGVzIiwiUHJvZ3Jlc3MiLCJ2YWx1ZSIsIkFsZXJ0IiwidmFyaWFudCIsIkFsZXJ0Q2lyY2xlIiwiQWxlcnREZXNjcmlwdGlvbiIsIkNoZWNrQ2lyY2xlMiIsInF1ZXN0aW9ucyIsImxlbmd0aCJdLCJtYXBwaW5ncyI6IkFBQUE7O0NBRUM7Ozs7Ozs7Ozs7O0lBNEJZQSxnQkFBZ0I7ZUFBaEJBOztJQTRIYixPQUFnQztlQUFoQzs7Ozs4REF0SmtCO3NCQUNnQjt3QkFDWDt1QkFDaUI7MEJBQ2Y7NkJBUWxCOzs7Ozs7QUFjQSxNQUFNQSxtQkFBb0QsQ0FBQyxFQUNoRUMsSUFBSSxFQUNKQyxNQUFNLEVBQ05DLGFBQWEsRUFDYkMsdUJBQXVCLEVBQ3ZCQyxZQUFZLEVBQ1pDLFlBQVksRUFDWkMsYUFBYSxFQUNiQyxLQUFLLEVBQ0xDLFVBQVUsRUFDWDtJQUNDLE1BQU0sRUFBRUMsU0FBUyxFQUFFLEdBQUdUO0lBRXRCLHFCQUNFLHNCQUFDVTtRQUFJQyxXQUFVOzswQkFDYixzQkFBQ0Q7Z0JBQUlDLFdBQVU7O2tDQUNiLHFCQUFDQzt3QkFBR0QsV0FBVTtrQ0FBdUM7O2tDQUNyRCxxQkFBQ0U7d0JBQUVGLFdBQVU7a0NBQXlCOzs7OzBCQUd4QyxzQkFBQ0Q7Z0JBQUlDLFdBQVU7O2tDQUNiLHFCQUFDRyxVQUFJO2tDQUNILGNBQUEsc0JBQUNDLGlCQUFXOzRCQUFDSixXQUFVOzs4Q0FDckIscUJBQUNLO29DQUFHTCxXQUFVOzhDQUE2Qjs7OENBQzNDLHNCQUFD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

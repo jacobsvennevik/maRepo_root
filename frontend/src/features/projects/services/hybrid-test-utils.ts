@@ -1,5 +1,5 @@
 // Hybrid test utilities - Use mock data but process through real backend
-import { axiosApi } from '@/lib/axios-api';
+import { axiosApi } from '@/lib/axios';
 import { 
   MOCK_SYLLABUS_PROCESSED_DOCUMENT, 
   MOCK_COURSE_CONTENT_PROCESSED_DOCUMENT,

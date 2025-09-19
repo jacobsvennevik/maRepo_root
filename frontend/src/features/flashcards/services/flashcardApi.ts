@@ -1,4 +1,6 @@
 import { axiosGeneration } from '@/lib/axios';
+import { getProjectScoped, postProjectScoped } from '@/lib/projectApi'
+import { buildTestModeHeaders } from '@/lib/testMode'
 import type { 
   Flashcard, 
   FlashcardSet, 
@@ -10,47 +12,15 @@ import type {
 } from '../types';
 
 class FlashcardApiService {
-  // Flashcard Set Operations
   async getProjectFlashcardSets(projectId: string): Promise<FlashcardSet[]> {
-    console.group('🔍 Flashcard Sets API');
-    console.log('→ GET /projects/${projectId}/flashcard-sets/');
-
-    try {
-      const response = await axiosGeneration.get<FlashcardSetApiResponse | FlashcardSet[]>(`/projects/${projectId}/flashcard-sets/`);
-      const data = response.data;
-      console.log('✅ Payload:', data);
-      
-      // Handle different response formats
-      const sets = (data as any).results || data || [];
-      console.log('📋 Normalized sets:', sets);
-      
-      return sets;
-    } catch (err) {
-      console.error('❌ Network/parse failure:', err);
-      throw err;
-    } finally {
-      console.groupEnd();
-    }
+    const data = await getProjectScoped<FlashcardSetApiResponse | FlashcardSet[]>(`flashcard-sets/`, projectId)
+    const sets = (data as any).results || data || []
+    return sets
   }
 
   async createProjectFlashcardSet(projectId: string, form: CreateFlashcardSetForm): Promise<FlashcardSet | null> {
-    console.group('🔍 Create Flashcard Set API');
-    console.log('→ POST /projects/${projectId}/flashcard-sets/');
-    console.log('→ Payload:', form);
-
-    try {
-      // Create flashcard set for the specific project
-      const response = await axiosGeneration.post<FlashcardSet>(`/projects/${projectId}/flashcard-sets/`, { title: form.title });
-      const data = response.data;
-      console.log('✅ Created set:', data);
-      
-      return data;
-    } catch (err) {
-      console.error('❌ Create failure:', err);
-      throw err;
-    } finally {
-      console.groupEnd();
-    }
+    const data = await postProjectScoped<FlashcardSet>(`flashcard-sets/`, projectId, { title: form.title })
+    return data
   }
 
   async deleteFlashcardSet(setId: number): Promise<void> {
@@ -68,38 +38,14 @@ class FlashcardApiService {
     }
   }
 
-  // Flashcard Operations
   async getFlashcards(setId: number, projectId?: string): Promise<Flashcard[]> {
-    console.group('🔍 Flashcards API');
-    
-    // Try project-scoped endpoint first if projectId is provided
     const endpoint = projectId 
-      ? `/projects/${projectId}/flashcard-sets/${setId}/flashcards/`
-      : `/flashcards/?flashcard_set=${setId}`;
-    
-    console.log('→ GET', endpoint);
-
-    try {
-      const response = await axiosGeneration.get<FlashcardApiResponse | Flashcard[]>(endpoint);
-      console.log('✅ Response:', response);
-      
-      // Extract data from axios response
-      const responseData = response.data;
-      console.log('✅ Response data:', responseData);
-      
-      // Handle different response formats
-      const cards = (responseData as any)?.results || responseData || [];
-      console.log('📋 Normalized cards:', cards);
-      
-      // Ensure we return an array
-      return Array.isArray(cards) ? cards : [];
-    } catch (err) {
-      console.error('❌ Network/parse failure:', err);
-      // Return empty array on error to prevent .map() errors
-      return [];
-    } finally {
-      console.groupEnd();
-    }
+      ? `projects/${projectId}/flashcard-sets/${setId}/flashcards/`
+      : `flashcards/?flashcard_set=${setId}`
+    const res = await axiosGeneration.get(endpoint)
+    const responseData = res.data
+    const cards = (responseData as any)?.results || responseData || []
+    return Array.isArray(cards) ? cards : []
   }
 
   async createFlashcard(setId: number, form: CreateFlashcardForm): Promise<Flashcard | null> {
@@ -225,5 +171,4 @@ class FlashcardApiService {
   }
 }
 
-// Export singleton instance
 export const flashcardApi = new FlashcardApiService();

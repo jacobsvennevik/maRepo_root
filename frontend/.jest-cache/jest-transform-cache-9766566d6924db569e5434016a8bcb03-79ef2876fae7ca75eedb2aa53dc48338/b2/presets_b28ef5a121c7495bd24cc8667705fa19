@@ -1,0 +1,446 @@
+6c7643e9cd1990b9fb703b74eaa454a7
+/**
+ * Quiz Type Presets and Configuration
+ * 
+ * Predefined configurations for different quiz types to speed up
+ * the creation process and provide smart defaults based on best practices.
+ */ // ============================================================================
+// Types and Interfaces
+// ============================================================================
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    PRESET_CATEGORIES: function() {
+        return PRESET_CATEGORIES;
+    },
+    QUIZ_PRESETS: function() {
+        return QUIZ_PRESETS;
+    },
+    default: function() {
+        return _default;
+    },
+    getCustomPresetTemplate: function() {
+        return getCustomPresetTemplate;
+    },
+    getPresetById: function() {
+        return getPresetById;
+    },
+    getPresetsByCategory: function() {
+        return getPresetsByCategory;
+    },
+    getPresetsByDifficulty: function() {
+        return getPresetsByDifficulty;
+    },
+    getPresetsByQuizType: function() {
+        return getPresetsByQuizType;
+    },
+    getRecommendedPresets: function() {
+        return getRecommendedPresets;
+    },
+    searchPresets: function() {
+        return searchPresets;
+    }
+});
+const QUIZ_PRESETS = [
+    // Quick Assessment Presets
+    {
+        id: 'quick-check',
+        name: 'Quick Knowledge Check',
+        description: 'Fast 5-minute assessment to gauge understanding',
+        icon: '⚡',
+        category: 'quick',
+        recommended: true,
+        config: {
+            quiz_type: 'formative',
+            difficulty: 'INTERMEDIATE',
+            max_questions: 5,
+            time_limit_sec: 300,
+            question_types: [
+                'multiple_choice',
+                'true_false'
+            ],
+            delivery_mode: 'immediate',
+            features: {
+                hints_enabled: true,
+                explanations_enabled: true,
+                retries_allowed: true,
+                randomize_questions: true,
+                show_progress: true
+            }
+        },
+        tags: [
+            'quick',
+            'formative',
+            'practice'
+        ],
+        estimatedTime: '5 minutes',
+        difficulty_description: 'Easy to moderate questions'
+    },
+    {
+        id: 'diagnostic-basic',
+        name: 'Basic Diagnostic',
+        description: 'Identify knowledge gaps and learning needs',
+        icon: '🔍',
+        category: 'quick',
+        recommended: true,
+        config: {
+            quiz_type: 'diagnostic',
+            difficulty: 'INTERMEDIATE',
+            max_questions: 8,
+            time_limit_sec: 600,
+            question_types: [
+                'multiple_choice',
+                'fill_blank'
+            ],
+            delivery_mode: 'immediate',
+            features: {
+                hints_enabled: false,
+                explanations_enabled: true,
+                retries_allowed: false,
+                randomize_questions: true,
+                show_progress: true
+            }
+        },
+        tags: [
+            'diagnostic',
+            'assessment',
+            'gaps'
+        ],
+        estimatedTime: '8-10 minutes',
+        difficulty_description: 'Covers key concepts'
+    },
+    {
+        id: 'practice-session',
+        name: 'Practice Session',
+        description: 'Extended practice with detailed feedback',
+        icon: '💪',
+        category: 'quick',
+        recommended: false,
+        config: {
+            quiz_type: 'formative',
+            difficulty: 'INTERMEDIATE',
+            max_questions: 15,
+            time_limit_sec: 1200,
+            question_types: [
+                'multiple_choice',
+                'short_answer',
+                'true_false'
+            ],
+            delivery_mode: 'self_paced',
+            features: {
+                hints_enabled: true,
+                explanations_enabled: true,
+                retries_allowed: true,
+                randomize_questions: true,
+                show_progress: true
+            }
+        },
+        tags: [
+            'practice',
+            'extended',
+            'feedback'
+        ],
+        estimatedTime: '15-20 minutes',
+        difficulty_description: 'Comprehensive practice'
+    },
+    // Academic Presets
+    {
+        id: 'midterm-prep',
+        name: 'Midterm Preparation',
+        description: 'Comprehensive review for midterm exams',
+        icon: '📚',
+        category: 'academic',
+        recommended: true,
+        config: {
+            quiz_type: 'summative',
+            difficulty: 'INTERMEDIATE',
+            max_questions: 25,
+            time_limit_sec: 2400,
+            question_types: [
+                'multiple_choice',
+                'short_answer',
+                'essay'
+            ],
+            delivery_mode: 'scheduled',
+            features: {
+                hints_enabled: false,
+                explanations_enabled: false,
+                retries_allowed: false,
+                randomize_questions: true,
+                show_progress: true
+            }
+        },
+        tags: [
+            'academic',
+            'exam',
+            'comprehensive'
+        ],
+        estimatedTime: '35-40 minutes',
+        difficulty_description: 'Exam-level difficulty'
+    },
+    {
+        id: 'final-exam',
+        name: 'Final Exam Format',
+        description: 'Full comprehensive examination',
+        icon: '🎓',
+        category: 'academic',
+        recommended: false,
+        config: {
+            quiz_type: 'summative',
+            difficulty: 'ADVANCED',
+            max_questions: 50,
+            time_limit_sec: 5400,
+            question_types: [
+                'multiple_choice',
+                'short_answer',
+                'essay',
+                'problem_solving'
+            ],
+            delivery_mode: 'scheduled',
+            features: {
+                hints_enabled: false,
+                explanations_enabled: false,
+                retries_allowed: false,
+                randomize_questions: true,
+                show_progress: false
+            }
+        },
+        tags: [
+            'academic',
+            'final',
+            'comprehensive',
+            'high-stakes'
+        ],
+        estimatedTime: '75-90 minutes',
+        difficulty_description: 'Advanced comprehensive exam'
+    },
+    {
+        id: 'chapter-review',
+        name: 'Chapter Review Quiz',
+        description: 'Review key concepts from a chapter or unit',
+        icon: '📖',
+        category: 'academic',
+        recommended: true,
+        config: {
+            quiz_type: 'formative',
+            difficulty: 'INTERMEDIATE',
+            max_questions: 12,
+            time_limit_sec: 900,
+            question_types: [
+                'multiple_choice',
+                'true_false',
+                'fill_blank'
+            ],
+            delivery_mode: 'self_paced',
+            features: {
+                hints_enabled: true,
+                explanations_enabled: true,
+                retries_allowed: true,
+                randomize_questions: false,
+                show_progress: true
+            }
+        },
+        tags: [
+            'academic',
+            'chapter',
+            'review'
+        ],
+        estimatedTime: '12-15 minutes',
+        difficulty_description: 'Chapter-specific content'
+    },
+    // Professional Development Presets
+    {
+        id: 'certification-prep',
+        name: 'Certification Prep',
+        description: 'Prepare for professional certification exams',
+        icon: '🏆',
+        category: 'professional',
+        recommended: true,
+        config: {
+            quiz_type: 'summative',
+            difficulty: 'ADVANCED',
+            max_questions: 30,
+            time_limit_sec: 3600,
+            question_types: [
+                'multiple_choice',
+                'scenario_based'
+            ],
+            delivery_mode: 'scheduled',
+            features: {
+                hints_enabled: false,
+                explanations_enabled: true,
+                retries_allowed: false,
+                randomize_questions: true,
+                show_progress: true
+            }
+        },
+        tags: [
+            'professional',
+            'certification',
+            'career'
+        ],
+        estimatedTime: '50-60 minutes',
+        difficulty_description: 'Professional certification level'
+    },
+    {
+        id: 'skills-assessment',
+        name: 'Skills Assessment',
+        description: 'Evaluate current skill level and competencies',
+        icon: '⚡',
+        category: 'professional',
+        recommended: false,
+        config: {
+            quiz_type: 'diagnostic',
+            difficulty: 'INTERMEDIATE',
+            max_questions: 20,
+            time_limit_sec: 1800,
+            question_types: [
+                'multiple_choice',
+                'practical_application'
+            ],
+            delivery_mode: 'immediate',
+            features: {
+                hints_enabled: false,
+                explanations_enabled: true,
+                retries_allowed: true,
+                randomize_questions: true,
+                show_progress: true
+            }
+        },
+        tags: [
+            'professional',
+            'skills',
+            'assessment'
+        ],
+        estimatedTime: '25-30 minutes',
+        difficulty_description: 'Skills-focused evaluation'
+    },
+    // Mastery Learning Presets
+    {
+        id: 'mastery-check',
+        name: 'Mastery Check',
+        description: 'Verify complete understanding before advancing',
+        icon: '✅',
+        category: 'academic',
+        recommended: false,
+        config: {
+            quiz_type: 'mastery',
+            difficulty: 'INTERMEDIATE',
+            max_questions: 10,
+            time_limit_sec: 1200,
+            question_types: [
+                'multiple_choice',
+                'short_answer'
+            ],
+            delivery_mode: 'immediate',
+            features: {
+                hints_enabled: false,
+                explanations_enabled: true,
+                retries_allowed: true,
+                randomize_questions: false,
+                show_progress: true
+            }
+        },
+        tags: [
+            'mastery',
+            'prerequisite',
+            'competency'
+        ],
+        estimatedTime: '15-20 minutes',
+        difficulty_description: 'Must achieve 80% to pass'
+    }
+];
+const PRESET_CATEGORIES = [
+    {
+        id: 'quick',
+        name: 'Quick Assessments',
+        description: 'Fast, focused assessments for immediate feedback',
+        icon: '⚡',
+        presets: QUIZ_PRESETS.filter((p)=>p.category === 'quick')
+    },
+    {
+        id: 'academic',
+        name: 'Academic Testing',
+        description: 'Structured assessments for educational environments',
+        icon: '🎓',
+        presets: QUIZ_PRESETS.filter((p)=>p.category === 'academic')
+    },
+    {
+        id: 'professional',
+        name: 'Professional Development',
+        description: 'Career-focused assessments and skill evaluations',
+        icon: '💼',
+        presets: QUIZ_PRESETS.filter((p)=>p.category === 'professional')
+    }
+];
+const getRecommendedPresets = (limit = 3)=>{
+    return QUIZ_PRESETS.filter((preset)=>preset.recommended).slice(0, limit);
+};
+const getPresetsByCategory = (category)=>{
+    return QUIZ_PRESETS.filter((preset)=>preset.category === category);
+};
+const getPresetById = (id)=>{
+    return QUIZ_PRESETS.find((preset)=>preset.id === id);
+};
+const getPresetsByDifficulty = (difficulty)=>{
+    return QUIZ_PRESETS.filter((preset)=>preset.config.difficulty === difficulty);
+};
+const getPresetsByQuizType = (quizType)=>{
+    return QUIZ_PRESETS.filter((preset)=>preset.config.quiz_type === quizType);
+};
+const searchPresets = (query)=>{
+    const lowerQuery = query.toLowerCase();
+    return QUIZ_PRESETS.filter((preset)=>preset.name.toLowerCase().includes(lowerQuery) || preset.description.toLowerCase().includes(lowerQuery) || preset.tags.some((tag)=>tag.toLowerCase().includes(lowerQuery)));
+};
+const getCustomPresetTemplate = ()=>{
+    return {
+        id: 'custom',
+        name: 'Custom Configuration',
+        description: 'Create your own quiz configuration',
+        icon: '⚙️',
+        category: 'custom',
+        recommended: false,
+        config: {
+            quiz_type: 'formative',
+            difficulty: 'INTERMEDIATE',
+            max_questions: 10,
+            question_types: [
+                'multiple_choice'
+            ],
+            delivery_mode: 'immediate',
+            features: {
+                hints_enabled: true,
+                explanations_enabled: true,
+                retries_allowed: true,
+                randomize_questions: true,
+                show_progress: true
+            }
+        },
+        tags: [
+            'custom'
+        ],
+        estimatedTime: '10-15 minutes',
+        difficulty_description: 'Customizable'
+    };
+};
+const _default = {
+    QUIZ_PRESETS,
+    PRESET_CATEGORIES,
+    getRecommendedPresets,
+    getPresetsByCategory,
+    getPresetById,
+    getPresetsByDifficulty,
+    getPresetsByQuizType,
+    searchPresets,
+    getCustomPresetTemplate
+};
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvZmVhdHVyZXMvcXVpei9jb25zdGFudHMvcHJlc2V0cy50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIFF1aXogVHlwZSBQcmVzZXRzIGFuZCBDb25maWd1cmF0aW9uXG4gKiBcbiAqIFByZWRlZmluZWQgY29uZmlndXJhdGlvbnMgZm9yIGRpZmZlcmVudCBxdWl6IHR5cGVzIHRvIHNwZWVkIHVwXG4gKiB0aGUgY3JlYXRpb24gcHJvY2VzcyBhbmQgcHJvdmlkZSBzbWFydCBkZWZhdWx0cyBiYXNlZCBvbiBiZXN0IHByYWN0aWNlcy5cbiAqL1xuXG4vLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4vLyBUeXBlcyBhbmQgSW50ZXJmYWNlc1xuLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG5leHBvcnQgaW50ZXJmYWNlIFF1aXpQcmVzZXQge1xuICBpZDogc3RyaW5nO1xuICBuYW1lOiBzdHJpbmc7XG4gIGRlc2NyaXB0aW9uOiBzdHJpbmc7XG4gIGljb246IHN0cmluZztcbiAgY2F0ZWdvcnk6ICdxdWljaycgfCAnYWNhZGVtaWMnIHwgJ3Byb2Zlc3Npb25hbCcgfCAnY3VzdG9tJztcbiAgcmVjb21tZW5kZWQ6IGJvb2xlYW47XG4gIGNvbmZpZzoge1xuICAgIHF1aXpfdHlwZTogJ2Zvcm1hdGl2ZScgfCAnc3VtbWF0aXZlJyB8ICdkaWFnbm9zdGljJyB8ICdtYXN0ZXJ5JztcbiAgICBkaWZmaWN1bHR5OiAnQkVHSU5ORVInIHwgJ0lOVEVSTUVESUFURScgfCAnQURWQU5DRUQnIHwgJ0VYUEVSVCc7XG4gICAgbWF4X3F1ZXN0aW9uczogbnVtYmVyO1xuICAgIHRpbWVfbGltaXRfc2VjPzogbnVtYmVyO1xuICAgIHF1ZXN0aW9uX3R5cGVzOiBzdHJpbmdbXTtcbiAgICBkZWxpdmVyeV9tb2RlOiAnaW1tZWRpYXRlJyB8ICdzY2hlZHVsZWQnIHwgJ3NlbGZfcGFjZWQnO1xuICAgIGZlYXR1cmVzOiB7XG4gICAgICBoaW50c19lbmFibGVkOiBib29sZWFuO1xuICAgICAgZXhwbGFuYXRpb25zX2VuYWJsZWQ6IGJvb2xlYW47XG4gICAgICByZXRyaWVzX2FsbG93ZWQ6IGJvb2xlYW47XG4gICAgICByYW5kb21pemVfcXVlc3Rpb25zOiBib29sZWFuO1xuICAgICAgc2hvd19wcm9ncmVzczogYm9vbGVhbjtcbiAgICB9O1xuICB9O1xuICB0YWdzOiBzdHJpbmdbXTtcbiAgZXN0aW1hdGVkVGltZTogc3RyaW5nO1xuICBkaWZmaWN1bHR5X2Rlc2NyaXB0aW9uOiBzdHJpbmc7XG59XG5cbmV4cG9ydCBpbnRlcmZhY2UgUHJlc2V0Q2F0ZWdvcnkge1xuICBpZDogc3RyaW5nO1xuICBuYW1lOiBzdHJpbmc7XG4gIGRlc2NyaXB0aW9uOiBzdHJpbmc7XG4gIGljb246IHN0cmluZztcbiAgcHJlc2V0czogUXVpelByZXNldFtdO1xufVxuXG4vLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4vLyBRdWl6IFR5cGUgUHJlc2V0c1xuLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG5leHBvcnQgY29uc3QgUVVJWl9QUkVTRVRTOiBRdWl6UHJlc2V0W10gPSBbXG4gIC8vIFF1aWNrIEFzc2Vzc21lbnQgUHJlc2V0c1xuICB7XG4gICAgaWQ6ICdxdWljay1jaGVjaycsXG4gICAgbmFtZTogJ1F1aWNrIEtub3dsZWRnZSBDaGVjaycsXG4gICAgZGVzY3JpcHRpb246ICdGYXN0IDUtbWludXRlIGFzc2Vzc21lbnQgdG8gZ2F1Z2UgdW5kZXJzdGFuZGluZycsXG4gICAgaWNvbjogJ+KaoScsXG4gICAgY2F0ZWdvcnk6ICdxdWljaycsXG4gICAgcmVjb21tZW5kZWQ6IHRydWUsXG4gICAgY29uZmlnOiB7XG4gICAgICBxdWl6X3R5cGU6ICdmb3JtYXRpdmUnLFxuICAgICAgZGlmZmljdWx0eTogJ0lOVEVSTUVESUFURScsXG4gICAgICBtYXhfcXVlc3Rpb25zOiA1LFxuICAgICAgdGltZV9saW1pdF9zZWM6IDMwMCwgLy8gNSBtaW51dGVzXG4gICAgICBxdWVzdGlvbl90eXBlczogWydtdWx0aXBsZV9jaG9pY2UnLCAndHJ1ZV9mYWxzZSddLFxuICAgICAgZGVsaXZlcnlfbW9kZTogJ2ltbWVkaWF0ZScsXG4gICAgICBmZWF0dXJlczoge1xuICAgICAgICBoaW50c19lbmFibGVkOiB0cnVlLFxuICAgICAgICBleHBsYW5hdGlvbnNfZW5hYmxlZDogdHJ1ZSxcbiAgICAgICAgcmV0cmllc19hbGxvd2VkOiB0cnVlLFxuICAgICAgICByYW5kb21pemVfcXVlc3Rpb25zOiB0cnVlLFxuICAgICAgICBzaG93X3Byb2dyZXNzOiB0cnVlLFxuICAgICAgfSxcbiAgICB9LFxuICAgIHRhZ3M6IFsncXVpY2snLCAnZm9ybWF0aXZlJywgJ3ByYWN0aWNlJ10sXG4gICAgZXN0aW1hdGVkVGltZTogJzUgbWludXRlcycsXG4gICAgZGlmZmljdWx0eV9kZXNjcmlwdGlvbjogJ0Vhc3kgdG8gbW9kZXJhdGUgcXVlc3Rpb25zJyxcbiAgfSxcbiAge1xuICAgIGlkOiAnZGlhZ25vc3RpYy1iYXNpYycsXG4gICAgbmFtZTogJ0Jhc2ljIERpYWdub3N0aWMnLFxuICAgIGRlc2NyaXB0aW9uOiAnSWRlbnRpZnkga25vd2xlZGdlIGdhcHMgYW5kIGxlYXJuaW5nIG5lZWRzJyxcbiAgICBpY29uOiAn8J+UjScsXG4gICAgY2F0ZWdvcnk6ICdxdWljaycsXG4gICAgcmVjb21tZW5kZWQ6IHRydWUsXG4gICAgY29uZmlnOiB7XG4gICAgICBxdWl6X3R5cGU6ICdkaWFnbm9zdGljJyxcbiAgICAgIGRpZmZpY3VsdHk6ICdJTlRFUk1FRElBVEUnLFxuICAgICAgbWF4X3F1ZXN0aW9uczogOCxcbiAgICAgIHRpbWVfbGltaXRfc2VjOiA2MDAsIC8vIDEwIG1pbnV0ZXNcbiAgICAgIHF1ZXN0aW9uX3R5cGVzOiBbJ211bHRpcGxlX2Nob2ljZScsICdmaWxsX2JsYW5rJ10sXG4gICAgICBkZWxpdmVyeV9tb2RlOiAnaW1tZWRpYXRlJyxcbiAgICAgIGZlYXR1cmVzOiB7XG4gICAgICAgIGhpbnRzX2VuYWJsZWQ6IGZhbHNlLFxuICAgICAgICBleHBsYW5hdGlvbnNfZW5hYmxlZDogdHJ1ZSxcbiAgICAgICAgcmV0cmllc19hbGxvd2VkOiBmYWxzZSxcbiAgICAgICAgcmFuZG9taXplX3F1ZXN0aW9uczogdHJ1ZSxcbiAgICAgICAgc2hvd19wcm9ncmVzczogdHJ1ZSxcbiAgICAgIH0sXG4gICAgfSxcbiAgICB0YWdzOiBbJ2RpYWdub3N0aWMnLCAnYXNzZXNzbWVudCcsICdnYXBzJ10sXG4gICAgZXN0aW1hdGVkVGltZTogJzgtMTAgbWludXRlcycsXG4gICAgZGlmZmljdWx0eV9kZXNjcmlwdGlvbjogJ0NvdmVycyBrZXkgY29uY2VwdHMnLFxuICB9LFxuICB7XG4gICAgaWQ6ICdwcmFjdGljZS1zZXNzaW9uJyxcbiAgICBuYW1lOiAnUHJhY3RpY2UgU2Vzc2lvbicsXG4gICAgZGVzY3JpcHRpb246ICdFeHRlbmRlZCBwcmFjdGljZSB3aXRoIGRldGFpbGVkIGZlZWRiYWNrJyxcbiAgICBpY29uOiAn8J+SqicsXG4gICAgY2F0ZWdvcnk6ICdxdWljaycsXG4gICAgcmVjb21tZW5kZWQ6IGZhbHNlLFxuICAgIGNvbmZpZzoge1xuICAgICAgcXVpel90eXBlOiAnZm9ybWF0aXZlJyxcbiAgICAgIGRpZmZpY3VsdHk6ICdJTlRFUk1FRElBVEUnLFxuICAgICAgbWF4X3F1ZXN0aW9uczogMTUsXG4gICAgICB0aW1lX2xpbWl0X3NlYzogMTIwMCwgLy8gMjAgbWludXRlc1xuICAgICAgcXVlc3Rpb25fdHlwZXM6IFsnbXVsdGlwbGVfY2hvaWNlJywgJ3Nob3J0X2Fuc3dlcicsICd0cnVlX2ZhbHNlJ10sXG4gICAgICBkZWxpdmVyeV9tb2RlOiAnc2VsZl9wYWNlZCcsXG4gICAgICBmZWF0dXJlczoge1xuICAgICAgICBoaW50c19lbmFibGVkOiB0cnVlLFxuICAgICAgICBleHBsYW5hdGlvbnNfZW5hYmxlZDogdHJ1ZSxcbiAgICAgICAgcmV0cmllc19hbGxvd2VkOiB0cnVlLFxuICAgICAgICByYW5kb21pemVfcXVlc3Rpb25zOiB0cnVlLFxuICAgICAgICBzaG93X3Byb2dyZXNzOiB0cnVlLFxuICAgICAgfSxcbiAgICB9LFxuICAgIHRhZ3M6IFsncHJhY3RpY2UnLCAnZXh0ZW5kZWQnLCAnZmVlZGJhY2snXSxcbiAgICBlc3RpbWF0ZWRUaW1lOiAnMTUtMjAgbWludXRlcycsXG4gICAgZGlmZmljdWx0eV9kZXNjcmlwdGlvbjogJ0NvbXByZWhlbnNpdmUgcHJhY3RpY2UnLFxuICB9LFxuXG4gIC8vIEFjYWRlbWljIFByZXNldHNcbiAge1xuICAgIGlkOiAnbWlkdGVybS1wcmVwJyxcbiAgICBuYW1lOiAnTWlkdGVybSBQcmVwYXJhdGlvbicsXG4gICAgZGVzY3JpcHRpb246ICdDb21wcmVoZW5zaXZlIHJldmlldyBmb3IgbWlkdGVybSBleGFtcycsXG4gICAgaWNvbjogJ/Cfk5onLFxuICAgIGNhdGVnb3J5OiAnYWNhZGVtaWMnLFxuICAgIHJlY29tbWVuZGVkOiB0cnVlLFxuICAgIGNvbmZpZzoge1xuICAgICAgcXVpel90eXBlOiAnc3VtbWF0aXZlJyxcbiAgICAgIGRpZmZpY3VsdHk6ICdJTlRFUk1FRElBVEUnLFxuICAgICAgbWF4X3F1ZXN0aW9uczogMjUsXG4gICAgICB0aW1lX2xpbWl0X3NlYzogMjQwMCwgLy8gNDAgbWludXRlc1xuICAgICAgcXVlc3Rpb25fdHlwZXM6IFsnbXVsdGlwbGVfY2hvaWNlJywgJ3Nob3J0X2Fuc3dlcicsICdlc3NheSddLFxuICAgICAgZGVsaXZlcnlfbW9kZTogJ3NjaGVkdWxlZCcsXG4gICAgICBmZWF0dXJlczoge1xuICAgICAgICBoaW50c19lbmFibGVkOiBmYWxzZSxcbiAgICAgICAgZXhwbGFuYXRpb25zX2VuYWJsZWQ6IGZhbHNlLFxuICAgICAgICByZXRyaWVzX2FsbG93ZWQ6IGZhbHNlLFxuICAgICAgICByYW5kb21pemVfcXVlc3Rpb25zOiB0cnVlLFxuICAgICAgICBzaG93X3Byb2dyZXNzOiB0cnVlLFxuICAgICAgfSxcbiAgICB9LFxuICAgIHRhZ3M6IFsnYWNhZGVtaWMnLCAnZXhhbScsICdjb21wcmVoZW5zaXZlJ10sXG4gICAgZXN0aW1hdGVkVGltZTogJzM1LTQwIG1pbnV0ZXMnLFxuICAgIGRpZmZpY3VsdHlfZGVzY3JpcHRpb246ICdFeGFtLWxldmVsIGRpZmZpY3VsdHknLFxuICB9LFxuICB7XG4gICAgaWQ6ICdmaW5hbC1leGFtJyxcbiAgICBuYW1lOiAnRmluYWwgRXhhbSBGb3JtYXQnLFxuICAgIGRlc2NyaXB0aW9uOiAnRnVsbCBjb21wcmVoZW5zaXZlIGV4YW1pbmF0aW9uJyxcbiAgICBpY29uOiAn8J+OkycsXG4gICAgY2F0ZWdvcnk6ICdhY2FkZW1pYycsXG4gICAgcmVjb21tZW5kZWQ6IGZhbHNlLFxuICAgIGNvbmZpZzoge1xuICAgICAgcXVpel90eXBlOiAnc3VtbWF0aXZlJyxcbiAgICAgIGRpZmZpY3VsdHk6ICdBRFZBTkNFRCcsXG4gICAgICBtYXhfcXVlc3Rpb25zOiA1MCxcbiAgICAgIHRpbWVfbGltaXRfc2VjOiA1NDAwLCAvLyA5MCBtaW51dGVzXG4gICAgICBxdWVzdGlvbl90eXBlczogWydtdWx0aXBsZV9jaG9pY2UnLCAnc2hvcnRfYW5zd2VyJywgJ2Vzc2F5JywgJ3Byb2JsZW1fc29sdmluZyddLFxuICAgICAgZGVsaXZlcnlfbW9kZTogJ3NjaGVkdWxlZCcsXG4gICAgICBmZWF0dXJlczoge1xuICAgICAgICBoaW50c19lbmFibGVkOiBmYWxzZSxcbiAgICAgICAgZXhwbGFuYXRpb25zX2VuYWJsZWQ6IGZhbHNlLFxuICAgICAgICByZXRyaWVzX2FsbG93ZWQ6IGZhbHNlLFxuICAgICAgICByYW5kb21pemVfcXVlc3Rpb25zOiB0cnVlLFxuICAgICAgICBzaG93X3Byb2dyZXNzOiBmYWxzZSxcbiAgICAgIH0sXG4gICAgfSxcbiAgICB0YWdzOiBbJ2FjYWRlbWljJywgJ2ZpbmFsJywgJ2NvbXByZWhlbnNpdmUnLCAnaGlnaC1zdGFrZXMnXSxcbiAgICBlc3RpbWF0ZWRUaW1lOiAnNzUtOTAgbWludXRlcycsXG4gICAgZGlmZmljdWx0eV9kZXNjcmlwdGlvbjogJ0FkdmFuY2VkIGNvbXByZWhlbnNpdmUgZXhhbScsXG4gIH0sXG4gIHtcbiAgICBpZDogJ2NoYXB0ZXItcmV2aWV3JyxcbiAgICBuYW1lOiAnQ2hhcHRlciBSZXZpZXcgUXVpeicsXG4gICAgZGVzY3JpcHRpb246ICdSZXZpZXcga2V5IGNvbmNlcHRzIGZyb20gYSBjaGFwdGVyIG9yIHVuaXQnLFxuICAgIGljb246ICfwn5OWJyxcbiAgICBjYXRlZ29yeTogJ2FjYWRlbWljJyxcbiAgICByZWNvbW1lbmRlZDogdHJ1ZSxcbiAgICBjb25maWc6IHtcbiAgICAgIHF1aXpfdHlwZTogJ2Zvcm1hdGl2ZScsXG4gICAgICBkaWZmaWN1bHR5OiAnSU5URVJNRURJQVRFJyxcbiAgICAgIG1heF9xdWVzdGlvbnM6IDEyLFxuICAgICAgdGltZV9saW1pdF9zZWM6IDkwMCwgLy8gMTUgbWludXRlc1xuICAgICAgcXVlc3Rpb25fdHlwZXM6IFsnbXVsdGlwbGVfY2hvaWNlJywgJ3RydWVfZmFsc2UnLCAnZmlsbF9ibGFuayddLFxuICAgICAgZGVsaXZlcnlfbW9kZTogJ3NlbGZfcGFjZWQnLFxuICAgICAgZmVhdHVyZXM6IHtcbiAgICAgICAgaGludHNfZW5hYmxlZDogdHJ1ZSxcbiAgICAgICAgZXhwbGFuYXRpb25zX2VuYWJsZWQ6IHRydWUsXG4gICAgICAgIHJldHJpZXNfYWxsb3dlZDogdHJ1ZSxcbiAgICAgICAgcmFuZG9taXplX3F1ZXN0aW9uczogZmFsc2UsXG4gICAgICAgIHNob3dfcHJvZ3Jlc3M6IHRydWUsXG4gICAgICB9LFxuICAgIH0sXG4gICAgdGFnczogWydhY2FkZW1pYycsICdjaGFwdGVyJywgJ3JldmlldyddLFxuICAgIGVzdGltYXRlZFRpbWU6ICcxMi0xNSBtaW51dGVzJyxcbiAgICBkaWZmaWN1bHR5X2Rlc2NyaXB0aW9uOiAnQ2hhcHRlci1zcGVjaWZpYyBjb250ZW50JyxcbiAgfSxcblxuICAvLyBQcm9mZXNzaW9uYWwgRGV2ZWxvcG1lbnQgUHJlc2V0c1xuICB7XG4gICAgaWQ6ICdjZXJ0aWZpY2F0aW9uLXByZXAnLFxuICAgIG5hbWU6ICdDZXJ0aWZpY2F0aW9uIFByZXAnLFxuICAgIGRlc2NyaXB0aW9uOiAnUHJlcGFyZSBmb3IgcHJvZmVzc2lvbmFsIGNlcnRpZmljYXRpb24gZXhhbXMnLFxuICAgIGljb246ICfwn4+GJyxcbiAgICBjYXRlZ29yeTogJ3Byb2Zlc3Npb25hbCcsXG4gICAgcmVjb21tZW5kZWQ6IHRydWUsXG4gICAgY29uZmlnOiB7XG4gICAgICBxdWl6X3R5cGU6ICdzdW1tYXRpdmUnLFxuICAgICAgZGlmZmljdWx0eTogJ0FEVkFOQ0VEJyxcbiAgICAgIG1heF9xdWVzdGlvbnM6IDMwLFxuICAgICAgdGltZV9saW1pdF9zZWM6IDM2MDAsIC8vIDYwIG1pbnV0ZXNcbiAgICAgIHF1ZXN0aW9uX3R5cGVzOiBbJ211bHRpcGxlX2Nob2ljZScsICdzY2VuYXJpb19iYXNlZCddLFxuICAgICAgZGVsaXZlcnlfbW9kZTogJ3NjaGVkdWxlZCcsXG4gICAgICBmZWF0dXJlczoge1xuICAgICAgICBoaW50c19lbmFibGVkOiBmYWxzZSxcbiAgICAgICAgZXhwbGFuYXRpb25zX2VuYWJsZWQ6IHRydWUsXG4gICAgICAgIHJldHJpZXNfYWxsb3dlZDogZmFsc2UsXG4gICAgICAgIHJhbmRvbWl6ZV9xdWVzdGlvbnM6IHRydWUsXG4gICAgICAgIHNob3dfcHJvZ3Jlc3M6IHRydWUsXG4gICAgICB9LFxuICAgIH0sXG4gICAgdGFnczogWydwcm9mZXNzaW9uYWwnLCAnY2VydGlmaWNhdGlvbicsICdjYXJlZXInXSxcbiAgICBlc3RpbWF0ZWRUaW1lOiAnNTAtNjAgbWludXRlcycsXG4gICAgZGlmZmljdWx0eV9kZXNjcmlwdGlvbjogJ1Byb2Zlc3Npb25hbCBjZXJ0aWZpY2F0aW9uIGxldmVsJyxcbiAgfSxcbiAge1xuICAgIGlkOiAnc2tpbGxzLWFzc2Vzc21lbnQnLFxuICAgIG5hbWU6ICdTa2lsbHMgQXNzZXNzbWVudCcsXG4gICAgZGVzY3JpcHRpb246ICdFdmFsdWF0ZSBjdXJyZW50IHNraWxsIGxldmVsIGFuZCBjb21wZXRlbmNpZXMnLFxuICAgIGljb246ICfimqEnLFxuICAgIGNhdGVnb3J5OiAncHJvZmVzc2lvbmFsJyxcbiAgICByZWNvbW1lbmRlZDogZmFsc2UsXG4gICAgY29uZmlnOiB7XG4gICAgICBxdWl6X3R5cGU6ICdkaWFnbm9zdGljJyxcbiAgICAgIGRpZmZpY3VsdHk6ICdJTlRFUk1FRElBVEUnLFxuICAgICAgbWF4X3F1ZXN0aW9uczogMjAsXG4gICAgICB0aW1lX2xpbWl0X3NlYzogMTgwMCwgLy8gMzAgbWludXRlc1xuICAgICAgcXVlc3Rpb25fdHlwZXM6IFsnbXVsdGlwbGVfY2hvaWNlJywgJ3ByYWN0aWNhbF9hcHBsaWNhdGlvbiddLFxuICAgICAgZGVsaXZlcnlfbW9kZTogJ2ltbWVkaWF0ZScsXG4gICAgICBmZWF0dXJlczoge1xuICAgICAgICBoaW50c19lbmFibGVkOiBmYWxzZSxcbiAgICAgICAgZXhwbGFuYXRpb25zX2VuYWJsZWQ6IHRydWUsXG4gICAgICAgIHJldHJpZXNfYWxsb3dlZDogdHJ1ZSxcbiAgICAgICAgcmFuZG9taXplX3F1ZXN0aW9uczogdHJ1ZSxcbiAgICAgICAgc2hvd19wcm9ncmVzczogdHJ1ZSxcbiAgICAgIH0sXG4gICAgfSxcbiAgICB0YWdzOiBbJ3Byb2Zlc3Npb25hbCcsICdza2lsbHMnLCAnYXNzZXNzbWVudCddLFxuICAgIGVzdGltYXRlZFRpbWU6ICcyNS0zMCBtaW51dGVzJyxcbiAgICBkaWZmaWN1bHR5X2Rlc2NyaXB0aW9uOiAnU2tpbGxzLWZvY3VzZWQgZXZhbHVhdGlvbicsXG4gIH0sXG5cbiAgLy8gTWFzdGVyeSBMZWFybmluZyBQcmVzZXRzXG4gIHtcbiAgICBpZDogJ21hc3RlcnktY2hlY2snLFxuICAgIG5hbWU6ICdNYXN0ZXJ5IENoZWNrJyxcbiAgICBkZXNjcmlwdGlvbjogJ1ZlcmlmeSBjb21wbGV0ZSB1bmRlcnN0YW5kaW5nIGJlZm9yZSBhZHZhbmNpbmcnLFxuICAgIGljb246ICfinIUnLFxuICAgIGNhdGVnb3J5OiAnYWNhZGVtaWMnLFxuICAgIHJlY29tbWVuZGVkOiBmYWxzZSxcbiAgICBjb25maWc6IHtcbiAgICAgIHF1aXpfdHlwZTogJ21hc3RlcnknLFxuICAgICAgZGlmZmljdWx0eTogJ0lOVEVSTUVESUFURScsXG4gICAgICBtYXhfcXVlc3Rpb25zOiAxMCxcbiAgICAgIHRpbWVfbGltaXRfc2VjOiAxMjAwLCAvLyAyMCBtaW51dGVzXG4gICAgICBxdWVzdGlvbl90eXBlczogWydtdWx0aXBsZV9jaG9pY2UnLCAnc2hvcnRfYW5zd2VyJ10sXG4gICAgICBkZWxpdmVyeV9tb2RlOiAnaW1tZWRpYXRlJyxcbiAgICAgIGZlYXR1cmVzOiB7XG4gICAgICAgIGhpbnRzX2VuYWJsZWQ6IGZhbHNlLFxuICAgICAgICBleHBsYW5hdGlvbnNfZW5hYmxlZDogdHJ1ZSxcbiAgICAgICAgcmV0cmllc19hbGxvd2VkOiB0cnVlLFxuICAgICAgICByYW5kb21pemVfcXVlc3Rpb25zOiBmYWxzZSxcbiAgICAgICAgc2hvd19wcm9ncmVzczogdHJ1ZSxcbiAgICAgIH0sXG4gICAgfSxcbiAgICB0YWdzOiBbJ21hc3RlcnknLCAncHJlcmVxdWlzaXRlJywgJ2NvbXBldGVuY3knXSxcbiAgICBlc3RpbWF0ZWRUaW1lOiAnMTUtMjAgbWludXRlcycsXG4gICAgZGlmZmljdWx0eV9kZXNjcmlwdGlvbjogJ011c3QgYWNoaWV2ZSA4MCUgdG8gcGFzcycsXG4gIH0sXG5dO1xuXG4vLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4vLyBQcmVzZXQgQ2F0ZWdvcmllc1xuLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG5leHBvcnQgY29uc3QgUFJFU0VUX0NBVEVHT1JJRVM6IFByZXNldENhdGVnb3J5W10gPSBbXG4gIHtcbiAgICBpZDogJ3F1aWNrJyxcbiAgICBuYW1lOiAnUXVpY2sgQXNzZXNzbWVudHMnLFxuICAgIGRlc2NyaXB0aW9uOiAnRmFzdCwgZm9jdXNlZCBhc3Nlc3NtZW50cyBmb3IgaW1tZWRpYXRlIGZlZWRiYWNrJyxcbiAgICBpY29uOiAn4pqhJyxcbiAgICBwcmVzZXRzOiBRVUlaX1BSRVNFVFMuZmlsdGVyKHAgPT4gcC5jYXRlZ29yeSA9PT0gJ3F1aWNrJyksXG4gIH0sXG4gIHtcbiAgICBpZDogJ2FjYWRlbWljJyxcbiAgICBuYW1lOiAnQWNhZGVtaWMgVGVzdGluZycsXG4gICAgZGVzY3JpcHRpb246ICdTdHJ1Y3R1cmVkIGFzc2Vzc21lbnRzIGZvciBlZHVjYXRpb25hbCBlbnZpcm9ubWVudHMnLFxuICAgIGljb246ICfwn46TJyxcbiAgICBwcmVzZXRzOiBRVUlaX1BSRVNFVFMuZmlsdGVyKHAgPT4gcC5jYXRlZ29yeSA9PT0gJ2FjYWRlbWljJyksXG4gIH0sXG4gIHtcbiAgICBpZDogJ3Byb2Zlc3Npb25hbCcsXG4gICAgbmFtZTogJ1Byb2Zlc3Npb25hbCBEZXZlbG9wbWVudCcsXG4gICAgZGVzY3JpcHRpb246ICdDYXJlZXItZm9jdXNlZCBhc3Nlc3NtZW50cyBhbmQgc2tpbGwgZXZhbHVhdGlvbnMnLFxuICAgIGljb246ICfwn5K8JyxcbiAgICBwcmVzZXRzOiBRVUlaX1BSRVNFVFMuZmlsdGVyKHAgPT4gcC5jYXRlZ29yeSA9PT0gJ3Byb2Zlc3Npb25hbCcpLFxuICB9LFxuXTtcblxuLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuLy8gVXRpbGl0eSBGdW5jdGlvbnNcbi8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuLyoqXG4gKiBHZXQgcmVjb21tZW5kZWQgcHJlc2V0cyBmb3IgYSBzcGVjaWZpYyB1c2UgY2FzZVxuICovXG5leHBvcnQgY29uc3QgZ2V0UmVjb21tZW5kZWRQcmVzZXRzID0gKGxpbWl0OiBudW1iZXIgPSAzKTogUXVpelByZXNldFtdID0+IHtcbiAgcmV0dXJuIFFVSVpfUFJFU0VUUy5maWx0ZXIocHJlc2V0ID0+IHByZXNldC5yZWNvbW1lbmRlZCkuc2xpY2UoMCwgbGltaXQpO1xufTtcblxuLyoqXG4gKiBHZXQgcHJlc2V0cyBieSBjYXRlZ29yeVxuICovXG5leHBvcnQgY29uc3QgZ2V0UHJlc2V0c0J5Q2F0ZWdvcnkgPSAoY2F0ZWdvcnk6IHN0cmluZyk6IFF1aXpQcmVzZXRbXSA9PiB7XG4gIHJldHVybiBRVUlaX1BSRVNFVFMuZmlsdGVyKHByZXNldCA9PiBwcmVzZXQuY2F0ZWdvcnkgPT09IGNhdGVnb3J5KTtcbn07XG5cbi8qKlxuICogRmluZCBwcmVzZXQgYnkgSURcbiAqL1xuZXhwb3J0IGNvbnN0IGdldFByZXNldEJ5SWQgPSAoaWQ6IHN0cmluZyk6IFF1aXpQcmVzZXQgfCB1bmRlZmluZWQgPT4ge1xuICByZXR1cm4gUVVJWl9QUkVTRVRTLmZpbmQocHJlc2V0ID0+IHByZXNldC5pZCA9PT0gaWQpO1xufTtcblxuLyoqXG4gKiBHZXQgcHJlc2V0cyBieSBkaWZmaWN1bHR5IGxldmVsXG4gKi9cbmV4cG9ydCBjb25zdCBnZXRQcmVzZXRzQnlEaWZmaWN1bHR5ID0gKGRpZmZpY3VsdHk6IHN0cmluZyk6IFF1aXpQcmVzZXRbXSA9PiB7XG4gIHJldHVybiBRVUlaX1BSRVNFVFMuZmlsdGVyKHByZXNldCA9PiBwcmVzZXQuY29uZmlnLmRpZmZpY3VsdHkgPT09IGRpZmZpY3VsdHkpO1xufTtcblxuLyoqXG4gKiBHZXQgcHJlc2V0cyBieSBxdWl6IHR5cGVcbiAqL1xuZXhwb3J0IGNvbnN0IGdldFByZXNldHNCeVF1aXpUeXBlID0gKHF1aXpUeXBlOiBzdHJpbmcpOiBRdWl6UHJlc2V0W10gPT4ge1xuICByZXR1cm4gUVVJWl9QUkVTRVRTLmZpbHRlcihwcmVzZXQgPT4gcHJlc2V0LmNvbmZpZy5xdWl6X3R5cGUgPT09IHF1aXpUeXBlKTtcbn07XG5cbi8qKlxuICogU2VhcmNoIHByZXNldHMgYnkgbmFtZSBvciB0YWdzXG4gKi9cbmV4cG9ydCBjb25zdCBzZWFyY2hQcmVzZXRzID0gKHF1ZXJ5OiBzdHJpbmcpOiBRdWl6UHJlc2V0W10gPT4ge1xuICBjb25zdCBsb3dlclF1ZXJ5ID0gcXVlcnkudG9Mb3dlckNhc2UoKTtcbiAgcmV0dXJuIFFVSVpfUFJFU0VUUy5maWx0ZXIocHJlc2V0ID0+IFxuICAgIHByZXNldC5uYW1lLnRvTG93ZXJDYXNlKCkuaW5jbHVkZXMobG93ZXJRdWVyeSkgfHxcbiAgICBwcmVzZXQuZGVzY3JpcHRpb24udG9Mb3dlckNhc2UoKS5pbmNsdWRlcyhsb3dlclF1ZXJ5KSB8fFxuICAgIHByZXNldC50YWdzLnNvbWUodGFnID0+IHRhZy50b0xvd2VyQ2FzZSgpLmluY2x1ZGVzKGxvd2VyUXVlcnkpKVxuICApO1xufTtcblxuLyoqXG4gKiBHZXQgY3VzdG9tIHByZXNldCB0ZW1wbGF0ZSBmb3IgYWR2YW5jZWQgdXNlcnNcbiAqL1xuZXhwb3J0IGNvbnN0IGdldEN1c3RvbVByZXNldFRlbXBsYXRlID0gKCk6IFBhcnRpYWw8UXVpelByZXNldD4gPT4ge1xuICByZXR1cm4ge1xuICAgIGlkOiAnY3VzdG9tJyxcbiAgICBuYW1lOiAnQ3VzdG9tIENvbmZpZ3VyYXRpb24nLFxuICAgIGRlc2NyaXB0aW9uOiAnQ3JlYXRlIHlvdXIgb3duIHF1aXogY29uZmlndXJhdGlvbicsXG4gICAgaWNvbjogJ+Kame+4jycsXG4gICAgY2F0ZWdvcnk6ICdjdXN0b20nLFxuICAgIHJlY29tbWVuZGVkOiBmYWxzZSxcbiAgICBjb25maWc6IHtcbiAgICAgIHF1aXpfdHlwZTogJ2Zvcm1hdGl2ZScsXG4gICAgICBkaWZmaWN1bHR5OiAnSU5URVJNRURJQVRFJyxcbiAgICAgIG1heF9xdWVzdGlvbnM6IDEwLFxuICAgICAgcXVlc3Rpb25fdHlwZXM6IFsnbXVsdGlwbGVfY2hvaWNlJ10sXG4gICAgICBkZWxpdmVyeV9tb2RlOiAnaW1tZWRpYXRlJyxcbiAgICAgIGZlYXR1cmVzOiB7XG4gICAgICAgIGhpbnRzX2VuYWJsZWQ6IHRydWUsXG4gICAgICAgIGV4cGxhbmF0aW9uc19lbmFibGVkOiB0cnVlLFxuICAgICAgICByZXRyaWVzX2FsbG93ZWQ6IHRydWUsXG4gICAgICAgIHJhbmRvbWl6ZV9xdWVzdGlvbnM6IHRydWUsXG4gICAgICAgIHNob3dfcHJvZ3Jlc3M6IHRydWUsXG4gICAgICB9LFxuICAgIH0sXG4gICAgdGFnczogWydjdXN0b20nXSxcbiAgICBlc3RpbWF0ZWRUaW1lOiAnMTAtMTUgbWludXRlcycsXG4gICAgZGlmZmljdWx0eV9kZXNjcmlwdGlvbjogJ0N1c3RvbWl6YWJsZScsXG4gIH07XG59O1xuXG5leHBvcnQgZGVmYXVsdCB7XG4gIFFVSVpfUFJFU0VUUyxcbiAgUFJFU0VUX0NBVEVHT1JJRVMsXG4gIGdldFJlY29tbWVuZGVkUHJlc2V0cyxcbiAgZ2V0UHJlc2V0c0J5Q2F0ZWdvcnksXG4gIGdldFByZXNldEJ5SWQsXG4gIGdldFByZXNldHNCeURpZmZpY3VsdHksXG4gIGdldFByZXNldHNCeVF1aXpUeXBlLFxuICBzZWFyY2hQcmVzZXRzLFxuICBnZXRDdXN0b21QcmVzZXRUZW1wbGF0ZSxcbn07XG5cbiJdLCJuYW1lcyI6WyJQUkVTRVRfQ0FURUdPUklFUyIsIlFVSVpfUFJFU0VUUyIsImdldEN1c3RvbVByZXNldFRlbXBsYXRlIiwiZ2V0UHJlc2V0QnlJZCIsImdldFByZXNldHNCeUNhdGVnb3J5IiwiZ2V0UHJlc2V0c0J5RGlmZmljdWx0eSIsImdldFByZXNldHNCeVF1aXpUeXBlIiwiZ2V0UmVjb21tZW5kZWRQcmVzZXRzIiwic2VhcmNoUHJlc2V0cyIsImlkIiwibmFtZSIsImRlc2NyaXB0aW9uIiwiaWNvbiIsImNhdGVnb3J5IiwicmVjb21tZW5kZWQiLCJjb25maWciLCJxdWl6X3R5cGUiLCJkaWZmaWN1bHR5IiwibWF4X3F1ZXN0aW9ucyIsInRpbWVfbGltaXRfc2VjIiwicXVlc3Rpb25fdHlwZXMiLCJkZWxpdmVyeV9tb2RlIiwiZmVhdHVyZXMiLCJoaW50c19lbmFibGVkIiwiZXhwbGFuYXRpb25zX2VuYWJsZWQiLCJyZXRyaWVzX2FsbG93ZWQiLCJyYW5kb21pemVfcXVlc3Rpb25zIiwic2hvd19wcm9ncmVzcyIsInRhZ3MiLCJlc3RpbWF0ZWRUaW1lIiwiZGlmZmljdWx0eV9kZXNjcmlwdGlvbiIsInByZXNldHMiLCJmaWx0ZXIiLCJwIiwibGltaXQiLCJwcmVzZXQiLCJzbGljZSIsImZpbmQiLCJxdWl6VHlwZSIsInF1ZXJ5IiwibG93ZXJRdWVyeSIsInRvTG93ZXJDYXNlIiwiaW5jbHVkZXMiLCJzb21lIiwidGFnIl0sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7Q0FLQyxHQUVELCtFQUErRTtBQUMvRSx1QkFBdUI7QUFDdkIsK0VBQStFOzs7Ozs7Ozs7Ozs7SUFpU2xFQSxpQkFBaUI7ZUFBakJBOztJQXhQQUMsWUFBWTtlQUFaQTs7SUFrV2IsT0FVRTtlQVZGOztJQTVCYUMsdUJBQXVCO2VBQXZCQTs7SUFqQ0FDLGFBQWE7ZUFBYkE7O0lBUEFDLG9CQUFvQjtlQUFwQkE7O0lBY0FDLHNCQUFzQjtlQUF0QkE7O0lBT0FDLG9CQUFvQjtlQUFwQkE7O0lBNUJBQyxx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

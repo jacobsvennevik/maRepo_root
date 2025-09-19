@@ -1,4 +1,5 @@
 import { axiosAuth } from "@/lib/axios-auth";
+import axios from "axios";
 
 export interface LoginCredentials {
   email: string;
@@ -19,10 +20,29 @@ export class AuthService {
       }
 
       // Post email/password directly (backend maps email→username internally)
-      const response = await axiosAuth.post<AuthResponse>("/token/", {
-        email: credentials.email,
-        password: credentials.password,
-      });
+      let response;
+      try {
+        response = await axiosAuth.post<AuthResponse>("token/", {
+          email: credentials.email,
+          password: credentials.password,
+        });
+      } catch (primaryError: any) {
+        // Network error fallback: try legacy Next proxy path (kept for backward compatibility)
+        if (!primaryError?.response) {
+          try {
+            console.warn("[AuthService] Primary auth call failed (network). Retrying via /backend/api/...");
+            response = await axios.post<AuthResponse>(
+              "/backend/api/token/",
+              { email: credentials.email, password: credentials.password },
+              { headers: { "Content-Type": "application/json" } }
+            );
+          } catch (fallbackError) {
+            throw primaryError; // rethrow original network error
+          }
+        } else {
+          throw primaryError;
+        }
+      }
 
       if (!response.data.access || !response.data.refresh) {
         throw new Error("Server response missing required tokens");
@@ -132,7 +152,7 @@ export class AuthService {
       }
 
       const response = await axiosAuth.post<AuthResponse>(
-        "/token/refresh/",
+        "token/refresh/",
         {
           refresh: refreshToken,
         },

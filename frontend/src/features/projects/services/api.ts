@@ -1,5 +1,5 @@
 import axios from "axios";
-import { axiosApi } from "@/lib/axios-api";
+import { axiosApi } from '@/lib/axios';
 import { ProjectSetup } from "../types";
 
 export interface ProjectData {

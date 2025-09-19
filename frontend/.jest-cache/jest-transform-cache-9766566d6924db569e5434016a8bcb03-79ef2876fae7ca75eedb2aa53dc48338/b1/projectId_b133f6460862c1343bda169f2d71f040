@@ -1,0 +1,51 @@
+0482038c4ea2cbad9cba94b69f965017
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    looksLikeUuid: function() {
+        return looksLikeUuid;
+    },
+    normalizeProjectId: function() {
+        return normalizeProjectId;
+    },
+    persistActiveProjectId: function() {
+        return persistActiveProjectId;
+    }
+});
+function looksLikeUuid(id) {
+    const s = String(id || '');
+    return s.includes('-') && s.length >= 32;
+}
+function normalizeProjectId(raw) {
+    const val = String(raw || '');
+    if (looksLikeUuid(val)) return val;
+    try {
+        const hinted = globalThis?.__activeProjectId;
+        if (hinted && looksLikeUuid(hinted)) return hinted;
+    } catch  {}
+    try {
+        const ls = globalThis?.localStorage;
+        if (ls) {
+            const stored = ls.getItem('activeProjectId') || ls.getItem('currentProjectId');
+            if (stored && looksLikeUuid(stored)) return stored;
+        }
+    } catch  {}
+    return val;
+}
+function persistActiveProjectId(id) {
+    try {
+        if (!id) return;
+        const ls = globalThis?.localStorage;
+        if (ls) ls.setItem('activeProjectId', id);
+    } catch  {}
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9qYWNvYmhvcm5zdmVubmV2aWsvRG9jdW1lbnRzL0dpdEh1Yi9tYVJlcG9fcm9vdC9mcm9udGVuZC9zcmMvbGliL3Byb2plY3RJZC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnQgZnVuY3Rpb24gbG9va3NMaWtlVXVpZChpZDogc3RyaW5nKTogYm9vbGVhbiB7XG4gIGNvbnN0IHMgPSBTdHJpbmcoaWQgfHwgJycpXG4gIHJldHVybiBzLmluY2x1ZGVzKCctJykgJiYgcy5sZW5ndGggPj0gMzJcbn1cblxuZXhwb3J0IGZ1bmN0aW9uIG5vcm1hbGl6ZVByb2plY3RJZChyYXc6IHN0cmluZyk6IHN0cmluZyB7XG4gIGNvbnN0IHZhbCA9IFN0cmluZyhyYXcgfHwgJycpXG4gIGlmIChsb29rc0xpa2VVdWlkKHZhbCkpIHJldHVybiB2YWxcblxuICB0cnkge1xuICAgIGNvbnN0IGhpbnRlZCA9IChnbG9iYWxUaGlzIGFzIGFueSk/Ll9fYWN0aXZlUHJvamVjdElkIGFzIHN0cmluZyB8IHVuZGVmaW5lZFxuICAgIGlmIChoaW50ZWQgJiYgbG9va3NMaWtlVXVpZChoaW50ZWQpKSByZXR1cm4gaGludGVkXG4gIH0gY2F0Y2gge31cblxuICB0cnkge1xuICAgIGNvbnN0IGxzOiBTdG9yYWdlIHwgdW5kZWZpbmVkID0gKGdsb2JhbFRoaXMgYXMgYW55KT8ubG9jYWxTdG9yYWdlXG4gICAgaWYgKGxzKSB7XG4gICAgICBjb25zdCBzdG9yZWQgPSBscy5nZXRJdGVtKCdhY3RpdmVQcm9qZWN0SWQnKSB8fCBscy5nZXRJdGVtKCdjdXJyZW50UHJvamVjdElkJylcbiAgICAgIGlmIChzdG9yZWQgJiYgbG9va3NMaWtlVXVpZChzdG9yZWQpKSByZXR1cm4gc3RvcmVkXG4gICAgfVxuICB9IGNhdGNoIHt9XG5cbiAgcmV0dXJuIHZhbFxufVxuXG5leHBvcnQgZnVuY3Rpb24gcGVyc2lzdEFjdGl2ZVByb2plY3RJZChpZDogc3RyaW5nKTogdm9pZCB7XG4gIHRyeSB7XG4gICAgaWYgKCFpZCkgcmV0dXJuXG4gICAgY29uc3QgbHM6IFN0b3JhZ2UgfCB1bmRlZmluZWQgPSAoZ2xvYmFsVGhpcyBhcyBhbnkpPy5sb2NhbFN0b3JhZ2VcbiAgICBpZiAobHMpIGxzLnNldEl0ZW0oJ2FjdGl2ZVByb2plY3RJZCcsIGlkKVxuICB9IGNhdGNoIHt9XG59XG5cbiJdLCJuYW1lcyI6WyJsb29rc0xpa2VVdWlkIiwibm9ybWFsaXplUHJvamVjdElkIiwicGVyc2lzdEFjdGl2ZVByb2plY3RJZCIsImlkIiwicyIsIlN0cmluZyIsImluY2x1ZGVzIiwibGVuZ3RoIiwicmF3IiwidmFsIiwiaGludGVkIiwiZ2xvYmFsVGhpcyIsIl9fYWN0aXZlUHJvamVjdElkIiwibHMiLCJsb2NhbFN0b3JhZ2UiLCJzdG9yZWQiLCJnZXRJdGVtIiwic2V0SXRlbSJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7SUFBZ0JBLGFBQWE7ZUFBYkE7O0lBS0FDLGtCQUFrQjtlQUFsQkE7O0lBb0JBQyxzQkFBc0I7ZUFBdEJBOzs7QUF6QlQsU0FBU0YsY0FBY0csRUFBVTtJQUN0QyxNQUFNQyxJQUFJQyxPQUFPRixNQUFNO0lBQ3ZCLE9BQU9DLEVBQUVFLFFBQVEsQ0FBQyxRQUFRRixFQUFFRyxNQUFNLElBQUk7QUFDeEM7QUFFTyxTQUFTTixtQkFBbUJPLEdBQVc7SUFDNUMsTUFBTUMsTUFBTUosT0FBT0csT0FBTztJQUMxQixJQUFJUixjQUFjUyxNQUFNLE9BQU9BO0lBRS9CLElBQUk7UUFDRixNQUFNQyxTQUFVQyxZQUFvQkM7UUFDcEMsSUFBSUYsVUFBVVYsY0FBY1UsU0FBUyxPQUFPQTtJQUM5QyxFQUFFLE9BQU0sQ0FBQztJQUVULElBQUk7UUFDRixNQUFNRyxLQUEyQkYsWUFBb0JHO1FBQ3JELElBQUlELElBQUk7WUFDTixNQUFNRSxTQUFTRixHQUFHRyxPQUFPLENBQUMsc0JBQXNCSCxHQUFHRyxPQUFPLENBQUM7WUFDM0QsSUFBSUQsVUFBVWYsY0FBY2UsU0FBUyxPQUFPQTtRQUM5QztJQUNGLEVBQUUsT0FBTSxDQUFDO0lBRVQsT0FBT047QUFDVDtBQUVPLFNBQVNQLHVCQUF1QkMsRUFBVTtJQUMvQyxJQUFJO1FBQ0YsSUFBSSxDQUFDQSxJQUFJO1FBQ1QsTUFBTVUsS0FBMkJGLFlBQW9CRztRQUNyRCxJQUFJRCxJQUFJQSxHQUFHSSxPQUFPLENBQUMsbUJBQW1CZDtJQUN4QyxFQUFFLE9BQU0sQ0FBQztBQUNYIn0=

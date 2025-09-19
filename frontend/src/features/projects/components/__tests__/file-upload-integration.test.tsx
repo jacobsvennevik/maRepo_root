@@ -76,7 +76,7 @@ jest.mock('../../services/api', () => ({
 }));
 
 // Mock axiosApi for FileStorage component
-jest.mock('@/lib/axios-api', () => ({
+jest.mock('@/lib/axios', () => ({
   axiosApi: {
     get: jest.fn(),
     post: jest.fn(),
@@ -98,7 +98,7 @@ jest.mock('next/navigation', () => ({
 
 // Import the mocked functions
 import { createProject, uploadFileWithProgress } from '../../services/api';
-import { axiosApi } from '@/lib/axios-api';
+import { axiosApi } from '@/lib/axios';
 
 // Mock file upload component
 jest.mock('@/components/ui/file-upload', () => ({
